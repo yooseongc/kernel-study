@@ -4,282 +4,274 @@
 
 ## 범위
 
-- 프로젝트 구조, 공통 레이아웃, 데이터 모델, 대표 주제 페이지, 시각화 컴포넌트, 문서, 빌드/린트 상태를 기준으로 리뷰했다.
-- 코드 수정은 하지 않았고, 현재 저장소 상태를 바탕으로 개선점을 정리했다.
+- 현재 저장소 기준으로 홈, 사이드바, 검색, 용어사전, 대표 토픽 페이지, 토픽 메타데이터, README를 다시 읽고 리뷰했다.
+- 이번 문서는 "코드 구조 문제"보다 "내용과 기능 측면에서 다음에 무엇을 개선할지"에 초점을 둔다.
 
-## 한 줄 평가
+## 현재 상태 요약
 
-`kernel-study`는 "리눅스 커널 학습용 인터랙티브 문서 사이트"라는 목표와 방향은 명확하다. 다만 현재는 콘텐츠 확장 속도가 구조 정리에 앞서가면서, 대형 단일 파일, React 19 규칙 위반, 문서/설정 불일치가 동시에 누적된 상태다.
+`kernel-study`는 이미 "보여줄 것이 있는 학습 사이트" 단계에 들어왔다. 13개 토픽, 검색, 용어 툴팁, 용어사전, TOC, 다크 모드, lazy loading까지 갖춰져 있고, 빌드도 정상이다.
 
-## 프로젝트 파악
-
-### 기술 스택
-
-- Vite + React 19 + TypeScript
-- React Router 7 (`HashRouter`)
-- D3, Three.js, Mermaid, react-syntax-highlighter
-- Tailwind CSS v4 스타일링
-
-### 현재 구조
-
-- 앱 엔트리와 라우팅은 [`src/App.tsx`](../src/App.tsx), [`src/main.tsx`](../src/main.tsx)에 집중되어 있다.
-- 공통 레이아웃은 [`src/components/layout`](../src/components/layout)에 모여 있다.
-- 주제 데이터는 [`src/data/kernelTopics.ts`](../src/data/kernelTopics.ts)에서 관리한다.
-- 주요 콘텐츠는 `src/pages/topicXX-*/index.tsx` 단일 파일들에 직접 작성되어 있다.
-- 공통 시각화 래퍼는 [`src/components/viz`](../src/components/viz)에 존재한다.
-- 문서화는 [`docs/STYLE.md`](./STYLE.md), [`docs/PROCESS.md`](./PROCESS.md), [`docs/PAGES.md`](./PAGES.md)에 있으나 현재 상태와 어긋나는 부분이 있다.
-
-### 확인한 상태
+확인 결과:
 
 - `npm run build`: 성공
-- `npm run lint`: 실패, 319건 문제 확인
-  - 314 errors
-  - 5 warnings
+- `npm run lint`: 에러 없음, 경고 4건
+
+즉, 지금부터의 핵심 과제는 "망가진 부분 복구"가 아니라 "학습 경험을 더 좋아지게 만드는 제품 개선"이다.
 
 ## 강점
 
-- 주제와 사용자 경험 방향이 명확하다. 사이드바, 검색, 용어사전, TOC까지 학습형 사이트에 필요한 뼈대는 갖춰져 있다.
-- D3, Mermaid, 코드 블록, 애니메이션 등 학습 표현 수단이 다양하다.
-- 토픽 분할 자체는 되어 있어서 장기적으로는 모듈화할 기반이 있다.
-- 빌드는 통과하므로 "완전히 무너진 상태"는 아니고, 구조 정리로 회복 가능한 단계다.
+### 1. 학습 도구로서의 방향이 분명하다
 
-## 주요 문제와 개선점
+- 단순 텍스트 문서가 아니라, 개념 설명 + 시각화 + 코드 + 용어사전이 하나의 흐름으로 묶여 있다.
+- 특히 [`src/components/ui/GlossaryTooltip.tsx`](../src/components/ui/GlossaryTooltip.tsx), [`src/pages/Glossary/index.tsx`](../src/pages/Glossary/index.tsx), [`src/components/search/SearchModal.tsx`](../src/components/search/SearchModal.tsx)의 조합은 학습 진입 장벽을 낮추는 데 효과적이다.
 
-### 1. 최우선: 주제 페이지가 지나치게 큰 단일 파일 구조
+### 2. 공통 UX가 안정됐다
 
-영향:
+- [`src/App.tsx`](../src/App.tsx)에서 lazy loading이 적용되어 있고,
+- [`src/components/layout/AppLayout.tsx`](../src/components/layout/AppLayout.tsx)에서 검색, TOC, 모바일 드로어, 패널 토글이 정리되어 있다.
+- 이전 상태와 비교하면 이제는 "기능이 돌아간다"를 넘어 "사용 패턴이 정돈됐다"고 볼 수 있다.
 
-- 주제 하나를 수정할 때 시각화, 텍스트, 표, 코드 샘플, 보조 컴포넌트가 한 파일에 섞여 있어 변경 범위가 커진다.
-- 동일한 패턴이 토픽마다 반복되어 버그 수정과 스타일 정합성 유지 비용이 높다.
-- 리뷰와 테스트가 어렵다.
+### 3. 콘텐츠 자체의 밀도는 이미 높다
 
-대표 규모:
+- [`src/pages/topic01-overview/index.tsx`](../src/pages/topic01-overview/index.tsx), [`src/pages/topic04-filesystem/index.tsx`](../src/pages/topic04-filesystem/index.tsx)처럼 대표 페이지만 봐도 설명, 애니메이션, 커널 코드, 실습 명령이 잘 결합돼 있다.
+- [`src/data/glossary.ts`](../src/data/glossary.ts)의 용어 밀도도 충분히 높다.
 
-- `topic03-memory`: 2016 lines
-- `topic02-scheduler`: 1649 lines
-- `topic06-network-stack`: 1543 lines
-- `topic08-xdp-ebpf`: 1375 lines
-- `topic09-synchronization`: 1282 lines
+## 우선순위별 개선점
 
-근거:
+### 1. 최우선: "완성도/상태" 메타데이터를 실제 UI에 반영해야 한다
 
-- [`src/pages/topic03-memory/index.tsx`](../src/pages/topic03-memory/index.tsx)
-- [`src/pages/topic02-scheduler/index.tsx`](../src/pages/topic02-scheduler/index.tsx)
-- [`src/pages/topic06-network-stack/index.tsx`](../src/pages/topic06-network-stack/index.tsx)
+현재 [`src/data/kernelTopics.ts`](../src/data/kernelTopics.ts)에는 `implemented`, `subtitle`, `vizType`, `tags`가 있지만, 사용자에게는 거의 드러나지 않는다.
 
-개선 제안:
+문제:
 
-- 각 topic을 최소한 아래 단위로 분리한다.
-- `content.ts` 또는 `content/*.ts`: 코드 샘플, 표 데이터, step 데이터
-- `components/*.tsx`: 주제 전용 시각화
-- `sections/*.tsx`: 본문 섹션
-- `index.tsx`: 페이지 조립만 담당
-- `Section`, `Prose`, `InfoTable` 같은 반복 UI는 페이지마다 복붙하지 말고 공통 컴포넌트로 이동한다.
-
-### 2. 최우선: React 19 / eslint 규칙과 실제 코드가 충돌하고 있음
-
-영향:
-
-- 현재 lint 실패의 핵심 원인이다.
-- React Compiler/Hook 규칙을 사용하는데 코드 패턴은 그 규칙에 맞지 않는다.
-- 단순 경고 수준이 아니라, 상태 관리와 렌더링 구조를 다시 정리해야 하는 항목이 포함되어 있다.
-
-대표 사례:
-
-- effect 내부 동기 `setState`
-  - [`src/components/layout/AppLayout.tsx`](../src/components/layout/AppLayout.tsx)
-  - [`src/components/search/SearchModal.tsx`](../src/components/search/SearchModal.tsx)
-- render 중 컴포넌트 정의
-  - [`src/pages/topic09-synchronization/index.tsx`](../src/pages/topic09-synchronization/index.tsx)
-- 수동 memoization 의존성 불일치
-  - [`src/pages/topic09-synchronization/index.tsx`](../src/pages/topic09-synchronization/index.tsx)
-  - [`src/pages/topic10-drivers/index.tsx`](../src/pages/topic10-drivers/index.tsx)
-  - [`src/pages/topic11-debugging/index.tsx`](../src/pages/topic11-debugging/index.tsx)
-- 불필요한 표현식
-  - [`src/components/ui/GlossaryTooltip.tsx`](../src/components/ui/GlossaryTooltip.tsx)
+- 홈과 사이드바에서 모든 토픽이 거의 같은 무게로 보인다.
+- 그런데 데이터상으로는 `implemented: true`인 토픽과 아닌 토픽이 섞여 있다.
+- 사용자는 "이 토픽이 초안인지, 완성본인지, 추천 학습 경로상 어디쯤인지" 알 수 없다.
 
 개선 제안:
 
-- React 19 규칙을 유지할지, 현재 단계에서는 완화할지 먼저 결정해야 한다.
-- 유지한다면:
-  - effect 안 상태 초기화 패턴 제거
-  - 렌더 함수 내부 컴포넌트 정의 제거
-  - `useCallback`/수동 memoization 의존성 재정비
-- 완화한다면:
-  - 현재 팀이 실제로 지킬 수 있는 수준으로 eslint 설정을 낮춘다.
-- 지금 상태에서는 "설정은 엄격한데 코드베이스는 그 기준을 따르지 못하는" 불일치가 가장 큰 문제다.
+- 홈 카드와 사이드바에 `구현 완료`, `작성 중`, `추천 시작점` 같은 상태 배지를 표시한다.
+- `subtitle`과 `vizType`도 홈 카드 또는 상세 헤더에서 노출한다.
+- `implemented`를 단순 boolean 대신 `draft | in_progress | complete` 같은 상태값으로 올리는 것이 더 낫다.
 
-### 3. 높음: 빌드는 되지만 품질 게이트로서 lint가 사실상 무력화됨
+기대 효과:
 
-영향:
+- 탐색 경험이 좋아지고, 사이트가 "정리된 커리큘럼"처럼 보이기 시작한다.
 
-- 빌드 성공만으로는 품질을 보장하지 못한다.
-- 린트 에러가 너무 많아 새 문제와 기존 문제를 구분하기 어렵다.
-- CI에 린트가 걸려 있어도 개발자가 신뢰하지 않게 된다.
+### 2. 최우선: 홈 화면 설명과 실제 기능/데이터가 아직 완전히 일치하지 않는다
 
-근거:
+예를 들어 [`src/pages/Home/index.tsx`](../src/pages/Home/index.tsx)에는 "D3 기반 그래프와 Three.js 3D 시각화가 혼합되어 있습니다."라고 적혀 있지만, 현재 토픽 메타데이터는 모두 `vizType: 'D3'`로 되어 있고, 실제 사용 흔적도 제한적이다.
 
-- [`eslint.config.js`](../eslint.config.js)
-- `npm run lint` 결과 319건
+또 [`README.md`](../README.md)는 프로젝트 설명은 좋아졌지만 버전 정보가 현재 패키지와 어긋난다.
+
+예시:
+
+- README: Vite 6, Three.js 0.178
+- 실제 [`package.json`](../package.json): Vite 8, Three.js 0.183
 
 개선 제안:
 
-- 1차 목표를 "lint 0"이 아니라 "치명 문제 우선 제거 + 새 문제 유입 차단"으로 잡는다.
-- 기존 오류는 범주별로 나눠 순차 해소한다.
-  - 인코딩/문자열
-  - React hook/compiler 규칙
-  - 포맷/indent
-  - 사용하지 않는 변수
-- CI에는 점진적 기준을 둔다. 예: 수정 파일만 엄격 적용.
+- 홈 문구는 "현재 실제 경험" 기준으로 맞춘다.
+- README의 버전/기술 스택은 배포 기준이 아니라 `package.json` 기준으로 자동 검증하거나 최소한 수동으로 동기화한다.
+- `vizType`가 실제로 활용되지 않을 거라면 제거하고, 활용할 거라면 UI에 반영한다.
 
-### 4. 높음: 문서와 실제 코드 상태가 어긋남
+기대 효과:
 
-영향:
+- 문서 신뢰도가 올라가고, 사용자가 기대하는 경험과 실제 경험의 차이가 줄어든다.
 
-- 신규 작업자가 문서를 보고 구조를 따라가기 어렵다.
-- "표준 문서"가 있으나 실제 코드가 그 규칙을 지키지 않는 부분이 많다.
-근거:
+### 3. 높음: 검색은 작동하지만, "학습용 탐색"으로는 아직 한 단계 더 갈 수 있다
 
-- [`docs/STYLE.md`](./STYLE.md)
-- [`docs/PROCESS.md`](./PROCESS.md)
-- [`docs/PAGES.md`](./PAGES.md)
-- [`README.md`](../README.md)
+현재 검색은 [`src/components/search/SearchModal.tsx`](../src/components/search/SearchModal.tsx)에서 토픽 제목/설명/태그, 용어 정의를 대상으로 잘 동작한다.
 
-추가 관찰:
+하지만 개선 여지가 있다.
 
-- `README.md`는 여전히 Vite 템플릿 기본 문서다.
-- 프로젝트 소개, 실행 방법, 배포 방식, 폴더 구조, 작성 규칙이 README에 반영되지 않았다.
+현재 한계:
+
+- 결과 정렬이 단순 포함 검색 수준이라, 가장 관련도 높은 결과가 위로 온다는 보장이 약하다.
+- glossary 결과는 6개로 제한되지만 topic 결과는 제한이 없어 질의에 따라 균형이 깨질 수 있다.
+- 검색 결과에서 "왜 이 결과가 나왔는지" 힌트가 없다.
+- 섹션 단위 검색이 없어, 긴 토픽 안에서 특정 개념을 바로 찾기 어렵다.
 
 개선 제안:
 
-- `README.md`를 실제 프로젝트 기준으로 다시 작성한다.
-- `docs/*`는 실제 유지할 규칙만 남기도록 정리한다.
-  - 프로젝트 개요
-  - 페이지 작성 규칙
-  - 콘텐츠/시각화 작성 규칙
-  - 배포/검증 절차
-- 문서가 코드의 복사본이 아니라, 유지해야 할 기준만 담도록 줄이는 편이 낫다.
+- 검색 가중치를 둔다: 제목 > alias > 태그 > 설명 > 정의
+- 결과 유형별 그룹 표시: `토픽`, `용어`, 이후 가능하면 `섹션`
+- 토픽 결과에는 `subtitle` 또는 대표 섹션 키워드를 함께 노출
+- 장기적으로는 h2/h3 단위 인덱싱을 추가해 "토픽 내부 섹션 바로 이동"을 지원
 
-### 5. 중간: 공통 컴포넌트가 있지만 추상화 수준이 일정하지 않음
+기대 효과:
 
-영향:
+- 검색이 단순 이동 기능이 아니라 "개념 탐색 도구"가 된다.
 
-- 같은 목적의 기능이 `hook`, `container`, 페이지 내부 유틸로 흩어져 있다.
-- D3/Three/Mermaid 사용 방식이 통일되어 있지 않다.
+### 4. 높음: 용어사전은 풍부하지만, 사용량이 늘수록 필터/탐색 기능이 필요해진다
 
-근거:
+[`src/pages/Glossary/index.tsx`](../src/pages/Glossary/index.tsx)는 현재 정렬된 카드 리스트로 충분히 읽을 수 있다. 하지만 용어 수가 계속 늘어나는 구조라면 지금 방식은 곧 한계에 닿는다.
 
-- [`src/hooks/useD3.ts`](../src/hooks/useD3.ts)
-- [`src/hooks/useThree.ts`](../src/hooks/useThree.ts)
-- [`src/components/viz/D3Container.tsx`](../src/components/viz/D3Container.tsx)
-- [`src/components/viz/WebGLCanvas.tsx`](../src/components/viz/WebGLCanvas.tsx)
-- [`src/components/viz/MermaidDiagram.tsx`](../src/components/viz/MermaidDiagram.tsx)
+현재 한계:
+
+- 카테고리 필터가 없다.
+- 페이지 내부 검색이 없다.
+- "관련 토픽 보기"는 단일 링크 수준이라 학습 경로 연결이 약하다.
+
+개선 제안:
+
+- 카테고리 필터 칩 추가
+- 사전 내부 검색 입력 추가
+- `관련 토픽 보기`를 1개 링크가 아니라 `관련 토픽들` 구조로 확장할 수 있게 데이터 모델 준비
+- 용어 상세에 "처음 보면 같이 읽으면 좋은 토픽"을 보여주는 것도 좋다
+
+기대 효과:
+
+- 용어사전이 보조 페이지가 아니라 독립적인 학습 허브가 된다.
+
+### 5. 높음: 각 토픽에 "학습 흐름 장치"를 더 넣을 여지가 크다
+
+현재 토픽들은 내용 밀도는 높지만, 초학자 관점에서는 "어디부터 읽어야 하고 무엇을 얻어가야 하는지"가 상대적으로 덜 드러난다.
+
+개선 제안:
+
+- 페이지 상단에 `이 토픽에서 배우는 것` 3줄 요약 추가
+- 페이지 하단에 `핵심 요약` 추가
+- `선수 지식` 또는 `먼저 읽으면 좋은 토픽` 표시
+- `다음 추천 토픽`을 하단 네비게이션과 연결
+- 긴 페이지에는 중간 요약 카드나 checkpoint를 넣어 인지 부하를 낮춘다
+
+기대 효과:
+
+- 콘텐츠가 "좋은 참고 자료"에서 "좋은 학습 코스"로 바뀐다.
+
+### 6. 중간: 메타데이터는 이미 좋은데, 커리큘럼 기능으로 아직 확장되지 않았다
+
+[`src/types/topic.ts`](../src/types/topic.ts), [`src/data/kernelTopics.ts`](../src/data/kernelTopics.ts)를 보면 토픽 중심 구조는 이미 잘 잡혀 있다.
+
+하지만 아직 부족한 메타데이터:
+
+- 난이도
+- 예상 학습 시간
+- 선수 토픽
+- 다음 추천 토픽
+- 완성도
+- 마지막 업데이트
+
+개선 제안:
+
+- 토픽 데이터 모델을 "라우팅 데이터"에서 "커리큘럼 데이터"로 승격한다.
+- 홈, 사이드바, 검색, 용어사전이 모두 이 메타데이터를 재사용하게 만든다.
+
+기대 효과:
+
+- 기능 추가가 페이지별 하드코딩이 아니라 데이터 중심으로 진행된다.
+
+### 7. 중간: 영어/한글 UI 혼합은 점차 정리하는 편이 좋다
+
+현재 UI는 전체적으로 한국어 중심이지만, [`src/components/layout/TableOfContents.tsx`](../src/components/layout/TableOfContents.tsx)의 `On this page`처럼 일부는 영어가 남아 있다.
+
+이 자체가 큰 문제는 아니지만, 학습 사이트의 톤을 생각하면 통일이 있는 편이 낫다.
+
+개선 제안:
+
+- 사용자 노출 UI 언어를 한국어 중심으로 통일
+- 영어는 부제, 원어 용어, 코드/사양 명칭에만 남긴다
+
+### 8. 중간: 정보 위계를 더 분명하게 만들 여지가 있다
+
+현재 UI는 깔끔하고 기능적이지만, 화면별 정보의 중요도가 시각적으로 아주 강하게 구분되지는 않는다.
 
 관찰:
 
-- `useD3`와 `D3Container`가 역할이 겹친다.
-- `useThree`와 `WebGLCanvas`도 비슷한 중복이 있다.
-- 페이지마다 자체 helper를 다시 정의해 공통 계층이 얇다.
+- [`src/pages/Home/index.tsx`](../src/pages/Home/index.tsx)의 히어로는 구조는 좋지만, `배지 → 제목 → 설명 → 보조 안내`의 대비가 조금 더 벌어져도 된다.
+- 토픽 카드에서 `제목`, `설명`, `태그`는 모두 안정적으로 보이지만, "무엇을 먼저 읽어야 하는지"가 한눈에 들어오지는 않는다.
+- [`src/components/layout/Sidebar.tsx`](../src/components/layout/Sidebar.tsx)의 네비게이션은 정돈돼 있지만, 현재 토픽/완성 토픽/핵심 토픽 같은 계층은 시각적으로 구분되지 않는다.
+- [`src/components/layout/TableOfContents.tsx`](../src/components/layout/TableOfContents.tsx)는 기능은 좋지만, 본문을 읽다가 시선을 옮겼을 때 활성 섹션의 우선순위가 아주 강하지는 않다.
 
 개선 제안:
 
-- 시각화 API를 하나의 스타일로 통일한다.
-- 예시 방향:
-  - React wrapper 컴포넌트 중심
-  - 내부에서 resize, cleanup, theme 연동 담당
-  - 페이지는 `data + render fn`만 제공
-- 현재처럼 hook과 wrapper가 병행되면 팀 내 사용 규칙이 계속 흔들린다.
+- 홈에서는 `제목`, `설명`, `사용 가이드`, `토픽 그리드`의 간격과 대비를 더 분명히 한다.
+- 토픽 카드에는 상태 배지, 난이도, 추천 여부 같은 메타 정보를 상단 우선순위로 올린다.
+- 사이드바에는 현재 토픽, 완료 토픽, 핵심 토픽을 구분하는 시각 규칙을 만든다.
+- TOC는 활성 섹션의 배경/텍스트/좌측 표시를 더 강하게 줘서 "현재 읽는 위치"를 더 즉시 알 수 있게 한다.
 
-### 6. 중간: 검색/레이아웃/테마는 유용하지만 상태 관리가 조금 거칠다
+기대 효과:
 
-근거:
+- 사용자가 "어디를 먼저 봐야 하는지"를 더 빠르게 이해하게 된다.
+- 학습 콘텐츠가 많은 사이트일수록 정보 위계는 기능만큼 중요하기 때문에, 체감 완성도가 올라간다.
 
-- [`src/components/layout/AppLayout.tsx`](../src/components/layout/AppLayout.tsx)
-- [`src/components/search/SearchModal.tsx`](../src/components/search/SearchModal.tsx)
-- [`src/contexts/ThemeContext.tsx`](../src/contexts/ThemeContext.tsx)
+### 9. 중간: 일관된 브랜딩을 더 강화할 수 있다
+
+현재 디자인은 전반적으로 안정적이고 무난하지만, 아직은 "Tailwind로 잘 정리된 학습 도구"에 가깝고, `kernel-study`만의 시각 언어는 조금 약하다.
 
 관찰:
 
-- `ThemeContext`는 provider 파일에서 hook까지 함께 export하고 있어 현재 eslint 규칙과 충돌한다.
-- Search modal은 open/query/active index 관리가 effect에 의존한다.
-- route 변경 시 사이드바 닫기와 스크롤 이동은 동작은 하더라도 현재 규칙에서는 재설계 대상이다.
+- 홈, 사이드바, 검색, TOC, 용어사전은 모두 같은 계열 스타일을 쓰지만, 브랜드 레벨의 규칙으로 보일 정도로 강하게 묶여 있지는 않다.
+- [`src/pages/Home/index.tsx`](../src/pages/Home/index.tsx), [`src/components/search/SearchModal.tsx`](../src/components/search/SearchModal.tsx), [`src/pages/Glossary/index.tsx`](../src/pages/Glossary/index.tsx) 사이의 배지, 카드, 강조색 톤이 "같은 제품"이라는 인상까지는 아직 약하다.
+- 토픽 메타데이터에 `vizType`, `implemented` 같은 제품적 정보가 있는데, 이것이 브랜딩 요소로 활용되지는 않고 있다.
 
 개선 제안:
 
-- 테마 초기화는 "초기 state 계산 + 단일 effect"로 단순화한다.
-- 검색 모달 상태는 open 시점 이벤트와 입력 이벤트 중심으로 재구성한다.
-- provider와 reusable hook 분리를 고려한다.
+- 브랜드 색의 역할을 명확히 정한다. 예:
+  - 파랑: 기본 탐색 / 현재 위치
+  - 초록: 실습 / 성능 / 실행 가능한 내용
+  - 주황: 단계별 흐름 / 애니메이션
+  - 보라 또는 청록: 심화 개념 / 가상화 / 시스템 구조
+- 상태 배지, 토픽 카드, 검색 결과 타입, 용어 카테고리 색을 하나의 규칙으로 맞춘다.
+- `Kernel Study` 로고/타이포/배지 스타일을 홈과 사이드바, 검색 모달에서 반복적으로 사용한다.
+- `implemented`, `vizType`, `difficulty` 같은 메타데이터가 생기면 이를 단순 텍스트가 아니라 브랜드 요소처럼 일관되게 표현한다.
 
-### 7. 중간: 번들 크기가 크고 Mermaid 의존성이 무겁다
+기대 효과:
 
-영향:
+- 사이트 전체가 더 하나의 제품처럼 보이게 된다.
+- 사용자는 화면을 옮겨도 같은 규칙을 학습하게 되고, 탐색 비용이 줄어든다.
 
-- 초기 로딩 비용이 크다.
-- 학습 사이트 특성상 첫 진입 경험이 중요하므로 성능 체감에 직접 연결된다.
+### 10. 중간: 성능은 많이 좋아졌지만, 여전히 큰 공통 청크가 남아 있다
 
-근거:
-
-- `npm run build` 결과
-  - `dist/assets/index-CIdYRuke.js` 1.5MB
-  - Mermaid 관련 청크 다수 생성
-  - 일부 청크 500kB 초과 경고
-
-개선 제안:
-
-- topic 페이지 단위 lazy loading 적용
-- Mermaid, Three.js는 실제 사용하는 페이지에서만 동적 import
-- glossary/search 데이터도 필요 시점 로드 고려
-- "홈 + 기본 레이아웃"과 "무거운 시각화"를 분리한다
-
-### 8. 낮음: 데이터 모델이 최소 수준이라 콘텐츠 운영 확장성이 낮음
-
-근거:
-
-- [`src/types/topic.ts`](../src/types/topic.ts)
-- [`src/data/kernelTopics.ts`](../src/data/kernelTopics.ts)
+현재는 route lazy loading 덕분에 예전보다 훨씬 좋아졌다. 다만 build 결과를 보면 여전히 큰 공통 청크가 남아 있다.
 
 관찰:
 
-- `implemented`는 있으나 실제 페이지 완성도, 섹션 수, 시각화 유형, 난이도, 마지막 업데이트 같은 운영 정보가 없다.
-- 라우팅과 탐색이 수동 import + 수동 route 선언 방식이다.
+- `Section-*.js` 공통 청크가 500kB를 넘는다
+- Mermaid, KaTeX, Cytoscape 계열 청크도 무겁다
+
+이건 기능 결함은 아니지만, 학습 사이트 특성상 모바일/저속 네트워크에서 체감될 수 있다.
 
 개선 제안:
 
-- topic 메타데이터를 기준으로 라우트/사이드바/홈 카드 생성을 더 자동화한다.
-- 최소한 아래 메타데이터를 추가할 가치가 있다.
-  - `status`
-  - `lastUpdated`
-  - `sections`
-  - `difficulty`
-  - `estimatedReadTime`
+- Mermaid가 필요한 페이지에서만 더 강하게 분리되는지 확인
+- 무거운 시각화 라이브러리 import 경로를 더 세분화
+- 장기적으로는 "텍스트 우선 렌더, 무거운 시각화 지연 로드"도 고려 가능
 
-## 우선순위별 실행 제안
+## 추천 실행 순서
 
-### 1단계: 복구
+### 1단계: 사용자에게 보이는 정보 정리
 
-- README 현실화
-- `docs/*`와 실제 코드 구조의 기준 재정렬
+- 홈/사이드바에 토픽 상태 배지 표시
+- README와 홈 설명을 실제 상태와 맞춤
+- TOC/검색 등 UI 언어 통일
 
-### 2단계: 품질 기준 정렬
+### 2단계: 탐색 UX 강화
 
-- eslint 규칙 유지/완화 여부 결정
-- React 19 관련 주요 lint 에러 해소
-- 새로 수정하는 파일부터 lint-clean 원칙 적용
+- 검색 랭킹 개선
+- 용어사전 필터/검색 추가
+- 토픽 메타데이터 확장
 
-### 3단계: 구조 분해
+### 3단계: 학습 흐름 강화
 
-- `topic03`, `topic06`, `topic08`, `topic09`부터 파일 분리
-- 공통 `Section`, `Prose`, `InfoTable`, `TopicNav` 추출
-- 시각화 계층을 wrapper 중심으로 단일화
+- 선수 지식 / 다음 토픽 / 핵심 요약
+- 긴 토픽의 중간 checkpoint 추가
+- 토픽별 난이도/예상 학습 시간 표시
 
-### 4단계: 성능 정리
+### 4단계: 성능 미세 조정
 
-- route lazy loading
-- Mermaid/Three.js 동적 로딩
-- 큰 데이터와 무거운 차트 분리
+- 큰 공통 청크 원인 분석
+- 시각화 라이브러리 분리 최적화
 
 ## 결론
 
-이 프로젝트는 학습 콘텐츠 제품으로서의 방향성과 소재는 좋다. 문제는 "콘텐츠 생산 속도"가 "구조적 정리와 품질 기준"을 앞질렀다는 점이다. 지금 가장 중요한 일은 새 기능 추가가 아니라, 인코딩 복구와 품질 기준 정렬, 그리고 큰 페이지 분해다.
+이 프로젝트는 이제 "기술적으로 만들 수 있느냐"의 단계를 넘어섰다. 지금부터 중요한 것은 기능을 더 붙이는 것보다, 이미 있는 콘텐츠를 더 잘 탐색하고 더 잘 학습하게 만드는 것이다.
 
-이 세 가지가 정리되면 이후의 개선은 비교적 단순해진다. 반대로 이 상태에서 토픽을 더 추가하면 문서, 접근성, 리뷰 비용, 유지보수 비용이 함께 더 나빠질 가능성이 높다.
+가장 큰 개선 포인트는 세 가지다.
+
+- 토픽 상태와 메타데이터를 UI에 드러내기
+- 검색/용어사전을 학습 탐색 도구로 강화하기
+- 각 토픽에 학습 흐름 장치를 추가하기
+
+이 세 가지가 정리되면 `kernel-study`는 좋은 시각화 사이트에서, 실제로 따라 읽기 좋은 커널 학습 플랫폼으로 한 단계 올라갈 수 있다.

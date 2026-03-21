@@ -9,6 +9,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
@@ -1258,20 +1259,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
 
             </Section>
 
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/04-filesystem" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 04 · VFS와 파일시스템
-                    </a>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/06-network-stack" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        06 · 네트워크 스택의 전체 흐름 →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="05-interrupts" />
         </div>
     )
 }

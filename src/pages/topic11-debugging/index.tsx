@@ -9,6 +9,7 @@ import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 11.1  /proc 트리 D3 시각화
@@ -1199,20 +1200,7 @@ lock(B) ← 대기   lock(A) ← 대기
                 />
             </Section>
 
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/10-drivers" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 10 · 디바이스 드라이버와 커널 모듈
-                    </a>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/12-security" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        12 · Linux 보안 모델 →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="11-debugging" />
         </div>
     )
 }

@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 28)
+> 마지막 업데이트: 2026-03-22 (Sprint 29)
 
 ---
 
@@ -12,6 +12,7 @@
 | 26 | 토픽 메타데이터 확장 (status/difficulty/prerequisites), 홈 카드 난이도 배지 + 선수 지식, 검색 가중치·그룹화·섹션 검색 추가, 용어사전 카테고리 필터 칩 + 내부 검색 | 2026-03-22 |
 | 27 | KernelRef 컴포넌트 (elixir.bootlin.com 링크), LearningCard 컴포넌트 (학습 목표 3줄 + 선수지식 링크) 신규 생성, 전체 13개 토픽 적용, topic02/03/06/08/09에 KernelRef 삽입 | 2026-03-22 |
 | 28 | 개념 지도 페이지 (`/#/graph`) — D3 force-directed 그래프, 토픽 13개+용어 57개 노드, 공통태그/topicRef 엣지, 줌/팬/드래그, 카테고리 필터, Sidebar "개념 지도" 메뉴 추가 | 2026-03-22 |
+| 29 | 리팩터링 — TopicNavigation/InfoBox/Alert 공통 컴포넌트 추출, 13개 토픽 nav 교체, topic02/03/06 codeSnippets.ts 분리 (총 ~880줄 감소), 그래프 노드 레이블 상시 표시 | 2026-03-22 |
 | 1 | 프로젝트 골격 구축 (Vite+React+TS, 라우팅, 공통 컴포넌트, GitHub Actions 배포) | 2026-03-21 |
 | 1.5 | UI 강화 (다크모드, 검색 모달, Glossary 페이지, 36개 용어 초기 데이터) | 2026-03-21 |
 | 2 | Topic 01~03 콘텐츠 구현 (syscall 흐름, CFS/컨텍스트스위치 D3, 메모리 관리 전체) | 2026-03-21 |

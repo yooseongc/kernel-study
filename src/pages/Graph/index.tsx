@@ -194,7 +194,7 @@ function renderGraph(
         })
         .attr('stroke-width', d => d.type === 'topic' ? 2 : 1)
 
-    // 토픽 번호 레이블
+    // 토픽 번호 레이블 (원 안)
     nodeSel.filter(d => d.type === 'topic')
         .append('text')
         .attr('text-anchor', 'middle')
@@ -206,18 +206,44 @@ function renderGraph(
         .attr('pointer-events', 'none')
         .text(d => String((d.topicIndex ?? 0) + 1).padStart(2, '0'))
 
+    // 토픽 타이틀 레이블 (원 아래, 상시 표시)
+    nodeSel.filter(d => d.type === 'topic')
+        .append('text')
+        .attr('text-anchor', 'middle')
+        .attr('y', d => d.r + 11)
+        .attr('fill', d => topicStroke(d.topicIndex!, isDark))
+        .attr('font-size', '8px')
+        .attr('font-family', 'sans-serif')
+        .attr('pointer-events', 'none')
+        .text(d => {
+            const title = d.label.replace(/^\d+\.\s*/, '')
+            return title.length > 11 ? title.slice(0, 10) + '…' : title
+        })
+
+    // 용어 텍스트 레이블 (원 우측, 상시 표시)
+    nodeSel.filter(d => d.type === 'glossary')
+        .append('text')
+        .attr('x', d => d.r + 4)
+        .attr('y', 1)
+        .attr('dominant-baseline', 'middle')
+        .attr('fill', d => CAT_COLOR[d.category ?? 'general'])
+        .attr('font-size', '6.5px')
+        .attr('font-family', 'sans-serif')
+        .attr('pointer-events', 'none')
+        .text(d => d.label.length > 9 ? d.label.slice(0, 8) + '…' : d.label)
+
     // Force 시뮬레이션
     const sim = d3.forceSimulation<GraphNode>(nodes)
         .force('link', d3.forceLink<GraphNode, GraphLink>(links)
             .id(d => d.id)
-            .distance(d => d.kind === 'sharedTag' ? 170 : 85)
-            .strength(d => d.kind === 'sharedTag' ? 0.25 : 0.5)
+            .distance(d => d.kind === 'sharedTag' ? 190 : 95)
+            .strength(d => d.kind === 'sharedTag' ? 0.2 : 0.45)
         )
         .force('charge', d3.forceManyBody<GraphNode>()
-            .strength(d => d.type === 'topic' ? -450 : -55)
+            .strength(d => d.type === 'topic' ? -500 : -70)
         )
         .force('center', d3.forceCenter(width / 2, height / 2).strength(0.05))
-        .force('collision', d3.forceCollide<GraphNode>(d => d.r + 3))
+        .force('collision', d3.forceCollide<GraphNode>(d => d.type === 'topic' ? d.r + 18 : d.r + 22))
         .on('tick', () => {
             linkSel
                 .attr('x1', d => (d.source as GraphNode).x ?? 0)

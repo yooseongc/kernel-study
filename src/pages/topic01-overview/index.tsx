@@ -9,6 +9,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 const syscallFlowChart = `
 sequenceDiagram
@@ -1095,15 +1096,7 @@ export default function Topic01Overview() {
                 </div>
             </Section>
 
-            {/* 다음 토픽 */}
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-end">
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/02-scheduler" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        02 · 프로세스, 스레드, 스케줄러 →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="01-overview" />
         </div>
     )
 }

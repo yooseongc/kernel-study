@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import * as snippets from './codeSnippets'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
@@ -11,6 +12,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ── 2.3 프로세스 상태 전이 D3 다이어그램 ────────────────────────────────────
 function renderProcessStateDiagram(
@@ -114,232 +116,7 @@ function renderProcessStateDiagram(
     arrow(`M 510,${BTop} C 510,135 316,135 316,${TBot}`, 'SIGCONT',  427, 122)
 }
 
-// ── 2.2 task_struct 코드 ────────────────────────────────────────────────────
-const taskStructCode = `struct task_struct {
-    /* ── 상태 ── */
-    unsigned int        __state;      /* TASK_RUNNING, TASK_INTERRUPTIBLE, ... */
-    int                 exit_state;   /* EXIT_ZOMBIE, EXIT_DEAD */
-
-    /* ── 식별자 ── */
-    pid_t               pid;          /* 이 태스크의 고유 ID */
-    pid_t               tgid;         /* 스레드 그룹 ID (메인 스레드의 PID) */
-    char                comm[16];     /* 프로세스 이름 (ps에서 보이는 이름) */
-
-    /* ── 주소 공간 ── */
-    struct mm_struct    *mm;          /* 가상 주소 공간 (NULL = 커널 스레드) */
-    struct mm_struct    *active_mm;   /* 실제 사용 중인 mm (커널 스레드용) */
-
-    /* ── 스케줄러 ── */
-    int                 prio;         /* 동적 우선순위 (nice + 조정값) */
-    int                 static_prio;  /* 정적 우선순위 (nice 값 기반) */
-    struct sched_entity se;           /* CFS 스케줄링 엔티티 (vruntime 포함) */
-    struct sched_rt_entity rt;        /* RT 스케줄러 엔티티 */
-    const struct sched_class *sched_class; /* 소속 스케줄러 클래스 */
-
-    /* ── 파일 시스템 ── */
-    struct fs_struct    *fs;          /* 루트/현재 디렉토리 */
-    struct files_struct *files;       /* 열린 파일 디스크립터 테이블 */
-
-    /* ── 계층 구조 ── */
-    struct task_struct  *parent;      /* 부모 프로세스 */
-    struct list_head    children;     /* 자식 목록 */
-    struct list_head    sibling;      /* 형제 목록 */
-
-    /* ── 신호 ── */
-    struct signal_struct *signal;     /* 스레드 그룹 공유 신호 정보 */
-    sigset_t            blocked;      /* 블록된 시그널 마스크 */
-};`
-
-const schedEntityCode = `struct sched_entity {
-    struct load_weight  load;       /* 이 엔티티의 CPU 가중치 */
-    struct rb_node      run_node;   /* CFS 런큐의 Red-Black 트리 노드 */
-    u64                 vruntime;   /* 가상 실행 시간 — CFS 정렬 기준 */
-    u64                 exec_start; /* 마지막 실행 시작 시간 (ns) */
-    u64                 sum_exec_runtime; /* 총 CPU 사용 시간 (ns) */
-};`
-
-// ── 2.10 스케줄러 통계 & 로드밸런싱 코드 ────────────────────────────────────
-const schedstatCode = `# schedstat 형식: CPU별 통계
-cat /proc/schedstat
-# cpu0 0 0 731 659 731 659 3645037 1242 0
-# 컬럼: yld_count, yld_act_count, sched_count, sched_goidle,
-#        ttwu_count, ttwu_local, run_delay(ns), pcount
-
-# 읽기 쉬운 형태로 파싱
-awk '/^cpu[0-9]/ {
-    printf "CPU%s: schedules=%s, run_delay=%sms\\n",
-    substr($1,4), $8, $9/1000000
-}' /proc/schedstat
-
-# 특정 프로세스의 스케줄링 통계
-cat /proc/$(pgrep nginx)/schedstat
-# run_time(ns)  wait_time(ns)  timeslices
-# 1234567890    9876543210     5678
-
-# 스케줄러 레이턴시 확인 (schedtool)
-schedtool -r $(pgrep nginx)  # RT 우선순위 확인`
-
-const schedDebugCode = `# 전체 스케줄러 상태 덤프
-cat /proc/sched_debug | head -60
-
-# 주요 정보:
-# .nr_running     : 현재 실행 가능한 태스크 수
-# .load           : 런큐 부하 (weight 합계)
-# cfs_rq->min_vruntime : CFS 최소 vruntime
-# current         : 현재 실행 중인 태스크
-
-# CPU별 런큐 부하 모니터링
-watch -n 1 'grep "\\.load\\|nr_running\\|curr->" /proc/sched_debug | head -40'
-
-# 태스크별 vruntime 확인 (CFS 트리 스냅샷)
-cat /proc/sched_debug | grep -A3 "cfs_rq\\[0\\]"`
-
-const loadBalanceCode = `/* 주기적 로드밸런싱 트리거 */
-static void run_rebalance_domains(struct softirq_action *h)
-{
-    /* 현재 CPU의 런큐 부하 vs 다른 CPU 비교 */
-    rebalance_domains(this_rq(), idle);
-}
-
-/* 불균형 감지 및 태스크 이동 */
-static int load_balance(int this_cpu, struct rq *this_rq,
-                         struct sched_domain *sd, ...)
-{
-    struct rq *busiest;
-
-    /* 가장 바쁜 CPU 찾기 */
-    busiest = find_busiest_queue(this_cpu, sd, ...);
-
-    /* 태스크 이동 (busiest → this_rq) */
-    ld_moved = move_tasks(this_rq, this_cpu, busiest, ...);
-
-    return ld_moved;
-}
-
-/* 유휴 CPU 즉시 태스크 당기기 */
-static int newidle_balance(struct rq *this_rq, ...)
-{
-    /* CPU가 idle 상태 진입 시 즉시 다른 CPU에서 태스크 가져옴 */
-    pulled_task = load_balance(this_cpu, this_rq, sd, CPU_NEWLY_IDLE, ...);
-}`
-
-// ── 2.9 cgroups 코드 & 데이터 ───────────────────────────────────────────────
-const cgroupFsCode = `# cgroup v2 파일시스템 구조 (/sys/fs/cgroup/)
-/sys/fs/cgroup/
-├── cgroup.controllers    # 활성 서브시스템: "cpuset cpu io memory pids"
-├── cgroup.procs          # 이 cgroup에 속한 PID 목록
-├── cpu.max               # 루트: "max 100000" (제한 없음)
-├── memory.max            # 루트: "max"
-│
-├── system.slice/         # systemd 관리 서비스 그룹
-│   ├── sshd.service/
-│   └── nginx.service/
-│       ├── memory.max    # "268435456" (256 MiB)
-│       └── cgroup.procs  # nginx 워커 PID 목록
-│
-└── myapp/                # 수동 생성 cgroup
-    ├── cpu.max           # "200000 1000000" (20% of 1 CPU)
-    ├── memory.max        # "536870912" (512 MiB)
-    └── cgroup.procs      # 이 그룹에 속할 PID 추가`
-
-const cgroupCreateCode = `# cgroup v2: 그룹 생성 → 자원 제한 → 프로세스 이동
-
-# 1. 디렉토리 생성 = cgroup 생성
-mkdir /sys/fs/cgroup/myapp
-
-# 2. CPU 제한: period 1,000,000 µs 중 200,000 µs 사용 (20%)
-echo "200000 1000000" > /sys/fs/cgroup/myapp/cpu.max
-
-# 3. 메모리 상한 512 MiB
-echo "536870912" > /sys/fs/cgroup/myapp/memory.max
-
-# 4. 현재 쉘을 그룹으로 이동 (이후 fork된 자식도 자동 소속)
-echo $$ > /sys/fs/cgroup/myapp/cgroup.procs
-
-# 5. 확인
-cat /sys/fs/cgroup/myapp/cpu.stat`
-
-const cgroupTaskStructCode = `struct task_struct {
-    ...
-    /* ── cgroup 연결 ── */
-    struct css_set __rcu *cgroups;   /* 이 태스크가 속한 cgroup 세트 */
-    struct list_head cg_list;        /* css_set 내 태스크 목록 노드 */
-    ...
-};
-
-/* css_set: 각 서브시스템별 cgroup_subsys_state 포인터 집합 */
-struct css_set {
-    struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT];
-    /* cpu_cgroup, mem_cgroup, blkcg, ... */
-    refcount_t refcount;
-    struct list_head tasks; /* 이 css_set을 공유하는 task 목록 */
-};`
-
-const prioToWeightCode = `/* nice 값 → weight 변환 (kernel/sched/core.c) */
-const int sched_prio_to_weight[40] = {
- /* -20 */     88761,  71755,  56483,  46273,  36291,
- /* -15 */     29154,  23254,  18705,  14949,  11916,
- /* -10 */      9548,   7620,   6100,   4904,   3906,
- /*  -5 */      3121,   2501,   1991,   1586,   1277,
- /*   0 */      1024,    820,    655,    526,    423,
- /*   5 */       335,    272,    215,    172,    137,
- /*  10 */       110,     87,     70,     56,     45,
- /*  15 */        36,     29,     23,     18,     15,
-};
-
-/* vruntime 업데이트 (CFS의 핵심) */
-static void update_curr(struct cfs_rq *cfs_rq)
-{
-    u64 delta_exec = now - curr->exec_start;
-
-    /* weight가 높을수록 vruntime 증가가 느려 더 많이 실행됨 */
-    curr->vruntime += calc_delta_fair(delta_exec, curr);
-}
-
-static u64 calc_delta_fair(u64 delta, struct sched_entity *se)
-{
-    /* NICE_0_LOAD(1024) / se->load.weight 비율로 스케일 */
-    return __calc_delta(delta, NICE_0_LOAD, &se->load);
-}`
-
-const scheduleCode = `/* 스케줄러 진입점 — 자발적/비자발적 컨텍스트 스위치 공통 경로 */
-static void __sched notrace __schedule(unsigned int sched_mode)
-{
-    struct task_struct *prev, *next;
-    struct rq *rq;
-
-    rq = cpu_rq(cpu);
-    prev = rq->curr;
-
-    /* 1. 현재 태스크 상태 확인 */
-    if (signal_pending_state(prev->__state, prev))
-        prev->__state = TASK_RUNNING;
-
-    /* 2. 다음 실행할 태스크 선택 */
-    next = pick_next_task(rq, prev, &rf);
-    /*   └─ stop_task → dl_task → rt_task → fair_task → idle_task
-           (우선순위 순으로 클래스 탐색) */
-
-    /* 3. 같은 태스크면 스위치 생략 */
-    if (likely(prev != next)) {
-        rq->nr_switches++;
-
-        /* 4. 실제 컨텍스트 스위치 */
-        rq = context_switch(rq, prev, next, &rf);
-        /*   └─ switch_mm()  : 페이지 테이블 교체 (CR3 레지스터)
-               switch_to()   : 스택/레지스터 교체 (어셈블리) */
-    }
-}
-
-/* pick_next_task 내부 — 스케줄러 클래스 우선순위 */
-static inline struct task_struct *
-pick_next_task(struct rq *rq, struct task_struct *prev, ...)
-{
-    /* STOP > DEADLINE > RT > FAIR(CFS) > IDLE 순서 */
-    for_each_class(class)
-        if ((p = class->pick_next_task(rq)))
-            return p;
-}`
+// ── 2.9 cgroups 데이터 ──────────────────────────────────────────────────────
 
 interface CgroupNode {
   name: string
@@ -788,40 +565,6 @@ function ContextSwitchViz({ step }: { step: number }) {
     )
 }
 
-// ── 2.11 SCHED_DEADLINE 코드 예제 ────────────────────────────────────────────
-const deadlineSettattrCode = `/* SCHED_DEADLINE 설정 — sched_setattr() */
-#include <linux/sched.h>
-
-struct sched_attr attr = {
-    .size        = sizeof(attr),
-    .sched_policy   = SCHED_DEADLINE,
-    .sched_runtime  =  5000000,   /* 5 ms */
-    .sched_deadline = 10000000,   /* 10 ms */
-    .sched_period   = 20000000,   /* 20 ms — 50Hz */
-};
-
-if (sched_setattr(0, &attr, 0) < 0) {
-    /* -EBUSY: 합계 대역폭 초과로 허용 거부 */
-    perror("sched_setattr");
-    exit(1);
-}
-
-/* 확인: /proc/PID/sched */
-// dl_runtime   : 5000000
-// dl_deadline  : 10000000
-// dl_period    : 20000000`
-
-const deadlineChrtCode = `# SCHED_DEADLINE 프로세스 실행 (chrt 8 이상)
-chrt --deadline --sched-runtime 5000000 \\
-     --sched-deadline 10000000 \\
-     --sched-period 20000000 \\
-     0 ./realtime_app
-
-# 현재 스케줄링 정책 확인
-chrt -p $$
-# scheduling policy: SCHED_DEADLINE
-# runtime/deadline/period: 5000000/10000000/20000000`
-
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function Topic02Scheduler() {
     const { theme } = useTheme()
@@ -981,14 +724,14 @@ export default function Topic02Scheduler() {
                     거대한 구조체로 표현됩니다.
                     실제 커널 소스에서 이 구조체는 수백 개의 필드를 가지며, 스케줄링·메모리·파일·시그널 등 모든 정보를 담습니다.
                 </Prose>
-                <CodeBlock code={taskStructCode} language="c" filename="include/linux/sched.h" />
+                <CodeBlock code={snippets.taskStructCode} language="c" filename="include/linux/sched.h" />
 
                 <Prose>
                     스케줄링 핵심은 내부에 포함된{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">sched_entity</code>{' '}
                     구조체에 있습니다. <T id="cfs">CFS</T>가 사용하는 <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
                 </Prose>
-                <CodeBlock code={schedEntityCode} language="c" filename="include/linux/sched.h" />
+                <CodeBlock code={snippets.schedEntityCode} language="c" filename="include/linux/sched.h" />
             </Section>
 
             {/* 2.3 프로세스 상태 전이 */}
@@ -1247,7 +990,7 @@ export default function Topic02Scheduler() {
                     </div>
                 </div>
 
-                <CodeBlock code={prioToWeightCode} language="c" filename="kernel/sched/fair.c" />
+                <CodeBlock code={snippets.prioToWeightCode} language="c" filename="kernel/sched/fair.c" />
             </Section>
 
             {/* 2.5 컨텍스트 스위치 */}
@@ -1308,7 +1051,7 @@ export default function Topic02Scheduler() {
                     ))}
                 </div>
 
-                <CodeBlock code={scheduleCode} language="c" filename="kernel/sched/core.c" />
+                <CodeBlock code={snippets.scheduleCode} language="c" filename="kernel/sched/core.c" />
             </Section>
 
             {/* 2.6 CPU Affinity와 CPU Pinning */}
@@ -1574,17 +1317,17 @@ export default function Topic02Scheduler() {
                 </div>
 
                 {/* 파일시스템 구조 */}
-                <CodeBlock code={cgroupFsCode} language="bash" filename="/sys/fs/cgroup/" />
+                <CodeBlock code={snippets.cgroupFsCode} language="bash" filename="/sys/fs/cgroup/" />
 
                 {/* 생성/사용 예제 */}
-                <CodeBlock code={cgroupCreateCode} language="bash" filename="cgroup 생성 및 자원 제한 예제" />
+                <CodeBlock code={snippets.cgroupCreateCode} language="bash" filename="cgroup 생성 및 자원 제한 예제" />
 
                 {/* task_struct 연결 */}
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
           커널 내부에서 각 태스크는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">css_set</code>을 통해
           여러 서브시스템의 <T id="cgroup">cgroup</T> 상태를 참조합니다. 같은 <T id="cgroup">cgroup</T> 조합을 공유하는 태스크끼리는 동일한 css_set을 재사용합니다.
                 </p>
-                <CodeBlock code={cgroupTaskStructCode} language="c" filename="include/linux/sched.h / include/linux/cgroup.h" />
+                <CodeBlock code={snippets.cgroupTaskStructCode} language="c" filename="include/linux/sched.h / include/linux/cgroup.h" />
 
                 {/* CPU 서브시스템 주요 파일 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -1640,15 +1383,15 @@ export default function Topic02Scheduler() {
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">/proc/sched_debug</code>로 진단합니다.
                 </Prose>
 
-                <CodeBlock code={schedstatCode} language="bash" filename="# /proc/schedstat — CPU별 스케줄링 통계" />
-                <CodeBlock code={schedDebugCode} language="bash" filename="# /proc/sched_debug — 런큐 상태" />
+                <CodeBlock code={snippets.schedstatCode} language="bash" filename="# /proc/schedstat — CPU별 스케줄링 통계" />
+                <CodeBlock code={snippets.schedDebugCode} language="bash" filename="# /proc/sched_debug — 런큐 상태" />
 
                 {/* 로드밸런싱 */}
                 <Prose>
                     SMP 시스템에서 특정 CPU만 바쁘고 다른 CPU는 노는 불균형을 방지하기 위해 커널은 주기적으로 런큐를 재조정합니다.
                 </Prose>
 
-                <CodeBlock code={loadBalanceCode} language="c" filename="kernel/sched/fair.c — load_balance 핵심" />
+                <CodeBlock code={snippets.loadBalanceCode} language="c" filename="kernel/sched/fair.c — load_balance 핵심" />
 
                 {/* 스케줄링 도메인 카드 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1764,26 +1507,12 @@ export default function Topic02Scheduler() {
 
                 {/* 코드 예제 */}
                 <div className="mt-6 space-y-4">
-                    <CodeBlock code={deadlineSettattrCode} language="c" filename="sched_setattr() 예제" />
-                    <CodeBlock code={deadlineChrtCode} language="bash" filename="chrt — SCHED_DEADLINE 실행" />
+                    <CodeBlock code={snippets.deadlineSettattrCode} language="c" filename="sched_setattr() 예제" />
+                    <CodeBlock code={snippets.deadlineChrtCode} language="bash" filename="chrt — SCHED_DEADLINE 실행" />
                 </div>
             </Section>
 
-            {/* 네비게이션 */}
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/01-overview" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 01 · 리눅스 커널 개요와 전체 구조
-                    </a>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/03-memory" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        03 · 가상 메모리와 메모리 관리 →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="02-scheduler" />
         </div>
     )
 }

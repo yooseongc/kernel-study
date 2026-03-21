@@ -3,6 +3,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -740,15 +741,7 @@ export default function Topic13Kvm() {
                 />
             </Section>
 
-            {/* 이전 토픽 */}
-            <div className="flex justify-start">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/12-security" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 12 · Linux 보안 모델
-                    </a>
-                </div>
-            </div>
+            <TopicNavigation topicId="13-kvm" />
 
             {/* 완료 카드 */}
             <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">

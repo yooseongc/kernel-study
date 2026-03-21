@@ -3,6 +3,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ── 4.2 코드 상수 ──────────────────────────────────────────────────────────
 
@@ -1040,20 +1041,7 @@ f_flags: O_RDONLY`}</pre>
                 />
             </Section>
 
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/03-memory" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 03 · 가상 메모리와 메모리 관리
-                    </a>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/05-interrupts" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        05 · 인터럽트, 예외, Deferred Work →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="04-filesystem" />
         </div>
     )
 }

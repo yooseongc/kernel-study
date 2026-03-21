@@ -11,6 +11,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { TopicNavigation } from '../../components/ui/TopicNavigation'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 9.1  Race Condition — AnimatedDiagram step renderer
@@ -1409,20 +1410,7 @@ void cleanup(void) {
                 <CodeBlock code={rcuGracePeriodCode} language="c" filename="rcu_grace_period.c" />
             </Section>
 
-            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-                    <a href="#/topic/08-xdp-ebpf" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        ← 08 · XDP, eBPF, 고성능 패킷 처리
-                    </a>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-                    <a href="#/topic/10-drivers" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        10 · 디바이스 드라이버와 커널 모듈 →
-                    </a>
-                </div>
-            </nav>
+            <TopicNavigation topicId="09-synchronization" />
         </div>
     )
 }
