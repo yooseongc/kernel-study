@@ -188,6 +188,84 @@ function VirtualAddressViz() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 3.1  프로세스별 가상 주소 공간 격리 시각화
+// ─────────────────────────────────────────────────────────────────────────────
+const processes3_1 = [
+    { name: 'nginx',  pid: 1234, accent: { border: 'border-blue-600 dark:border-blue-700',   bg: 'bg-blue-950/40',   head: 'bg-blue-900/50',   dot: 'bg-blue-400',   text: 'text-blue-300',   cr3: 'text-blue-400',   physBg: 'bg-blue-900/60',   physText: 'text-blue-300'   } },
+    { name: 'python', pid: 5678, accent: { border: 'border-emerald-600 dark:border-emerald-700', bg: 'bg-emerald-950/40', head: 'bg-emerald-900/50', dot: 'bg-emerald-400', text: 'text-emerald-300', cr3: 'text-emerald-400', physBg: 'bg-emerald-900/60', physText: 'text-emerald-300' } },
+    { name: 'bash',   pid: 9012, accent: { border: 'border-amber-600 dark:border-amber-700',  bg: 'bg-amber-950/40',  head: 'bg-amber-900/50',  dot: 'bg-amber-400',  text: 'text-amber-300',  cr3: 'text-amber-400',  physBg: 'bg-amber-900/60',  physText: 'text-amber-300'  } },
+]
+
+function MultiProcessVAViz() {
+    return (
+        <div className="space-y-2">
+            {/* 3 process columns */}
+            <div className="grid grid-cols-3 gap-2">
+                {processes3_1.map(p => (
+                    <div key={p.pid} className={`rounded-xl border ${p.accent.border} ${p.accent.bg} overflow-hidden text-[11px] font-mono`}>
+                        {/* Process header */}
+                        <div className={`${p.accent.head} px-2.5 py-2 border-b ${p.accent.border} flex items-center gap-1.5`}>
+                            <div className={`w-2 h-2 rounded-full ${p.accent.dot} shrink-0`} />
+                            <span className={`font-bold ${p.accent.text}`}>{p.name}</span>
+                            <span className="text-gray-500 text-[10px] ml-auto">PID {p.pid}</span>
+                        </div>
+                        {/* Mini address space bars */}
+                        <div className="flex flex-col divide-y divide-gray-800/50">
+                            <div className="bg-violet-900/60 px-2.5 py-1.5">
+                                <div className="text-violet-300 font-semibold text-[10px]">커널 공간</div>
+                                <div className="text-violet-500 text-[9px]">공유 ↔</div>
+                            </div>
+                            <div className="bg-amber-900/30 px-2.5 py-1">
+                                <div className="text-amber-300 text-[10px]">stack</div>
+                                <div className="text-gray-600 text-[9px]">0x7fff…</div>
+                            </div>
+                            <div className="bg-emerald-900/30 px-2.5 py-1">
+                                <div className="text-emerald-300 text-[10px]">heap</div>
+                            </div>
+                            <div className="bg-blue-900/30 px-2.5 py-1.5">
+                                <div className="text-blue-300 text-[10px]">text / data</div>
+                                <div className="text-gray-600 text-[9px]">0x0040_0000</div>
+                            </div>
+                        </div>
+                        {/* CR3 indicator */}
+                        <div className={`px-2.5 py-1.5 border-t ${p.accent.border} text-[10px] text-gray-500`}>
+                            CR3 → <span className={`font-bold ${p.accent.cr3}`}>PGD_{p.pid}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Arrow row */}
+            <div className="grid grid-cols-3 gap-2 text-center text-gray-500 text-xs">
+                {processes3_1.map(p => (
+                    <div key={p.pid} className="flex flex-col items-center gap-0.5">
+                        <span className="text-[10px]">독립된 페이지 테이블</span>
+                        <span>↓</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* Physical memory bar */}
+            <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-3 space-y-2">
+                <div className="text-[11px] text-gray-400 font-mono font-semibold">물리 메모리 — 단 하나</div>
+                <div className="flex rounded-lg overflow-hidden h-9 text-[10px] font-mono border border-gray-700">
+                    <div className="w-16 shrink-0 bg-violet-900/70 flex items-center justify-center text-violet-300 border-r border-violet-800">커널</div>
+                    {processes3_1.map(p => (
+                        <div key={p.pid} className={`flex-1 ${p.accent.physBg} flex items-center justify-center ${p.accent.physText} border-r border-gray-700 last:border-r-0`}>
+                            {p.name}
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-6 text-[10px] text-gray-500">
+                    <span>↑ 커널 공간: 세 프로세스 <strong className="text-gray-300">모두 같은</strong> 물리 주소 공유</span>
+                    <span>↑ 유저 공간: 프로세스마다 <strong className="text-gray-300">서로 다른</strong> 물리 페이지</span>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 3.2  페이지 테이블 워크 (AnimatedDiagram)
 // ─────────────────────────────────────────────────────────────────────────────
 const pageTableSteps = [
@@ -1211,8 +1289,60 @@ export default function Topic03() {
             {/* 3.1 Virtual Address Space */}
             <Section id="s331" title="3.1  가상 주소 공간">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          x86-64 리눅스는 48비트 가상 주소(256TB)를 사용합니다. 하위 128TB는 유저 공간, 상위 128TB는 커널 공간이며,
-          중간의 비-정규(non-canonical) 구간에 접근하면 즉시 예외가 발생합니다.
+                    리눅스의 가장 중요한 보안·격리 원칙 중 하나: <strong className="text-gray-800 dark:text-gray-200">모든 프로세스는 자신만의 독립된 가상 주소 공간을 가집니다.</strong>{' '}
+                    x86-64에서 각 프로세스는 0부터 0x00007FFFFFFFFFFF까지 128TB의 유저 공간을 독점적으로 사용합니다.
+                    프로세스 A의 주소 0x00400000과 프로세스 B의 주소 0x00400000은 <em>이름만 같을 뿐, 전혀 다른 물리 페이지</em>를 가리킵니다.
+                </p>
+
+                {/* 프로세스별 가상 주소 공간 격리 */}
+                <MultiProcessVAViz />
+
+                {/* 핵심 포인트 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30 p-3">
+                        <div className="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">같은 VA, 다른 PA</div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            nginx와 python이 모두 <code className="font-mono">0x00400000</code>을 사용하지만,
+                            각자의 페이지 테이블이 서로 다른 물리 페이지로 안내합니다.
+                            한 프로세스가 다른 프로세스의 메모리에 접근하는 것은 불가능합니다.
+                        </p>
+                    </div>
+                    <div className="rounded-lg border border-violet-200 dark:border-violet-900 bg-violet-50 dark:bg-violet-950/30 p-3">
+                        <div className="text-xs font-bold text-violet-700 dark:text-violet-300 mb-1">커널 공간은 공유</div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            0xFFFF800000000000 이상 커널 공간은 모든 프로세스가 동일한 물리 주소에 매핑됩니다.
+                            시스템 콜을 통해 커널에 진입하면 커널은 어느 프로세스에서든 같은 코드·데이터를 씁니다.
+                        </p>
+                    </div>
+                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3">
+                        <div className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">어떻게 가능한가?</div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            각 프로세스는 고유한 <strong className="text-gray-800 dark:text-gray-200">페이지 테이블</strong>을 갖습니다.
+                            컨텍스트 스위치 시 CPU의 <code className="font-mono text-blue-500">CR3</code> 레지스터가 해당 프로세스의 PGD 주소로 교체됩니다. (§3.2 참고)
+                        </p>
+                    </div>
+                </div>
+
+                {/* 구체적 예시 */}
+                <div className={`rounded-lg border px-4 py-3 text-sm ${
+                    isDark ? 'border-gray-700 bg-gray-800/50 text-gray-300' : 'border-gray-200 bg-gray-50 text-gray-700'
+                }`}>
+                    <div className="font-bold mb-1 text-gray-800 dark:text-gray-200">구체적 예시</div>
+                    <div className="font-mono text-xs space-y-1 text-gray-600 dark:text-gray-400">
+                        <div><span className="text-blue-500">nginx</span>  PID 1234: VA <span className="text-amber-500">0x00400000</span> → PA <span className="text-blue-400">0x1A3F_0000</span> (nginx 바이너리 코드)</div>
+                        <div><span className="text-emerald-500">python</span> PID 5678: VA <span className="text-amber-500">0x00400000</span> → PA <span className="text-emerald-400">0x2B70_0000</span> (python 인터프리터 코드)</div>
+                        <div><span className="text-amber-500">bash</span>   PID 9012: VA <span className="text-amber-500">0x00400000</span> → PA <span className="text-amber-400">0x3C81_0000</span> (bash 바이너리 코드)</div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                        가상 주소는 동일하지만, 각자의 페이지 테이블이 전혀 다른 물리 페이지를 가리킵니다.
+                    </p>
+                </div>
+
+                {/* 단일 프로세스 상세 레이아웃 */}
+                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">단일 프로세스의 가상 주소 레이아웃 (x86-64)</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    48비트 주소 공간(256TB) 중 상위 128TB는 커널 전용, 하위 128TB는 유저 공간입니다.
+                    중간의 non-canonical 구간에 접근하면 즉시 #GP 예외가 발생합니다.
                 </p>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
                     <div className="flex items-center gap-2 mb-3">
@@ -1226,7 +1356,7 @@ export default function Topic03() {
                 {/* Legend */}
                 <div className="flex flex-wrap gap-3 text-xs">
                     {[
-                        { color: 'bg-violet-700', label: '커널 공간' },
+                        { color: 'bg-violet-700', label: '커널 공간 (공유)' },
                         { color: 'bg-amber-700', label: 'stack' },
                         { color: 'bg-purple-700', label: 'mmap / libs' },
                         { color: 'bg-emerald-700', label: 'heap' },

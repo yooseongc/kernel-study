@@ -221,6 +221,8 @@
 | Topic 03 §3.5 — Buddy Allocator 역할 설명 보강 | ✅ |
 | Topic 03 §3.6 — SLUB D3 레이아웃 수정: slab(좌 52%)·kmalloc table(우) 공간 분리 | ✅ |
 | Topic 03 §3.9 — pages_min Direct Reclaim 동작 설명 callout 추가 | ✅ |
+| Topic 03 §3.1 — 프로세스별 VA 공간 격리 시각화 (MultiProcessVAViz) 추가 | ✅ |
+| Topic 03 §3.1 — "같은 VA 다른 PA" 구체적 예시(nginx/python/bash) 및 핵심 설명 카드 추가 | ✅ |
 | topic03/04 — 미사용 Prose 컴포넌트 제거 (TS 빌드 오류) | ✅ |
 
 ---
