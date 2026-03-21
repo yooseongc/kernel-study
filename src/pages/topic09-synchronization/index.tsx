@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -657,8 +658,8 @@ export default function Topic08() {
                 <InfoTable headers={['항목', '값']} rows={spinlockRows} />
 
                 <div className="rounded-lg border border-orange-800/40 bg-orange-900/10 px-4 py-3 text-xs text-orange-200">
-                    <span className="font-bold text-orange-300">주의:</span> spinlock을 보유한 상태에서
-          sleep하면 데드락이 발생합니다. 임계 구역이 긴 경우 Mutex를 사용하세요.
+                    <span className="font-bold text-orange-300">주의:</span> <T id="spinlock">spinlock</T>을 보유한 상태에서
+          sleep하면 데드락이 발생합니다. 임계 구역이 긴 경우 <T id="mutex">Mutex</T>를 사용하세요.
                 </div>
             </Section>
 
@@ -666,7 +667,7 @@ export default function Topic08() {
             <Section id="s93" title="9.3  Mutex">
                 <Prose>
           긴 임계 구역에 사용합니다. 락 대기 중 sleep하므로 CPU 낭비가 없습니다. 프로세스
-          컨텍스트에서만 사용 가능하며, 인터럽트 핸들러에서는 사용할 수 없습니다.
+          컨텍스트에서만 사용 가능하며, 인터럽트 핸들러에서는 <T id="spinlock">Spinlock</T>과 달리 사용할 수 없습니다.
                 </Prose>
 
                 <CodeBlock code={mutexCode} language="c" filename="mutex.c" />
@@ -716,7 +717,7 @@ export default function Topic08() {
             <Section id="s94" title="9.4  RWLock (Reader-Writer Lock)">
                 <Prose>
           읽기는 동시에, 쓰기는 단독으로 수행합니다. 읽기가 많고 쓰기가 드문 자료구조에 적합합니다.
-          다수의 reader가 공존할 수 있어 읽기 경쟁이 심한 경우 Mutex보다 효율적입니다.
+          다수의 reader가 공존할 수 있어 읽기 경쟁이 심한 경우 <T id="mutex">Mutex</T>보다 효율적입니다.
                 </Prose>
 
                 <InfoTable headers={['동작', '허용']} rows={rwlockRows} />
@@ -740,7 +741,7 @@ export default function Topic08() {
             {/* 9.5 seqlock */}
             <Section id="s95" title="9.5  seqlock — 읽기 무잠금 동기화">
                 <Prose>
-          seqlock은 읽기 쪽이 잠금 없이 시퀀스 카운터를 확인하는 방식입니다. 쓰기가 드물고
+          <T id="seqlock">seqlock</T>은 읽기 쪽이 잠금 없이 시퀀스 카운터를 확인하는 방식입니다. 쓰기가 드물고
           읽기가 매우 빈번한 경우(커널 timekeeping, jiffies 업데이트)에 최적입니다. 읽기 중
           쓰기가 발생했으면 카운터가 달라지므로 재시도합니다.
                 </Prose>
@@ -847,7 +848,7 @@ export default function Topic08() {
             {/* 9.7 Atomic Operations */}
             <Section id="s97" title="9.7  Atomic Operations">
                 <Prose>
-          하드웨어 수준의 원자적 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를 통해
+          하드웨어 수준의 <T id="atomic">atomic</T> 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를 통해
           버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
           적합합니다.
                 </Prose>
@@ -880,7 +881,7 @@ export default function Topic08() {
             <Section id="s99" title="9.9  RCU (Read-Copy-Update)">
                 <Prose>
           읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화
-          메커니즘입니다. 읽기 측은 lock이 전혀 없습니다.
+          메커니즘입니다. <T id="rcu">RCU</T> 읽기 측은 lock이 전혀 없습니다.
                 </Prose>
 
                 {/* RCU 3단계 카드 */}
@@ -937,7 +938,7 @@ export default function Topic08() {
                 <div className="rounded-lg border border-green-800/40 bg-green-900/10 px-4 py-3 text-xs text-green-200">
                     <span className="font-bold text-green-300">사용 예:</span> 커널 내부의{' '}
                     <code className="font-mono">task_list</code>, 라우팅 테이블, 네트워크 디바이스 목록은 모두
-          RCU로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
+          <T id="rcu">RCU</T>로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
                 </div>
             </Section>
 
@@ -1056,9 +1057,9 @@ export default function Topic08() {
             {/* 9.12 Wait Queue */}
             <Section id="s912" title="9.12  Wait Queue — 블로킹 I/O의 핵심">
                 <Prose>
-          Wait Queue는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는 기본
+          <T id="wait_queue">Wait Queue</T>는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는 기본
           메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
-          wait queue 위에 구현됩니다.
+          <T id="wait_queue">wait queue</T> 위에 구현됩니다.
                 </Prose>
 
                 {/* 동작 흐름 카드 3단계 */}

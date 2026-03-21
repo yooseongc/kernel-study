@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared UI helpers
@@ -821,9 +822,9 @@ export default function Topic09() {
             {/* 10.3 NIC 드라이버와 DMA */}
             <Section id="s103" title="10.3  NIC 드라이버와 DMA">
                 <Prose>
-          고성능 NIC는 CPU를 거치지 않고 DMA(Direct Memory Access)로 직접 메모리에 패킷을 씁니다.
-          드라이버가 사전에 RX 링 버퍼의 DMA 주소를 NIC에 알려주면, NIC는 패킷 수신 시 해당
-          주소로 데이터를 전송하고 IRQ를 발생시킵니다.
+          고성능 NIC는 CPU를 거치지 않고 <T id="dma">DMA</T>(Direct Memory Access)로 직접 메모리에 패킷을 씁니다.
+          드라이버가 사전에 RX 링 버퍼의 <T id="dma">DMA</T> 주소를 NIC에 알려주면, NIC는 패킷 수신 시 해당
+          주소로 데이터를 전송하고 <T id="irq">IRQ</T>를 발생시킵니다.
                 </Prose>
                 <AnimatedDiagram
                     steps={dmaSteps}
@@ -835,7 +836,7 @@ export default function Topic09() {
             {/* 10.4 DMA 링 버퍼 */}
             <Section id="s104" title="10.4  DMA 링 버퍼">
                 <Prose>
-          NIC 드라이버는 RX/TX 링 버퍼를 준비하고 NIC에 DMA 주소를 알려줍니다. 각 서술자(descriptor)에는
+          NIC 드라이버는 RX/TX 링 버퍼를 준비하고 NIC에 <T id="dma">DMA</T> 주소를 알려줍니다. 각 서술자(descriptor)에는
           물리 주소와 길이, 상태 플래그가 있으며, NIC는 수신 완료 시 status 필드를 갱신합니다.
                 </Prose>
                 <CodeBlock code={rxRingCode} language="c" filename="rx_ring_init.c" />
@@ -979,7 +980,7 @@ export default function Topic09() {
             {/* 10.8 platform_driver */}
             <Section id="s108" title="10.8  platform_driver — 임베디드 드라이버 모델">
                 <Prose>
-          PCI, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
+          <T id="pci">PCI</T>, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
                     <strong className="text-gray-700 dark:text-gray-300">Device Tree</strong>와{' '}
                     <strong className="text-gray-700 dark:text-gray-300">platform_driver</strong>가 이를 해결합니다.
                 </Prose>
@@ -1022,7 +1023,7 @@ export default function Topic09() {
             {/* 10.9 PCI/PCIe 드라이버 모델 */}
             <Section id="s109" title="10.9  PCI/PCIe 드라이버 모델">
                 <Prose>
-          서버의 NIC, NVMe SSD, GPU는 모두 PCIe 버스로 연결됩니다.{' '}
+          서버의 NIC, NVMe SSD, GPU는 모두 <T id="pci">PCIe</T> 버스로 연결됩니다.{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">pci_driver</code>는
           커널이 PCIe 디바이스를 감지하면 자동으로 드라이버를 매칭하고{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">probe()</code>를

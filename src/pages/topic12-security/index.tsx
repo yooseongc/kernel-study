@@ -1,4 +1,5 @@
 import { CodeBlock } from '../../components/viz/CodeBlock'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -268,7 +269,7 @@ export default function Topic12() {
             {/* 12.1 Linux 보안 모델 개요 */}
             <Section id="s121" title="12.1  Linux 보안 모델 개요">
                 <Prose>
-          Linux의 보안은 전통적인 DAC(임의 접근 제어)를 기반으로, LSM(Linux Security Module)
+          Linux의 보안은 전통적인 DAC(임의 접근 제어)를 기반으로, <T id="lsm">LSM</T>(Linux Security Module)
           프레임워크가 MAC(강제 접근 제어)를 추가합니다.
                 </Prose>
 
@@ -392,7 +393,7 @@ export default function Topic12() {
             {/* 12.2 Linux Capabilities */}
             <Section id="s122" title="12.2  Linux Capabilities">
                 <Prose>
-          전통적으로 root(uid=0)는 모든 권한을 가졌습니다. Capabilities는 이를 37개 단위로 분리해
+          전통적으로 root(uid=0)는 모든 권한을 가졌습니다. <T id="capability">Capability</T>는 이를 37개 단위로 분리해
           최소 권한 원칙을 적용합니다.
                 </Prose>
                 <InfoTable
@@ -409,7 +410,7 @@ export default function Topic12() {
             {/* 12.3 LSM 프레임워크 */}
             <Section id="s123" title="12.3  LSM 프레임워크">
                 <Prose>
-          LSM(Linux Security Module)은 커널 보안 결정 지점에 훅을 제공합니다. SELinux, AppArmor,
+          <T id="lsm">LSM</T>(Linux Security Module)은 커널 보안 결정 지점에 훅을 제공합니다. <T id="selinux">SELinux</T>, <T id="apparmor">AppArmor</T>,
           Smack 등이 이 프레임워크 위에 구현됩니다.
                 </Prose>
                 <CodeBlock
@@ -456,8 +457,8 @@ export default function Topic12() {
             {/* 12.4 AppArmor */}
             <Section id="s124" title="12.4  AppArmor — 경로 기반 MAC">
                 <Prose>
-          AppArmor는 프로그램별로 접근 가능한 파일/네트워크를 프로파일로 정의합니다.
-          Ubuntu/Debian의 기본 LSM입니다.
+          <T id="apparmor">AppArmor</T>는 프로그램별로 접근 가능한 파일/네트워크를 프로파일로 정의합니다.
+          Ubuntu/Debian의 기본 <T id="lsm">LSM</T>입니다.
                 </Prose>
                 <CodeBlock
                     code={apparmorProfileCode}
@@ -474,7 +475,7 @@ export default function Topic12() {
             {/* 12.5 SELinux */}
             <Section id="s125" title="12.5  SELinux — 레이블 기반 MAC">
                 <Prose>
-          SELinux는 모든 파일, 프로세스, 소켓에{' '}
+          <T id="selinux">SELinux</T>는 모든 파일, 프로세스, 소켓에{' '}
                     <strong className="text-gray-800 dark:text-gray-200">보안 레이블(context)</strong>을
           부여하고, 정책 데이터베이스로 레이블 간 접근을 제어합니다. RHEL/CentOS/Fedora의 기본
           LSM입니다.
@@ -540,8 +541,8 @@ export default function Topic12() {
             {/* 12.6 Namespace와 보안 모델 */}
             <Section id="s126" title="12.6  Namespace — 컨테이너 격리의 기반">
                 <Prose>
-          Linux namespace는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
-          Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, Capabilities·LSM과 결합해
+          Linux <T id="linux_namespace">namespace</T>는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
+          Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, <T id="capability">Capabilities</T>·<T id="lsm">LSM</T>과 결합해
           컨테이너 보안을 구성합니다.
                 </Prose>
 

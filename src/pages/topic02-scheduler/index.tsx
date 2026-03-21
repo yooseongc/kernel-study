@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ── 2.3 프로세스 상태 전이 D3 다이어그램 ────────────────────────────────────
 function renderProcessStateDiagram(
@@ -875,7 +876,7 @@ export default function Topic02Scheduler() {
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에 스케줄링할까요?
                     이 페이지에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>,
-                    CFS 스케줄러, 그리고 컨텍스트 스위치를 시각적으로 탐구합니다.
+                    <T id="cfs">CFS</T> 스케줄러, 그리고 <T id="context_switch">컨텍스트 스위치</T>를 시각적으로 탐구합니다.
                 </p>
             </header>
 
@@ -947,7 +948,7 @@ export default function Topic02Scheduler() {
                 <Prose>
                     스케줄링 핵심은 내부에 포함된{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">sched_entity</code>{' '}
-                    구조체에 있습니다. CFS가 사용하는 <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
+                    구조체에 있습니다. <T id="cfs">CFS</T>가 사용하는 <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
                 </Prose>
                 <CodeBlock code={schedEntityCode} language="c" filename="include/linux/sched.h" />
             </Section>
@@ -1006,8 +1007,8 @@ export default function Topic02Scheduler() {
             {/* 2.4.0 O(1) 스케줄러 역사 → CFS 전환 이유 */}
             <Section id="s24" title="2.4  스케줄러의 역사 — O(1)에서 CFS로">
                 <Prose>
-                    리눅스 스케줄러는 커널 2.6 시절의 O(1) 스케줄러에서 2.6.23(2007년)부터 CFS로 교체되었습니다.
-                    두 접근 방식의 차이를 이해하면 CFS 설계 철학을 더 명확히 파악할 수 있습니다.
+                    리눅스 스케줄러는 커널 2.6 시절의 O(1) 스케줄러에서 2.6.23(2007년)부터 <T id="cfs">CFS</T>로 교체되었습니다.
+                    두 접근 방식의 차이를 이해하면 <T id="cfs">CFS</T> 설계 철학을 더 명확히 파악할 수 있습니다.
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1051,7 +1052,7 @@ export default function Topic02Scheduler() {
             {/* 2.4 CFS 스케줄러 */}
             <Section id="s241" title="2.4  CFS 스케줄러 — vruntime과 Red-Black 트리">
                 <Prose>
-                    CFS(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
+                    <T id="cfs">CFS</T>(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
                     <strong className="text-gray-900 dark:text-gray-100">vruntime(가상 실행 시간)</strong>을 사용합니다.
                     vruntime이 가장 작은 프로세스 = 가장 덜 실행된 프로세스 = 다음 실행 대상.
                     이를 빠르게 찾기 위해 <strong className="text-gray-900 dark:text-gray-100">Red-Black 트리(자가 균형 BST)</strong>를 사용합니다.
@@ -1214,7 +1215,7 @@ export default function Topic02Scheduler() {
             {/* 2.5 컨텍스트 스위치 */}
             <Section id="s25" title="2.5  컨텍스트 스위치 단계별 애니메이션">
                 <Prose>
-                    컨텍스트 스위치는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다.
+                    <T id="context_switch">컨텍스트 스위치</T>는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다.
                     CPU 레지스터 전체를 저장하고 복원해야 하므로 일반 함수 호출보다 수백~수천 배 비쌉니다.
                     아래 애니메이션으로 각 단계를 살펴보세요.
                 </Prose>
@@ -1228,7 +1229,7 @@ export default function Topic02Scheduler() {
             {/* 2.5.1 __schedule() 콜스택 */}
             <Section id="s251" title="2.5.1  __schedule() 콜스택 분석">
                 <Prose>
-                    자발적·비자발적 컨텍스트 스위치 모두{' '}
+                    자발적·비자발적 <T id="context_switch">컨텍스트 스위치</T> 모두{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">__schedule()</code>을 공통 진입점으로 사용합니다.
                     내부에서 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">pick_next_task()</code>가
                     스케줄러 클래스를{' '}
@@ -1275,7 +1276,7 @@ export default function Topic02Scheduler() {
             {/* 2.6 CPU Affinity와 CPU Pinning */}
             <Section id="s26" title="2.6  CPU Affinity와 CPU Pinning">
                 <Prose>
-                    기본적으로 CFS는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다.
+                    기본적으로 <T id="cfs">CFS</T>는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다.
                     하지만 <strong className="text-gray-900 dark:text-gray-100">CPU affinity(CPU 친화성)</strong>를 설정하면
                     특정 프로세스가 실행될 수 있는 CPU를 제한할 수 있습니다.
                     커널 내부적으로 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cpus_mask</code>에
@@ -1344,7 +1345,7 @@ export default function Topic02Scheduler() {
                         <div className="font-semibold text-blue-800 dark:text-blue-300">SMP — Symmetric Multi-Processing</div>
                         <div className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed space-y-1.5">
                             <p>모든 CPU 코어가 동일한 물리 메모리를 공유하는 구조. 서버 한 소켓 내부의 일반적인 형태.</p>
-                            <p>커널은 CPU마다 독립적인 <strong>런큐(run queue)</strong>를 유지합니다. CFS는 주기적으로 런큐 간 <strong>load balancing</strong>을 수행해 부하를 균등하게 분산합니다.</p>
+                            <p>커널은 CPU마다 독립적인 <strong>런큐(run queue)</strong>를 유지합니다. <T id="cfs">CFS</T>는 주기적으로 런큐 간 <strong>load balancing</strong>을 수행해 부하를 균등하게 분산합니다.</p>
                             <p>런큐 간 태스크 이전 비용: 캐시 미스(L1/L2 재적재) 발생.</p>
                         </div>
                         <div className="rounded-lg bg-blue-100 dark:bg-blue-900/30 p-2.5 font-mono text-xs text-blue-800 dark:text-blue-300">
@@ -1406,9 +1407,9 @@ export default function Topic02Scheduler() {
             {/* 2.8 RT 스케줄러 */}
             <Section id="s28" title="2.8  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
                 <Prose>
-                    CFS는 공정성(fairness)을 목표로 하지만, 일부 태스크는 <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다.
-                    리눅스 커널은 CFS 외에 Real-Time 스케줄러를 제공합니다.
-                    RT 태스크는 CFS 태스크보다 <em>항상</em> 먼저 실행됩니다.
+                    <T id="cfs">CFS</T>는 공정성(fairness)을 목표로 하지만, 일부 태스크는 <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다.
+                    리눅스 커널은 <T id="cfs">CFS</T> 외에 Real-Time 스케줄러를 제공합니다.
+                    RT 태스크는 <T id="cfs">CFS</T> 태스크보다 <em>항상</em> 먼저 실행됩니다.
                 </Prose>
 
                 {/* 스케줄러 클래스 계층 */}
@@ -1486,9 +1487,9 @@ export default function Topic02Scheduler() {
             {/* 2.9 cgroups */}
             <Section id="s29" title="2.9  cgroups — 프로세스 자원 제어의 핵심">
                 <Prose>
-                    <strong className="text-gray-900 dark:text-gray-100">cgroups(Control Groups)</strong>는 프로세스 그룹에
+                    <strong className="text-gray-900 dark:text-gray-100"><T id="cgroup">cgroups</T>(Control Groups)</strong>는 프로세스 그룹에
                     CPU·메모리·I/O·네트워크 등의 자원 제한을 걸 수 있는 커널 기능입니다.
-                    Docker, Kubernetes, systemd 모두 cgroups 위에서 동작합니다.
+                    Docker, Kubernetes, systemd 모두 <T id="cgroup">cgroups</T> 위에서 동작합니다.
                     커널 내부에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cgroups</code>가
                     해당 태스크의 cgroup 멤버십을 관리합니다.
                 </Prose>
@@ -1543,7 +1544,7 @@ export default function Topic02Scheduler() {
                 {/* task_struct 연결 */}
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
           커널 내부에서 각 태스크는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">css_set</code>을 통해
-          여러 서브시스템의 cgroup 상태를 참조합니다. 같은 cgroup 조합을 공유하는 태스크끼리는 동일한 css_set을 재사용합니다.
+          여러 서브시스템의 <T id="cgroup">cgroup</T> 상태를 참조합니다. 같은 <T id="cgroup">cgroup</T> 조합을 공유하는 태스크끼리는 동일한 css_set을 재사용합니다.
                 </p>
                 <CodeBlock code={cgroupTaskStructCode} language="c" filename="include/linux/sched.h / include/linux/cgroup.h" />
 

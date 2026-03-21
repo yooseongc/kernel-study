@@ -5,6 +5,7 @@ import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 const syscallFlowChart = `
 sequenceDiagram
@@ -710,7 +711,7 @@ export default function Topic01Overview() {
                     <span>
             x86 CPU는 <strong>권한 레벨(Ring 0~3)</strong>을 제공합니다.
             유저 프로그램은 Ring 3(최소 권한), 커널은 Ring 0(최대 권한)에서 실행됩니다.
-            이 경계를 넘는 것이 바로 <strong>시스템 콜</strong>입니다.
+            이 경계를 넘는 것이 바로 <strong><T id="syscall">시스템 콜</T></strong>입니다.
                     </span>
                 </div>
 

@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.1  네트워크 레이어 다이어그램 (D3)
@@ -1071,7 +1072,7 @@ export default function Topic05() {
             <Section id="s661" title="6.1  패킷이 커널에 들어오는 과정">
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           외부에서 패킷이 도착하면 NIC → 드라이버 → 커널 네트워크 스택 → 소켓 버퍼 → 사용자
-          프로세스까지 긴 여정을 거칩니다. 각 레이어는 sk_buff를 전달받아 자신의 역할을 수행하고
+          프로세스까지 긴 여정을 거칩니다. 각 레이어는 <T id="sk_buff">sk_buff</T>를 전달받아 자신의 역할을 수행하고
           상위 레이어로 넘깁니다.
                 </p>
 
@@ -1102,12 +1103,12 @@ export default function Topic05() {
             <Section id="s662" title="6.2  NIC 드라이버와 NAPI">
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <p>
-                        <span className="font-semibold text-red-400">과거 인터럽트 방식:</span> 패킷마다 IRQ가
+                        <span className="font-semibold text-red-400">과거 인터럽트 방식:</span> 패킷마다 <T id="irq">IRQ</T>가
             발생하여 고속 트래픽 환경에서 인터럽트 폭풍(interrupt storm)이 발생합니다. CPU가
             인터럽트 처리에만 소모되어 실제 작업이 불가능해집니다.
                     </p>
                     <p>
-                        <span className="font-semibold text-green-400">NAPI (New API):</span> 첫 패킷에서만
+                        <span className="font-semibold text-green-400"><T id="napi">NAPI</T> (New API):</span> 첫 패킷에서만
             인터럽트를 발생시키고, 이후에는 polling 방식으로 전환합니다.{' '}
                         <code className="font-mono bg-gray-800 px-1 rounded text-yellow-300">budget</code>{' '}
             파라미터로 poll()이 한 번에 처리할 최대 패킷 수를 제한합니다 (기본값: 64).
@@ -1159,7 +1160,7 @@ export default function Topic05() {
             <Section id="s665" title="6.5  소켓 계층과 시스템 콜">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           사용자 프로그램은 소켓 API를 통해 네트워크에 접근합니다. 각 시스템 콜은 커널 내부의
-          특정 함수로 연결되어 소켓 객체와 sk_buff를 조작합니다.
+          특정 함수로 연결되어 소켓 객체와 <T id="sk_buff">sk_buff</T>를 조작합니다.
                 </p>
 
                 <div className="rounded-xl border border-gray-700 overflow-hidden">
@@ -1221,7 +1222,7 @@ export default function Topic05() {
                     <div className="font-semibold text-gray-200 mb-2">동작 원리</div>
                     <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-green-900 border border-green-700 flex items-center justify-center text-xs text-green-300 shrink-0 mt-0.5">1</div>
-                        <div>프로세스가 cgroup에 할당됨 → 해당 프로세스가 생성한 sk_buff에 classid가 자동으로 태깅됨</div>
+                        <div>프로세스가 cgroup에 할당됨 → 해당 프로세스가 생성한 <T id="sk_buff">sk_buff</T>에 classid가 자동으로 태깅됨</div>
                     </div>
                     <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center text-xs text-blue-300 shrink-0 mt-0.5">2</div>
@@ -1238,7 +1239,7 @@ export default function Topic05() {
 
             <Section id="s667" title="6.7  TX 경로 — 송신 패킷의 여정">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 sk_buff를 생성하고
+          RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 <T id="sk_buff">sk_buff</T>를 생성하고
           qdisc(큐 디시플린)를 거쳐 NIC 하드웨어까지 전달됩니다. 각 레이어에서 헤더를 추가하고
           라우팅을 결정한 뒤 드라이버가 DMA로 실제 전송합니다.
                 </p>
@@ -1260,7 +1261,7 @@ export default function Topic05() {
                     <span className="font-semibold text-purple-400">GSO (Generic Segmentation Offload)</span>:
           TSO를 지원하지 않는 NIC를 위한 소프트웨어 대안으로, 드라이버 직전 단계에서 지연 분할합니다.{' '}
                     <span className="font-semibold text-green-400">LRO / GRO</span>: 수신 시 작은 패킷 여럿을
-          큰 하나로 합쳐 CPU 인터럽트 오버헤드를 줄입니다 (LRO는 NIC 하드웨어, GRO는 NAPI 소프트웨어).
+          큰 하나로 합쳐 CPU 인터럽트 오버헤드를 줄입니다 (LRO는 NIC 하드웨어, GRO는 <T id="napi">NAPI</T> 소프트웨어).
                 </p>
 
                 <div className="rounded-xl border border-gray-700 overflow-hidden">
@@ -1339,7 +1340,7 @@ export default function Topic05() {
           일반 <code className="font-mono text-blue-400">read()+write()</code> 방식은 데이터를 커널→유저→커널로 두 번 복사합니다.{' '}
                     <code className="font-mono text-purple-400">sendfile()</code>과{' '}
                     <code className="font-mono text-green-400">splice()</code>는 유저공간을 거치지 않고 커널 내에서 직접 전달합니다.
-          Nginx, Apache의 정적 파일 서빙 성능의 핵심입니다.
+          Nginx, Apache의 정적 파일 서빙 성능의 핵심인 <T id="zero_copy">zero-copy</T> 기법입니다.
                 </p>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -1523,7 +1524,7 @@ export default function Topic05() {
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
                         <div className="text-sm font-bold text-blue-400">syscall 감소</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
-              epoll+read/write = 요청당 3 syscall. io_uring batching = 수백 요청당 1 syscall
+              epoll+read/write = 요청당 3 syscall. <T id="io_uring">io_uring</T> batching = 수백 요청당 1 syscall
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">

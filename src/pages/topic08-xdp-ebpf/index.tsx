@@ -4,6 +4,7 @@ import { D3Container } from '../../components/viz/D3Container'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8.1  XDP vs Normal path D3 diagram
@@ -843,9 +844,9 @@ export default function Topic07() {
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
                 <Prose>
-          XDP(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — sk_buff 할당 전에 — 처리하는
+          <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는
           고성능 경로입니다. 기존 커널 네트워크 스택 대비 10~100배 빠릅니다. 패킷이 DMA 버퍼에서
-          곧바로 eBPF 프로그램으로 넘어가기 때문에 메모리 할당 및 복사 오버헤드가 없습니다.
+          곧바로 <T id="ebpf">eBPF</T> 프로그램으로 넘어가기 때문에 메모리 할당 및 복사 오버헤드가 없습니다.
                 </Prose>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <D3Container
@@ -887,8 +888,8 @@ export default function Topic07() {
             {/* 8.3 eBPF 실행 모델 */}
             <Section id="s83" title="8.3  eBPF 실행 모델">
                 <Prose>
-          eBPF(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
-          범용 VM입니다. XDP뿐만 아니라 kprobe, tracepoint, cgroup, perf 등 다양한 지점에서
+          <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
+          범용 VM입니다. <T id="xdp">XDP</T>뿐만 아니라 <T id="kprobe">kprobe</T>, tracepoint, cgroup, perf 등 다양한 지점에서
           동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
                 </Prose>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -927,7 +928,7 @@ export default function Topic07() {
             {/* 8.4 eBPF verifier */}
             <Section id="s84" title="8.4  eBPF verifier">
                 <Prose>
-          verifier는 eBPF 프로그램이 커널을 크래시시킬 수 없음을 정적 분석으로 보장합니다. 모든
+          verifier는 <T id="ebpf">eBPF</T> 프로그램이 커널을 크래시시킬 수 없음을 정적 분석으로 보장합니다. 모든
           가능한 실행 경로를 추적하며 안전하지 않은 접근을 거부합니다.
                 </Prose>
                 <InfoTable
@@ -944,7 +945,7 @@ export default function Topic07() {
             {/* 8.5 eBPF 맵 */}
             <Section id="s85" title="8.5  eBPF 맵 (Maps)">
                 <Prose>
-          eBPF 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
+          <T id="ebpf">eBPF</T> 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
           커널과 사용자 공간 모두에서 읽고 쓸 수 있으며 fd를 통해 접근합니다.
                 </Prose>
                 <InfoTable
@@ -1109,7 +1110,7 @@ export default function Topic07() {
             {/* 8.9 bcc Tools */}
             <Section id="s89" title="8.9  bcc Tools — 즉시 사용 가능한 eBPF 도구">
                 <Prose>
-          BCC(BPF Compiler Collection)는 eBPF 기반 관찰 도구 모음입니다. 커널 컴파일 없이
+          BCC(BPF Compiler Collection)는 <T id="ebpf">eBPF</T> 기반 관찰 도구 모음입니다. 커널 컴파일 없이
           실시간으로 시스템 내부를 관찰합니다.
                 </Prose>
                 <InfoTable
@@ -1167,7 +1168,7 @@ export default function Topic07() {
             {/* 8.10 AF_XDP */}
             <Section id="s810" title="8.10  AF_XDP — 유저공간 패킷 처리">
                 <Prose>
-          AF_XDP는 XDP가 받은 패킷을 커널 네트워크 스택을 완전히 우회하고 유저공간에서 직접 처리하는
+          AF_XDP는 <T id="xdp">XDP</T>가 받은 패킷을 커널 네트워크 스택을 완전히 우회하고 유저공간에서 직접 처리하는
           소켓 타입입니다. DPDK에 근접한 성능을 표준 커널 인터페이스로 달성합니다.
                 </Prose>
 

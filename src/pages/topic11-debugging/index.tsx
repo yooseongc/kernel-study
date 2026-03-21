@@ -4,6 +4,7 @@ import { D3Container } from '../../components/viz/D3Container'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -679,7 +680,7 @@ export default function Topic10() {
                     Performance Analysis & Debugging
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    dmesg, /proc, /sys, Oops/Panic, perf, ftrace, lockdep, KASAN, kdump, container 디버깅
+                    dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>, <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅
                 </p>
             </header>
 
@@ -848,7 +849,7 @@ export default function Topic10() {
             {/* 11.6 ftrace */}
             <Section id="s116" title="11.6  ftrace">
                 <Prose>
-          ftrace는 커널 함수 호출 추적 도구입니다.{' '}
+          <T id="ftrace">ftrace</T>는 커널 함수 호출 추적 도구입니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">
             /sys/kernel/debug/tracing/
                     </code>{' '}
@@ -944,7 +945,7 @@ export default function Topic10() {
                     <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>은 커널에
           내장된 동적 분석 도구로, 프로그램 실행 중 잠금 획득 순서를 추적하고{' '}
                     <strong className="text-gray-800 dark:text-gray-200">데드락 가능성</strong>을 런타임에
-          감지합니다. 실제 데드락이 발생하기 전에 경고합니다.
+          감지합니다. <T id="lockdep">lockdep</T>은 실제 데드락이 발생하기 전에 경고합니다.
                 </Prose>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="rounded-xl border border-red-200 dark:border-red-800/50 bg-white dark:bg-gray-900 p-4 space-y-2">
@@ -1006,11 +1007,11 @@ lock(B) ← 대기   lock(A) ← 대기
             {/* 11.11 KASAN */}
             <Section id="s1111" title="11.11  KASAN — 메모리 버그 탐지기">
                 <Prose>
-                    <strong className="text-gray-800 dark:text-gray-200">KASAN (Kernel Address Sanitizer)</strong>은
+                    <strong className="text-gray-800 dark:text-gray-200"><T id="kasan">KASAN</T> (Kernel Address Sanitizer)</strong>은
           커널의 메모리 안전성 버그를 런타임에 탐지합니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">use-after-free</code>,{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">out-of-bounds</code> 접근
-          같은 버그는 재현이 어렵고 보안 취약점으로 이어집니다. KASAN은 이를 즉시 잡아냅니다.
+          같은 버그는 재현이 어렵고 보안 취약점으로 이어집니다. <T id="kasan">KASAN</T>은 이를 즉시 잡아냅니다.
                 </Prose>
                 <InfoTable
                     headers={['버그 유형', '설명', '위험성']}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ── 4.2 코드 상수 ──────────────────────────────────────────────────────────
 
@@ -352,14 +353,14 @@ export default function Topic11Filesystem() {
                     VFS &amp; Filesystem
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    VFS 계층, open() 흐름, 페이지 캐시, ext4 저널링, 블록 I/O 경로
+                    <T id="vfs">VFS</T> 계층, open() 흐름, <T id="page_cache">페이지 캐시</T>, ext4 저널링, 블록 I/O 경로
                 </p>
             </header>
 
             {/* 4.1 VFS 계층 구조 */}
             <Section id="s441" title="4.1  VFS — Virtual File System">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          VFS는 커널의 파일시스템 추상화 계층입니다.{' '}
+          <T id="vfs">VFS</T>는 커널의 파일시스템 추상화 계층입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
             open()
                     </code>
@@ -456,7 +457,7 @@ export default function Topic11Filesystem() {
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
             read()
                     </code>
-          는 페이지 캐시를 확인하고 필요하면 디스크 I/O를 일으킵니다.
+          는 <T id="page_cache">페이지 캐시</T>를 확인하고 필요하면 디스크 I/O를 일으킵니다.
                 </p>
 
                 <AnimatedDiagram
@@ -475,7 +476,7 @@ export default function Topic11Filesystem() {
             {/* 4.3 페이지 캐시 */}
             <Section id="s443" title="4.3  페이지 캐시 — 디스크 I/O 최소화">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널은 디스크에서 읽은 데이터를 <strong className="text-gray-900 dark:text-gray-100">페이지 캐시(Page Cache)</strong>에 보관합니다.
+          커널은 디스크에서 읽은 데이터를 <strong className="text-gray-900 dark:text-gray-100"><T id="page_cache">페이지 캐시</T>(Page Cache)</strong>에 보관합니다.
           같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다.
           write()된 데이터는 먼저 캐시에 기록되고(dirty 상태), 백그라운드에서 디스크에 씁니다.
                 </p>
@@ -619,7 +620,7 @@ export default function Topic11Filesystem() {
             submit_bio()
                     </code>
           를 호출해 블록 레이어로 I/O를 전달합니다.
-          블록 레이어는 <strong className="text-gray-900 dark:text-gray-100">bio</strong> →{' '}
+          블록 레이어는 <strong className="text-gray-900 dark:text-gray-100"><T id="bio">bio</T></strong> →{' '}
                     <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
                     <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.
                 </p>

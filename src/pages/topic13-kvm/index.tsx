@@ -1,4 +1,5 @@
 import { CodeBlock } from '../../components/viz/CodeBlock'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -191,7 +192,7 @@ export default function Topic13Kvm() {
             {/* 13.1 KVM 개요 */}
             <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">
                 <Prose>
-                    KVM은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1 하이퍼바이저입니다.
+                    <T id="kvm">KVM</T>은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1 하이퍼바이저입니다.
                     유저 공간의 QEMU가 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-blue-600 dark:text-blue-300 text-xs">/dev/kvm</code> ioctl API를
                     통해 VM·vCPU를 생성·제어합니다.
                 </Prose>
@@ -277,7 +278,7 @@ export default function Topic13Kvm() {
             {/* 13.2 VMCS / VMCB */}
             <Section id="s1312" title="13.2  VMCS / VMCB — VMENTRY · VMEXIT 제어">
                 <Prose>
-                    Intel VT-x는 <strong className="text-gray-800 dark:text-gray-200">VMCS</strong>(Virtual Machine Control Structure),
+                    Intel VT-x는 <strong className="text-gray-800 dark:text-gray-200"><T id="vmcs">VMCS</T></strong>(Virtual Machine Control Structure),
                     AMD-V는 <strong className="text-gray-800 dark:text-gray-200">VMCB</strong>(VM Control Block)를 사용합니다.
                     이 자료 구조가 게스트·호스트 CPU 상태와 VM 실행 정책을 모두 관리합니다.
                 </Prose>
@@ -357,8 +358,8 @@ export default function Topic13Kvm() {
             {/* 13.3 EPT */}
             <Section id="s1313" title="13.3  EPT — 중첩 페이지 테이블">
                 <Prose>
-                    EPT(Extended Page Tables)는 <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong> 변환을
-                    하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 VMEXIT 횟수를 크게 줄입니다.
+                    <T id="ept">EPT</T>(Extended Page Tables)는 <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong> 변환을
+                    하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 <T id="vmexit">VMEXIT</T> 횟수를 크게 줄입니다.
                 </Prose>
 
                 {/* 주소 변환 2단계 다이어그램 */}
@@ -439,7 +440,7 @@ export default function Topic13Kvm() {
             <Section id="s1314" title="13.4  virtio — 반가상화 I/O">
                 <Prose>
                     순수 에뮬레이션(예: e1000 NIC 에뮬레이션)은 게스트 드라이버가 하드웨어 레지스터를 읽고 쓸 때마다
-                    VMEXIT가 발생합니다. <strong className="text-gray-800 dark:text-gray-200">virtio</strong>는
+                    <T id="vmexit">VMEXIT</T>가 발생합니다. <strong className="text-gray-800 dark:text-gray-200"><T id="virtio">virtio</T></strong>는
                     게스트-호스트 간 공유 메모리 링 버퍼(<code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">virtqueue</code>)로
                     I/O를 전달해 VMEXIT를 최소화합니다.
                 </Prose>
@@ -496,7 +497,7 @@ export default function Topic13Kvm() {
             <Section id="s1315" title="13.5  KVM 관리 실전">
                 <Prose>
                     QEMU, libvirt(virsh), 그리고 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">perf kvm</code>으로
-                    KVM 환경을 생성·관리·분석하는 실전 명령어입니다.
+                    <T id="kvm">KVM</T> 환경을 생성·관리·분석하는 실전 명령어입니다.
                 </Prose>
                 <CodeBlock
                     code={kvmMgmtCode}
@@ -570,8 +571,8 @@ export default function Topic13Kvm() {
                     KVM / 가상화 학습 완료
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
-                    KVM의 VMENTRY/VMEXIT 사이클, VMCS를 통한 제어, EPT로 주소 변환 효율화,
-                    virtio 공유 메모리 I/O까지 — 클라우드 인프라를 떠받치는 가상화 레이어를 살펴봤습니다.
+                    <T id="kvm">KVM</T>의 VMENTRY/<T id="vmexit">VMEXIT</T> 사이클, <T id="vmcs">VMCS</T>를 통한 제어, <T id="ept">EPT</T>로 주소 변환 효율화,
+                    <T id="virtio">virtio</T> 공유 메모리 I/O까지 — 클라우드 인프라를 떠받치는 가상화 레이어를 살펴봤습니다.
                 </p>
                 <a
                     href="#/"

@@ -4,6 +4,7 @@ import { D3Container } from '../../components/viz/D3Container'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
 function renderNetfilterFlow(
@@ -426,12 +427,12 @@ export default function Topic06() {
 
             <Section id="s771" title="7.1  Netfilter 구조">
             <InfoBox>
-                <strong>Netfilter</strong>는 리눅스 커널 네트워크 스택의{' '}
+                <strong><T id="netfilter">Netfilter</T></strong>는 리눅스 커널 네트워크 스택의{' '}
                 <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅 포인트를 두고,
         각 포인트에서 등록된 함수를 우선순위 순서대로 호출합니다.
                 <br /><br />
-                <strong>iptables</strong>, <strong>nftables</strong>,{' '}
-                <strong>conntrack(연결 추적)</strong>, <strong>IPVS(로드밸런서)</strong> 등
+                <strong><T id="iptables">iptables</T></strong>, <strong>nftables</strong>,{' '}
+                <strong><T id="conntrack">conntrack(연결 추적)</T></strong>, <strong>IPVS(로드밸런서)</strong> 등
         대부분의 리눅스 네트워크 보안·제어 기능이 모두 Netfilter 훅 위에서 동작합니다.
             </InfoBox>
             </Section>
@@ -488,7 +489,7 @@ export default function Topic06() {
                     <tr>
                         <Td mono>PREROUTING</Td>
                         <Td>라우팅 전 (수신 직후)</Td>
-                        <Td>DNAT, conntrack</Td>
+                        <Td>DNAT, <T id="conntrack">conntrack</T></Td>
                     </tr>
                     <tr>
                         <Td mono>INPUT</Td>
@@ -517,7 +518,7 @@ export default function Topic06() {
 
             <Section id="s774" title="7.4  iptables와 nftables">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        두 도구 모두 Netfilter 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다.
+        두 도구 모두 <T id="netfilter">Netfilter</T> 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다.
         현대 배포판(RHEL 8+, Debian 10+)은 nftables를 기본값으로 채택했습니다.
             </p>
             <TableWrapper>
@@ -575,7 +576,7 @@ export default function Topic06() {
 
             <Section id="s775" title="7.5  conntrack (연결 추적)">
             <InfoBox>
-        Netfilter <strong>conntrack</strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
+        <T id="netfilter">Netfilter</T> <strong><T id="conntrack">conntrack</T></strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
         커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
         응답 패킷을 자동으로 허용하거나 NAT 역변환을 처리합니다.
             </InfoBox>
@@ -615,7 +616,7 @@ export default function Topic06() {
         conntrack 성능 튜닝
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        고트래픽 환경에서 conntrack 테이블이 가득 차면 새 연결이 차단됩니다. 적절한 크기 조정이 필요합니다.
+        고트래픽 환경에서 <T id="conntrack">conntrack</T> 테이블이 가득 차면 새 연결이 차단됩니다. 적절한 크기 조정이 필요합니다.
             </p>
             <CodeBlock
                 code={conntrackTuningCode}
@@ -677,8 +678,8 @@ export default function Topic06() {
 
             <Section id="s777" title="7.7  TC Hook (Traffic Control)">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        TC(Traffic Control)는 Netfilter와 독립적인 패킷 처리 포인트입니다.
-        XDP보다 늦지만 Netfilter보다 빠른 위치에서 동작하여,
+        TC(Traffic Control)는 <T id="netfilter">Netfilter</T>와 독립적인 패킷 처리 포인트입니다.
+        XDP보다 늦지만 <T id="netfilter">Netfilter</T>보다 빠른 위치에서 동작하여,
         eBPF 프로그램과 결합하면 매우 유연한 패킷 제어가 가능합니다.
             </p>
             <TableWrapper>
@@ -725,11 +726,11 @@ export default function Topic06() {
 
             <Section id="s778" title="7.8  ipset — 대규모 IP 집합 매칭">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        iptables 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
+        <T id="iptables">iptables</T> 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
         차단 목록, 화이트리스트, GeoIP 차단에 활용됩니다.
             </p>
             <InfoBox>
-                <strong>성능 비교:</strong> iptables 규칙 10만 개 → O(n) 순차 매칭 vs{' '}
+                <strong>성능 비교:</strong> <T id="iptables">iptables</T> 규칙 10만 개 → O(n) 순차 매칭 vs{' '}
                 <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">ipset hash:ip</code>{' '}
         → O(1) 해시 룩업. 대규모 차단 목록에서 압도적인 성능 차이가 발생합니다.
             </InfoBox>

@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3.1  가상 주소 공간 (JSX div 기반)
@@ -1282,7 +1283,7 @@ export default function Topic03() {
                     Virtual Memory &amp; Memory Management
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    가상주소와 물리주소, 페이지 테이블, mm_struct/VMA, Page Fault, Buddy/SLUB, TLB, Huge Pages
+                    가상주소와 물리주소, 페이지 테이블, <T id="mm_struct">mm_struct</T>/<T id="vma">VMA</T>, <T id="page_fault">Page Fault</T>, <T id="buddy_allocator">Buddy</T>/<T id="slub">SLUB</T>, <T id="tlb">TLB</T>, <T id="hugepage">Huge Pages</T>
                 </p>
             </header>
 
@@ -1408,7 +1409,7 @@ export default function Topic03() {
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           4단계 페이지 테이블 워크는 메모리를 최대 4번 참조해야 합니다(PGD→PUD→PMD→PTE). 매 메모리 접근마다 이 과정을
-          반복하면 성능이 심각하게 저하됩니다. CPU는 최근 변환 결과를 TLB라는 하드웨어 캐시에 저장해 이 문제를 해결합니다.
+          반복하면 성능이 심각하게 저하됩니다. CPU는 최근 변환 결과를 <T id="tlb">TLB</T>라는 하드웨어 캐시에 저장해 이 문제를 해결합니다.
                 </p>
 
                 {/* TLB Hit vs Miss 비교 */}
@@ -1564,7 +1565,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 {/* mmap 익명/파일 매핑 */}
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">mmap() — 두 가지 매핑 방식</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono text-blue-400">mmap()</code>은 가상 주소 공간에 새로운 VMA를 만드는 핵심 syscall입니다.
+                    <code className="font-mono text-blue-400">mmap()</code>은 가상 주소 공간에 새로운 <T id="vma">VMA</T>를 만드는 핵심 syscall입니다.
           매핑 방식에 따라 <strong>익명 매핑</strong>과 <strong>파일 매핑</strong> 두 가지로 나뉩니다.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1608,7 +1609,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.4 Page Fault */}
             <Section id="s334" title="3.4  Page Fault">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          가상 주소에 접근했을 때 물리 페이지가 없으면 MMU가 Page Fault 예외를 발생시킵니다.
+          가상 주소에 접근했을 때 물리 페이지가 없으면 MMU가 <T id="page_fault">Page Fault</T> 예외를 발생시킵니다.
           커널은 fault 핸들러에서 적절한 물리 페이지를 확보하고 PTE를 업데이트한 뒤 명령어를 재실행합니다.
                 </p>
 
@@ -1658,8 +1659,8 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.5 Buddy Allocator */}
             <Section id="s335" title="3.5  Buddy Allocator (인터랙티브)">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <strong className="text-gray-800 dark:text-gray-200">Buddy Allocator</strong>는 아직 사용되지 않은 <strong className="text-gray-800 dark:text-gray-200">free 물리 페이지</strong>를 관리하는
-          커널의 핵심 메모리 관리자입니다. Page Fault, kmalloc, mmap 등 모든 물리 페이지 할당 요청이 여기서 처리됩니다.
+                    <strong className="text-gray-800 dark:text-gray-200"><T id="buddy_allocator">Buddy Allocator</T></strong>는 아직 사용되지 않은 <strong className="text-gray-800 dark:text-gray-200">free 물리 페이지</strong>를 관리하는
+          커널의 핵심 메모리 관리자입니다. <T id="page_fault">Page Fault</T>, kmalloc, <T id="mmap">mmap</T> 등 모든 물리 페이지 할당 요청이 여기서 처리됩니다.
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널은 물리 메모리를 2의 거듭제곱(2^order) 크기 블록으로 관리합니다. order 0 = 4KB(1 page), order 1 = 8KB,
@@ -1679,8 +1680,8 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.6 SLUB Allocator */}
             <Section id="s336" title="3.6  SLUB Allocator">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          Buddy Allocator는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의 작은 객체를 자주 할당합니다.
-          SLUB은 특정 크기의 객체 전용 캐시(<code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어
+          <T id="buddy_allocator">Buddy Allocator</T>는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의 작은 객체를 자주 할당합니다.
+          <T id="slub">SLUB</T>은 특정 크기의 객체 전용 캐시(<code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어
           빠르게 재사용합니다.
                 </p>
                 <D3Container
@@ -1740,7 +1741,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 {/* OOM Killer */}
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">OOM Killer — 메모리 부족 시 프로세스 종료</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          물리 메모리가 완전히 소진되면 커널 OOM Killer가 <code className="font-mono text-blue-400">oom_score</code> 기준으로
+          물리 메모리가 완전히 소진되면 커널 <T id="oom_killer">OOM Killer</T>가 <code className="font-mono text-blue-400">oom_score</code> 기준으로
           희생 프로세스를 선택해 강제 종료합니다.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1793,13 +1794,13 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </ul>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-purple-600 dark:text-purple-400 font-mono">vmalloc</div>
+                        <div className="text-sm font-bold text-purple-600 dark:text-purple-400 font-mono"><T id="vmalloc">vmalloc</T></div>
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">가상 연속</div>
                         <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                             <li>여러 불연속 물리 페이지를 가상 주소로 연속처럼 매핑</li>
                             <li>물리 연속성 없음 → DMA 불가</li>
                             <li>큰 크기 할당 가능 (수백MB)</li>
-                            <li>느림 (페이지 테이블 조작 필요, TLB flush)</li>
+                            <li>느림 (페이지 테이블 조작 필요, <T id="tlb">TLB</T> flush)</li>
                             <li className="text-gray-500 dark:text-gray-500">사용: 큰 모듈 메모리, 가상화 게스트 메모리, 큰 버퍼</li>
                         </ul>
                     </div>
@@ -1880,7 +1881,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 }`}>
                     <div className="font-bold mb-1">⚠ pages_min 이하 — Direct Reclaim</div>
                     <p className="text-xs leading-relaxed">
-                        free page가 <span className="font-mono font-bold">pages_min</span> 이하로 떨어지면 kswapd가 따라잡지 못한 위기 상태입니다.
+                        free page가 <span className="font-mono font-bold">pages_min</span> 이하로 떨어지면 <T id="kswapd">kswapd</T>가 따라잡지 못한 위기 상태입니다.
                         이때는 메모리를 <em>요청한 그 프로세스가 직접</em> 회수(direct reclaim)를 수행해야 할당이 이루어집니다.
                         프로세스가 자신의 페이지 폴트 처리 중에 수십 ms씩 지연될 수 있어 응답 레이턴시가 급격히 나빠집니다.
                         실무에서는 <span className="font-mono">vm.min_free_kbytes</span> 튜닝과 <span className="font-mono">vm.swappiness</span> 조정으로 이 상황을 예방합니다.
@@ -1920,8 +1921,8 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.10 Huge Pages / THP */}
             <Section id="s3310" title="3.10  Huge Pages / THP — 대형 페이지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          표준 페이지 크기는 4KB입니다. 수십GB 메모리를 사용하는 데이터베이스나 JVM은 수백만 개의 TLB 엔트리가 필요해
-          TLB miss가 심각한 성능 저하를 유발합니다. <strong className="text-gray-900 dark:text-white">Huge Pages</strong>(2MB/1GB)로
+          표준 페이지 크기는 4KB입니다. 수십GB 메모리를 사용하는 데이터베이스나 JVM은 수백만 개의 <T id="tlb">TLB</T> 엔트리가 필요해
+          TLB miss가 심각한 성능 저하를 유발합니다. <strong className="text-gray-900 dark:text-white"><T id="hugepage">Huge Pages</T></strong>(2MB/1GB)로
           TLB 부담을 90% 줄일 수 있습니다.
                 </p>
                 {/* 3-column page size comparison */}

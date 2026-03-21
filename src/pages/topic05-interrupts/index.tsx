@@ -5,6 +5,7 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
+import { T } from '../../components/ui/GlossaryTooltip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
@@ -606,7 +607,7 @@ export default function Topic04() {
 
             <Section id="s552" title="5.2  IRQ 처리 흐름">
                 <Prose>
-          IRQ가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
+          <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
           ISR은 가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
                 </Prose>
                 <AnimatedDiagram
@@ -619,7 +620,7 @@ export default function Topic04() {
             <Section id="s553" title="5.3  Top Half / Bottom Half">
                 <Prose>
           인터럽트 처리는 두 단계로 분리됩니다.{' '}
-                    <strong className="text-gray-200">Top Half</strong>는 IRQ 발생 직후 인터럽트가
+                    <strong className="text-gray-200">Top Half</strong>는 <T id="irq">IRQ</T> 발생 직후 인터럽트가
           비활성화된 상태에서 최소한의 작업(ACK, 데이터 복사)만 수행합니다.{' '}
                     <strong className="text-gray-200">Bottom Half</strong>는 인터럽트를 재활성화한 뒤
           나머지 무거운 처리(프로토콜 스택, 패킷 분류 등)를 수행합니다.
@@ -666,9 +667,9 @@ export default function Topic04() {
             <Section id="s554" title="5.4  Softirq, Tasklet, Workqueue 비교">
                 <Prose>
           Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
-          Softirq, Tasklet, Workqueue 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
-          경로는 Softirq, 드라이버의 일반 지연 처리는 Tasklet, 파일시스템 등 sleep이 필요한
-          작업은 Workqueue를 사용합니다.
+          <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
+          경로는 <T id="softirq">Softirq</T>, 드라이버의 일반 지연 처리는 <T id="tasklet">Tasklet</T>, 파일시스템 등 sleep이 필요한
+          작업은 <T id="workqueue">Workqueue</T>를 사용합니다.
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -854,7 +855,7 @@ export default function Topic04() {
             <Section id="s556" title="5.6  Threaded IRQ — 인터럽트의 스레드화">
 
                 <Prose>
-          전통적인 Bottom Half(Softirq/Tasklet)는 인터럽트 컨텍스트에서 실행되어 슬립이
+          전통적인 Bottom Half(<T id="softirq">Softirq</T>/<T id="tasklet">Tasklet</T>)는 인터럽트 컨텍스트에서 실행되어 슬립이
           불가합니다. Linux 2.6.30부터 도입된{' '}
                     <strong className="text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널
           스레드로 실행해 슬립 가능하고 우선순위를 조정할 수 있습니다.
@@ -879,7 +880,7 @@ export default function Topic04() {
                     </div>
 
                     <div className="bg-gray-800 rounded-xl border border-blue-700/50 p-4">
-                        <div className="text-sm font-bold text-blue-300 mb-3">Threaded IRQ (현대)</div>
+                        <div className="text-sm font-bold text-blue-300 mb-3"><T id="threaded_irq">Threaded IRQ</T> (현대)</div>
                         <ul className="space-y-1">
                             {[
                                 '하드웨어 인터럽트 → 빠른 top-half 확인',
@@ -916,7 +917,7 @@ export default function Topic04() {
                 <Prose>
           특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
                     <code className="font-mono text-blue-300 text-xs">/proc/irq/&lt;n&gt;/smp_affinity</code>로
-          어느 CPU 코어가 해당 IRQ를 처리할지 지정할 수 있습니다.
+          어느 CPU 코어가 해당 <T id="irq">IRQ</T>를 처리할지 지정할 수 있습니다.
                 </Prose>
 
                 <CodeBlock
