@@ -208,6 +208,39 @@
 
 ---
 
+## Sprint 11 — 콘텐츠 심화 개선 (예정)
+
+> 기준: 커널 선생님 리뷰 2026-03-21. 사용자 피드백 패턴 반영 (구체화·인라인 정의·임계값 행동·상태 전이 시각화)
+
+### 🔴 높음 — 핵심 개념 누락 또는 추상화 과도
+| 작업 | 상태 |
+|------|------|
+| Topic 03 §3.3 — CoW(Copy-on-Write): fork() 시 부모·자식 물리 페이지 공유 → 쓰기 시 복사 애니메이션 | ⬜ |
+| Topic 04 §4.1 — inode / dentry / file 세 객체 관계 시각화: open("foo.txt") 호출 흐름 그림 | ⬜ |
+| Topic 04 §4.3 — write-back 흐름: dirty page → writeback_control → kworker, sync/fsync/O_SYNC 차이 | ⬜ |
+| Topic 02 §2.8 — SCHED_DEADLINE 추가: CBS 알고리즘, runtime/period/deadline 파라미터 설명 | ⬜ |
+| Topic 09 §9.9 — RCU grace period 타임라인 시각화: 독자 탈출 후 reclaim 시점을 타임라인으로 | ⬜ |
+| Topic 12 §12.6 — PID namespace 구체 예시: 호스트 PID vs 컨테이너 PID 1 원리 비교 | ⬜ |
+
+### 🟡 중간 — 현대 커널에서 중요
+| 작업 | 상태 |
+|------|------|
+| Topic 06 §6.x — TCP 혼잡 제어 신규 섹션: CUBIC vs BBR, RTT 기반 vs 손실 기반 제어 비교 | ⬜ |
+| Topic 08 §8.x — bpftrace 신규 섹션: DTrace-like one-liner, kprobe/uprobe/tracepoint 예시 | ⬜ |
+| Topic 11 §11.x — flame graph 신규 섹션: perf record → perf script → flamegraph.pl 파이프라인 | ⬜ |
+| Topic 10 §10.x — 캐릭터 디바이스 전체 생명주기: module_init → file_operations → module_exit 완전 예제 | ⬜ |
+| Topic 13 §13.x — vhost 신규 섹션: 커널 내 virtio backend, QEMU 우회 경로 | ⬜ |
+
+### 🟢 낮음 — 깊이 추가 또는 보완
+| 작업 | 상태 |
+|------|------|
+| Topic 01 §1.x — 주요 syscall 카탈로그 표: open/read/write/fork/execve/mmap/socket/epoll 8개 | ⬜ |
+| Topic 03 §3.x — NUMA memory policy: mbind(), set_mempolicy(), numactl 제어 방법 | ⬜ |
+| Topic 07 §7.x — conntrack helpers: FTP·SIP 페이로드 내 IP:PORT 추적 원리 | ⬜ |
+| Topic 05 §5.x — IRQ coalescing: ethtool -C 인터럽트 합치기, NAPI poll 주기 조정 | ⬜ |
+
+---
+
 ## Sprint 10 — 차트·콘텐츠 버그 수정 (2026-03-21)
 
 | 작업 | 상태 |
