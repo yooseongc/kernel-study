@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AppLayout } from './components/layout/AppLayout'
 import Home from './pages/Home'
@@ -38,22 +38,23 @@ export default function App() {
                 <Routes>
                     <Route element={<AppLayout />}>
                         <Route index element={<Home />} />
-                        <Suspense fallback={<PageFallback />}>
-                            <Route path="topic/01-overview"     element={<Topic01  />} />
-                            <Route path="topic/02-scheduler"    element={<Topic02  />} />
-                            <Route path="topic/03-memory"       element={<Topic03  />} />
-                            <Route path="topic/04-filesystem"   element={<Topic04  />} />
-                            <Route path="topic/05-interrupts"   element={<Topic05  />} />
-                            <Route path="topic/06-network-stack" element={<Topic06 />} />
-                            <Route path="topic/07-netfilter"    element={<Topic07  />} />
-                            <Route path="topic/08-xdp-ebpf"     element={<Topic08  />} />
-                            <Route path="topic/09-synchronization" element={<Topic09 />} />
-                            <Route path="topic/10-drivers"      element={<Topic10  />} />
-                            <Route path="topic/11-debugging"    element={<Topic11  />} />
-                            <Route path="topic/12-security"     element={<Topic12  />} />
-                            <Route path="topic/13-kvm"          element={<Topic13  />} />
-                            <Route path="glossary"              element={<Glossary />} />
-                        </Suspense>
+                        {/* Suspense는 Routes 직계 자식이 될 수 없으므로 중간 레이아웃 Route로 감쌈 */}
+                        <Route element={<Suspense fallback={<PageFallback />}><Outlet /></Suspense>}>
+                            <Route path="topic/01-overview"        element={<Topic01  />} />
+                            <Route path="topic/02-scheduler"       element={<Topic02  />} />
+                            <Route path="topic/03-memory"          element={<Topic03  />} />
+                            <Route path="topic/04-filesystem"      element={<Topic04  />} />
+                            <Route path="topic/05-interrupts"      element={<Topic05  />} />
+                            <Route path="topic/06-network-stack"   element={<Topic06  />} />
+                            <Route path="topic/07-netfilter"       element={<Topic07  />} />
+                            <Route path="topic/08-xdp-ebpf"        element={<Topic08  />} />
+                            <Route path="topic/09-synchronization" element={<Topic09  />} />
+                            <Route path="topic/10-drivers"         element={<Topic10  />} />
+                            <Route path="topic/11-debugging"       element={<Topic11  />} />
+                            <Route path="topic/12-security"        element={<Topic12  />} />
+                            <Route path="topic/13-kvm"             element={<Topic13  />} />
+                            <Route path="glossary"                 element={<Glossary />} />
+                        </Route>
                     </Route>
                 </Routes>
             </HashRouter>
