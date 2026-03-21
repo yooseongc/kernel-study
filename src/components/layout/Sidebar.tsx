@@ -6,23 +6,25 @@ interface SidebarProps {
   onSearchOpen: () => void
   mobileOpen: boolean
   onMobileClose: () => void
+  collapsed?: boolean
 }
 
-export function Sidebar({ onSearchOpen, mobileOpen, onMobileClose }: SidebarProps) {
+export function Sidebar({ onSearchOpen, mobileOpen, onMobileClose, collapsed = false }: SidebarProps) {
     const { theme, toggle } = useTheme()
 
     return (
         <aside
             className={[
                 // 공통 스타일
-                'w-64 shrink-0 bg-gray-50 dark:bg-gray-900',
+                'bg-gray-50 dark:bg-gray-900',
                 'border-r border-gray-200 dark:border-gray-800',
                 'flex flex-col h-full overflow-hidden',
                 // 모바일: 고정 드로어 (z-40, transform으로 열고 닫기)
                 'fixed inset-y-0 left-0 z-40 transition-transform duration-300',
                 mobileOpen ? 'translate-x-0' : '-translate-x-full',
-                // 데스크톱: 일반 흐름 배치, transform 초기화
-                'md:relative md:inset-auto md:z-auto md:translate-x-0 md:transition-none',
+                // 데스크톱: 일반 흐름 배치, transform 초기화 + 너비 전환
+                'md:relative md:inset-auto md:z-auto md:translate-x-0 md:transition-[width] md:duration-200',
+                collapsed ? 'md:w-0 md:border-r-0' : 'md:w-72 md:shrink-0',
             ].join(' ')}
         >
             {/* Logo + 모바일 닫기 버튼 */}

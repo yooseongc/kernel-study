@@ -71,7 +71,7 @@ function InfoTable({ headers, rows }: { headers: string[]; rows: TableRow[] }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10.1  /proc 트리 D3 시각화
+// 11.1  /proc 트리 D3 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface TreeNodeData {
@@ -190,7 +190,7 @@ function renderProcTree(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10.6  네트워크 병목 바 차트 D3 시각화
+// 11.6  네트워크 병목 바 차트 D3 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface BottleneckItem {
@@ -676,8 +676,8 @@ export default function Topic10() {
                 </p>
             </div>
 
-            {/* 10.1 /proc와 /sys 활용 */}
-            <Section id="s101" title="10.1  /proc와 /sys 활용">
+            {/* 11.1 /proc와 /sys 활용 */}
+            <Section id="s111" title="11.1  /proc와 /sys 활용">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">/proc</code>와{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">/sys</code>는 커널이
@@ -701,8 +701,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.2 dmesg와 커널 로그 */}
-            <Section id="s102" title="10.2  dmesg와 커널 로그">
+            {/* 11.2 dmesg와 커널 로그 */}
+            <Section id="s112" title="11.2  dmesg와 커널 로그">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">printk()</code>로 출력된
           커널 메시지는 ring buffer에 저장됩니다.{' '}
@@ -713,8 +713,8 @@ export default function Topic10() {
                 <InfoTable headers={['레벨', '매크로', '용도']} rows={printkRows} />
             </Section>
 
-            {/* 10.3 Oops / Panic 읽는 법 */}
-            <Section id="s103" title="10.3  Oops / Panic 읽는 법">
+            {/* 11.3 Oops / Panic 읽는 법 */}
+            <Section id="s113" title="11.3  Oops / Panic 읽는 법">
                 <Prose>
           커널 버그 발생 시 Oops 메시지가 출력됩니다. NULL 포인터 역참조, 스택 오버플로우 등
           심각한 오류는 시스템 Panic으로 이어질 수 있습니다. Oops 메시지를 읽는 능력이 커널
@@ -758,8 +758,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.4 kdump / crash */}
-            <Section id="s104" title="10.4  kdump / crash — 프로덕션 크래시 사후 분석">
+            {/* 11.4 kdump / crash */}
+            <Section id="s114" title="11.4  kdump / crash — 프로덕션 크래시 사후 분석">
                 <Prose>
           서버가 Kernel Panic으로 재부팅된 후, kdump가 저장한 메모리 덤프(vmcore)를 crash
           유틸리티로 분석합니다. 라이브 디버깅 없이 사후 분석 가능합니다.
@@ -803,8 +803,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.5 perf 기초 */}
-            <Section id="s105" title="10.5  perf 기초">
+            {/* 11.5 perf 기초 */}
+            <Section id="s115" title="11.5  perf 기초">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">perf</code>는 커널 내장
           프로파일링 도구입니다. CPU 성능 카운터, 소프트웨어 이벤트, 트레이스포인트를 지원하며
@@ -838,8 +838,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.6 ftrace */}
-            <Section id="s106" title="10.6  ftrace">
+            {/* 11.6 ftrace */}
+            <Section id="s116" title="11.6  ftrace">
                 <Prose>
           ftrace는 커널 함수 호출 추적 도구입니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">
@@ -857,8 +857,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.7 네트워크 병목 분석 */}
-            <Section id="s107" title="10.7  네트워크 병목 분석">
+            {/* 11.7 네트워크 병목 분석 */}
+            <Section id="s117" title="11.7  네트워크 병목 분석">
                 <Prose>
           네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다.
           체크 우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
@@ -876,8 +876,8 @@ export default function Topic10() {
                 />
             </Section>
 
-            {/* 10.8 sar */}
-            <Section id="s108" title="10.8  sar를 이용한 시스템 모니터링">
+            {/* 11.8 sar */}
+            <Section id="s118" title="11.8  sar를 이용한 시스템 모니터링">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">sar</code>(System Activity
           Reporter)는 CPU, 메모리, 네트워크, 디스크 통계를 시계열로 수집합니다. cron으로 자동
@@ -886,8 +886,8 @@ export default function Topic10() {
                 <CodeBlock code={sarCode} language="bash" filename="sar 명령어" />
             </Section>
 
-            {/* 10.9 컨테이너 환경 디버깅 */}
-            <Section id="s109" title="10.9  컨테이너 환경 디버깅">
+            {/* 11.9 컨테이너 환경 디버깅 */}
+            <Section id="s119" title="11.9  컨테이너 환경 디버깅">
                 <Prose>
           컨테이너(Docker/K8s)는 cgroup과 namespace로 격리됩니다. OOM, 성능 저하 문제의 원인이
           컨테이너 내부인지 호스트인지 구분하는 방법입니다.
@@ -931,8 +931,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 10.10 lockdep */}
-            <Section id="s1010" title="10.10  lockdep — 잠금 순서 검증기">
+            {/* 11.10 lockdep */}
+            <Section id="s1110" title="11.10  lockdep — 잠금 순서 검증기">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>은 커널에
           내장된 동적 분석 도구로, 프로그램 실행 중 잠금 획득 순서를 추적하고{' '}
@@ -996,8 +996,8 @@ lock(B) ← 대기   lock(A) ← 대기
                 </div>
             </Section>
 
-            {/* 10.11 KASAN */}
-            <Section id="s1011" title="10.11  KASAN — 메모리 버그 탐지기">
+            {/* 11.11 KASAN */}
+            <Section id="s1111" title="11.11  KASAN — 메모리 버그 탐지기">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">KASAN (Kernel Address Sanitizer)</strong>은
           커널의 메모리 안전성 버그를 런타임에 탐지합니다.{' '}

@@ -77,7 +77,7 @@ function InfoTable({ headers, rows }: TableProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8.1  Race Condition — AnimatedDiagram step renderer
+// 9.1  Race Condition — AnimatedDiagram step renderer
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface RaceState {
@@ -254,7 +254,7 @@ function RaceViz({ step }: { step: number }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8.2–8.5  Lock comparison D3 bar chart
+// 9.2–9.5  Lock comparison D3 bar chart
 // ─────────────────────────────────────────────────────────────────────────────
 
 function renderLockComparison(
@@ -618,8 +618,8 @@ export default function Topic08() {
                 </p>
             </div>
 
-            {/* 8.1 Race Condition */}
-            <Section id="s81" title="8.1  Race Condition">
+            {/* 9.1 Race Condition */}
+            <Section id="s91" title="9.1  Race Condition">
                 <Prose>
           두 스레드가 공유 자원에 동시 접근할 때 실행 순서에 따라 결과가 달라지는 문제입니다.
           단순해 보이는 <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">counter++</code>도
@@ -640,8 +640,8 @@ export default function Topic08() {
                 <CodeBlock code={raceCode} language="c" filename="race_condition.c" />
             </Section>
 
-            {/* 8.2 Spinlock */}
-            <Section id="s82" title="8.2  Spinlock">
+            {/* 9.2 Spinlock */}
+            <Section id="s92" title="9.2  Spinlock">
                 <Prose>
           짧은 임계 구역에 사용합니다. 락을 얻을 때까지 CPU를 소모하며 바쁜 대기(busy-wait)를
           수행합니다. sleep 불가 컨텍스트(인터럽트 핸들러)에서도 사용할 수 있습니다.
@@ -657,8 +657,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.3 Mutex */}
-            <Section id="s83" title="8.3  Mutex">
+            {/* 9.3 Mutex */}
+            <Section id="s93" title="9.3  Mutex">
                 <Prose>
           긴 임계 구역에 사용합니다. 락 대기 중 sleep하므로 CPU 낭비가 없습니다. 프로세스
           컨텍스트에서만 사용 가능하며, 인터럽트 핸들러에서는 사용할 수 없습니다.
@@ -707,8 +707,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.4 RWLock */}
-            <Section id="s84" title="8.4  RWLock (Reader-Writer Lock)">
+            {/* 9.4 RWLock */}
+            <Section id="s94" title="9.4  RWLock (Reader-Writer Lock)">
                 <Prose>
           읽기는 동시에, 쓰기는 단독으로 수행합니다. 읽기가 많고 쓰기가 드문 자료구조에 적합합니다.
           다수의 reader가 공존할 수 있어 읽기 경쟁이 심한 경우 Mutex보다 효율적입니다.
@@ -732,8 +732,8 @@ export default function Topic08() {
                 </p>
             </div>
 
-            {/* 8.5 seqlock */}
-            <Section id="s85" title="8.5  seqlock — 읽기 무잠금 동기화">
+            {/* 9.5 seqlock */}
+            <Section id="s95" title="9.5  seqlock — 읽기 무잠금 동기화">
                 <Prose>
           seqlock은 읽기 쪽이 잠금 없이 시퀀스 카운터를 확인하는 방식입니다. 쓰기가 드물고
           읽기가 매우 빈번한 경우(커널 timekeeping, jiffies 업데이트)에 최적입니다. 읽기 중
@@ -786,8 +786,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.6 rwsem */}
-            <Section id="s86" title="8.6  rwsem — 슬립 가능한 읽기-쓰기 잠금">
+            {/* 9.6 rwsem */}
+            <Section id="s96" title="9.6  rwsem — 슬립 가능한 읽기-쓰기 잠금">
                 <Prose>
           rwsem은 RWLock과 달리 경쟁 시 슬립합니다. 인터럽트 컨텍스트 밖(프로세스 컨텍스트)에서
           사용하며, VFS inode lock 등 커널 내부에서 광범위하게 사용됩니다.
@@ -839,8 +839,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.7 Atomic Operations */}
-            <Section id="s87" title="8.7  Atomic Operations">
+            {/* 9.7 Atomic Operations */}
+            <Section id="s97" title="9.7  Atomic Operations">
                 <Prose>
           하드웨어 수준의 원자적 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를 통해
           버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
@@ -856,8 +856,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.8 메모리 배리어 */}
-            <Section id="s88" title="8.8  메모리 배리어 — CPU 재순서화 제어">
+            {/* 9.8 메모리 배리어 */}
+            <Section id="s98" title="9.8  메모리 배리어 — CPU 재순서화 제어">
                 <Prose>
           현대 CPU는 성능을 위해 메모리 읽기/쓰기 순서를 재배치합니다. 멀티코어 환경에서 이
           재배치가 동기화 버그를 일으킬 수 있어 <strong>메모리 배리어</strong>로 순서를 강제합니다.
@@ -871,8 +871,8 @@ export default function Topic08() {
                 <CodeBlock code={membarrierCode} language="c" filename="메모리 배리어 사용 예" />
             </Section>
 
-            {/* 8.9 RCU */}
-            <Section id="s89" title="8.9  RCU (Read-Copy-Update)">
+            {/* 9.9 RCU */}
+            <Section id="s99" title="9.9  RCU (Read-Copy-Update)">
                 <Prose>
           읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화
           메커니즘입니다. 읽기 측은 lock이 전혀 없습니다.
@@ -936,8 +936,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.10 멀티코어 환경에서 네트워크 성능 */}
-            <Section id="s810" title="8.10  멀티코어 환경에서 네트워크 성능">
+            {/* 9.10 멀티코어 환경에서 네트워크 성능 */}
+            <Section id="s910" title="9.10  멀티코어 환경에서 네트워크 성능">
                 <Prose>
           여러 CPU가 동시에 패킷을 처리할 때 동기화 비용이 병목이 됩니다. 다음 기법들로 락 경합을
           최소화합니다.
@@ -1001,8 +1001,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.11 futex */}
-            <Section id="s811" title="8.11  futex — 유저공간 잠금의 커널 기반">
+            {/* 9.11 futex */}
+            <Section id="s911" title="9.11  futex — 유저공간 잠금의 커널 기반">
                 <Prose>
           pthread_mutex, C++ std::mutex 등 유저공간 잠금의 대부분은 내부적으로{' '}
                     <strong>futex(Fast Userspace Mutex)</strong>를 사용합니다. 경쟁이 없을 때는 커널 진입
@@ -1048,8 +1048,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 8.12 Wait Queue */}
-            <Section id="s812" title="8.12  Wait Queue — 블로킹 I/O의 핵심">
+            {/* 9.12 Wait Queue */}
+            <Section id="s912" title="9.12  Wait Queue — 블로킹 I/O의 핵심">
                 <Prose>
           Wait Queue는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는 기본
           메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
@@ -1164,8 +1164,8 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
                 />
             </Section>
 
-            {/* 8.13 Completion */}
-            <Section id="s813" title="8.13  Completion — 일회성 완료 신호">
+            {/* 9.13 Completion */}
+            <Section id="s913" title="9.13  Completion — 일회성 완료 신호">
                 <Prose>
           Wait Queue가 "반복적인 조건 대기"라면, <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">Completion</code>은
           "딱 한 번의 완료 신호"에 최적화된 간단한 인터페이스입니다. 드라이버 초기화, 스레드 종료

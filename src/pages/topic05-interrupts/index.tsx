@@ -7,7 +7,7 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
+// 5.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
 // ─────────────────────────────────────────────────────────────────────────────
 
 type IRQZone = 'device' | 'cpu' | 'memory'
@@ -130,7 +130,7 @@ function IRQViz({ step }: { step: number }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4.4  Deferred Work 계층 D3 시각화
+// 5.4  Deferred Work 계층 D3 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface DeferredStage {
@@ -522,9 +522,9 @@ export default function Topic04() {
                 </p>
             </header>
 
-            {/* 4.1 인터럽트와 예외의 차이 */}
+            {/* 5.1 인터럽트와 예외의 차이 */}
             <section>
-                <SectionTitle>4.1 인터럽트와 예외의 차이</SectionTitle>
+                <SectionTitle>5.1 인터럽트와 예외의 차이</SectionTitle>
 
                 <Prose>
                     <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등
@@ -602,9 +602,9 @@ export default function Topic04() {
                 </div>
             </section>
 
-            {/* 4.2 IRQ 처리 흐름 */}
+            {/* 5.2 IRQ 처리 흐름 */}
             <section>
-                <SectionTitle>4.2 IRQ 처리 흐름</SectionTitle>
+                <SectionTitle>5.2 IRQ 처리 흐름</SectionTitle>
                 <Prose>
           IRQ가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
           ISR은 가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
@@ -616,9 +616,9 @@ export default function Topic04() {
                 />
             </section>
 
-            {/* 4.3 Top Half / Bottom Half */}
+            {/* 5.3 Top Half / Bottom Half */}
             <section>
-                <SectionTitle>4.3 Top Half / Bottom Half</SectionTitle>
+                <SectionTitle>5.3 Top Half / Bottom Half</SectionTitle>
                 <Prose>
           인터럽트 처리는 두 단계로 분리됩니다.{' '}
                     <strong className="text-gray-200">Top Half</strong>는 IRQ 발생 직후 인터럽트가
@@ -665,9 +665,9 @@ export default function Topic04() {
                 />
             </section>
 
-            {/* 4.4 Softirq, Tasklet, Workqueue */}
+            {/* 5.4 Softirq, Tasklet, Workqueue */}
             <section>
-                <SectionTitle>4.4 Softirq, Tasklet, Workqueue 비교</SectionTitle>
+                <SectionTitle>5.4 Softirq, Tasklet, Workqueue 비교</SectionTitle>
                 <Prose>
           Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
           Softirq, Tasklet, Workqueue 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
@@ -786,9 +786,9 @@ export default function Topic04() {
                 <D3Container renderFn={renderDeferredWork} height={200} deps={[theme]} />
             </section>
 
-            {/* 4.5 타이머와 비동기 처리 */}
+            {/* 5.5 타이머와 비동기 처리 */}
             <section>
-                <SectionTitle>4.5 타이머와 비동기 처리</SectionTitle>
+                <SectionTitle>5.5 타이머와 비동기 처리</SectionTitle>
 
                 <Prose>
           리눅스 커널은 두 가지 타이머 시스템을 제공합니다. jiffies 기반의 저해상도 타이머와
@@ -857,9 +857,9 @@ export default function Topic04() {
                 />
             </section>
 
-            {/* 4.6 Threaded IRQ */}
+            {/* 5.6 Threaded IRQ */}
             <section>
-                <SectionTitle>4.6 Threaded IRQ — 인터럽트의 스레드화</SectionTitle>
+                <SectionTitle>5.6 Threaded IRQ — 인터럽트의 스레드화</SectionTitle>
 
                 <Prose>
           전통적인 Bottom Half(Softirq/Tasklet)는 인터럽트 컨텍스트에서 실행되어 슬립이
@@ -919,9 +919,9 @@ export default function Topic04() {
                 />
             </section>
 
-            {/* 4.7 인터럽트 어피니티 */}
+            {/* 5.7 인터럽트 어피니티 */}
             <section>
-                <SectionTitle>4.7 인터럽트 어피니티 — CPU 코어 배정</SectionTitle>
+                <SectionTitle>5.7 인터럽트 어피니티 — CPU 코어 배정</SectionTitle>
 
                 <Prose>
           특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
@@ -968,9 +968,9 @@ export default function Topic04() {
                 </div>
             </section>
 
-            {/* 4.8 PREEMPT_RT */}
+            {/* 5.8 PREEMPT_RT */}
             <section>
-                <SectionTitle>4.8 PREEMPT_RT — 실시간 리눅스 커널</SectionTitle>
+                <SectionTitle>5.8 PREEMPT_RT — 실시간 리눅스 커널</SectionTitle>
 
                 <Prose>
           표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 스핀락을 보유한 채

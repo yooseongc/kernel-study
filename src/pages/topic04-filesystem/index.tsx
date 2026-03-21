@@ -1,7 +1,7 @@
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 
-// ── 11.2 코드 상수 ──────────────────────────────────────────────────────────
+// ── 4.2 코드 상수 ──────────────────────────────────────────────────────────
 
 const openFlowCode = `/* VFS open 흐름 (간략화) */
 long do_sys_open(int dfd, const char __user *filename, int flags, umode_t mode)
@@ -30,7 +30,7 @@ static ssize_t ext4_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
            └─ copy_page_to_iter() : 커널→유저 복사 */
 }`
 
-// ── 11.3 코드 상수 ──────────────────────────────────────────────────────────
+// ── 4.3 코드 상수 ──────────────────────────────────────────────────────────
 
 const pageCacheCode = `# 메모리에서 페이지 캐시 사용량 확인
 cat /proc/meminfo | grep -E "Cached|Buffers|Dirty|Writeback"
@@ -51,7 +51,7 @@ echo 3 > /proc/sys/vm/drop_caches  # 주의: 성능 저하
 sync
 echo 1 > /proc/sys/vm/drop_caches`
 
-// ── 11.4 코드 상수 ──────────────────────────────────────────────────────────
+// ── 4.4 코드 상수 ──────────────────────────────────────────────────────────
 
 const ext4Code = `# ext4 파일시스템 정보
 tune2fs -l /dev/sda1 | grep -E "Block size|Inode|Journal"
@@ -75,7 +75,7 @@ stat /etc/passwd
 df -i /
 # Filesystem  Inodes  IUsed  IFree  IUse%`
 
-// ── 11.2 AnimatedDiagram steps ──────────────────────────────────────────────
+// ── 4.2 AnimatedDiagram steps ──────────────────────────────────────────────
 
 const openFlowSteps = [
     {
@@ -110,7 +110,7 @@ const openFlowSteps = [
     },
 ]
 
-// ── 11.2 step별 시각화 ──────────────────────────────────────────────────────
+// ── 4.2 step별 시각화 ──────────────────────────────────────────────────────
 
 function OpenFlowViz({ step }: { step: number }) {
     const zones = [
@@ -284,7 +284,7 @@ export default function Topic11Filesystem() {
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-12">
             {/* Header */}
             <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 11</div>
+                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 4</div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">VFS와 파일시스템</h1>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
           리눅스 커널의 VFS(Virtual File System)는 파일 I/O를 추상화하는 계층입니다.
@@ -293,10 +293,10 @@ export default function Topic11Filesystem() {
                 </p>
             </div>
 
-            {/* 11.1 VFS 계층 구조 */}
+            {/* 4.1 VFS 계층 구조 */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">11.1</span>VFS — Virtual File System
+                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.1</span>VFS — Virtual File System
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           VFS는 커널의 파일시스템 추상화 계층입니다.{' '}
@@ -384,10 +384,10 @@ export default function Topic11Filesystem() {
                 </div>
             </section>
 
-            {/* 11.2 open() 흐름 */}
+            {/* 4.2 open() 흐름 */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">11.2</span>open() 흐름 — VFS에서 ext4까지
+                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.2</span>open() 흐름 — VFS에서 ext4까지
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           유저가{' '}
@@ -415,10 +415,10 @@ export default function Topic11Filesystem() {
                 />
             </section>
 
-            {/* 11.3 페이지 캐시 */}
+            {/* 4.3 페이지 캐시 */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">11.3</span>페이지 캐시 — 디스크 I/O 최소화
+                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.3</span>페이지 캐시 — 디스크 I/O 최소화
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널은 디스크에서 읽은 데이터를 <strong className="text-gray-900 dark:text-gray-100">페이지 캐시(Page Cache)</strong>에 보관합니다.
@@ -474,10 +474,10 @@ export default function Topic11Filesystem() {
                 </div>
             </section>
 
-            {/* 11.4 ext4 저널링 */}
+            {/* 4.4 ext4 저널링 */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">11.4</span>ext4 — 널리 쓰이는 저널링 파일시스템
+                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.4</span>ext4 — 널리 쓰이는 저널링 파일시스템
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           ext4는 Linux의 기본 파일시스템입니다.

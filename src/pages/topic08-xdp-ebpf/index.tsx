@@ -6,7 +6,7 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.1  XDP vs Normal path D3 diagram
+// 8.1  XDP vs Normal path D3 diagram
 // ─────────────────────────────────────────────────────────────────────────────
 
 function renderXdpVsNormal(
@@ -245,7 +245,7 @@ function renderXdpVsNormal(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.3  eBPF Pipeline D3 diagram
+// 8.3  eBPF Pipeline D3 diagram
 // ─────────────────────────────────────────────────────────────────────────────
 
 function renderEbpfPipeline(
@@ -527,7 +527,7 @@ function Prose({ children }: { children: React.ReactNode }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.2  XDP 모드 비교
+// 8.2  XDP 모드 비교
 // ─────────────────────────────────────────────────────────────────────────────
 const xdpModeRows: TableRow[] = [
     { cells: ['Native XDP', '드라이버 내부 (DMA 직후)', '최고 (~100Mpps)', '드라이버 지원 필요'] },
@@ -536,7 +536,7 @@ const xdpModeRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.4  eBPF verifier
+// 8.4  eBPF verifier
 // ─────────────────────────────────────────────────────────────────────────────
 const verifierRows: TableRow[] = [
     { cells: ['무한 루프 금지', '모든 경로가 종료됨을 보장 (backward jump 제한)'] },
@@ -547,7 +547,7 @@ const verifierRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.5  eBPF Maps
+// 8.5  eBPF Maps
 // ─────────────────────────────────────────────────────────────────────────────
 const mapRows: TableRow[] = [
     { cells: ['BPF_MAP_TYPE_HASH', '해시테이블', 'IP별 카운터, 연결 추적'] },
@@ -558,7 +558,7 @@ const mapRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.6  BTF / CO-RE / libbpf
+// 8.6  BTF / CO-RE / libbpf
 // ─────────────────────────────────────────────────────────────────────────────
 
 const coreKprobeCode = `/* CO-RE 기반 eBPF 프로그램 — 커널 버전 독립적 */
@@ -616,7 +616,7 @@ clang -O2 -target bpf -c kprobe_example.bpf.c -o kprobe_example.bpf.o
 bpftool gen skeleton kprobe_example.bpf.o > kprobe_example.skel.h`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.7  TC BPF vs XDP
+// 8.7  TC BPF vs XDP
 // ─────────────────────────────────────────────────────────────────────────────
 const tcVsXdpRows: TableRow[] = [
     { cells: ['실행 위치', '드라이버 (sk_buff 전)', 'sk_buff 이후'] },
@@ -628,7 +628,7 @@ const tcVsXdpRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.8  bcc Tools
+// 8.8  bcc Tools
 // ─────────────────────────────────────────────────────────────────────────────
 
 const bccToolRows: TableRow[] = [
@@ -668,7 +668,7 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_execve { printf("%s\\n", comm); }'
 bpftrace -e 'tracepoint:syscalls:sys_exit_read /args->ret > 0/ { @[comm] = hist(args->ret); }' -c 'sleep 5'`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.9  실무 활용 카드
+// 8.9  실무 활용 카드
 // ─────────────────────────────────────────────────────────────────────────────
 interface UseCaseCard {
   title: string
@@ -706,7 +706,7 @@ const useCases: UseCaseCard[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.10  AF_XDP
+// 8.10  AF_XDP
 // ─────────────────────────────────────────────────────────────────────────────
 
 const afXdpCode = `#include <linux/if_xdp.h>
@@ -747,7 +747,7 @@ while (1) {
 }`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7.11  seccomp-BPF
+// 8.11  seccomp-BPF
 // ─────────────────────────────────────────────────────────────────────────────
 
 const seccompBpfCode = `#include <linux/seccomp.h>
@@ -836,8 +836,8 @@ export default function Topic07() {
                 </p>
             </div>
 
-            {/* 7.1 XDP 개념과 위치 */}
-            <Section id="s71" title="7.1  XDP 개념과 위치">
+            {/* 8.1 XDP 개념과 위치 */}
+            <Section id="s81" title="8.1  XDP 개념과 위치">
                 <Prose>
           XDP(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — sk_buff 할당 전에 — 처리하는
           고성능 경로입니다. 기존 커널 네트워크 스택 대비 10~100배 빠릅니다. 패킷이 DMA 버퍼에서
@@ -866,8 +866,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.2 XDP 모드 비교 */}
-            <Section id="s72" title="7.2  XDP 모드 비교">
+            {/* 8.2 XDP 모드 비교 */}
+            <Section id="s82" title="8.2  XDP 모드 비교">
                 <InfoTable
                     headers={['모드', '위치', '성능', '드라이버 요구']}
                     rows={xdpModeRows}
@@ -880,8 +880,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.3 eBPF 실행 모델 */}
-            <Section id="s73" title="7.3  eBPF 실행 모델">
+            {/* 8.3 eBPF 실행 모델 */}
+            <Section id="s83" title="8.3  eBPF 실행 모델">
                 <Prose>
           eBPF(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
           범용 VM입니다. XDP뿐만 아니라 kprobe, tracepoint, cgroup, perf 등 다양한 지점에서
@@ -920,8 +920,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.4 eBPF verifier */}
-            <Section id="s74" title="7.4  eBPF verifier">
+            {/* 8.4 eBPF verifier */}
+            <Section id="s84" title="8.4  eBPF verifier">
                 <Prose>
           verifier는 eBPF 프로그램이 커널을 크래시시킬 수 없음을 정적 분석으로 보장합니다. 모든
           가능한 실행 경로를 추적하며 안전하지 않은 접근을 거부합니다.
@@ -937,8 +937,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.5 eBPF 맵 */}
-            <Section id="s75" title="7.5  eBPF 맵 (Maps)">
+            {/* 8.5 eBPF 맵 */}
+            <Section id="s85" title="8.5  eBPF 맵 (Maps)">
                 <Prose>
           eBPF 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
           커널과 사용자 공간 모두에서 읽고 쓸 수 있으며 fd를 통해 접근합니다.
@@ -950,8 +950,8 @@ export default function Topic07() {
                 <CodeBlock code={xdpDdosCode} language="c" filename="xdp_ddos.c" />
             </Section>
 
-            {/* 7.6 BTF와 CO-RE */}
-            <Section id="s76" title="7.6  BTF와 CO-RE — 이식 가능한 eBPF">
+            {/* 8.6 BTF와 CO-RE */}
+            <Section id="s86" title="8.6  BTF와 CO-RE — 이식 가능한 eBPF">
                 <Prose>
           전통적인 eBPF 프로그램은 커널 헤더에 의존해 컴파일해야 했습니다. 커널 버전이 다르면
           구조체 오프셋이 달라져 재컴파일이 필요했습니다. BTF(BPF Type Format)와 CO-RE(Compile
@@ -1013,8 +1013,8 @@ export default function Topic07() {
                 <CodeBlock code={bpftoolCode} language="bash" filename="# bpftool 사용법" />
             </Section>
 
-            {/* 7.7 TC BPF vs XDP */}
-            <Section id="s77" title="7.7  TC BPF vs XDP 비교">
+            {/* 8.7 TC BPF vs XDP */}
+            <Section id="s87" title="8.7  TC BPF vs XDP 비교">
                 <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
                     <table className="w-full text-sm">
                         <thead>
@@ -1062,8 +1062,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.8 실무 활용 사례 */}
-            <Section id="s78" title="7.8  실무 활용 사례">
+            {/* 8.8 실무 활용 사례 */}
+            <Section id="s88" title="8.8  실무 활용 사례">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {useCases.map((card) => (
                         <div
@@ -1102,8 +1102,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.9 bcc Tools */}
-            <Section id="s79" title="7.9  bcc Tools — 즉시 사용 가능한 eBPF 도구">
+            {/* 8.9 bcc Tools */}
+            <Section id="s89" title="8.9  bcc Tools — 즉시 사용 가능한 eBPF 도구">
                 <Prose>
           BCC(BPF Compiler Collection)는 eBPF 기반 관찰 도구 모음입니다. 커널 컴파일 없이
           실시간으로 시스템 내부를 관찰합니다.
@@ -1160,8 +1160,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.10 AF_XDP */}
-            <Section id="s710" title="7.10  AF_XDP — 유저공간 패킷 처리">
+            {/* 8.10 AF_XDP */}
+            <Section id="s810" title="8.10  AF_XDP — 유저공간 패킷 처리">
                 <Prose>
           AF_XDP는 XDP가 받은 패킷을 커널 네트워크 스택을 완전히 우회하고 유저공간에서 직접 처리하는
           소켓 타입입니다. DPDK에 근접한 성능을 표준 커널 인터페이스로 달성합니다.
@@ -1287,8 +1287,8 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* 7.11 seccomp-BPF */}
-            <Section id="s711" title="7.11  seccomp-BPF — 시스템 콜 필터링">
+            {/* 8.11 seccomp-BPF */}
+            <Section id="s811" title="8.11  seccomp-BPF — 시스템 콜 필터링">
                 <Prose>
           seccomp(Secure Computing)은 프로세스가 사용할 수 있는 시스템 콜을 제한하는 Linux 보안
           기능입니다. seccomp-BPF는 BPF 프로그램으로 허용/거부 규칙을 정밀하게 표현합니다.

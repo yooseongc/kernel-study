@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 
-// ── 6.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
+// ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
 function renderNetfilterFlow(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
     _width: number,
@@ -418,8 +418,8 @@ export default function Topic06() {
         Netfilter · iptables / nftables · conntrack · TPROXY · TC Hook
             </p>
 
-            {/* ── 6.1 Netfilter 구조 ── */}
-            <SectionHeading id="netfilter-overview">6.1 Netfilter 구조</SectionHeading>
+            {/* ── 7.1 Netfilter 구조 ── */}
+            <SectionHeading id="netfilter-overview">7.1 Netfilter 구조</SectionHeading>
             <InfoBox>
                 <strong>Netfilter</strong>는 리눅스 커널 네트워크 스택의{' '}
                 <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅 포인트를 두고,
@@ -430,8 +430,8 @@ export default function Topic06() {
         대부분의 리눅스 네트워크 보안·제어 기능이 모두 Netfilter 훅 위에서 동작합니다.
             </InfoBox>
 
-            {/* ── 6.2 5개 훅 포인트 D3 시각화 ── */}
-            <SectionHeading id="netfilter-hooks">6.2 5개 훅 포인트 — 패킷 흐름</SectionHeading>
+            {/* ── 7.2 5개 훅 포인트 D3 시각화 ── */}
+            <SectionHeading id="netfilter-hooks">7.2 5개 훅 포인트 — 패킷 흐름</SectionHeading>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
         수신 패킷은 PREROUTING → (라우팅 결정) → INPUT 또는 FORWARD 경로로 분기됩니다.
         송신 패킷은 OUTPUT → POSTROUTING 경로를 거칩니다.
@@ -468,8 +468,8 @@ export default function Topic06() {
                 </div>
             )}
 
-            {/* ── 6.3 훅 포인트 상세 표 ── */}
-            <SectionHeading id="hook-table">6.3 훅 포인트 상세</SectionHeading>
+            {/* ── 7.3 훅 포인트 상세 표 ── */}
+            <SectionHeading id="hook-table">7.3 훅 포인트 상세</SectionHeading>
             <TableWrapper>
                 <thead>
                     <tr>
@@ -507,8 +507,8 @@ export default function Topic06() {
                 </tbody>
             </TableWrapper>
 
-            {/* ── 6.4 iptables vs nftables ── */}
-            <SectionHeading id="iptables-nftables">6.4 iptables와 nftables</SectionHeading>
+            {/* ── 7.4 iptables vs nftables ── */}
+            <SectionHeading id="iptables-nftables">7.4 iptables와 nftables</SectionHeading>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         두 도구 모두 Netfilter 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다.
         현대 배포판(RHEL 8+, Debian 10+)은 nftables를 기본값으로 채택했습니다.
@@ -564,8 +564,8 @@ export default function Topic06() {
                 filename="# nftables 동일 규칙"
             />
 
-            {/* ── 6.5 conntrack ── */}
-            <SectionHeading id="conntrack">6.5 conntrack (연결 추적)</SectionHeading>
+            {/* ── 7.5 conntrack ── */}
+            <SectionHeading id="conntrack">7.5 conntrack (연결 추적)</SectionHeading>
             <InfoBox>
         Netfilter <strong>conntrack</strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
         커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
@@ -633,8 +633,8 @@ export default function Topic06() {
                 </div>
             </div>
 
-            {/* ── 6.6 TPROXY ── */}
-            <SectionHeading id="tproxy">6.6 TPROXY와 정책 기반 라우팅</SectionHeading>
+            {/* ── 7.6 TPROXY ── */}
+            <SectionHeading id="tproxy">7.6 TPROXY와 정책 기반 라우팅</SectionHeading>
             <InfoBox>
                 <ul className="space-y-1 list-disc list-inside">
                     <li>
@@ -664,8 +664,8 @@ export default function Topic06() {
                 filename="TPROXY 설정"
             />
 
-            {/* ── 6.7 TC Hook ── */}
-            <SectionHeading id="tc-hook">6.7 TC Hook (Traffic Control)</SectionHeading>
+            {/* ── 7.7 TC Hook ── */}
+            <SectionHeading id="tc-hook">7.7 TC Hook (Traffic Control)</SectionHeading>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         TC(Traffic Control)는 Netfilter와 독립적인 패킷 처리 포인트입니다.
         XDP보다 늦지만 Netfilter보다 빠른 위치에서 동작하여,
@@ -711,8 +711,8 @@ export default function Topic06() {
                 </p>
             </div>
 
-            {/* ── 6.8 ipset ── */}
-            <SectionHeading id="ipset">6.8 ipset — 대규모 IP 집합 매칭</SectionHeading>
+            {/* ── 7.8 ipset ── */}
+            <SectionHeading id="ipset">7.8 ipset — 대규모 IP 집합 매칭</SectionHeading>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         iptables 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
         차단 목록, 화이트리스트, GeoIP 차단에 활용됩니다.

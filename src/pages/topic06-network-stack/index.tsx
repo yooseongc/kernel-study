@@ -7,7 +7,7 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.1  네트워크 레이어 다이어그램 (D3)
+// 6.1  네트워크 레이어 다이어그램 (D3)
 // ─────────────────────────────────────────────────────────────────────────────
 interface LayerInfo {
   label: string
@@ -187,7 +187,7 @@ function renderNetworkLayers(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.2  NAPI 동작 흐름 비교 (JSX)
+// 6.2  NAPI 동작 흐름 비교 (JSX)
 // ─────────────────────────────────────────────────────────────────────────────
 interface NapiStep {
   text: string
@@ -290,7 +290,7 @@ int driver_poll(struct napi_struct *napi, int budget) {
 }`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.3  sk_buff 구조
+// 6.3  sk_buff 구조
 // ─────────────────────────────────────────────────────────────────────────────
 const skbuffCode = `/* include/linux/skbuff.h (핵심 필드만 발췌) */
 struct sk_buff {
@@ -428,7 +428,7 @@ function SkbuffLayout() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.4  L2/L3/L4 처리 흐름 (AnimatedDiagram)
+// 6.4  L2/L3/L4 처리 흐름 (AnimatedDiagram)
 // ─────────────────────────────────────────────────────────────────────────────
 const flowSteps = [
     {
@@ -583,7 +583,7 @@ function NetworkFlowViz({ step }: { step: number }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.5  소켓 시스템 콜 표
+// 6.5  소켓 시스템 콜 표
 // ─────────────────────────────────────────────────────────────────────────────
 interface SyscallRow {
   syscall: string
@@ -601,7 +601,7 @@ const syscallRows: SyscallRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.6  net_cls cgroup
+// 6.6  net_cls cgroup
 // ─────────────────────────────────────────────────────────────────────="────
 const netClsCode = `# myapp cgroup의 패킷에 classid 1:10 태그
 echo 0x00010010 > /sys/fs/cgroup/myapp/net_cls.classid
@@ -612,7 +612,7 @@ tc class add dev eth0 parent 1: classid 1:10 htb rate 100mbit
 tc filter add dev eth0 parent 1: handle 0x10 cgroup`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.7  TX 경로 데이터 및 컴포넌트
+// 6.7  TX 경로 데이터 및 컴포넌트
 // ─────────────────────────────────────────────────────────────────────────────
 const txSteps = [
     {
@@ -793,7 +793,7 @@ int dev_queue_xmit(struct sk_buff *skb)
 }`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.8  TSO / GSO 데이터
+// 6.8  TSO / GSO 데이터
 // ─────────────────────────────────────────────────────────────────────────────
 interface TsoGsoRow {
   name: string
@@ -840,7 +840,7 @@ ip link show eth0  # mtu 1500 부분
 cat /proc/sys/net/ipv4/tcp_gso_max_size`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.9  RSS / RPS / RFS 데이터
+// 6.9  RSS / RPS / RFS 데이터
 // ─────────────────────────────────────────────────────────────────────────────
 interface RssMode {
   name: string
@@ -904,7 +904,7 @@ echo 32768 > /proc/sys/net/core/rps_sock_flow_entries
 cat /proc/interrupts | grep eth0`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.10  Zero-copy — sendfile과 splice
+// 6.10  Zero-copy — sendfile과 splice
 // ─────────────────────────────────────────────────────────────────────────────
 const sendfileCode = `/* sendfile — 파일을 소켓으로 zero-copy 전송 */
 #include <sys/sendfile.h>
@@ -930,7 +930,7 @@ splice(pipefd[0], NULL, sock_fd, NULL, chunk_size, SPLICE_F_MOVE);
 /* nginx.conf: sendfile on; tcp_nopush on; */`
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.11  SO_REUSEPORT와 네트워크 네임스페이스
+// 6.11  SO_REUSEPORT와 네트워크 네임스페이스
 // ─────────────────────────────────────────────────────────────────────────────
 const reuseportCode = `int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -1050,10 +1050,10 @@ export default function Topic05() {
                 </p>
             </div>
 
-            {/* ── 5.1 패킷이 커널에 들어오는 과정 ── */}
+            {/* ── 6.1 패킷이 커널에 들어오는 과정 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.1 패킷이 커널에 들어오는 과정
+          6.1 패킷이 커널에 들어오는 과정
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           외부에서 패킷이 도착하면 NIC → 드라이버 → 커널 네트워크 스택 → 소켓 버퍼 → 사용자
@@ -1085,10 +1085,10 @@ export default function Topic05() {
                 </div>
             </section>
 
-            {/* ── 5.2 NIC 드라이버와 NAPI ── */}
+            {/* ── 6.2 NIC 드라이버와 NAPI ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.2 NIC 드라이버와 NAPI
+          6.2 NIC 드라이버와 NAPI
                 </h2>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <p>
@@ -1109,9 +1109,9 @@ export default function Topic05() {
                 <CodeBlock code={napiPollCode} language="c" filename="drivers/net/my_driver.c" />
             </section>
 
-            {/* ── 5.3 sk_buff 구조 ── */}
+            {/* ── 6.3 sk_buff 구조 ── */}
             <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">5.3 sk_buff 구조</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">6.3 sk_buff 구조</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono bg-gray-800 text-blue-300 px-1 rounded">sk_buff</code>
           (소켓 버퍼)는 패킷이 커널을 통과하는 내내 동반하는 메타데이터 구조체입니다. 실제
@@ -1132,10 +1132,10 @@ export default function Topic05() {
                 </div>
             </section>
 
-            {/* ── 5.4 L2/L3/L4 처리 흐름 ── */}
+            {/* ── 6.4 L2/L3/L4 처리 흐름 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.4 L2 / L3 / L4 처리 흐름
+          6.4 L2 / L3 / L4 처리 흐름
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           패킷이 NIC 드라이버에서 사용자 프로세스까지 도달하는 각 단계를 애니메이션으로 살펴봅니다.
@@ -1152,10 +1152,10 @@ export default function Topic05() {
                 />
             </section>
 
-            {/* ── 5.5 소켓 계층과 시스템 콜 ── */}
+            {/* ── 6.5 소켓 계층과 시스템 콜 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.5 소켓 계층과 시스템 콜
+          6.5 소켓 계층과 시스템 콜
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           사용자 프로그램은 소켓 API를 통해 네트워크에 접근합니다. 각 시스템 콜은 커널 내부의
@@ -1210,10 +1210,10 @@ export default function Topic05() {
                 </div>
             </section>
 
-            {/* ── 5.6 net_cls cgroup ── */}
+            {/* ── 6.6 net_cls cgroup ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.6 net_cls cgroup — 네트워크와 cgroup 연결
+          6.6 net_cls cgroup — 네트워크와 cgroup 연결
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono bg-gray-800 text-green-300 px-1 rounded">net_cls</code>{' '}
@@ -1240,10 +1240,10 @@ export default function Topic05() {
                 <CodeBlock code={netClsCode} language="bash" filename="net_cls cgroup + tc 설정" />
             </section>
 
-            {/* ── 5.7 TX 경로 ── */}
+            {/* ── 6.7 TX 경로 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.7 TX 경로 — 송신 패킷의 여정
+          6.7 TX 경로 — 송신 패킷의 여정
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 sk_buff를 생성하고
@@ -1260,10 +1260,10 @@ export default function Topic05() {
                 <CodeBlock code={txCode} language="c" filename="net/ipv4/tcp.c" />
             </section>
 
-            {/* ── 5.8 TSO / GSO ── */}
+            {/* ── 6.8 TSO / GSO ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.8 TSO / GSO — 세그멘테이션 오프로드
+          6.8 TSO / GSO — 세그멘테이션 오프로드
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <span className="font-semibold text-blue-400">TSO (TCP Segmentation Offload)</span>: 커널이 큰
@@ -1314,10 +1314,10 @@ export default function Topic05() {
                 <CodeBlock code={tsoCheckCode} language="bash" filename="ethtool — TSO/GSO/GRO 확인" />
             </section>
 
-            {/* ── 5.9 RSS / RPS / RFS ── */}
+            {/* ── 6.9 RSS / RPS / RFS ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.9 RSS / RPS / RFS — 멀티코어 수신 분산
+          6.9 RSS / RPS / RFS — 멀티코어 수신 분산
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           단일 CPU가 모든 수신 패킷을 처리하면 병목이 됩니다. 리눅스는 하드웨어/소프트웨어 두 수준에서
@@ -1350,10 +1350,10 @@ export default function Topic05() {
                 <CodeBlock code={rssConfigCode} language="bash" filename="RSS / RPS / RFS 설정" />
             </section>
 
-            {/* ── 5.10 Zero-copy ── */}
+            {/* ── 6.10 Zero-copy ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.10 Zero-copy — sendfile과 splice
+          6.10 Zero-copy — sendfile과 splice
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           일반 <code className="font-mono text-blue-400">read()+write()</code> 방식은 데이터를 커널→유저→커널로 두 번 복사합니다.{' '}
@@ -1411,10 +1411,10 @@ export default function Topic05() {
                 </div>
             </section>
 
-            {/* ── 5.11 SO_REUSEPORT와 네트워크 네임스페이스 ── */}
+            {/* ── 6.11 SO_REUSEPORT와 네트워크 네임스페이스 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.11 SO_REUSEPORT와 네트워크 네임스페이스
+          6.11 SO_REUSEPORT와 네트워크 네임스페이스
                 </h2>
 
                 {/* 파트 A: SO_REUSEPORT */}
@@ -1487,10 +1487,10 @@ export default function Topic05() {
                 </div>
             </section>
 
-            {/* ── 5.12 io_uring — 비동기 I/O의 새로운 표준 ── */}
+            {/* ── 6.12 io_uring — 비동기 I/O의 새로운 표준 ── */}
             <section className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          5.12 io_uring — 비동기 I/O의 새로운 표준
+          6.12 io_uring — 비동기 I/O의 새로운 표준
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono text-blue-400">io_uring</code>은 Linux 5.1(2019)에 도입된 비동기 I/O 인터페이스입니다.

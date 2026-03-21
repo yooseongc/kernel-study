@@ -77,7 +77,7 @@ function InfoTable({ headers, rows }: TableProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9.2  드라이버 계층 트리 (D3 horizontal tree)
+// 10.2  드라이버 계층 트리 (D3 horizontal tree)
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface DriverNode {
@@ -225,7 +225,7 @@ function renderDriverTree(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9.3  NIC DMA 흐름 — AnimatedDiagram
+// 10.3  NIC DMA 흐름 — AnimatedDiagram
 // ─────────────────────────────────────────────────────────────────────────────
 
 const dmaSteps = [
@@ -717,8 +717,8 @@ export default function Topic09() {
                 </p>
             </div>
 
-            {/* 9.1 커널 모듈 */}
-            <Section id="s91" title="9.1  커널 모듈">
+            {/* 10.1 커널 모듈 */}
+            <Section id="s101" title="10.1  커널 모듈">
                 <Prose>
           커널 모듈은 실행 중인 커널에 동적으로 로드/언로드 가능한 코드입니다. 재부팅 없이
           드라이버를 추가하거나 제거할 수 있으며, <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> / <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code> 매크로로
@@ -731,8 +731,8 @@ export default function Topic09() {
                 />
             </Section>
 
-            {/* 9.2 디바이스 드라이버 종류 */}
-            <Section id="s92" title="9.2  디바이스 드라이버 종류">
+            {/* 10.2 디바이스 드라이버 종류 */}
+            <Section id="s102" title="10.2  디바이스 드라이버 종류">
                 <InfoTable
                     headers={['종류', '예시', '인터페이스', '특징']}
                     rows={driverTypeRows}
@@ -813,8 +813,8 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* 9.3 NIC 드라이버와 DMA */}
-            <Section id="s93" title="9.3  NIC 드라이버와 DMA">
+            {/* 10.3 NIC 드라이버와 DMA */}
+            <Section id="s103" title="10.3  NIC 드라이버와 DMA">
                 <Prose>
           고성능 NIC는 CPU를 거치지 않고 DMA(Direct Memory Access)로 직접 메모리에 패킷을 씁니다.
           드라이버가 사전에 RX 링 버퍼의 DMA 주소를 NIC에 알려주면, NIC는 패킷 수신 시 해당
@@ -827,8 +827,8 @@ export default function Topic09() {
                 />
             </Section>
 
-            {/* 9.4 DMA 링 버퍼 */}
-            <Section id="s94" title="9.4  DMA 링 버퍼">
+            {/* 10.4 DMA 링 버퍼 */}
+            <Section id="s104" title="10.4  DMA 링 버퍼">
                 <Prose>
           NIC 드라이버는 RX/TX 링 버퍼를 준비하고 NIC에 DMA 주소를 알려줍니다. 각 서술자(descriptor)에는
           물리 주소와 길이, 상태 플래그가 있으며, NIC는 수신 완료 시 status 필드를 갱신합니다.
@@ -842,8 +842,8 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* 9.5 드라이버와 커널 서브시스템 연결 */}
-            <Section id="s95" title="9.5  드라이버와 커널 서브시스템 연결">
+            {/* 10.5 드라이버와 커널 서브시스템 연결 */}
+            <Section id="s105" title="10.5  드라이버와 커널 서브시스템 연결">
                 <Prose>
           드라이버는 커널의 다양한 프레임워크에 콜백을 등록하는 방식으로 동작합니다.
           네트워크 드라이버는 <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">net_device_ops</code> 구조체에 함수 포인터를 채워
@@ -856,8 +856,8 @@ export default function Topic09() {
                 <CodeBlock code={netdevOpsCode} language="c" filename="my_driver.c" />
             </Section>
 
-            {/* 9.6 모듈 파라미터와 sysfs */}
-            <Section id="s96" title="9.6  모듈 파라미터와 sysfs">
+            {/* 10.6 모듈 파라미터와 sysfs */}
+            <Section id="s106" title="10.6  모듈 파라미터와 sysfs">
                 <Prose>
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_param()</code> 매크로로
           로드 시 파라미터를 받을 수 있고, 권한(0644)에 따라 런타임에
@@ -912,8 +912,8 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* 9.7 ioctl / mmap */}
-            <Section id="s97" title="9.7  ioctl / mmap — 고급 디바이스 인터페이스">
+            {/* 10.7 ioctl / mmap */}
+            <Section id="s107" title="10.7  ioctl / mmap — 고급 디바이스 인터페이스">
                 <Prose>
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">read()</code>/
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">write()</code>로
@@ -971,8 +971,8 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* 9.8 platform_driver */}
-            <Section id="s98" title="9.8  platform_driver — 임베디드 드라이버 모델">
+            {/* 10.8 platform_driver */}
+            <Section id="s108" title="10.8  platform_driver — 임베디드 드라이버 모델">
                 <Prose>
           PCI, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
                     <strong className="text-gray-700 dark:text-gray-300">Device Tree</strong>와{' '}
@@ -1014,8 +1014,8 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* 9.9 PCI/PCIe 드라이버 모델 */}
-            <Section id="s99" title="9.9  PCI/PCIe 드라이버 모델">
+            {/* 10.9 PCI/PCIe 드라이버 모델 */}
+            <Section id="s109" title="10.9  PCI/PCIe 드라이버 모델">
                 <Prose>
           서버의 NIC, NVMe SSD, GPU는 모두 PCIe 버스로 연결됩니다.{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">pci_driver</code>는
