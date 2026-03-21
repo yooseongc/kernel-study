@@ -87,7 +87,7 @@ export function TableOfContents({ scrollRef, collapsed = false }: TableOfContent
         <aside className="hidden xl:flex w-52 shrink-0 flex-col overflow-y-auto border-l border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
             <div className="sticky top-0 px-3 pt-5 pb-3">
                 <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2 px-1">
-                    On this page
+                    이 페이지
                 </div>
                 <ul className="space-y-0.5">
                     {items.map(item => (

@@ -33,7 +33,7 @@ export default function Home() {
                         <span className="text-orange-500 dark:text-orange-400">단계별 애니메이션</span>,{' '}
                         <span className="text-green-600 dark:text-green-400">실제 커널 소스 코드</span>와 함께
             개념을 설명합니다.
-            D3 기반 그래프와 Three.js 3D 시각화가 혼합되어 있습니다.
+            D3 기반 인터랙티브 다이어그램과 SVG 애니메이션으로 구성되어 있습니다.
                     </p>
                 </div>
             </div>
