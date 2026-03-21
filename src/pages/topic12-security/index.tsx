@@ -248,15 +248,22 @@ const capabilityRows: TableRow[] = [
 
 export default function Topic12() {
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 12</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Linux 보안 모델</h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          DAC, Capabilities, LSM 프레임워크, AppArmor, SELinux
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 12
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    Linux 보안 모델
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Linux Security Model
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    DAC, Capabilities, LSM, AppArmor, SELinux, Namespace 격리, 컨테이너 보안
+                </p>
+            </header>
 
             {/* 12.1 Linux 보안 모델 개요 */}
             <Section id="s121" title="12.1  Linux 보안 모델 개요">
@@ -667,24 +674,20 @@ export default function Topic12() {
                 </div>
             </Section>
 
-            {/* 12.7 다음 토픽 링크 */}
-            <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-          Linux 보안 모델 학습 완료
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/11-debugging" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 11 · 성능 분석과 디버깅
+                    </a>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
-          DAC에서 시작해 Capabilities로 권한을 세분화하고, LSM 프레임워크 위에서 AppArmor와
-          SELinux가 MAC를 구현하는 계층적 보안 구조를 살펴봤습니다. 이 개념들은 컨테이너 보안,
-          시스템 강화(hardening)의 기반이 됩니다.
-                </p>
-                <a
-                    href="#/"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-                >
-                    <span>←</span>
-          홈으로 돌아가기
-                </a>
-            </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/13-kvm" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        13 · KVM / 가상화 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

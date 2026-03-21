@@ -666,15 +666,22 @@ export default function Topic10() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 10</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">성능 분석과 디버깅</h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          dmesg, /proc, perf, ftrace, Oops/Panic 분석
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 11
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    성능 분석과 디버깅
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Performance Analysis & Debugging
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    dmesg, /proc, /sys, Oops/Panic, perf, ftrace, lockdep, KASAN, kdump, container 디버깅
+                </p>
+            </header>
 
             {/* 11.1 /proc와 /sys 활용 */}
             <Section id="s111" title="11.1  /proc와 /sys 활용">
@@ -1050,24 +1057,20 @@ lock(B) ← 대기   lock(A) ← 대기
                 </div>
             </Section>
 
-            {/* 마무리 카드 */}
-            <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-          Linux 커널 핵심 학습 완료
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/10-drivers" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 10 · 디바이스 드라이버와 커널 모듈
+                    </a>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
-          이것으로 Linux 커널 핵심 10개 토픽을 마쳤습니다. 커널 개요부터 스케줄러, 메모리,
-          인터럽트, 네트워크 스택, Netfilter, XDP/eBPF, 동기화, 드라이버, 디버깅까지 — 이
-          여정이 커널을 이해하는 데 도움이 되었길 바랍니다.
-                </p>
-                <a
-                    href="#/"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-                >
-                    <span>←</span>
-          홈으로 돌아가기
-                </a>
-            </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/12-security" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        12 · Linux 보안 모델 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

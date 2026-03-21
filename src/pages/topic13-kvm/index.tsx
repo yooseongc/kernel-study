@@ -170,51 +170,22 @@ cat /sys/kernel/debug/kvm/*/mmu_cache_miss`
 
 export default function Topic13Kvm() {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
 
-            {/* 헤더 */}
+            {/* Header */}
             <header className="space-y-3">
-                <div className="flex items-center gap-3">
-                    <span className="text-3xl font-bold text-blue-500 dark:text-blue-400 font-mono">13</span>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            KVM / 가상화
-                        </h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-mono mt-0.5">
-                            KVM, Virtualization & virtio
-                        </p>
-                    </div>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    KVM(Kernel-based Virtual Machine)은 Linux 커널 자체가 하이퍼바이저 역할을 하는 구조입니다.
-                    Intel VT-x / AMD-V 하드웨어 지원을 활용하며, VMCS(VMCB), EPT, virtio 등의
-                    핵심 개념을 통해 클라우드 인프라의 기반을 이룹니다.
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 13
                 </p>
-
-                {/* 목차 */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
-                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                        목차
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                        {[
-                            ['13.1', 'KVM 개요 — 커널 하이퍼바이저 구조'],
-                            ['13.2', 'VMCS / VMCB — VMENTRY · VMEXIT 제어'],
-                            ['13.3', 'EPT — 중첩 페이지 테이블'],
-                            ['13.4', 'virtio — 반가상화 I/O'],
-                            ['13.5', 'KVM 관리 실전 (QEMU, libvirt, perf)'],
-                        ].map(([num, title]) => (
-                            <a
-                                key={num}
-                                href={`#s1${num.replace('.', '')}`}
-                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-mono flex items-center gap-1.5"
-                            >
-                                <span className="text-gray-400">{num}</span>
-                                <span>{title}</span>
-                            </a>
-                        ))}
-                    </div>
-                </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    KVM / 가상화
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    KVM, Virtualization & virtio
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    KVM 구조, VMCS/VMCB, VMENTRY/VMEXIT, EPT, virtio, 클라우드 인프라
+                </p>
             </header>
 
             {/* 13.1 KVM 개요 */}
@@ -582,6 +553,16 @@ export default function Topic13Kvm() {
                     </div>
                 </div>
             </Section>
+
+            {/* 이전 토픽 */}
+            <div className="flex justify-start">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/12-security" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 12 · Linux 보안 모델
+                    </a>
+                </div>
+            </div>
 
             {/* 완료 카드 */}
             <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">

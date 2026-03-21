@@ -705,17 +705,22 @@ export default function Topic09() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 09</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-          디바이스 드라이버와 커널 모듈
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          커널 모듈 · 문자/블록/네트워크 드라이버 · DMA · 링 버퍼 · net_device_ops
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 10
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    디바이스 드라이버와 커널 모듈
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Device Drivers & Kernel Modules
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    커널 모듈, 문자/블록/네트워크 드라이버, NIC+DMA, PCI/PCIe 드라이버, platform driver
+                </p>
+            </header>
 
             {/* 10.1 커널 모듈 */}
             <Section id="s101" title="10.1  커널 모듈">
@@ -1112,17 +1117,20 @@ export default function Topic09() {
                 </div>
             </Section>
 
-            {/* Next topic */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-6 flex items-center justify-between">
-                <span className="text-sm text-gray-400 dark:text-gray-500">다음 토픽</span>
-                <a
-                    href="#/topic/10-debugging"
-                    className="flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                >
-          Topic 10 — 성능 분석과 디버깅
-                    <span aria-hidden>→</span>
-                </a>
-            </div>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/09-synchronization" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 09 · 동기화와 멀티코어 환경
+                    </a>
+                </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/11-debugging" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        11 · 성능 분석과 디버깅 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

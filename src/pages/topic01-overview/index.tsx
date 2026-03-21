@@ -642,31 +642,50 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf, size_t, count
     return ret;
 }`
 
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+function Prose({ children }: { children: React.ReactNode }) {
+    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
+}
+
 export default function Topic01Overview() {
     const [selectedRing, setSelectedRing] = useState<RingInfo>(ringData[1]) // default: Ring 0
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 01</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">리눅스 커널 개요와 전체 구조</h1>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널은 하드웨어와 소프트웨어 사이에서 중재자 역할을 합니다.
-          이 페이지에서는 커널이 무엇을 하는지, 어떤 구조로 이루어져 있는지를 시각적으로 살펴봅니다.
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 01
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    리눅스 커널 개요와 전체 구조
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Linux Kernel Overview &amp; Architecture
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    커널은 하드웨어와 소프트웨어 사이에서 중재자 역할을 합니다.
+                    이 페이지에서는 커널이 무엇을 하는지, 어떤 구조로 이루어져 있는지를 시각적으로 살펴봅니다.
+                </p>
+            </header>
 
             {/* 섹션 1: 커널이란 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.1</span> 커널이 하는 일
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널(Kernel)은 운영체제의 핵심 부분으로, 하드웨어 자원(CPU, 메모리, I/O)을 관리하고
-          여러 프로세스가 이 자원을 공유할 수 있도록 추상화합니다.
-          유저 프로그램은 커널 없이는 하드웨어에 직접 접근할 수 없습니다.
-                </p>
+            <Section id="s11" title="1.1  커널이 하는 일">
+                <Prose>
+                    커널(Kernel)은 운영체제의 핵심 부분으로, 하드웨어 자원(CPU, 메모리, I/O)을 관리하고
+                    여러 프로세스가 이 자원을 공유할 수 있도록 추상화합니다.
+                    유저 프로그램은 커널 없이는 하드웨어에 직접 접근할 수 없습니다.
+                </Prose>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
@@ -682,13 +701,10 @@ export default function Topic01Overview() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             {/* 섹션 2: 유저/커널 공간 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.2</span> 유저 공간과 커널 공간
-                </h2>
+            <Section id="s12" title="1.2  유저 공간과 커널 공간">
                 <div className="flex gap-3 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/50 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
                     <span className="text-lg">💡</span>
                     <span>
@@ -701,19 +717,16 @@ export default function Topic01Overview() {
                 <div className="overflow-x-auto">
                     <MermaidDiagram chart={syscallFlowChart} />
                 </div>
-            </section>
+            </Section>
 
             {/* 섹션 3: CPU 권한 레벨 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.3</span> CPU 권한 레벨 — Ring 0 ~ 3
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          x86 CPU는 하드웨어 수준에서 4단계 <strong className="text-gray-900 dark:text-gray-100">보호 링(Protection Ring)</strong>을 제공합니다.
-          숫자가 낮을수록 더 많은 권한을 가지며, 커널(Ring 0)과 유저 프로그램(Ring 3) 사이의
-          하드웨어 경계가 메모리/권한 보호의 핵심입니다.
-          링을 클릭하면 자세한 정보가 표시됩니다.
-                </p>
+            <Section id="s13" title="1.3  CPU 권한 레벨 — Ring 0 ~ 3">
+                <Prose>
+                    x86 CPU는 하드웨어 수준에서 4단계 <strong className="text-gray-900 dark:text-gray-100">보호 링(Protection Ring)</strong>을 제공합니다.
+                    숫자가 낮을수록 더 많은 권한을 가지며, 커널(Ring 0)과 유저 프로그램(Ring 3) 사이의
+                    하드웨어 경계가 메모리/권한 보호의 핵심입니다.
+                    링을 클릭하면 자세한 정보가 표시됩니다.
+                </Prose>
 
                 {/* 동심원 다이어그램 + 상세 패널 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -820,50 +833,38 @@ export default function Topic01Overview() {
             * 수치는 현대 x86 CPU 기준 근사값입니다. Meltdown/Spectre 패치 이후 syscall 비용은 더 증가했습니다.
                     </p>
                 </div>
-            </section>
+            </Section>
 
             {/* 섹션 4: 커널 서브시스템 그래프 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.4</span> 커널 서브시스템 구조 (인터랙티브)
-                </h2>
+            <Section id="s14" title="1.4  커널 서브시스템 구조 (인터랙티브)">
                 <p className="text-sm text-gray-500">노드를 드래그하거나 스크롤로 확대/축소할 수 있습니다.</p>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
                     <D3Container renderFn={renderSubsystemGraph} height={420} zoomable />
                 </div>
-            </section>
+            </Section>
 
             {/* 섹션 5: 전체 구조 Mermaid */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.5</span> 전체 계층 구조
-                </h2>
+            <Section id="s15" title="1.5  전체 계층 구조">
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 overflow-x-auto">
                     <MermaidDiagram chart={kernelStructureChart} />
                 </div>
-            </section>
+            </Section>
 
             {/* 섹션 6: task_struct */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.6</span> task_struct — 프로세스의 본체
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널에서 모든 프로세스/스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>라는
-          거대한 구조체로 표현됩니다. 여기에는 PID, 메모리 정보, 열린 파일, 스케줄링 정보 등이 모두 포함됩니다.
-                </p>
+            <Section id="s16" title="1.6  task_struct — 프로세스의 본체">
+                <Prose>
+                    커널에서 모든 프로세스/스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>라는
+                    거대한 구조체로 표현됩니다. 여기에는 PID, 메모리 정보, 열린 파일, 스케줄링 정보 등이 모두 포함됩니다.
+                </Prose>
                 <CodeBlock code={taskStructCode} language="c" filename="include/linux/sched.h" />
-            </section>
+            </Section>
 
             {/* 섹션 7: 시스템 콜 전체 흐름 애니메이션 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">1.7</span> 시스템 콜의 전체 흐름 — 유저에서 커널로
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+            <Section id="s17" title="1.7  시스템 콜의 전체 흐름 — 유저에서 커널로">
+                <Prose>
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">write(fd, buf, n)</code> 한 번의 호출이 커널 안에서 어떤 경로를 거치는지
-          단계별로 살펴봅니다. 각 단계마다 어느 영역이 활성화되는지 강조됩니다.
-                </p>
+                    단계별로 살펴봅니다. 각 단계마다 어느 영역이 활성화되는지 강조됩니다.
+                </Prose>
 
                 <AnimatedDiagram
                     steps={syscallAnimSteps}
@@ -929,19 +930,17 @@ export default function Topic01Overview() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             {/* 다음 토픽 */}
-            <div className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-                <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-600 mb-1">다음 토픽</div>
-                    <div className="font-semibold text-gray-900 dark:text-gray-200">02 · 프로세스, 스레드, 스케줄러</div>
-                    <div className="text-xs text-gray-500 mt-0.5">task_struct를 더 깊게, CFS 스케줄러의 동작 원리</div>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-end">
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/02-scheduler" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        02 · 프로세스, 스레드, 스케줄러 →
+                    </a>
                 </div>
-                <a href="#/topic/02-scheduler" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm">
-          다음 →
-                </a>
-            </div>
+            </nav>
         </div>
     )
 }

@@ -824,17 +824,21 @@ export default function Topic07() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
-            {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 07</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-          XDP, eBPF, 고성능 패킷 처리
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          eBPF 실행 모델, XDP vs 일반 경로, TC BPF
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 08
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    XDP, eBPF, 고성능 패킷 처리
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    XDP, eBPF &amp; High-Performance Packet Processing
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    XDP 개념, eBPF VM/verifier/맵, AF_XDP, seccomp-BPF, BTF/CO-RE
+                </p>
+            </header>
 
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
@@ -1357,17 +1361,20 @@ export default function Topic07() {
                 </div>
             </Section>
 
-            {/* Next topic */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-6 flex items-center justify-between">
-                <span className="text-sm text-gray-400 dark:text-gray-500">다음 토픽</span>
-                <a
-                    href="#/topic/08-synchronization"
-                    className="flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                >
-          Topic 08 — 동기화와 멀티코어 환경
-                    <span aria-hidden>→</span>
-                </a>
-            </div>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/07-netfilter" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 07 · 패킷 처리 경로와 후킹 지점
+                    </a>
+                </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/09-synchronization" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        09 · 동기화와 멀티코어 환경 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

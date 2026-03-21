@@ -1,3 +1,4 @@
+import React from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 
@@ -321,27 +322,46 @@ function VfsLayerDiagram() {
     )
 }
 
+// ── Layout helpers ────────────────────────────────────────────────────────────
+
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+function Prose({ children }: { children: React.ReactNode }) {
+    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
+}
+
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 
 export default function Topic11Filesystem() {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8 space-y-12">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 4</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">VFS와 파일시스템</h1>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          리눅스 커널의 VFS(Virtual File System)는 파일 I/O를 추상화하는 계층입니다.
-          유저는 어떤 파일시스템을 사용하는지 몰라도 동일한 POSIX 인터페이스로 파일에 접근할 수 있습니다.
-          open(), read(), write()가 커널 내부에서 ext4까지 어떻게 전달되는지 살펴봅니다.
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 04
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    VFS와 파일시스템
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    VFS &amp; Filesystem
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    VFS 계층, open() 흐름, 페이지 캐시, ext4 저널링, 블록 I/O 경로
+                </p>
+            </header>
 
             {/* 4.1 VFS 계층 구조 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.1</span>VFS — Virtual File System
-                </h2>
+            <Section id="s441" title="4.1  VFS — Virtual File System">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           VFS는 커널의 파일시스템 추상화 계층입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
@@ -426,13 +446,10 @@ export default function Topic11Filesystem() {
                         </table>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 4.2 open() 흐름 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.2</span>open() 흐름 — VFS에서 ext4까지
-                </h2>
+            <Section id="s442" title="4.2  open() 흐름 — VFS에서 ext4까지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           유저가{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
@@ -457,13 +474,10 @@ export default function Topic11Filesystem() {
                     language="c"
                     filename="fs/open.c + fs/ext4/file.c"
                 />
-            </section>
+            </Section>
 
             {/* 4.3 페이지 캐시 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.3</span>페이지 캐시 — 디스크 I/O 최소화
-                </h2>
+            <Section id="s443" title="4.3  페이지 캐시 — 디스크 I/O 최소화">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널은 디스크에서 읽은 데이터를 <strong className="text-gray-900 dark:text-gray-100">페이지 캐시(Page Cache)</strong>에 보관합니다.
           같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다.
@@ -516,13 +530,10 @@ export default function Topic11Filesystem() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             {/* 4.4 ext4 저널링 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.4</span>ext4 — 널리 쓰이는 저널링 파일시스템
-                </h2>
+            <Section id="s444" title="4.4  ext4 — 널리 쓰이는 저널링 파일시스템">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           ext4는 Linux의 기본 파일시스템입니다.
                     <strong className="text-gray-900 dark:text-gray-100"> 저널(journal)</strong>로 크래시 후에도 파일시스템 일관성을 보장합니다.
@@ -602,13 +613,10 @@ export default function Topic11Filesystem() {
                     language="bash"
                     filename="# ext4 실전 명령어"
                 />
-            </section>
+            </Section>
 
             {/* 4.5 블록 I/O 경로 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.5</span>블록 I/O 경로 — bio에서 드라이버까지
-                </h2>
+            <Section id="s445" title="4.5  블록 I/O 경로 — bio에서 드라이버까지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           파일시스템이 데이터를 읽고 쓸 때 최종적으로는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
@@ -705,22 +713,22 @@ export default function Topic11Filesystem() {
                     language="bash"
                     filename="# 블록 I/O 스케줄러 실전"
                 />
-            </section>
+            </Section>
 
-            {/* 다음 토픽 링크 */}
-            <div className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
                 <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-600 mb-1">이전 토픽</div>
-                    <div className="font-semibold text-gray-900 dark:text-gray-200">10 · 성능 분석과 디버깅</div>
-                    <div className="text-xs text-gray-500 mt-0.5">dmesg, /proc, perf, ftrace 활용법</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/03-memory" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 03 · 가상 메모리와 메모리 관리
+                    </a>
                 </div>
-                <a
-                    href="#/topic/10-debugging"
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm"
-                >
-          ← 이전
-                </a>
-            </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/05-interrupts" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        05 · 인터럽트, 예외, Deferred Work →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

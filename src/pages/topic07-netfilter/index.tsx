@@ -338,14 +338,14 @@ ip route add local default dev lo table 100
 # setsockopt(fd, SOL_IP, IP_TRANSPARENT, &opt, sizeof(opt))`
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-function SectionHeading({ id, children }: { id: string; children: React.ReactNode }) {
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
     return (
-        <h2
-            id={id}
-            className="text-xl font-bold text-gray-900 dark:text-white mb-3 mt-10 flex items-center gap-2"
-        >
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
             {children}
-        </h2>
+        </section>
     )
 }
 
@@ -408,18 +408,23 @@ export default function Topic06() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10">
-            {/* ── Header ── */}
-            <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 06</div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-        패킷 처리 경로와 후킹 지점
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-10">
-        Netfilter · iptables / nftables · conntrack · TPROXY · TC Hook
-            </p>
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 07
+                </p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    패킷 처리 경로와 후킹 지점
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Packet Path &amp; Hook Points
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    Netfilter 5훅, iptables/nftables, conntrack, TPROXY, TC Hook
+                </p>
+            </header>
 
-            {/* ── 7.1 Netfilter 구조 ── */}
-            <SectionHeading id="netfilter-overview">7.1 Netfilter 구조</SectionHeading>
+            <Section id="s771" title="7.1  Netfilter 구조">
             <InfoBox>
                 <strong>Netfilter</strong>는 리눅스 커널 네트워크 스택의{' '}
                 <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅 포인트를 두고,
@@ -429,9 +434,9 @@ export default function Topic06() {
                 <strong>conntrack(연결 추적)</strong>, <strong>IPVS(로드밸런서)</strong> 등
         대부분의 리눅스 네트워크 보안·제어 기능이 모두 Netfilter 훅 위에서 동작합니다.
             </InfoBox>
+            </Section>
 
-            {/* ── 7.2 5개 훅 포인트 D3 시각화 ── */}
-            <SectionHeading id="netfilter-hooks">7.2 5개 훅 포인트 — 패킷 흐름</SectionHeading>
+            <Section id="s772" title="7.2  5개 훅 포인트 — 패킷 흐름">
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
         수신 패킷은 PREROUTING → (라우팅 결정) → INPUT 또는 FORWARD 경로로 분기됩니다.
         송신 패킷은 OUTPUT → POSTROUTING 경로를 거칩니다.
@@ -468,8 +473,9 @@ export default function Topic06() {
                 </div>
             )}
 
-            {/* ── 7.3 훅 포인트 상세 표 ── */}
-            <SectionHeading id="hook-table">7.3 훅 포인트 상세</SectionHeading>
+            </Section>
+
+            <Section id="s773" title="7.3  훅 포인트 상세">
             <TableWrapper>
                 <thead>
                     <tr>
@@ -507,8 +513,9 @@ export default function Topic06() {
                 </tbody>
             </TableWrapper>
 
-            {/* ── 7.4 iptables vs nftables ── */}
-            <SectionHeading id="iptables-nftables">7.4 iptables와 nftables</SectionHeading>
+            </Section>
+
+            <Section id="s774" title="7.4  iptables와 nftables">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         두 도구 모두 Netfilter 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다.
         현대 배포판(RHEL 8+, Debian 10+)은 nftables를 기본값으로 채택했습니다.
@@ -564,8 +571,9 @@ export default function Topic06() {
                 filename="# nftables 동일 규칙"
             />
 
-            {/* ── 7.5 conntrack ── */}
-            <SectionHeading id="conntrack">7.5 conntrack (연결 추적)</SectionHeading>
+            </Section>
+
+            <Section id="s775" title="7.5  conntrack (연결 추적)">
             <InfoBox>
         Netfilter <strong>conntrack</strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
         커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
@@ -633,8 +641,9 @@ export default function Topic06() {
                 </div>
             </div>
 
-            {/* ── 7.6 TPROXY ── */}
-            <SectionHeading id="tproxy">7.6 TPROXY와 정책 기반 라우팅</SectionHeading>
+            </Section>
+
+            <Section id="s776" title="7.6  TPROXY와 정책 기반 라우팅">
             <InfoBox>
                 <ul className="space-y-1 list-disc list-inside">
                     <li>
@@ -664,8 +673,9 @@ export default function Topic06() {
                 filename="TPROXY 설정"
             />
 
-            {/* ── 7.7 TC Hook ── */}
-            <SectionHeading id="tc-hook">7.7 TC Hook (Traffic Control)</SectionHeading>
+            </Section>
+
+            <Section id="s777" title="7.7  TC Hook (Traffic Control)">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         TC(Traffic Control)는 Netfilter와 독립적인 패킷 처리 포인트입니다.
         XDP보다 늦지만 Netfilter보다 빠른 위치에서 동작하여,
@@ -711,8 +721,9 @@ export default function Topic06() {
                 </p>
             </div>
 
-            {/* ── 7.8 ipset ── */}
-            <SectionHeading id="ipset">7.8 ipset — 대규모 IP 집합 매칭</SectionHeading>
+            </Section>
+
+            <Section id="s778" title="7.8  ipset — 대규모 IP 집합 매칭">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         iptables 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
         차단 목록, 화이트리스트, GeoIP 차단에 활용됩니다.
@@ -759,21 +770,22 @@ export default function Topic06() {
                 </tbody>
             </TableWrapper>
 
-            {/* ── 다음 토픽 링크 ── */}
-            <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 flex justify-between items-center">
-                <a
-                    href="#/topic/05-network-stack"
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-          &larr; Topic 05: 네트워크 스택의 전체 흐름
-                </a>
-                <a
-                    href="#/topic/07-xdp-ebpf"
-                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 text-sm font-semibold transition-colors"
-                >
-          다음: XDP, eBPF, 고성능 패킷 처리 &rarr;
-                </a>
-            </div>
+            </Section>
+
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/06-network-stack" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 06 · 네트워크 스택의 전체 흐름
+                    </a>
+                </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/08-xdp-ebpf" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        08 · XDP, eBPF, 고성능 패킷 처리 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

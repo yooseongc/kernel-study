@@ -1022,6 +1022,21 @@ cat /proc/*/fdinfo/* 2>/dev/null | grep "sq_ring"
 apt install liburing-dev  # Ubuntu`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// UI Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic05() {
@@ -1038,23 +1053,22 @@ export default function Topic05() {
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 05</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-          네트워크 스택의 전체 흐름
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          NIC → NAPI → sk_buff → TCP/IP 스택 → 소켓 — 패킷이 하드웨어에서 사용자 프로세스까지
-          이동하는 경로를 단계별로 살펴봅니다.
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 06
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    네트워크 스택의 전체 흐름
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Network Stack End-to-End
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    패킷 수신·송신 경로, NIC/NAPI, sk_buff, L2/L3/L4, 소켓, Zero-copy, SO_REUSEPORT
+                </p>
+            </header>
 
-            {/* ── 6.1 패킷이 커널에 들어오는 과정 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.1 패킷이 커널에 들어오는 과정
-                </h2>
+            <Section id="s661" title="6.1  패킷이 커널에 들어오는 과정">
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           외부에서 패킷이 도착하면 NIC → 드라이버 → 커널 네트워크 스택 → 소켓 버퍼 → 사용자
           프로세스까지 긴 여정을 거칩니다. 각 레이어는 sk_buff를 전달받아 자신의 역할을 수행하고
@@ -1083,13 +1097,9 @@ export default function Topic05() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 6.2 NIC 드라이버와 NAPI ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.2 NIC 드라이버와 NAPI
-                </h2>
+            <Section id="s662" title="6.2  NIC 드라이버와 NAPI">
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <p>
                         <span className="font-semibold text-red-400">과거 인터럽트 방식:</span> 패킷마다 IRQ가
@@ -1107,11 +1117,9 @@ export default function Topic05() {
                 <NapiCompare />
 
                 <CodeBlock code={napiPollCode} language="c" filename="drivers/net/my_driver.c" />
-            </section>
+            </Section>
 
-            {/* ── 6.3 sk_buff 구조 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">6.3 sk_buff 구조</h2>
+            <Section id="s663" title="6.3  sk_buff 구조">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono bg-gray-800 text-blue-300 px-1 rounded">sk_buff</code>
           (소켓 버퍼)는 패킷이 커널을 통과하는 내내 동반하는 메타데이터 구조체입니다. 실제
@@ -1130,13 +1138,9 @@ export default function Topic05() {
                     <code className="font-mono">data</code> 포인터를 앞으로 당기거나 뒤로 밀어 헤더를
           노출/숨깁니다. 실제 메모리 복사는 일어나지 않습니다.
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 6.4 L2/L3/L4 처리 흐름 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.4 L2 / L3 / L4 처리 흐름
-                </h2>
+            <Section id="s664" title="6.4  L2 / L3 / L4 처리 흐름">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           패킷이 NIC 드라이버에서 사용자 프로세스까지 도달하는 각 단계를 애니메이션으로 살펴봅니다.
           각 레이어에서 어떤 커널 함수가 실행되는지 확인하세요.
@@ -1150,13 +1154,9 @@ export default function Topic05() {
                     }}
                     autoPlayInterval={2500}
                 />
-            </section>
+            </Section>
 
-            {/* ── 6.5 소켓 계층과 시스템 콜 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.5 소켓 계층과 시스템 콜
-                </h2>
+            <Section id="s665" title="6.5  소켓 계층과 시스템 콜">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           사용자 프로그램은 소켓 API를 통해 네트워크에 접근합니다. 각 시스템 콜은 커널 내부의
           특정 함수로 연결되어 소켓 객체와 sk_buff를 조작합니다.
@@ -1208,13 +1208,9 @@ export default function Topic05() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 6.6 net_cls cgroup ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.6 net_cls cgroup — 네트워크와 cgroup 연결
-                </h2>
+            <Section id="s666" title="6.6  net_cls cgroup — 네트워크와 cgroup 연결">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono bg-gray-800 text-green-300 px-1 rounded">net_cls</code>{' '}
           서브시스템은 특정 cgroup에 속한 프로세스의 패킷에 classid 태그를 부여합니다. TC(Traffic
@@ -1238,13 +1234,9 @@ export default function Topic05() {
                 </div>
 
                 <CodeBlock code={netClsCode} language="bash" filename="net_cls cgroup + tc 설정" />
-            </section>
+            </Section>
 
-            {/* ── 6.7 TX 경로 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.7 TX 경로 — 송신 패킷의 여정
-                </h2>
+            <Section id="s667" title="6.7  TX 경로 — 송신 패킷의 여정">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 sk_buff를 생성하고
           qdisc(큐 디시플린)를 거쳐 NIC 하드웨어까지 전달됩니다. 각 레이어에서 헤더를 추가하고
@@ -1258,13 +1250,9 @@ export default function Topic05() {
                 />
 
                 <CodeBlock code={txCode} language="c" filename="net/ipv4/tcp.c" />
-            </section>
+            </Section>
 
-            {/* ── 6.8 TSO / GSO ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.8 TSO / GSO — 세그멘테이션 오프로드
-                </h2>
+            <Section id="s668" title="6.8  TSO / GSO — 세그멘테이션 오프로드">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <span className="font-semibold text-blue-400">TSO (TCP Segmentation Offload)</span>: 커널이 큰
           TCP 버퍼를 통째로 NIC에 넘기고, NIC 하드웨어가 MSS 단위로 분할합니다. CPU 부담을 크게
@@ -1312,13 +1300,9 @@ export default function Topic05() {
                 </div>
 
                 <CodeBlock code={tsoCheckCode} language="bash" filename="ethtool — TSO/GSO/GRO 확인" />
-            </section>
+            </Section>
 
-            {/* ── 6.9 RSS / RPS / RFS ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.9 RSS / RPS / RFS — 멀티코어 수신 분산
-                </h2>
+            <Section id="s669" title="6.9  RSS / RPS / RFS — 멀티코어 수신 분산">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           단일 CPU가 모든 수신 패킷을 처리하면 병목이 됩니다. 리눅스는 하드웨어/소프트웨어 두 수준에서
           패킷을 여러 CPU 코어에 분산하는 메커니즘을 제공합니다.
@@ -1348,13 +1332,9 @@ export default function Topic05() {
                 </div>
 
                 <CodeBlock code={rssConfigCode} language="bash" filename="RSS / RPS / RFS 설정" />
-            </section>
+            </Section>
 
-            {/* ── 6.10 Zero-copy ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.10 Zero-copy — sendfile과 splice
-                </h2>
+            <Section id="s6610" title="6.10  Zero-copy — sendfile과 splice">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           일반 <code className="font-mono text-blue-400">read()+write()</code> 방식은 데이터를 커널→유저→커널로 두 번 복사합니다.{' '}
                     <code className="font-mono text-purple-400">sendfile()</code>과{' '}
@@ -1409,13 +1389,9 @@ export default function Topic05() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 6.11 SO_REUSEPORT와 네트워크 네임스페이스 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.11 SO_REUSEPORT와 네트워크 네임스페이스
-                </h2>
+            <Section id="s6611" title="6.11  SO_REUSEPORT와 네트워크 네임스페이스">
 
                 {/* 파트 A: SO_REUSEPORT */}
                 <div className="space-y-3">
@@ -1485,13 +1461,9 @@ export default function Topic05() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 6.12 io_uring — 비동기 I/O의 새로운 표준 ── */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          6.12 io_uring — 비동기 I/O의 새로운 표준
-                </h2>
+            <Section id="s6612" title="6.12  io_uring — 비동기 I/O의 새로운 표준">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono text-blue-400">io_uring</code>은 Linux 5.1(2019)에 도입된 비동기 I/O 인터페이스입니다.
           전통적인 epoll+read/write 방식의 syscall 오버헤드를 공유 링 버퍼로 최소화해,
@@ -1567,22 +1539,22 @@ export default function Topic05() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* ── 다음 토픽 ── */}
-            <section className="pt-4 border-t border-gray-200 dark:border-gray-800">
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">다음 토픽</div>
-                    <a
-                        href="#/topic/06-netfilter"
-                        className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                        <span>Topic 06</span>
-                        <span className="text-gray-400 dark:text-gray-500">패킷 처리 경로와 후킹 지점 (Netfilter)</span>
-                        <span>→</span>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/05-interrupts" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 05 · 인터럽트, 예외, Deferred Work
                     </a>
                 </div>
-            </section>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/07-netfilter" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        07 · 패킷 처리 경로와 후킹 지점 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

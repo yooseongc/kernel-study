@@ -449,12 +449,14 @@ function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
     )
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
     return (
-        <h2 className="text-xl font-bold text-gray-100 mb-4 flex items-center gap-2">
-            <span className="w-1 h-5 rounded-full bg-blue-500 inline-block" />
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
             {children}
-        </h2>
+        </section>
     )
 }
 
@@ -508,23 +510,23 @@ export default function Topic04() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-16">
-            {/* Header */}
-            <header>
-                <div className="text-xs font-mono text-blue-500 dark:text-blue-400 mb-2 tracking-widest uppercase">
-          Topic 04
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-          인터럽트, 예외, Deferred Work
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 05
+                </p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    인터럽트, 예외, Deferred Work
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          IRQ 처리 흐름 · Top Half / Bottom Half · Softirq · Tasklet · Workqueue · 타이머
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Interrupts, Exceptions &amp; Deferred Work
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    IRQ 처리, Top/Bottom Half, Softirq, Tasklet, Workqueue, hrtimer, Threaded IRQ
                 </p>
             </header>
 
-            {/* 5.1 인터럽트와 예외의 차이 */}
-            <section>
-                <SectionTitle>5.1 인터럽트와 예외의 차이</SectionTitle>
+            <Section id="s551" title="5.1  인터럽트와 예외의 차이">
 
                 <Prose>
                     <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등
@@ -600,11 +602,9 @@ export default function Topic04() {
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </Section>
 
-            {/* 5.2 IRQ 처리 흐름 */}
-            <section>
-                <SectionTitle>5.2 IRQ 처리 흐름</SectionTitle>
+            <Section id="s552" title="5.2  IRQ 처리 흐름">
                 <Prose>
           IRQ가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
           ISR은 가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
@@ -614,11 +614,9 @@ export default function Topic04() {
                     renderStep={(step) => <IRQViz step={step} />}
                     autoPlayInterval={2200}
                 />
-            </section>
+            </Section>
 
-            {/* 5.3 Top Half / Bottom Half */}
-            <section>
-                <SectionTitle>5.3 Top Half / Bottom Half</SectionTitle>
+            <Section id="s553" title="5.3  Top Half / Bottom Half">
                 <Prose>
           인터럽트 처리는 두 단계로 분리됩니다.{' '}
                     <strong className="text-gray-200">Top Half</strong>는 IRQ 발생 직후 인터럽트가
@@ -663,11 +661,9 @@ export default function Topic04() {
                     language="c"
                     filename="drivers/net/ethernet/intel/e1000/e1000_main.c"
                 />
-            </section>
+            </Section>
 
-            {/* 5.4 Softirq, Tasklet, Workqueue */}
-            <section>
-                <SectionTitle>5.4 Softirq, Tasklet, Workqueue 비교</SectionTitle>
+            <Section id="s554" title="5.4  Softirq, Tasklet, Workqueue 비교">
                 <Prose>
           Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
           Softirq, Tasklet, Workqueue 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
@@ -784,11 +780,9 @@ export default function Topic04() {
 
                 <SubTitle>Deferred Work 계층 흐름</SubTitle>
                 <D3Container renderFn={renderDeferredWork} height={200} deps={[theme]} />
-            </section>
+            </Section>
 
-            {/* 5.5 타이머와 비동기 처리 */}
-            <section>
-                <SectionTitle>5.5 타이머와 비동기 처리</SectionTitle>
+            <Section id="s555" title="5.5  타이머와 비동기 처리">
 
                 <Prose>
           리눅스 커널은 두 가지 타이머 시스템을 제공합니다. jiffies 기반의 저해상도 타이머와
@@ -855,11 +849,9 @@ export default function Topic04() {
                     language="c"
                     filename="kernel/hrtimer_example.c"
                 />
-            </section>
+            </Section>
 
-            {/* 5.6 Threaded IRQ */}
-            <section>
-                <SectionTitle>5.6 Threaded IRQ — 인터럽트의 스레드화</SectionTitle>
+            <Section id="s556" title="5.6  Threaded IRQ — 인터럽트의 스레드화">
 
                 <Prose>
           전통적인 Bottom Half(Softirq/Tasklet)는 인터럽트 컨텍스트에서 실행되어 슬립이
@@ -917,11 +909,9 @@ export default function Topic04() {
                     language="bash"
                     filename="# 실전 확인"
                 />
-            </section>
+            </Section>
 
-            {/* 5.7 인터럽트 어피니티 */}
-            <section>
-                <SectionTitle>5.7 인터럽트 어피니티 — CPU 코어 배정</SectionTitle>
+            <Section id="s557" title="5.7  인터럽트 어피니티 — CPU 코어 배정">
 
                 <Prose>
           특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
@@ -966,11 +956,9 @@ export default function Topic04() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
-            {/* 5.8 PREEMPT_RT */}
-            <section>
-                <SectionTitle>5.8 PREEMPT_RT — 실시간 리눅스 커널</SectionTitle>
+            <Section id="s558" title="5.8  PREEMPT_RT — 실시간 리눅스 커널">
 
                 <Prose>
           표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 스핀락을 보유한 채
@@ -1072,21 +1060,22 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         </p>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* 다음 토픽 링크 */}
-            <footer className="border-t border-gray-800 pt-8">
-                <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">다음 토픽</span>
-                    <a
-                        href="#/topic/05-network-stack"
-                        className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors group"
-                    >
-                        <span>네트워크 스택의 전체 흐름</span>
-                        <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/04-filesystem" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 04 · VFS와 파일시스템
                     </a>
                 </div>
-            </footer>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/06-network-stack" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        06 · 네트워크 스택의 전체 흐름 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

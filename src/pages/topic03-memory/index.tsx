@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
@@ -1088,6 +1088,24 @@ madvise(ptr, size, MADV_HUGEPAGE);   # THP 요청
 madvise(ptr, size, MADV_NOHUGEPAGE); # THP 억제 (Redis 등)`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Layout helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+function Prose({ children }: { children: React.ReactNode }) {
+    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
+}
+
 // Main Page Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic03() {
@@ -1102,19 +1120,25 @@ export default function Topic03() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
+        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 03</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">가상 메모리와 메모리 관리</h1>
-                <p className="text-gray-500 dark:text-gray-400">
-          페이지 테이블 워크, Buddy Allocator, SLUB, memory cgroup
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 03
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    가상 메모리와 메모리 관리
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Virtual Memory &amp; Memory Management
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    가상주소와 물리주소, 페이지 테이블, mm_struct/VMA, Page Fault, Buddy/SLUB, TLB, Huge Pages
+                </p>
+            </header>
 
             {/* 3.1 Virtual Address Space */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.1 가상 주소 공간</h2>
+            <Section id="s331" title="3.1  가상 주소 공간">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           x86-64 리눅스는 48비트 가상 주소(256TB)를 사용합니다. 하위 128TB는 유저 공간, 상위 128TB는 커널 공간이며,
           중간의 비-정규(non-canonical) 구간에 접근하면 즉시 예외가 발생합니다.
@@ -1143,11 +1167,10 @@ export default function Topic03() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             {/* 3.2 Page Table Walk */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.2 페이지와 페이지 테이블</h2>
+            <Section id="s332" title="3.2  페이지와 페이지 테이블">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           가상 주소는 4단계 페이지 테이블을 통해 물리 주소로 변환됩니다. 각 레벨이 9비트를 인덱스로 사용하고,
           마지막 12비트가 page offset입니다.
@@ -1283,11 +1306,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 3.3 mm_struct & VMA */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.3 mm_struct와 VMA</h2>
+            <Section id="s333" title="3.3  mm_struct와 VMA">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           각 프로세스는 고유한 <code className="font-mono text-blue-400">mm_struct</code>를 가지며, 이 구조체가 가상 주소
           공간 전체를 관리합니다. 가상 주소 공간 내의 각 연속된 영역은{' '}
@@ -1360,11 +1382,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     </div>
                 </div>
                 <CodeBlock code={mmapExampleCode} language="c" filename="mm/mmap.c 활용 예시" />
-            </section>
+            </Section>
 
             {/* 3.4 Page Fault */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.4 Page Fault</h2>
+            <Section id="s334" title="3.4  Page Fault">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           가상 주소에 접근했을 때 물리 페이지가 없으면 MMU가 Page Fault 예외를 발생시킵니다.
           커널은 fault 핸들러에서 적절한 물리 페이지를 확보하고 PTE를 업데이트한 뒤 명령어를 재실행합니다.
@@ -1396,11 +1417,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </Section>
 
             {/* 3.5 Buddy Allocator */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.5 Buddy Allocator (인터랙티브)</h2>
+            <Section id="s335" title="3.5  Buddy Allocator (인터랙티브)">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널은 물리 메모리를 2의 거듭제곱(2^order) 크기 블록으로 관리합니다. order 0 = 4KB(1 page), order 1 = 8KB,
           ..., order 10 = 4MB. 아래 시뮬레이터는 32페이지(128KB) 존에서 buddy 할당/해제를 보여줍니다.
@@ -1414,11 +1434,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
 
                 <BuddyAllocatorViz />
-            </section>
+            </Section>
 
             {/* 3.6 SLUB Allocator */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.6 SLUB Allocator</h2>
+            <Section id="s336" title="3.6  SLUB Allocator">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           Buddy Allocator는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의 작은 객체를 자주 할당합니다.
           SLUB은 특정 크기의 객체 전용 캐시(<code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어
@@ -1440,11 +1459,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
             {/* 3.7 memory cgroup */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.7 memory cgroup</h2>
+            <Section id="s337" title="3.7  memory cgroup">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           cgroup v2의 memory 컨트롤러를 사용하면 프로세스 그룹별로 메모리 사용량을 제한할 수 있습니다.
           컨테이너 런타임(Docker, containerd)이 이 인터페이스를 통해 컨테이너 메모리를 격리합니다.
@@ -1514,11 +1532,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
                 <CodeBlock code={oomBashCode} language="bash" filename="# OOM Killer 실전 관리" />
                 <CodeBlock code={oomKillCode} language="c" filename="mm/oom_kill.c" />
-            </section>
+            </Section>
 
             {/* 3.8 vmalloc vs kmalloc */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.8 vmalloc vs kmalloc — 커널 메모리 할당 API</h2>
+            <Section id="s338" title="3.8  vmalloc vs kmalloc — 커널 메모리 할당 API">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널 코드에서 메모리를 동적 할당할 때 두 가지 주요 API가 있습니다. 물리적 연속성 요구 여부가 선택 기준입니다.
                 </p>
@@ -1575,11 +1592,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </Section>
 
             {/* 3.9 kswapd와 메모리 회수 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.9 kswapd와 메모리 회수 — LRU 알고리즘</h2>
+            <Section id="s339" title="3.9  kswapd와 메모리 회수 — LRU 알고리즘">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           물리 메모리가 부족해지면 커널은 사용 빈도가 낮은 페이지를 회수(reclaim)합니다. 이 작업은{' '}
                     <code className="font-mono text-blue-400">kswapd</code> 커널 스레드가 담당합니다.
@@ -1646,11 +1662,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
                 <CodeBlock code={kswapdBashCode} language="bash" filename="# 메모리 회수 상태 확인" />
                 <CodeBlock code={kswapdCCode} language="c" filename="mm/vmscan.c 핵심 흐름" />
-            </section>
+            </Section>
 
             {/* 3.10 Huge Pages / THP */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">3.10 Huge Pages / THP — 대형 페이지</h2>
+            <Section id="s3310" title="3.10  Huge Pages / THP — 대형 페이지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           표준 페이지 크기는 4KB입니다. 수십GB 메모리를 사용하는 데이터베이스나 JVM은 수백만 개의 TLB 엔트리가 필요해
           TLB miss가 심각한 성능 저하를 유발합니다. <strong className="text-gray-900 dark:text-white">Huge Pages</strong>(2MB/1GB)로
@@ -1746,17 +1761,22 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     ))}
                 </div>
-            </section>
+            </Section>
 
-            {/* Next topic link */}
-            <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                <a
-                    href="#/topic/04-interrupts"
-                    className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                >
-          다음: 인터럽트, 예외, Deferred Work →
-                </a>
-            </div>
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+                <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/02-scheduler" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 02 · 프로세스, 스레드, 스케줄러
+                    </a>
+                </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/04-filesystem" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        04 · VFS와 파일시스템 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }

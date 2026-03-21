@@ -782,6 +782,21 @@ function ContextSwitchViz({ step }: { step: number }) {
     )
 }
 
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+function Prose({ children }: { children: React.ReactNode }) {
+    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
+}
+
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function Topic02Scheduler() {
     const { theme } = useTheme()
@@ -847,29 +862,33 @@ export default function Topic02Scheduler() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
-            <div>
-                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">Topic 02</div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">프로세스, 스레드, 스케줄러</h1>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에 스케줄링할까요?
-          이 페이지에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>,
-          CFS 스케줄러, 그리고 컨텍스트 스위치를 시각적으로 탐구합니다.
+            <header className="space-y-3">
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
+                    Topic 02
                 </p>
-            </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    프로세스, 스레드, 스케줄러
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                    Processes, Threads &amp; Scheduler
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에 스케줄링할까요?
+                    이 페이지에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>,
+                    CFS 스케줄러, 그리고 컨텍스트 스위치를 시각적으로 탐구합니다.
+                </p>
+            </header>
 
             {/* 2.1 프로세스와 스레드 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.1</span> 프로세스와 스레드
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          리눅스 커널의 관점에서 프로세스와 스레드는 근본적으로 같은 존재입니다.
-          둘 다 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">task_struct</code>로 표현되며,
-          차이는 오직 <strong className="text-gray-900 dark:text-gray-100">어떤 자원을 공유하느냐</strong>에 있습니다.
-          스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">clone()</code> 호출 시
+            <Section id="s21" title="2.1  프로세스와 스레드">
+                <Prose>
+                    리눅스 커널의 관점에서 프로세스와 스레드는 근본적으로 같은 존재입니다.
+                    둘 다 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">task_struct</code>로 표현되며,
+                    차이는 오직 <strong className="text-gray-900 dark:text-gray-100">어떤 자원을 공유하느냐</strong>에 있습니다.
+                    스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">clone()</code> 호출 시
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">CLONE_THREAD</code> 플래그로 생성한
-          "자원 공유 프로세스"입니다.
-                </p>
+                    "자원 공유 프로세스"입니다.
+                </Prose>
 
                 {/* 비교 테이블 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -914,38 +933,32 @@ export default function Topic02Scheduler() {
             시스템 콜로 생성된, 자원을 공유하는 프로세스일 뿐입니다.
                     </span>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.2 task_struct */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.2</span> task_struct 심층 탐색
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널에서 모든 프로세스/스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>라는
-          거대한 구조체로 표현됩니다.
-          실제 커널 소스에서 이 구조체는 수백 개의 필드를 가지며, 스케줄링·메모리·파일·시그널 등 모든 정보를 담습니다.
-                </p>
+            <Section id="s22" title="2.2  task_struct 심층 탐색">
+                <Prose>
+                    커널에서 모든 프로세스/스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct</code>라는
+                    거대한 구조체로 표현됩니다.
+                    실제 커널 소스에서 이 구조체는 수백 개의 필드를 가지며, 스케줄링·메모리·파일·시그널 등 모든 정보를 담습니다.
+                </Prose>
                 <CodeBlock code={taskStructCode} language="c" filename="include/linux/sched.h" />
 
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          스케줄링 핵심은 내부에 포함된{' '}
+                <Prose>
+                    스케줄링 핵심은 내부에 포함된{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">sched_entity</code>{' '}
-          구조체에 있습니다. CFS가 사용하는 <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
-                </p>
+                    구조체에 있습니다. CFS가 사용하는 <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
+                </Prose>
                 <CodeBlock code={schedEntityCode} language="c" filename="include/linux/sched.h" />
-            </section>
+            </Section>
 
             {/* 2.3 프로세스 상태 전이 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.3</span> 프로세스 상태 전이
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          프로세스는 생애 주기 동안 여러 상태 사이를 전이합니다.
+            <Section id="s23" title="2.3  프로세스 상태 전이">
+                <Prose>
+                    프로세스는 생애 주기 동안 여러 상태 사이를 전이합니다.
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.__state</code>에
-          현재 상태가 비트 플래그로 저장됩니다.
-                </p>
+                    현재 상태가 비트 플래그로 저장됩니다.
+                </Prose>
 
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-2">
                     <D3Container renderFn={renderProcessState} height={290} deps={[theme]} />
@@ -988,17 +1001,14 @@ export default function Topic02Scheduler() {
                         </table>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.4.0 O(1) 스케줄러 역사 → CFS 전환 이유 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.4</span> 스케줄러의 역사 — O(1)에서 CFS로
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          리눅스 스케줄러는 커널 2.6 시절의 O(1) 스케줄러에서 2.6.23(2007년)부터 CFS로 교체되었습니다.
-          두 접근 방식의 차이를 이해하면 CFS 설계 철학을 더 명확히 파악할 수 있습니다.
-                </p>
+            <Section id="s24" title="2.4  스케줄러의 역사 — O(1)에서 CFS로">
+                <Prose>
+                    리눅스 스케줄러는 커널 2.6 시절의 O(1) 스케줄러에서 2.6.23(2007년)부터 CFS로 교체되었습니다.
+                    두 접근 방식의 차이를 이해하면 CFS 설계 철학을 더 명확히 파악할 수 있습니다.
+                </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* O(1) 스케줄러 */}
@@ -1036,20 +1046,17 @@ export default function Topic02Scheduler() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.4 CFS 스케줄러 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.4</span> CFS 스케줄러 — vruntime과 Red-Black 트리
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          CFS(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
+            <Section id="s241" title="2.4  CFS 스케줄러 — vruntime과 Red-Black 트리">
+                <Prose>
+                    CFS(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
                     <strong className="text-gray-900 dark:text-gray-100">vruntime(가상 실행 시간)</strong>을 사용합니다.
-          vruntime이 가장 작은 프로세스 = 가장 덜 실행된 프로세스 = 다음 실행 대상.
-          이를 빠르게 찾기 위해 <strong className="text-gray-900 dark:text-gray-100">Red-Black 트리(자가 균형 BST)</strong>를 사용합니다.
-          트리의 가장 왼쪽 노드가 항상 다음 실행 대상입니다.
-                </p>
+                    vruntime이 가장 작은 프로세스 = 가장 덜 실행된 프로세스 = 다음 실행 대상.
+                    이를 빠르게 찾기 위해 <strong className="text-gray-900 dark:text-gray-100">Red-Black 트리(자가 균형 BST)</strong>를 사용합니다.
+                    트리의 가장 왼쪽 노드가 항상 다음 실행 대상입니다.
+                </Prose>
 
                 <div className="flex gap-3 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/50 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
                     <span className="text-lg shrink-0">💡</span>
@@ -1202,38 +1209,32 @@ export default function Topic02Scheduler() {
                 </div>
 
                 <CodeBlock code={prioToWeightCode} language="c" filename="kernel/sched/fair.c" />
-            </section>
+            </Section>
 
             {/* 2.5 컨텍스트 스위치 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.5</span> 컨텍스트 스위치 단계별 애니메이션
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          컨텍스트 스위치는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다.
-          CPU 레지스터 전체를 저장하고 복원해야 하므로 일반 함수 호출보다 수백~수천 배 비쌉니다.
-          아래 애니메이션으로 각 단계를 살펴보세요.
-                </p>
+            <Section id="s25" title="2.5  컨텍스트 스위치 단계별 애니메이션">
+                <Prose>
+                    컨텍스트 스위치는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다.
+                    CPU 레지스터 전체를 저장하고 복원해야 하므로 일반 함수 호출보다 수백~수천 배 비쌉니다.
+                    아래 애니메이션으로 각 단계를 살펴보세요.
+                </Prose>
                 <AnimatedDiagram
                     steps={contextSwitchSteps}
                     renderStep={(step) => <ContextSwitchViz step={step} />}
                     autoPlayInterval={2500}
                 />
-            </section>
+            </Section>
 
             {/* 2.5.1 __schedule() 콜스택 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.5.1</span> <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-base">__schedule()</code> 콜스택 분석
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          자발적·비자발적 컨텍스트 스위치 모두{' '}
+            <Section id="s251" title="2.5.1  __schedule() 콜스택 분석">
+                <Prose>
+                    자발적·비자발적 컨텍스트 스위치 모두{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">__schedule()</code>을 공통 진입점으로 사용합니다.
-          내부에서 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">pick_next_task()</code>가
-          스케줄러 클래스를{' '}
+                    내부에서 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">pick_next_task()</code>가
+                    스케줄러 클래스를{' '}
                     <strong className="text-gray-900 dark:text-gray-100">STOP → DEADLINE → RT → CFS(FAIR) → IDLE</strong>{' '}
-          순서로 탐색하여 다음 실행할 태스크를 결정합니다.
-                </p>
+                    순서로 탐색하여 다음 실행할 태스크를 결정합니다.
+                </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs text-center">
                     {[
@@ -1269,20 +1270,17 @@ export default function Topic02Scheduler() {
                 </div>
 
                 <CodeBlock code={scheduleCode} language="c" filename="kernel/sched/core.c" />
-            </section>
+            </Section>
 
             {/* 2.6 CPU Affinity와 CPU Pinning */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.6</span> CPU Affinity와 CPU Pinning
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          기본적으로 CFS는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다.
-          하지만 <strong className="text-gray-900 dark:text-gray-100">CPU affinity(CPU 친화성)</strong>를 설정하면
-          특정 프로세스가 실행될 수 있는 CPU를 제한할 수 있습니다.
-          커널 내부적으로 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cpus_mask</code>에
-          비트마스크로 저장됩니다.
-                </p>
+            <Section id="s26" title="2.6  CPU Affinity와 CPU Pinning">
+                <Prose>
+                    기본적으로 CFS는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다.
+                    하지만 <strong className="text-gray-900 dark:text-gray-100">CPU affinity(CPU 친화성)</strong>를 설정하면
+                    특정 프로세스가 실행될 수 있는 CPU를 제한할 수 있습니다.
+                    커널 내부적으로 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cpus_mask</code>에
+                    비트마스크로 저장됩니다.
+                </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -1331,17 +1329,14 @@ export default function Topic02Scheduler() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.7 SMP와 NUMA */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.7</span> SMP와 NUMA — 멀티코어 환경의 스케줄링
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          현대 서버는 단일 CPU가 아닙니다. 리눅스 스케줄러는 멀티코어·멀티소켓 환경을 지원하기 위해
+            <Section id="s27" title="2.7  SMP와 NUMA — 멀티코어 환경의 스케줄링">
+                <Prose>
+                    현대 서버는 단일 CPU가 아닙니다. 리눅스 스케줄러는 멀티코어·멀티소켓 환경을 지원하기 위해
                     <strong className="text-gray-900 dark:text-gray-100"> SMP</strong>와 <strong className="text-gray-900 dark:text-gray-100">NUMA</strong>를 이해해야 합니다.
-                </p>
+                </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* SMP */}
@@ -1406,18 +1401,15 @@ export default function Topic02Scheduler() {
                         </table>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.8 RT 스케줄러 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.8</span> RT 스케줄러 — SCHED_FIFO와 SCHED_RR
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          CFS는 공정성(fairness)을 목표로 하지만, 일부 태스크는 <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다.
-          리눅스 커널은 CFS 외에 Real-Time 스케줄러를 제공합니다.
-          RT 태스크는 CFS 태스크보다 <em>항상</em> 먼저 실행됩니다.
-                </p>
+            <Section id="s28" title="2.8  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
+                <Prose>
+                    CFS는 공정성(fairness)을 목표로 하지만, 일부 태스크는 <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다.
+                    리눅스 커널은 CFS 외에 Real-Time 스케줄러를 제공합니다.
+                    RT 태스크는 CFS 태스크보다 <em>항상</em> 먼저 실행됩니다.
+                </Prose>
 
                 {/* 스케줄러 클래스 계층 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -1489,20 +1481,17 @@ export default function Topic02Scheduler() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.9 cgroups */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.9</span> cgroups — 프로세스 자원 제어의 핵심
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+            <Section id="s29" title="2.9  cgroups — 프로세스 자원 제어의 핵심">
+                <Prose>
                     <strong className="text-gray-900 dark:text-gray-100">cgroups(Control Groups)</strong>는 프로세스 그룹에
-          CPU·메모리·I/O·네트워크 등의 자원 제한을 걸 수 있는 커널 기능입니다.
-          Docker, Kubernetes, systemd 모두 cgroups 위에서 동작합니다.
-          커널 내부에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cgroups</code>가
-          해당 태스크의 cgroup 멤버십을 관리합니다.
-                </p>
+                    CPU·메모리·I/O·네트워크 등의 자원 제한을 걸 수 있는 커널 기능입니다.
+                    Docker, Kubernetes, systemd 모두 cgroups 위에서 동작합니다.
+                    커널 내부에서는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">task_struct.cgroups</code>가
+                    해당 태스크의 cgroup 멤버십을 관리합니다.
+                </Prose>
 
                 {/* v1 vs v2 비교 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -1602,26 +1591,23 @@ export default function Topic02Scheduler() {
             Kubernetes의 resource limits도 마찬가지입니다.
                     </span>
                 </div>
-            </section>
+            </Section>
 
             {/* 2.10 스케줄러 통계와 분석 */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <span className="text-blue-600 dark:text-blue-400">2.10</span> 스케줄러 통계와 분석
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          스케줄링 문제(높은 레이턴시, CPU 불균형)는{' '}
+            <Section id="s210" title="2.10  스케줄러 통계와 분석">
+                <Prose>
+                    스케줄링 문제(높은 레이턴시, CPU 불균형)는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">/proc/schedstat</code>과{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">/proc/sched_debug</code>로 진단합니다.
-                </p>
+                </Prose>
 
                 <CodeBlock code={schedstatCode} language="bash" filename="# /proc/schedstat — CPU별 스케줄링 통계" />
                 <CodeBlock code={schedDebugCode} language="bash" filename="# /proc/sched_debug — 런큐 상태" />
 
                 {/* 로드밸런싱 */}
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          SMP 시스템에서 특정 CPU만 바쁘고 다른 CPU는 노는 불균형을 방지하기 위해 커널은 주기적으로 런큐를 재조정합니다.
-                </p>
+                <Prose>
+                    SMP 시스템에서 특정 CPU만 바쁘고 다른 CPU는 노는 불균형을 방지하기 위해 커널은 주기적으로 런큐를 재조정합니다.
+                </Prose>
 
                 <CodeBlock code={loadBalanceCode} language="c" filename="kernel/sched/fair.c — load_balance 핵심" />
 
@@ -1657,19 +1643,23 @@ export default function Topic02Scheduler() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Section>
 
-            {/* 다음 토픽 */}
-            <div className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
+            {/* 네비게이션 */}
+            <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
                 <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-600 mb-1">다음 토픽</div>
-                    <div className="font-semibold text-gray-900 dark:text-gray-200">03 · 가상 메모리와 메모리 관리</div>
-                    <div className="text-xs text-gray-500 mt-0.5">가상주소, 페이지 테이블, mm_struct, Page Fault, Buddy Allocator</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
+                    <a href="#/topic/01-overview" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        ← 01 · 리눅스 커널 개요와 전체 구조
+                    </a>
                 </div>
-                <a href="#/topic/03-memory" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm">
-          다음 →
-                </a>
-            </div>
+                <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
+                    <a href="#/topic/03-memory" className="font-semibold text-gray-900 dark:text-gray-200 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        03 · 가상 메모리와 메모리 관리 →
+                    </a>
+                </div>
+            </nav>
         </div>
     )
 }
