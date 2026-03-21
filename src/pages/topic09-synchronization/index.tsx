@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../contexts/ThemeContext'
+import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
@@ -86,48 +86,49 @@ const raceAnimSteps = [
     },
 ]
 
-function RaceViz({ step }: { step: number }) {
-    const s = raceStates[step]
+const colBase = 'rounded-lg border px-3 py-3 flex flex-col gap-1 min-w-0'
 
-    const colBase = 'rounded-lg border px-3 py-3 flex flex-col gap-1 min-w-0'
-    const activeA = s.activeA
-    const activeB = s.activeB
-    const isDanger = s.highlight === 'danger'
-
-    function ThreadBox({
-        label,
-        regVal,
-        active,
-        danger,
-    }: {
+function ThreadBox({
+    label,
+    regVal,
+    active,
+    danger,
+}: {
     label: string
     regVal: number | null
     active: boolean
     danger: boolean
-  }) {
-        const borderCls = danger
-            ? 'border-red-500 bg-red-900/20'
-            : active
-                ? 'border-blue-500 bg-blue-900/20'
-                : 'border-gray-700 bg-gray-800/40'
-        const textCls = danger ? 'text-red-400' : active ? 'text-blue-300' : 'text-gray-500'
-        return (
-            <div className={`${colBase} ${borderCls} flex-1`}>
-                <div className={`text-xs font-mono font-bold ${textCls}`}>{label}</div>
-                <div className="text-xs text-gray-400 font-mono">
+}) {
+    const borderCls = danger
+        ? 'border-red-500 bg-red-900/20'
+        : active
+            ? 'border-blue-500 bg-blue-900/20'
+            : 'border-gray-700 bg-gray-800/40'
+    const textCls = danger ? 'text-red-400' : active ? 'text-blue-300' : 'text-gray-500'
+    return (
+        <div className={`${colBase} ${borderCls} flex-1`}>
+            <div className={`text-xs font-mono font-bold ${textCls}`}>{label}</div>
+            <div className="text-xs text-gray-400 font-mono">
           reg ={' '}
-                    <span className={regVal !== null ? 'text-yellow-300' : 'text-gray-600'}>
-                        {regVal !== null ? regVal : '—'}
-                    </span>
-                </div>
-                {active && (
-                    <div className={`text-[10px] font-mono ${danger ? 'text-red-400' : 'text-green-400'}`}>
-                        {danger ? '▶ STORE (충돌!)' : '▶ 실행 중'}
-                    </div>
-                )}
+                <span className={regVal !== null ? 'text-yellow-300' : 'text-gray-600'}>
+                    {regVal !== null ? regVal : '—'}
+                </span>
             </div>
-        )
-    }
+            {active && (
+                <div className={`text-[10px] font-mono ${danger ? 'text-red-400' : 'text-green-400'}`}>
+                    {danger ? '▶ STORE (충돌!)' : '▶ 실행 중'}
+                </div>
+            )}
+        </div>
+    )
+}
+
+function RaceViz({ step }: { step: number }) {
+    const s = raceStates[step]
+
+    const activeA = s.activeA
+    const activeB = s.activeB
+    const isDanger = s.highlight === 'danger'
 
     return (
         <div className="flex flex-col gap-3 p-2">

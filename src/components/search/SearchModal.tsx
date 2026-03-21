@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { kernelTopics } from '../../data/kernelTopics'
 import { glossary } from '../../data/glossary'
@@ -53,25 +53,21 @@ interface Props {
 }
 
 export function SearchModal({ open, onClose }: Props) {
+    // key 프롭으로 재마운트되므로 open 시 항상 초기 상태로 시작 — useEffect 불필요
     const [query, setQuery] = useState('')
     const [activeIdx, setActiveIdx] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
     const results = search(query)
 
-    useEffect(() => {
-        if (open) {
-            setQuery('')
-            setActiveIdx(0)
-            setTimeout(() => inputRef.current?.focus(), 50)
-        }
-    }, [open])
-
-    useEffect(() => { setActiveIdx(0) }, [query])
-
     const go = (href: string) => {
         navigate(href)
         onClose()
+    }
+
+    const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value)
+        setActiveIdx(0)  // 쿼리 변경 시 이벤트 핸들러에서 직접 리셋 (effect 불필요)
     }
 
     const handleKey = (e: React.KeyboardEvent) => {
@@ -96,8 +92,9 @@ export function SearchModal({ open, onClose }: Props) {
                     </svg>
                     <input
                         ref={inputRef}
+                        autoFocus
                         value={query}
-                        onChange={e => setQuery(e.target.value)}
+                        onChange={handleQueryChange}
                         onKeyDown={handleKey}
                         placeholder="토픽 또는 용어 검색..."
                         className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none text-sm"

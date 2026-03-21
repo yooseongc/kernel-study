@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { D3Container } from '../../components/viz/D3Container'
-import { useTheme } from '../../contexts/ThemeContext'
+import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'

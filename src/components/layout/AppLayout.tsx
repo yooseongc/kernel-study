@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { SearchModal } from '../search/SearchModal'
@@ -16,11 +16,17 @@ function getPanelState(key: string, def: boolean): boolean {
 
 export function AppLayout() {
     const [searchOpen, setSearchOpen] = useState(false)
-    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [searchKey, setSearchKey] = useState(0)
     const [leftOpen, setLeftOpen] = useState(() => getPanelState('panel-left', true))
     const [rightOpen, setRightOpen] = useState(() => getPanelState('panel-right', true))
     const location = useLocation()
     const mainRef = useRef<HTMLElement>(null)
+    const searchOpenRef = useRef(false)
+    searchOpenRef.current = searchOpen
+
+    // sidebarOpen을 상태가 아닌 "현재 라우트 키와 일치하는지"로 유도 → effect 안 setState 불필요
+    const [sidebarOpenKey, setSidebarOpenKey] = useState<string | null>(null)
+    const sidebarOpen = sidebarOpenKey === location.key
 
     const toggleLeft = () => setLeftOpen(v => {
         const next = !v
@@ -33,22 +39,33 @@ export function AppLayout() {
         return next
     })
 
-    // 라우트 변경 시 모바일 사이드바 닫기 + 스크롤 최상단 복귀
-    useEffect(() => {
-        setSidebarOpen(false)
+    // 라우트 변경 시 스크롤 최상단 복귀 (DOM 조작 → useLayoutEffect)
+    // sidebarOpen은 location.key 유도값이므로 별도 setState 불필요
+    useLayoutEffect(() => {
         mainRef.current?.scrollTo({ top: 0 })
     }, [location])
 
+    // Cmd+K / Ctrl+K 검색 토글 (이벤트 핸들러 안에서 setState — effect 안 직접 호출 아님)
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault()
-                setSearchOpen(o => !o)
+                if (searchOpenRef.current) {
+                    setSearchOpen(false)
+                } else {
+                    setSearchKey(k => k + 1)
+                    setSearchOpen(true)
+                }
             }
         }
         window.addEventListener('keydown', handler)
         return () => window.removeEventListener('keydown', handler)
     }, [])
+
+    const openSearch = () => {
+        setSearchKey(k => k + 1)
+        setSearchOpen(true)
+    }
 
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 overflow-hidden">
@@ -56,16 +73,16 @@ export function AppLayout() {
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-30 md:hidden"
-                    onClick={() => setSidebarOpen(false)}
+                    onClick={() => setSidebarOpenKey(null)}
                     aria-hidden="true"
                 />
             )}
 
             {/* 좌측: 네비게이션 사이드바 */}
             <Sidebar
-                onSearchOpen={() => setSearchOpen(true)}
+                onSearchOpen={openSearch}
                 mobileOpen={sidebarOpen}
-                onMobileClose={() => setSidebarOpen(false)}
+                onMobileClose={() => setSidebarOpenKey(null)}
                 collapsed={!leftOpen}
             />
 
@@ -87,7 +104,7 @@ export function AppLayout() {
                 {/* 모바일 상단 바 */}
                 <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 sticky top-0 z-20">
                     <button
-                        onClick={() => setSidebarOpen(true)}
+                        onClick={() => setSidebarOpenKey(location.key)}
                         className="p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                         aria-label="메뉴 열기"
                     >
@@ -99,7 +116,7 @@ export function AppLayout() {
                         Kernel Study
                     </span>
                     <button
-                        onClick={() => setSearchOpen(true)}
+                        onClick={openSearch}
                         className="ml-auto p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                         aria-label="검색"
                     >
@@ -129,7 +146,7 @@ export function AppLayout() {
             <TableOfContents scrollRef={mainRef} collapsed={!rightOpen} />
 
             <BackToTop scrollRef={mainRef} />
-            <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+            <SearchModal key={searchKey} open={searchOpen} onClose={() => setSearchOpen(false)} />
         </div>
     )
 }

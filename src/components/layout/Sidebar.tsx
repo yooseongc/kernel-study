@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { kernelTopics } from '../../data/kernelTopics'
-import { useTheme } from '../../contexts/ThemeContext'
+import { useTheme } from '../../hooks/useTheme'
 
 interface SidebarProps {
   onSearchOpen: () => void
