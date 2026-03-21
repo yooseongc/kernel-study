@@ -2,13 +2,23 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { kernelTopics } from '../../data/kernelTopics'
 import { glossary } from '../../data/glossary'
+import { sectionIndex } from '../../data/searchIndex'
 
 interface SearchResult {
-  type: 'topic' | 'glossary'
+  type: 'topic' | 'glossary' | 'section'
   id: string
   title: string
   subtitle: string
   href: string
+}
+
+function score(text: string, q: string): number {
+    if (!text) return 0
+    const t = text.toLowerCase()
+    if (t === q) return 4
+    if (t.startsWith(q)) return 3
+    if (t.includes(q)) return 2
+    return 0
 }
 
 function search(query: string): SearchResult[] {
@@ -16,35 +26,73 @@ function search(query: string): SearchResult[] {
     const q = query.toLowerCase()
 
     const topicResults: SearchResult[] = kernelTopics
-        .filter(t =>
-            t.title.toLowerCase().includes(q) ||
-      t.description.toLowerCase().includes(q) ||
-      t.tags.some(tag => tag.toLowerCase().includes(q))
-        )
         .map(t => ({
-            type: 'topic',
+            s: Math.max(
+                score(t.title, q) * 4,
+                score(t.subtitle, q) * 3,
+                ...t.tags.map(tag => score(tag, q) * 2),
+                score(t.description, q)
+            ),
+            t,
+        }))
+        .filter(x => x.s > 0)
+        .sort((a, b) => b.s - a.s)
+        .slice(0, 5)
+        .map(({ t }) => ({
+            type: 'topic' as const,
             id: t.id,
             title: t.title,
-            subtitle: t.description,
+            subtitle: t.subtitle,
             href: t.route,
         }))
 
     const glossaryResults: SearchResult[] = glossary
-        .filter(g =>
-            g.term.toLowerCase().includes(q) ||
-      g.definition.toLowerCase().includes(q) ||
-      (g.aliases ?? []).some(a => a.toLowerCase().includes(q))
-        )
-        .slice(0, 6)
         .map(g => ({
-            type: 'glossary',
+            s: Math.max(
+                score(g.term, q) * 4,
+                ...(g.aliases ?? []).map(a => score(a, q) * 3),
+                score(g.definition, q)
+            ),
+            g,
+        }))
+        .filter(x => x.s > 0)
+        .sort((a, b) => b.s - a.s)
+        .slice(0, 4)
+        .map(({ g }) => ({
+            type: 'glossary' as const,
             id: g.id,
             title: g.term,
             subtitle: g.definition.slice(0, 80) + '...',
             href: `/glossary#${g.id}`,
         }))
 
-    return [...topicResults, ...glossaryResults]
+    const sectionResults: SearchResult[] = sectionIndex
+        .filter(s => s.title.toLowerCase().includes(q))
+        .slice(0, 4)
+        .map(s => {
+            const topic = kernelTopics.find(t => t.id === s.topicId)
+            return {
+                type: 'section' as const,
+                id: s.sectionId,
+                title: s.title,
+                subtitle: topic?.title ?? s.topicId,
+                href: s.route,
+            }
+        })
+
+    return [...topicResults, ...glossaryResults, ...sectionResults]
+}
+
+const typeLabel: Record<string, string> = {
+    topic: '토픽',
+    glossary: '용어',
+    section: '섹션',
+}
+
+const typeColor: Record<string, string> = {
+    topic: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300',
+    glossary: 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300',
+    section: 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300',
 }
 
 interface Props {
@@ -53,7 +101,6 @@ interface Props {
 }
 
 export function SearchModal({ open, onClose }: Props) {
-    // key 프롭으로 재마운트되므로 open 시 항상 초기 상태로 시작 — useEffect 불필요
     const [query, setQuery] = useState('')
     const [activeIdx, setActiveIdx] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -67,7 +114,7 @@ export function SearchModal({ open, onClose }: Props) {
 
     const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value)
-        setActiveIdx(0)  // 쿼리 변경 시 이벤트 핸들러에서 직접 리셋 (effect 불필요)
+        setActiveIdx(0)
     }
 
     const handleKey = (e: React.KeyboardEvent) => {
@@ -78,6 +125,13 @@ export function SearchModal({ open, onClose }: Props) {
     }
 
     if (!open) return null
+
+    // 결과를 타입별로 그룹화
+    const groups: { type: string; items: SearchResult[] }[] = []
+    for (const type of ['topic', 'glossary', 'section']) {
+        const items = results.filter(r => r.type === type)
+        if (items.length > 0) groups.push({ type, items })
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]" onClick={onClose}>
@@ -96,44 +150,55 @@ export function SearchModal({ open, onClose }: Props) {
                         value={query}
                         onChange={handleQueryChange}
                         onKeyDown={handleKey}
-                        placeholder="토픽 또는 용어 검색..."
+                        placeholder="토픽, 용어, 섹션 검색..."
                         className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none text-sm"
                     />
                     <kbd className="text-xs text-gray-400 border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5">ESC</kbd>
                 </div>
 
-                {/* Results */}
-                {results.length > 0 && (
-                    <ul className="max-h-80 overflow-y-auto py-2">
-                        {results.map((r, i) => (
-                            <li key={r.id}>
-                                <button
-                                    onClick={() => go(r.href)}
-                                    onMouseEnter={() => setActiveIdx(i)}
-                                    className={`w-full text-left px-4 py-2.5 flex items-start gap-3 transition-colors ${
-                                        i === activeIdx ? 'bg-blue-50 dark:bg-blue-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                                >
-                                    <span className={`mt-0.5 shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${
-                                        r.type === 'topic'
-                                            ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                                            : 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                                    }`}>
-                                        {r.type === 'topic' ? '토픽' : '용어'}
-                                    </span>
-                                    <div className="min-w-0">
-                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{r.title}</div>
-                                        <div className="text-xs text-gray-500 dark:text-gray-500 truncate mt-0.5">{r.subtitle}</div>
+                {/* Grouped results */}
+                {groups.length > 0 && (
+                    <div className="max-h-80 overflow-y-auto py-2">
+                        {groups.map(({ type, items }) => {
+                            const flatIdx = results.indexOf(items[0])
+                            return (
+                                <div key={type}>
+                                    <div className="px-4 py-1 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                                        {typeLabel[type]}
                                     </div>
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                                    <ul>
+                                        {items.map((r, localI) => {
+                                            const i = flatIdx + localI
+                                            return (
+                                                <li key={r.id}>
+                                                    <button
+                                                        onClick={() => go(r.href)}
+                                                        onMouseEnter={() => setActiveIdx(i)}
+                                                        className={`w-full text-left px-4 py-2 flex items-start gap-3 transition-colors ${
+                                                            i === activeIdx ? 'bg-blue-50 dark:bg-blue-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                        }`}
+                                                    >
+                                                        <span className={`mt-0.5 shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${typeColor[type]}`}>
+                                                            {typeLabel[type]}
+                                                        </span>
+                                                        <div className="min-w-0">
+                                                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{r.title}</div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-500 truncate mt-0.5">{r.subtitle}</div>
+                                                        </div>
+                                                    </button>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                            )
+                        })}
+                    </div>
                 )}
 
                 {query && results.length === 0 && (
                     <div className="px-4 py-8 text-center text-sm text-gray-400">
-            "{query}"에 대한 결과가 없습니다
+                        "{query}"에 대한 결과가 없습니다
                     </div>
                 )}
 

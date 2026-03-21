@@ -7,5 +7,7 @@ export interface KernelTopic {
   route: string
   vizType: 'D3' | 'Three.js' | 'Mixed'
   tags: string[]
-  implemented: boolean
+  status: 'complete' | 'in_progress' | 'draft'
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  prerequisites: string[]
 }

@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom'
 import { kernelTopics } from '../../data/kernelTopics'
 
+const difficultyLabel = { beginner: '입문', intermediate: '중급', advanced: '심화' }
+const difficultyColor = {
+    beginner: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30',
+    intermediate: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30',
+    advanced: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30',
+}
+
 export default function Home() {
     return (
         <div className="max-w-5xl mx-auto px-6 py-10">
@@ -50,10 +57,23 @@ export default function Home() {
                             {String(topic.number).padStart(2, '0')}
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h2 className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white text-sm leading-snug mb-1">
-                                {topic.title}
-                            </h2>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h2 className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white text-sm leading-snug">
+                                    {topic.title}
+                                </h2>
+                                <span className={`shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded ${difficultyColor[topic.difficulty]}`}>
+                                    {difficultyLabel[topic.difficulty]}
+                                </span>
+                            </div>
                             <p className="text-xs text-gray-500 leading-relaxed">{topic.description}</p>
+                            {topic.prerequisites.length > 0 && (
+                                <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-1.5">
+                                    선수 지식: {topic.prerequisites.map(id => {
+                                        const t = kernelTopics.find(k => k.id === id)
+                                        return t ? `Topic ${String(t.number).padStart(2, '0')}` : id
+                                    }).join(', ')}
+                                </p>
+                            )}
                             <div className="flex flex-wrap gap-1.5 mt-2">
                                 {topic.tags.slice(0, 3).map((tag) => (
                                     <span key={tag} className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 rounded px-1.5 py-0.5 font-mono">
