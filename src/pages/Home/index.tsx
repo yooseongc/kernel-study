@@ -67,7 +67,7 @@ export default function Home() {
             </div>
 
             <p className="text-center text-xs text-gray-400 dark:text-gray-700 mt-10">
-        kernel-study · React + TypeScript + D3 + Three.js + Mermaid
+        © 2026 yooseongc · kernel-study
             </p>
         </div>
     )

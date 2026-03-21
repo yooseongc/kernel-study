@@ -10,6 +10,9 @@ const categoryLabel: Record<string, string> = {
     driver: '드라이버',
     debug: '디버깅 / 성능',
     general: '일반',
+    fs: '파일시스템',
+    security: '보안',
+    virt: '가상화',
 }
 
 const categoryColor: Record<string, string> = {
@@ -21,6 +24,9 @@ const categoryColor: Record<string, string> = {
     driver: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300',
     debug: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
     general: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300',
+    fs: 'bg-lime-100 dark:bg-lime-900/40 text-lime-700 dark:text-lime-300',
+    security: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
+    virt: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
 }
 
 export default function Glossary() {
