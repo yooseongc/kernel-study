@@ -208,9 +208,43 @@
 
 ---
 
+## Sprint 12 — 인라인 용어 툴팁 시스템 + 용어사전 갱신 (예정)
+
+> 배경: 콘텐츠 전반에 등장하는 기술 용어를 "카드"(핵심 개념) 또는 "hover 툴팁"(그 외)으로 즉시 확인할 수 있게 한다.
+> Sprint 12를 먼저 완료한 뒤 Sprint 11 콘텐츠 작업 시 툴팁을 적용 상태로 추가한다.
+
+### 🔴 높음 — 인프라 구축
+
+| 작업 | 상태 |
+|------|------|
+| `src/components/ui/GlossaryTooltip.tsx` 개발: `<T id="rcu">RCU</T>` 형태, glossary.ts id로 정의 조회 | ⬜ |
+| 팝오버 UI: 점선 밑줄(border-dotted) + hover/focus 시 정의 카드 (용어명·카테고리 배지·정의·"→ 용어사전" 링크) | ⬜ |
+| 포커스·키보드 접근성(Tab + Enter/Space 토글), 화면 밖 넘침 방지(위/아래 자동 전환), 다크모드 완전 대응 | ⬜ |
+| id가 glossary에 없는 경우 graceful fallback (툴팁 없이 텍스트만 렌더) | ⬜ |
+
+### 🟡 중간 — 기존 Topic 페이지에 적용
+
+| 작업 | 상태 |
+|------|------|
+| Topic 01~04: task_struct, VFS, inode, dentry, PGD, PTE, TLB, CR3, Buddy Allocator, SLUB, VMA 등 | ⬜ |
+| Topic 05~08: IRQ, softirq, Tasklet, Workqueue, NAPI, sk_buff, Netfilter, conntrack, XDP, eBPF 등 | ⬜ |
+| Topic 09~13: RCU, Spinlock, Mutex, DMA, LSM, Capabilities, VMCS, EPT, virtio, cgroup 등 | ⬜ |
+| Glossary 페이지의 topicRef 링크가 `<T>` 컴포넌트로 연결되지 않도록 주의 (순환 방지) | ⬜ |
+
+### 🟢 낮음 — Sprint 11 완료 후 용어사전 갱신
+
+| 작업 | 상태 |
+|------|------|
+| Sprint 11 신규 용어 glossary.ts 추가: CoW, SCHED_DEADLINE, CBS, grace period, bpftrace, flame graph, vhost, write-back, dirty page, PID namespace, CUBIC, BBR 등 | ⬜ |
+| 신규 섹션 topicRef 매핑 업데이트 (§02-scheduler, §03-memory, §04-filesystem 등) | ⬜ |
+| Glossary 페이지 categoryLabel/categoryColor에 신규 카테고리 추가 필요 시 반영 | ⬜ |
+
+---
+
 ## Sprint 11 — 콘텐츠 심화 개선 (예정)
 
 > 기준: 커널 선생님 리뷰 2026-03-21. 사용자 피드백 패턴 반영 (구체화·인라인 정의·임계값 행동·상태 전이 시각화)
+> **Sprint 12(툴팁 인프라) 완료 후 진행. 새 섹션 내 주요 용어에 `<T id="...">` 적용.**
 
 ### 🔴 높음 — 핵심 개념 누락 또는 추상화 과도
 | 작업 | 상태 |
