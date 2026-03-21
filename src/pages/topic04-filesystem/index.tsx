@@ -2,6 +2,7 @@ import { CodeBlock } from '../../components/viz/CodeBlock'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ── 4.2 코드 상수 ──────────────────────────────────────────────────────────
 
@@ -398,6 +399,15 @@ export default function Topic11Filesystem() {
                     <T id="vfs">VFS</T> 계층, open() 흐름, <T id="page_cache">페이지 캐시</T>, ext4 저널링, 블록 I/O 경로
                 </p>
             </header>
+
+            <LearningCard
+                topicId="04-filesystem"
+                items={[
+                    'VFS가 다양한 파일시스템을 통일된 인터페이스로 추상화하는 방법을 이해합니다',
+                    'inode, dentry, file 세 객체가 어떻게 협력하여 파일 접근을 처리하는지 배웁니다',
+                    'Page Cache와 write-back으로 디스크 I/O를 최소화하는 원리를 파악합니다',
+                ]}
+            />
 
             {/* 4.1 VFS 계층 구조 */}
             <Section id="s441" title="4.1  VFS — Virtual File System">

@@ -2,6 +2,7 @@ import { CodeBlock } from '../../components/viz/CodeBlock'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -199,6 +200,15 @@ export default function Topic13Kvm() {
                     KVM 구조, VMCS/VMCB, VMENTRY/VMEXIT, EPT, virtio, 클라우드 인프라
                 </p>
             </header>
+
+            <LearningCard
+                topicId="13-kvm"
+                items={[
+                    'KVM이 하드웨어 가상화 확장(VMX/SVM)을 이용해 VM을 실행하는 원리를 이해합니다',
+                    'VMCS(VM Control Structure)와 EPT/NPT를 통한 중첩 페이지 테이블 번역을 배웁니다',
+                    'virtio 프레임워크로 게스트와 호스트가 I/O를 효율적으로 공유하는 방법을 파악합니다',
+                ]}
+            />
 
             {/* 13.1 KVM 개요 */}
             <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">

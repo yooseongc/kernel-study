@@ -8,6 +8,7 @@ import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 const syscallFlowChart = `
 sequenceDiagram
@@ -708,6 +709,15 @@ export default function Topic01Overview() {
                     이 페이지에서는 커널이 무엇을 하는지, 어떤 구조로 이루어져 있는지를 시각적으로 살펴봅니다.
                 </p>
             </header>
+
+            <LearningCard
+                topicId="01-overview"
+                items={[
+                    '커널이 하는 일과 유저/커널 공간의 경계를 이해합니다',
+                    '시스템 콜이 어떻게 유저 프로그램과 커널을 연결하는지 배웁니다',
+                    '모놀리식 커널과 커널 모듈 구조, 소스 트리의 큰 그림을 파악합니다',
+                ]}
+            />
 
             {/* 섹션 1: 커널이란 */}
             <Section id="s11" title="1.1  커널이 하는 일">

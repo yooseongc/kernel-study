@@ -9,6 +9,8 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
+import { KernelRef } from '../../components/ui/KernelRef'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 9.1  Race Condition — AnimatedDiagram step renderer
@@ -581,6 +583,15 @@ export default function Topic08() {
                 </p>
             </header>
 
+            <LearningCard
+                topicId="09-synchronization"
+                items={[
+                    'Spinlock, Mutex, RWLock의 내부 구현과 올바른 선택 기준을 이해합니다',
+                    'RCU(Read-Copy-Update)가 읽기 성능을 극대화하는 grace period 메커니즘을 배웁니다',
+                    '멀티코어 환경에서 Cache Coherence와 메모리 배리어가 동기화에 미치는 영향을 파악합니다',
+                ]}
+            />
+
             {/* 9.1 Race Condition */}
             <Section id="s91" title="9.1  Race Condition">
                 <Prose>
@@ -608,6 +619,10 @@ export default function Topic08() {
                 <Prose>
           짧은 임계 구역에 사용합니다. 락을 얻을 때까지 CPU를 소모하며 바쁜 대기(busy-wait)를
           수행합니다. sleep 불가 컨텍스트(인터럽트 핸들러)에서도 사용할 수 있습니다.
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/spinlock_types.h" sym="spinlock_t" label="spinlock_t" />
+                        <KernelRef path="include/linux/rcupdate.h" sym="rcu_head" label="rcu_head" />
+                    </div>
                 </Prose>
 
                 <CodeBlock code={spinlockCode} language="c" filename="spinlock.c" />

@@ -9,6 +9,8 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
+import { KernelRef } from '../../components/ui/KernelRef'
 
 // ── 2.3 프로세스 상태 전이 D3 다이어그램 ────────────────────────────────────
 function renderProcessStateDiagram(
@@ -903,6 +905,15 @@ export default function Topic02Scheduler() {
                 </p>
             </header>
 
+            <LearningCard
+                topicId="02-scheduler"
+                items={[
+                    'task_struct 구조체가 프로세스와 스레드를 어떻게 통일 표현하는지 이해합니다',
+                    'CFS(Completely Fair Scheduler)의 가중치·vruntime 계산 방식을 배웁니다',
+                    '컨텍스트 스위치 시 CPU 레지스터와 메모리 컨텍스트가 어떻게 교환되는지 파악합니다',
+                ]}
+            />
+
             {/* 2.1 프로세스와 스레드 */}
             <Section id="s21" title="2.1  프로세스와 스레드">
                 <Prose>
@@ -912,6 +923,10 @@ export default function Topic02Scheduler() {
                     스레드는 <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">clone()</code> 호출 시
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">CLONE_THREAD</code> 플래그로 생성한
                     "자원 공유 프로세스"입니다.
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/sched.h" sym="task_struct" label="task_struct" />
+                        <KernelRef path="kernel/sched/sched.h" sym="sched_entity" label="sched_entity" />
+                    </div>
                 </Prose>
 
                 {/* 비교 테이블 */}

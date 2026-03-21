@@ -3,6 +3,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -245,6 +246,15 @@ export default function Topic12() {
                     DAC, Capabilities, LSM, AppArmor, SELinux, Namespace 격리, 컨테이너 보안
                 </p>
             </header>
+
+            <LearningCard
+                topicId="12-security"
+                items={[
+                    'LSM(Linux Security Module) 훅이 커널 내부에서 보안 정책을 강제하는 방법을 이해합니다',
+                    'Capabilities 권한 모델로 root 권한을 세분화하고 최소 권한 원칙을 구현하는 방법을 배웁니다',
+                    'PID/Network/Mount Namespace로 컨테이너 격리를 구현하는 커널 메커니즘을 파악합니다',
+                ]}
+            />
 
             {/* 12.1 Linux 보안 모델 개요 */}
             <Section id="s121" title="12.1  Linux 보안 모델 개요">

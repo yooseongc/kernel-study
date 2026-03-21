@@ -9,6 +9,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 10.2  드라이버 계층 트리 (D3 horizontal tree)
@@ -757,6 +758,15 @@ export default function Topic09() {
                     커널 모듈, 문자/블록/네트워크 드라이버, NIC+DMA, PCI/PCIe 드라이버, platform driver
                 </p>
             </header>
+
+            <LearningCard
+                topicId="10-drivers"
+                items={[
+                    '커널 모듈의 초기화/종료 생명주기와 module_init/module_exit 매크로를 이해합니다',
+                    '문자 디바이스 드라이버가 file_operations 구조체를 통해 시스템 콜과 연결되는 방법을 배웁니다',
+                    'NIC 드라이버의 DMA 설정과 IRQ 등록, NAPI 처리 루프를 파악합니다',
+                ]}
+            />
 
             {/* 10.1 커널 모듈 */}
             <Section id="s101" title="10.1  커널 모듈">

@@ -7,6 +7,8 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
+import { LearningCard } from '../../components/ui/LearningCard'
+import { KernelRef } from '../../components/ui/KernelRef'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3.1  가상 주소 공간 (JSX div 기반)
@@ -1324,6 +1326,15 @@ export default function Topic03() {
                 </p>
             </header>
 
+            <LearningCard
+                topicId="03-memory"
+                items={[
+                    '가상 주소를 물리 주소로 번역하는 페이지 테이블 4단계 구조를 이해합니다',
+                    'Page Fault 발생 시 커널이 어떻게 처리하는지, CoW 최적화를 배웁니다',
+                    'Buddy Allocator와 SLUB Allocator가 메모리를 어떻게 할당하는지 파악합니다',
+                ]}
+            />
+
             {/* 3.1 Virtual Address Space */}
             <Section id="s331" title="3.1  가상 주소 공간">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -1576,6 +1587,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </p>
                 <CodeBlock code={mmStructCode} language="c" filename="include/linux/mm_types.h" />
                 <CodeBlock code={vmaCode} language="c" filename="include/linux/mm_types.h" />
+                <div className="mt-2 flex flex-wrap gap-2">
+                    <KernelRef path="include/linux/mm_types.h" sym="mm_struct" label="mm_struct" />
+                    <KernelRef path="include/linux/mm_types.h" sym="vm_area_struct" label="vm_area_struct" />
+                </div>
 
                 {/* VMA flags table */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden text-sm">

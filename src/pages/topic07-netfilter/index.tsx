@@ -6,6 +6,7 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
 function renderNetfilterFlow(
@@ -433,6 +434,15 @@ export default function Topic06() {
                     Netfilter 5훅, iptables/nftables, conntrack, TPROXY, TC Hook
                 </p>
             </header>
+
+            <LearningCard
+                topicId="07-netfilter"
+                items={[
+                    'Netfilter의 5개 훅 포인트(PREROUTING~POSTROUTING)와 우선순위 체계를 이해합니다',
+                    'iptables와 nftables가 커널 Netfilter 위에서 어떻게 동작하는지 배웁니다',
+                    'TPROXY를 이용한 투명 프록시 구현과 conntrack 상태 추적 원리를 파악합니다',
+                ]}
+            />
 
             <Section id="s771" title="7.1  Netfilter 구조">
                 <InfoBox>

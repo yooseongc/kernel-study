@@ -7,6 +7,8 @@ import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
+import { LearningCard } from '../../components/ui/LearningCard'
+import { KernelRef } from '../../components/ui/KernelRef'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.1  네트워크 레이어 다이어그램 (D3)
@@ -1141,6 +1143,15 @@ export default function Topic05() {
                 </p>
             </header>
 
+            <LearningCard
+                topicId="06-network-stack"
+                items={[
+                    'NIC 드라이버에서 소켓까지 패킷이 이동하는 전체 경로를 이해합니다',
+                    'sk_buff 구조체가 어떻게 네트워크 데이터를 표현하는지, NAPI 폴링을 배웁니다',
+                    'L2→L3→L4 각 레이어에서 일어나는 헤더 처리와 라우팅 결정을 파악합니다',
+                ]}
+            />
+
             <Section id="s661" title="6.1  패킷이 커널에 들어오는 과정">
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           외부에서 패킷이 도착하면 NIC → 드라이버 → 커널 네트워크 스택 → 소켓 버퍼 → 사용자
@@ -1204,6 +1215,11 @@ export default function Topic05() {
                 <div className="rounded-xl border border-gray-700 bg-gray-900 p-4">
                     <div className="text-sm font-semibold text-gray-300 mb-3">메모리 레이아웃 시각화</div>
                     <SkbuffLayout />
+                </div>
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                    <KernelRef path="include/linux/skbuff.h" sym="sk_buff" label="sk_buff" />
+                    <KernelRef path="include/linux/netdevice.h" sym="net_device" label="net_device" />
                 </div>
 
                 <div className="rounded-lg border border-amber-800/40 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">

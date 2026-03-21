@@ -8,6 +8,8 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
+import { KernelRef } from '../../components/ui/KernelRef'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8.1  XDP vs Normal path D3 diagram
@@ -839,12 +841,25 @@ export default function Topic07() {
                 </p>
             </header>
 
+            <LearningCard
+                topicId="08-xdp-ebpf"
+                items={[
+                    'XDP가 NIC 드라이버 레벨에서 패킷을 처리해 커널 스택 오버헤드를 제거하는 원리를 이해합니다',
+                    'eBPF 프로그램이 검증기를 통과해 JIT 컴파일되고 훅에 연결되는 실행 모델을 배웁니다',
+                    'TC BPF와 XDP의 차이, Maps를 통한 사용자 공간과의 데이터 공유를 파악합니다',
+                ]}
+            />
+
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
                 <Prose>
                     <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는
           고성능 경로입니다. 기존 커널 네트워크 스택 대비 10~100배 빠릅니다. 패킷이 DMA 버퍼에서
           곧바로 <T id="ebpf">eBPF</T> 프로그램으로 넘어가기 때문에 메모리 할당 및 복사 오버헤드가 없습니다.
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/bpf.h" sym="bpf_prog" label="bpf_prog" />
+                        <KernelRef path="include/uapi/linux/bpf.h" sym="xdp_md" label="xdp_md" />
+                    </div>
                 </Prose>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <D3Container

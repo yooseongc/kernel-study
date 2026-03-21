@@ -8,6 +8,7 @@ import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
@@ -593,6 +594,15 @@ export default function Topic04() {
                     IRQ 처리, Top/Bottom Half, Softirq, Tasklet, Workqueue, hrtimer, Threaded IRQ
                 </p>
             </header>
+
+            <LearningCard
+                topicId="05-interrupts"
+                items={[
+                    '하드웨어 인터럽트와 예외의 차이, IRQ 처리 흐름 전체를 이해합니다',
+                    'Top Half/Bottom Half 분리로 인터럽트 지연을 최소화하는 설계를 배웁니다',
+                    'Softirq, Tasklet, Workqueue의 차이와 적절한 사용 시나리오를 파악합니다',
+                ]}
+            />
 
             <Section id="s551" title="5.1  인터럽트와 예외의 차이">
 

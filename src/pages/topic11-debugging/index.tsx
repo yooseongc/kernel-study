@@ -8,6 +8,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { LearningCard } from '../../components/ui/LearningCard'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 11.1  /proc 트리 D3 시각화
@@ -741,6 +742,15 @@ export default function Topic10() {
                     dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>, <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅
                 </p>
             </header>
+
+            <LearningCard
+                topicId="11-debugging"
+                items={[
+                    'perf stat/record/report로 CPU 성능 이벤트를 수집하고 분석하는 방법을 이해합니다',
+                    'ftrace와 kprobe를 이용해 커널 함수 호출을 실시간으로 추적하는 기법을 배웁니다',
+                    'Kernel Oops 메시지를 해석하고 /proc, /sys 인터페이스로 시스템 상태를 진단하는 방법을 파악합니다',
+                ]}
+            />
 
             {/* 11.1 /proc와 /sys 활용 */}
             <Section id="s111" title="11.1  /proc와 /sys 활용">
