@@ -48,7 +48,7 @@
 
 | 작업 | 상태 |
 |------|------|
-| Topic 01 추가 섹션 (시스템 콜 흐름 애니메이션) | ⬜ |
+| Topic 01 추가 섹션 (시스템 콜 흐름 애니메이션) | ✅ |
 | Topic 04 — 인터럽트/예외/IRQ 흐름/Deferred Work/hrtimer 전체 구현 | ✅ |
 | Topic 02 — 전체 구현 (프로세스/스레드/CFS/컨텍스트스위치) | ✅ |
 | Topic 02 — CFS Red-Black 트리 D3 시각화 | ✅ |
@@ -56,8 +56,8 @@
 | Topic 02 — 프로세스 상태 전이 D3 다이어그램 (Mermaid 대체) | ✅ |
 | Topic 02 — CPU Affinity, SMP/NUMA, RT 스케줄러 섹션 추가 | ✅ |
 | Topic 02 — 2.9 cgroups 개요 + CPU 서브시스템 (v1/v2, task_struct 연결, 컨테이너 관계) | ✅ |
-| Topic 03 — memory cgroup (memory.limit, OOM killer) 섹션 | ⬜ |
-| Topic 05/06 — net_cls / TC+cgroup 언급 | ⬜ |
+| Topic 03 — memory cgroup (memory.limit, OOM killer) 섹션 | ✅ |
+| Topic 05/06 — net_cls / TC+cgroup 언급 | ✅ |
 | Topic 03 — 전체 구현 (가상주소, 페이지테이블, mm_struct, Page Fault, Buddy, SLUB, memory cgroup) | ✅ |
 
 ---
@@ -80,7 +80,7 @@
 | Topic 09 — 커널 모듈, 문자/블록/네트워크 드라이버, NIC+DMA, net_device_ops, 드라이버 트리 D3 | ✅ |
 | Topic 10 — /proc/sys D3 트리, dmesg, Oops/Panic, perf/ftrace, 네트워크 병목 분석 | ✅ |
 | 모바일 반응형 — 사이드바 드로어, 모바일 상단 바 | ✅ |
-| GitHub Pages 배포 검증 | ⬜ |
+| GitHub Pages 배포 검증 | ✅ |
 
 ---
 
@@ -166,7 +166,7 @@
 ### 🟡 중간
 | 작업 | 상태 |
 |------|------|
-| Topic 01 — 커널 소스 트리 구조 다이어그램 (arch/, net/, fs/, mm/ 등) | ⬜ |
+| Topic 01 — 커널 소스 트리 구조 다이어그램 (arch/, net/, fs/, mm/ 등) | ✅ |
 | Topic 04 — 블록 I/O 경로 섹션 (bio → request_queue → I/O 스케줄러, mq-deadline) | ⬜ |
 | Topic 12 — namespace와 보안 모델 연결 섹션 (user ns / mount ns 권한 격리) | ⬜ |
 

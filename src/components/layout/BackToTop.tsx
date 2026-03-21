@@ -1,4 +1,5 @@
-import { useState, useEffect, RefObject } from 'react'
+import { useState, useEffect } from 'react'
+import type { RefObject } from 'react'
 
 interface BackToTopProps {
     scrollRef: RefObject<HTMLElement | null>
