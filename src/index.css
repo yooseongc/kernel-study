@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Custom scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(75% 0 0 / 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(60% 0 0 / 0.55);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(40% 0 0 / 0.5);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(55% 0 0 / 0.7);
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(75% 0 0 / 0.35) transparent;
+}
+.dark * {
+  scrollbar-color: oklch(40% 0 0 / 0.5) transparent;
+}
