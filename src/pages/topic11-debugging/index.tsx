@@ -5,71 +5,9 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
-}
-
-interface TableRow {
-  cells: string[]
-}
-
-function InfoTable({ headers, rows }: { headers: string[]; rows: TableRow[] }) {
-    return (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-            <table className="w-full text-sm">
-                <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-                        {headers.map((h, i) => (
-                            <th
-                                key={i}
-                                className="px-4 py-2.5 text-left font-semibold text-gray-700 dark:text-gray-300 font-mono text-xs"
-                            >
-                                {h}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map((row, ri) => (
-                        <tr
-                            key={ri}
-                            className="border-b last:border-0 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
-                        >
-                            {row.cells.map((cell, ci) => (
-                                <td
-                                    key={ci}
-                                    className={`px-4 py-2.5 font-mono text-xs ${
-                                        ci === 0
-                                            ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                                            : 'text-gray-600 dark:text-gray-400'
-                                    }`}
-                                >
-                                    {cell}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    )
-}
+import { Section } from '../../components/ui/Section'
+import { Prose } from '../../components/ui/Prose'
+import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 11.1  /proc 트리 D3 시각화
@@ -656,14 +594,14 @@ export default function Topic10() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderProcTree(svg, w, h, isDark)
         },
-        [theme], // eslint-disable-line react-hooks/exhaustive-deps
+        [isDark]
     )
 
     const renderNetworkBottleneckFn = useCallback(
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderNetworkBottleneck(svg, w, h, isDark)
         },
-        [theme], // eslint-disable-line react-hooks/exhaustive-deps
+        [isDark]
     )
 
     return (

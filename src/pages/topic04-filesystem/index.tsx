@@ -1,7 +1,7 @@
-import React from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
 
 // ── 4.2 코드 상수 ──────────────────────────────────────────────────────────
 
@@ -320,19 +320,6 @@ function VfsLayerDiagram() {
                 </div>
             ))}
         </div>
-    )
-}
-
-// ── Layout helpers ────────────────────────────────────────────────────────────
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
     )
 }
 

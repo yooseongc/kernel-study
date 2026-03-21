@@ -1,6 +1,21 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-21 (Sprint 10)
+> 마지막 업데이트: 2026-03-21 (Sprint 13)
+
+## Sprint 13 — 구조 정리 (2026-03-21)
+
+> 기준: CODEX_REVIEW(docs/CODEX_REVIEW.md) 권고사항 — 콘텐츠 확장 전 구조적 기반 정비
+
+| 작업 | 상태 |
+|------|------|
+| `src/components/ui/Section.tsx` 추출 — 13개 토픽 로컬 정의 제거 | ✅ |
+| `src/components/ui/Prose.tsx` 추출 — 11개 토픽 로컬 정의 제거 | ✅ |
+| `src/components/ui/InfoTable.tsx` 추출 — 5개 토픽 로컬 정의 제거 | ✅ |
+| `App.tsx` Route lazy loading — 초기 번들 1.5MB → 250KB | ✅ |
+| `topic09/10/11` useCallback 의존성 수정: `[theme]` → `[isDark]`, eslint-disable 주석 제거 | ✅ |
+| `README.md` 실제 프로젝트 내용으로 재작성 | ✅ |
+
+---
 
 ## Sprint 1 — 골격 구축 ✅
 

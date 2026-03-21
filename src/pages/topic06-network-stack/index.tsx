@@ -6,6 +6,7 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.1  네트워크 레이어 다이어그램 (D3)
@@ -1025,17 +1026,6 @@ apt install liburing-dev  # Ubuntu`
 // ─────────────────────────────────────────────────────────────────────────────
 // UI Helpers
 // ─────────────────────────────────────────────────────────────────────────────
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component

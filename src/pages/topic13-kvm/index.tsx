@@ -1,24 +1,7 @@
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { T } from '../../components/ui/GlossaryTooltip'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
-}
+import { Section } from '../../components/ui/Section'
+import { Prose } from '../../components/ui/Prose'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings

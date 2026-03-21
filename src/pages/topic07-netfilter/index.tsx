@@ -5,6 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
 function renderNetfilterFlow(
@@ -339,17 +340,6 @@ ip route add local default dev lo table 100
 # setsockopt(fd, SOL_IP, IP_TRANSPARENT, &opt, sizeof(opt))`
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
 function TableWrapper({ children }: { children: React.ReactNode }) {
     return (
         <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 mb-6">

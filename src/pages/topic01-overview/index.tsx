@@ -6,6 +6,8 @@ import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
+import { Prose } from '../../components/ui/Prose'
 
 const syscallFlowChart = `
 sequenceDiagram
@@ -642,21 +644,6 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf, size_t, count
     ret = vfs_write(f.file, buf, count, &pos);  /* VFS로 전달 */
     return ret;
 }`
-
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
-}
 
 export default function Topic01Overview() {
     const [selectedRing, setSelectedRing] = useState<RingInfo>(ringData[1]) // default: Ring 0

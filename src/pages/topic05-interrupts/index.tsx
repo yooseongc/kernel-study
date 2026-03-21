@@ -6,6 +6,8 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
+import { Prose } from '../../components/ui/Prose'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5.2  IRQ 처리 흐름 — AnimatedDiagram 시각화 컴포넌트
@@ -450,25 +452,10 @@ function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
     )
 }
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
 function SubTitle({ children }: { children: React.ReactNode }) {
     return (
         <h3 className="text-base font-semibold text-gray-200 mb-3 mt-6">{children}</h3>
     )
-}
-
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-sm text-gray-400 leading-relaxed mb-4">{children}</p>
 }
 
 type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'

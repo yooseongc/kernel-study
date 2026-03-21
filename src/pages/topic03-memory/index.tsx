@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
 import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
@@ -6,6 +6,7 @@ import { useTheme } from '../../contexts/ThemeContext'
 import * as d3 from 'd3'
 import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
+import { Section } from '../../components/ui/Section'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3.1  가상 주소 공간 (JSX div 기반)
@@ -1243,19 +1244,6 @@ madvise(ptr, size, MADV_NOHUGEPAGE); # THP 억제 (Redis 등)`
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────────────────────
-// Layout helpers
-// ─────────────────────────────────────────────────────────────────────────────
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
-
 // Main Page Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic03() {
