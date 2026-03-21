@@ -219,12 +219,18 @@ const pageTableSteps = [
 // 0x00007FFF_DEADBEEF in binary:
 // 0x00007FFF = 0000 0000 0000 0000 0111 1111 1111 1111
 // bits 47:39 of the 48-bit VA: bits[47:39] = 0b000001111 = 0xFF (255? let me just use a plausible display)
+// Correct values for 0x00007FFF_DEADBEEF:
+//   PGD [47:39] = (addr >> 39) & 0x1FF = 0x0FF (255)
+//   PUD [38:30] = (addr >> 30) & 0x1FF = 0x1FF (511)
+//   PMD [29:21] = (addr >> 21) & 0x1FF = 0x0F5 (245)
+//   PTE [20:12] = (addr >> 12) & 0x1FF = 0x0DB (219)
+//   Off [11:0]  =  addr        & 0xFFF = 0xEEF (3823)
 const vaFields = [
-    { label: 'PGD', bits: '47:39', value: '0x0FF', color: '#8b5cf6', darkColor: '#7c3aed' },
-    { label: 'PUD', bits: '38:30', value: '0x1FF', color: '#3b82f6', darkColor: '#2563eb' },
-    { label: 'PMD', bits: '29:21', value: '0x1EF', color: '#10b981', darkColor: '#059669' },
-    { label: 'PTE', bits: '20:12', value: '0x0AD', color: '#f59e0b', darkColor: '#d97706' },
-    { label: 'Offset', bits: '11:0', value: '0xEEF', color: '#ef4444', darkColor: '#dc2626' },
+    { label: 'PGD', bits: '47:39', value: '0x0FF', dec: 255,  color: '#8b5cf6', darkColor: '#7c3aed' },
+    { label: 'PUD', bits: '38:30', value: '0x1FF', dec: 511,  color: '#3b82f6', darkColor: '#2563eb' },
+    { label: 'PMD', bits: '29:21', value: '0x0F5', dec: 245,  color: '#10b981', darkColor: '#059669' },
+    { label: 'PTE', bits: '20:12', value: '0x0DB', dec: 219,  color: '#f59e0b', darkColor: '#d97706' },
+    { label: 'Offset', bits: '11:0', value: '0xEEF', dec: 3823, color: '#ef4444', darkColor: '#dc2626' },
 ]
 
 const tableAddresses = [
@@ -233,6 +239,71 @@ const tableAddresses = [
     { level: 'PMD', baseAddr: '0x1002_0000', nextLabel: 'PTE' },
     { level: 'PTE', baseAddr: '0x1003_0000', nextLabel: 'Physical' },
 ]
+
+// VA bit-field 분해 시각화 — 각 필드의 실제 비트를 보여줌
+function VABitBreakdown() {
+    const toBin = (n: number, bits: number) => n.toString(2).padStart(bits, '0')
+
+    const fields = [
+        { name: 'PGD', range: '[47:39]', bits: 9,  dec: 0xFF,  hex: '0xFF',  bg: 'bg-purple-100 dark:bg-purple-900/40', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-200', label: '1번째 레벨 인덱스' },
+        { name: 'PUD', range: '[38:30]', bits: 9,  dec: 0x1FF, hex: '0x1FF', bg: 'bg-blue-100 dark:bg-blue-900/40',   border: 'border-blue-400 dark:border-blue-600',   text: 'text-blue-700 dark:text-blue-200',   label: '2번째 레벨 인덱스' },
+        { name: 'PMD', range: '[29:21]', bits: 9,  dec: 0xF5,  hex: '0xF5',  bg: 'bg-emerald-100 dark:bg-emerald-900/40', border: 'border-emerald-400 dark:border-emerald-600', text: 'text-emerald-700 dark:text-emerald-200', label: '3번째 레벨 인덱스' },
+        { name: 'PTE', range: '[20:12]', bits: 9,  dec: 0xDB,  hex: '0xDB',  bg: 'bg-amber-100 dark:bg-amber-900/40', border: 'border-amber-400 dark:border-amber-600', text: 'text-amber-700 dark:text-amber-200',   label: '4번째 레벨 인덱스' },
+        { name: 'Offset', range: '[11:0]', bits: 12, dec: 0xEEF, hex: '0xEEF', bg: 'bg-red-100 dark:bg-red-900/40', border: 'border-red-400 dark:border-red-600', text: 'text-red-700 dark:text-red-200', label: '페이지 내 오프셋' },
+    ]
+
+    return (
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
+            <div className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                VA = <span className="text-gray-900 dark:text-white">0x00007FFF_DEADBEEF</span> 비트 분해
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+                48비트 = 9+9+9+9+12. 각 9비트는 해당 페이지 테이블에서 최대 512개(2⁹) 엔트리 중 하나를 선택합니다.
+            </p>
+
+            {/* 필드별 비트 블록 */}
+            <div className="flex gap-1 flex-wrap">
+                {fields.map(f => {
+                    const binStr = toBin(f.dec, f.bits)
+                    return (
+                        <div key={f.name} className={`rounded-lg border ${f.bg} ${f.border} flex flex-col items-center py-2 px-1`}>
+                            {/* 비트 열 */}
+                            <div className="flex gap-px mb-1">
+                                {binStr.split('').map((bit, i) => (
+                                    <span key={i} className={`w-[18px] h-6 flex items-center justify-center text-xs font-bold font-mono rounded ${f.text} bg-white/50 dark:bg-black/20`}>
+                                        {bit}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className={`text-[10px] font-bold font-mono ${f.text}`}>{f.name}</div>
+                            <div className="text-[9px] text-gray-400 dark:text-gray-500 font-mono">{f.range}</div>
+                            <div className={`text-[11px] font-bold font-mono ${f.text} mt-0.5`}>{f.hex}</div>
+                            <div className="text-[9px] text-gray-400 dark:text-gray-500">({f.dec}번째)</div>
+                        </div>
+                    )
+                })}
+            </div>
+
+            {/* 의미 설명 */}
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-1 text-[10px] font-mono">
+                {fields.map(f => (
+                    <div key={f.name} className={`rounded px-2 py-1 ${f.bg} ${f.text} text-center`}>
+                        {f.label}
+                    </div>
+                ))}
+            </div>
+
+            {/* 계산 흐름 요약 */}
+            <div className="rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2 font-mono text-[11px] text-gray-600 dark:text-gray-400 space-y-0.5">
+                <div>CR3 → PGD[<span className="text-purple-600 dark:text-purple-300">0xFF</span>] → PUD 기준 주소</div>
+                <div className="pl-2">→ PUD[<span className="text-blue-600 dark:text-blue-300">0x1FF</span>] → PMD 기준 주소</div>
+                <div className="pl-4">→ PMD[<span className="text-emerald-600 dark:text-emerald-300">0xF5</span>] → PTE 기준 주소</div>
+                <div className="pl-6">→ PTE[<span className="text-amber-600 dark:text-amber-300">0xDB</span>] → <strong className="text-gray-800 dark:text-gray-200">PFN</strong> (물리 페이지 번호)</div>
+                <div className="pl-8">→ <strong className="text-gray-800 dark:text-gray-200">PA</strong> = PFN × 4096 + <span className="text-red-600 dark:text-red-300">0xEEF</span></div>
+            </div>
+        </div>
+    )
+}
 
 function PageTableWalkViz({ step }: { step: number }) {
     return (
@@ -810,12 +881,16 @@ function renderSlubViz(
 
     svg.style('background', bg)
 
-    const padL = 16, padT = 10
+    const padL = 12, padT = 10
+
+    // Split SVG: left 52% for slab visualization, right for kmalloc table
+    const slabSectionW = Math.floor(width * 0.52)
+    const tableSectionX = slabSectionW + 8
 
     const g = svg.append('g')
 
     // kmem_cache header box
-    const cacheW = Math.min(260, width * 0.4)
+    const cacheW = Math.min(220, slabSectionW * 0.8)
     const cacheH = 44
     g.append('rect')
         .attr('x', padL).attr('y', padT)
@@ -844,7 +919,7 @@ function renderSlubViz(
         { label: 'partial', objs: [true, false, true, false, true, false] },
         { label: 'full (free)', objs: [false, false, false, false, false, false] },
     ]
-    const slabAreaW = width - padL * 2
+    const slabAreaW = slabSectionW - padL
     const slabW = slabAreaW / 3 - 8
     const slabStartY = padT + cacheH + 16
     const objCols = 3, objRows = 2
@@ -902,8 +977,8 @@ function renderSlubViz(
         }
     })
 
-    // kmalloc size class table on the right — clamp to prevent overflow
-    const tableX = Math.min(padL + width * 0.55, width - 160)
+    // kmalloc size class table — placed in dedicated right section
+    const tableX = tableSectionX
     const tableY = padT
     const sizes = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]
     const rowH = 16
@@ -1177,29 +1252,8 @@ export default function Topic03() {
                     autoPlayInterval={2500}
                 />
 
-                {/* VA bit-field 시각화 */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 space-y-3">
-                    <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">VA 비트 분해 — 48비트 가상 주소 구조</div>
-                    <div className="flex flex-wrap gap-1 font-mono text-xs">
-                        {[
-                            { label: 'PGD', bits: '[47:39]', width: '9bit', bg: 'bg-purple-100 dark:bg-purple-900/40', text: 'text-purple-800 dark:text-purple-200', border: 'border-purple-300 dark:border-purple-700' },
-                            { label: 'PUD', bits: '[38:30]', width: '9bit', bg: 'bg-blue-100 dark:bg-blue-900/40', text: 'text-blue-800 dark:text-blue-200', border: 'border-blue-300 dark:border-blue-700' },
-                            { label: 'PMD', bits: '[29:21]', width: '9bit', bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-800 dark:text-emerald-200', border: 'border-emerald-300 dark:border-emerald-700' },
-                            { label: 'PTE', bits: '[20:12]', width: '9bit', bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-800 dark:text-amber-200', border: 'border-amber-300 dark:border-amber-700' },
-                            { label: 'Offset', bits: '[11:0]', width: '12bit', bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-800 dark:text-red-200', border: 'border-red-300 dark:border-red-700' },
-                        ].map(f => (
-                            <div key={f.label} className={`flex-1 min-w-[60px] rounded border ${f.bg} ${f.border} px-2 py-1.5 text-center`}>
-                                <div className={`font-bold ${f.text}`}>{f.label}</div>
-                                <div className="text-gray-500 dark:text-gray-400 text-[10px]">{f.bits}</div>
-                                <div className="text-gray-400 dark:text-gray-500 text-[10px]">{f.width}</div>
-                            </div>
-                        ))}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        각 레벨은 9비트(= 512가지 엔트리)로 테이블을 인덱싱합니다. Page Offset 12비트는 4KB 페이지 내 위치(0~4095)를 가리킵니다.
-                        48비트 = 9+9+9+9+12 = 4레벨 × 9비트 + 12비트 offset.
-                    </p>
-                </div>
+                {/* VA bit-field 실제 분해 시각화 */}
+                <VABitBreakdown />
 
                 {/* CR3/PGD/PUD/PMD/PTE/Offset 용어 설명 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

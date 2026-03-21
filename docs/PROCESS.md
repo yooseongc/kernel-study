@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-21
+> 마지막 업데이트: 2026-03-21 (Sprint 10)
 
 ## Sprint 1 — 골격 구축 ✅
 
@@ -205,6 +205,23 @@
 | Topic 01~08 — 하단 네비게이션 표준화 (중간 페이지: 이전↔다음 카드형) | ✅ |
 | Topic 09~12 — 하단 네비게이션 표준화 (중간 페이지: 이전↔다음 카드형, 완료 카드는 13만 유지) | ✅ |
 | 전체 wrapper `space-y-14` 통일 (Topic 12 space-y-12 → 14) | ✅ |
+
+---
+
+## Sprint 10 — 차트·콘텐츠 버그 수정 (2026-03-21)
+
+| 작업 | 상태 |
+|------|------|
+| Topic 02 §2.10 — SMT/MC 카드 긴 경로 문자열 오버플로우 수정 (`break-all`) | ✅ |
+| Topic 03 §3.2 — PageTableWalkViz `Physical` 레이블 색상 개선 | ✅ |
+| Topic 03 §3.2 — VA 48비트 분해 시각화 (`VABitBreakdown`) 추가 — 실제 비트값 표시 | ✅ |
+| Topic 03 §3.2 — `vaFields` PMD/PTE 값 오류 수정 (0x1EF→0xF5, 0x0AD→0xDB) | ✅ |
+| Topic 03 §3.2 — CR3/PGD/PUD/PMD/PTE/Offset 각 용어 설명 카드 추가 | ✅ |
+| Topic 03 §3.4 — MMU/CR2/PTE.Present 핵심 용어 카드 추가 | ✅ |
+| Topic 03 §3.5 — Buddy Allocator 역할 설명 보강 | ✅ |
+| Topic 03 §3.6 — SLUB D3 레이아웃 수정: slab(좌 52%)·kmalloc table(우) 공간 분리 | ✅ |
+| Topic 03 §3.9 — pages_min Direct Reclaim 동작 설명 callout 추가 | ✅ |
+| topic03/04 — 미사용 Prose 컴포넌트 제거 (TS 빌드 오류) | ✅ |
 
 ---
 
