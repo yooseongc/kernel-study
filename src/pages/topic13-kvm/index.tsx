@@ -1,0 +1,605 @@
+import { CodeBlock } from '../../components/viz/CodeBlock'
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+    return (
+        <section id={id} className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                {title}
+            </h2>
+            {children}
+        </section>
+    )
+}
+
+function Prose({ children }: { children: React.ReactNode }) {
+    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Code strings
+// ─────────────────────────────────────────────────────────────────────────────
+
+const kvmOverviewCode = `/* KVM — Kernel-based Virtual Machine (Linux 커널 내 하이퍼바이저) */
+
+/* KVM은 /dev/kvm 장치로 유저 공간에 API를 제공합니다 */
+int kvm_fd = open("/dev/kvm", O_RDWR);
+
+/* VM 생성 */
+int vm_fd = ioctl(kvm_fd, KVM_CREATE_VM, 0);
+
+/* vCPU 생성 */
+int vcpu_fd = ioctl(vm_fd, KVM_CREATE_VCPU, 0);
+
+/* 게스트 물리 메모리 등록 */
+struct kvm_userspace_memory_region region = {
+    .slot            = 0,
+    .guest_phys_addr = 0x1000,      /* 게스트 물리 주소 */
+    .memory_size     = 0x1000,      /* 크기 */
+    .userspace_addr  = (uint64_t)guest_mem,  /* 호스트 VA */
+};
+ioctl(vm_fd, KVM_SET_USER_MEMORY_REGION, &region);
+
+/* vCPU 실행 루프 */
+for (;;) {
+    ioctl(vcpu_fd, KVM_RUN, 0);     /* VMENTRY — 게스트 코드 실행 */
+    switch (run->exit_reason) {     /* VMEXIT — 처리 후 재진입 */
+    case KVM_EXIT_HLT: goto done;
+    case KVM_EXIT_IO:  handle_io(run); break;
+    case KVM_EXIT_MMIO: handle_mmio(run); break;
+    }
+}`
+
+const vmcsCode = `/* VMCS — Virtual Machine Control Structure (Intel VT-x) */
+
+/* VMCS는 Intel CPU가 VMENTRY/VMEXIT 시 참조하는 4KB 자료 구조입니다.
+   AMD는 동등한 VMCB(Virtual Machine Control Block)를 사용합니다. */
+
+VMCS 주요 필드:
+┌─────────────────────────────────────────────────┐
+│  Guest State Area  (게스트 CPU 상태)             │
+│  ├─ CR0, CR3, CR4  (제어 레지스터)              │
+│  ├─ RIP, RSP, RFLAGS                            │
+│  ├─ CS, DS, ES, SS ... (세그먼트 레지스터)       │
+│  └─ GDTR, IDTR, TR                             │
+├─────────────────────────────────────────────────│
+│  Host State Area   (호스트 복귀 상태)            │
+│  ├─ CR0, CR3, CR4, RIP, RSP                    │
+│  └─ CS, DS, GDTR, IDTR ...                     │
+├─────────────────────────────────────────────────│
+│  VM Execution Control Fields                    │
+│  ├─ Pin-based: 외부 인터럽트 → VMEXIT 여부      │
+│  ├─ Proc-based: HLT, I/O, RDMSR 등 트랩 여부   │
+│  └─ Exception Bitmap: 예외별 VMEXIT 설정        │
+├─────────────────────────────────────────────────│
+│  VM Exit Information (VMEXIT 원인 기록)          │
+│  ├─ Exit Reason (I/O / EPT Violation / HLT…)   │
+│  └─ Exit Qualification (상세 정보)              │
+└─────────────────────────────────────────────────┘
+
+/* VMENTRY / VMEXIT 흐름 */
+// VMENTRY: VMLAUNCH/VMRESUME 명령 → CPU가 Guest State로 전환
+// VMEXIT:  특권 명령, I/O, 인터럽트 등 → CPU가 Host State로 복귀`
+
+const eptCode = `/* EPT — Extended Page Tables (중첩 페이지 테이블) */
+
+/* 두 단계 주소 변환 */
+게스트 VA → (게스트 페이지 테이블) → 게스트 PA
+게스트 PA → (EPT) → 호스트 PA (실제 물리 주소)
+
+/* EPT Violation (= Page Fault의 가상화 버전) */
+// 게스트가 접근한 게스트 PA가 EPT에 매핑되지 않으면 VMEXIT 발생
+// → KVM이 메모리 할당 후 EPT 항목 추가 → VMRESUME
+
+/* TLB 관계 */
+// CPU는 vTLB(가상 TLB)에 두 단계 변환 결과를 캐시
+// VPID(Virtual Processor ID)로 VM 전환 시 전체 TLB flush 없이 구분
+
+/* EPT 성능 이점 vs Shadow Page Table */
+// Shadow PT: 소프트웨어로 게스트 VA → 호스트 PA 직접 매핑 (KVM이 관리)
+//            → CR3 쓰기 시마다 VMEXIT, 높은 오버헤드
+// EPT:       하드웨어가 두 단계 변환을 직접 처리
+//            → VMEXIT 없이 페이지 탐색, 성능 크게 향상
+
+# EPT 통계 확인
+cat /sys/kernel/debug/kvm/ept_misconfig
+# 또는
+perf kvm stat --event=ept_violations`
+
+const virtioCode = `/* virtio — 반가상화 I/O 표준 (OASIS 사양) */
+
+/* virtio 계층 구조 */
+게스트 커널
+  └─ virtio 드라이버 (virtio-net, virtio-blk, virtio-scsi …)
+       └─ virtqueue (링 버퍼 — 호스트·게스트 공유 메모리)
+            └─ KVM / QEMU (호스트)
+                 └─ 실제 네트워크 / 디스크
+
+/* virtqueue — 공유 메모리 링 버퍼 */
+struct vring {
+    unsigned int num;       /* 엔트리 수 (2의 거듭제곱) */
+    struct vring_desc *desc;    /* 디스크립터 테이블 (버퍼 주소/길이/플래그) */
+    struct vring_avail *avail;  /* 게스트 → 호스트: 사용 가능한 버퍼 */
+    struct vring_used  *used;   /* 호스트 → 게스트: 처리 완료된 버퍼 */
+};
+
+/* virtio-net 패킷 전송 흐름 */
+// 1. 게스트 드라이버가 sk_buff를 vring_desc에 등록
+// 2. avail 링 업데이트 → kick (호스트에 알림)
+// 3. 호스트(QEMU/vhost)가 버퍼 소비 → 실제 전송
+// 4. used 링 업데이트 → 게스트에 인터럽트
+
+# vhost-net: QEMU 바이패스 — 커널 스레드가 직접 처리
+modprobe vhost_net
+ls /dev/vhost-net`
+
+const kvmMgmtCode = `# KVM 지원 확인
+egrep -c '(vmx|svm)' /proc/cpuinfo   # > 0 이면 지원
+lsmod | grep kvm
+# kvm_intel  335872  0    (Intel VT-x)
+# kvm        1069056  1 kvm_intel
+
+# QEMU/KVM으로 VM 생성 예시
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 2G \
+  -cpu host \           # 호스트 CPU 모델 그대로 노출
+  -smp 2 \              # vCPU 2개
+  -hda ubuntu.qcow2 \
+  -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
+  -nographic
+
+# virsh (libvirt) — KVM VM 관리
+virsh list --all
+virsh start myvm
+virsh dumpxml myvm | grep -i cpu   # vCPU 설정 확인
+
+# KVM 성능 통계
+perf kvm stat -p <qemu_pid> sleep 5
+# vmexit 원인별 횟수 출력 (EPT_VIOLATION, EXTERNAL_INTERRUPT 등)
+
+# 게스트 메모리 사용량
+cat /sys/kernel/debug/kvm/*/mmu_cache_miss`
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main page
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function Topic13Kvm() {
+    return (
+        <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
+
+            {/* 헤더 */}
+            <header className="space-y-3">
+                <div className="flex items-center gap-3">
+                    <span className="text-3xl font-bold text-blue-500 dark:text-blue-400 font-mono">13</span>
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            KVM / 가상화
+                        </h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                            KVM, Virtualization & virtio
+                        </p>
+                    </div>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    KVM(Kernel-based Virtual Machine)은 Linux 커널 자체가 하이퍼바이저 역할을 하는 구조입니다.
+                    Intel VT-x / AMD-V 하드웨어 지원을 활용하며, VMCS(VMCB), EPT, virtio 등의
+                    핵심 개념을 통해 클라우드 인프라의 기반을 이룹니다.
+                </p>
+
+                {/* 목차 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                        목차
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                        {[
+                            ['13.1', 'KVM 개요 — 커널 하이퍼바이저 구조'],
+                            ['13.2', 'VMCS / VMCB — VMENTRY · VMEXIT 제어'],
+                            ['13.3', 'EPT — 중첩 페이지 테이블'],
+                            ['13.4', 'virtio — 반가상화 I/O'],
+                            ['13.5', 'KVM 관리 실전 (QEMU, libvirt, perf)'],
+                        ].map(([num, title]) => (
+                            <a
+                                key={num}
+                                href={`#s1${num.replace('.', '')}`}
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-mono flex items-center gap-1.5"
+                            >
+                                <span className="text-gray-400">{num}</span>
+                                <span>{title}</span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </header>
+
+            {/* 13.1 KVM 개요 */}
+            <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">
+                <Prose>
+                    KVM은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1 하이퍼바이저입니다.
+                    유저 공간의 QEMU가 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-blue-600 dark:text-blue-300 text-xs">/dev/kvm</code> ioctl API를
+                    통해 VM·vCPU를 생성·제어합니다.
+                </Prose>
+
+                {/* 하이퍼바이저 타입 비교 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                        {
+                            type: 'Type-1 (Bare-metal)',
+                            examples: 'VMware ESXi, Hyper-V, Xen',
+                            color: '#3b82f6',
+                            desc: '하이퍼바이저가 하드웨어에 직접 설치. OS 없이 VM을 실행합니다.',
+                        },
+                        {
+                            type: 'KVM (Hybrid)',
+                            examples: 'Linux + KVM + QEMU',
+                            color: '#10b981',
+                            desc: 'Linux 커널 자체가 하이퍼바이저. 호스트 OS 기능을 재활용해 효율적입니다.',
+                        },
+                        {
+                            type: 'Type-2 (Hosted)',
+                            examples: 'VirtualBox, VMware Workstation',
+                            color: '#f59e0b',
+                            desc: '일반 OS 위에서 동작하는 하이퍼바이저. 개발·테스트에 편리합니다.',
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.type}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
+                            style={{ borderColor: card.color + '55' }}
+                        >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                                {card.type}
+                            </div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">
+                                {card.examples}
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {card.desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* KVM 구조 다이어그램 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                    <div className="text-xs font-mono text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+                        KVM 계층 구조
+                    </div>
+                    <div className="space-y-2">
+                        {[
+                            { label: '게스트 VM (Guest OS + 유저 앱)', color: '#3b82f6', layer: '게스트 공간' },
+                            { label: 'QEMU — 디바이스 에뮬레이션 (디스크, NIC, VGA …)', color: '#8b5cf6', layer: '호스트 유저' },
+                            { label: 'KVM 모듈 (kvm.ko / kvm_intel.ko) — VMENTRY/VMEXIT 관리', color: '#10b981', layer: '커널' },
+                            { label: 'Intel VT-x / AMD-V 하드웨어 지원', color: '#f59e0b', layer: '하드웨어' },
+                        ].map((row, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <div className="text-xs font-mono text-gray-400 dark:text-gray-600 w-20 text-right shrink-0">
+                                    {row.layer}
+                                </div>
+                                <div
+                                    className="flex-1 rounded-lg px-3 py-2 text-xs font-mono"
+                                    style={{
+                                        backgroundColor: row.color + '18',
+                                        border: `1px solid ${row.color}44`,
+                                        color: row.color,
+                                    }}
+                                >
+                                    {row.label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <CodeBlock
+                    code={kvmOverviewCode}
+                    language="c"
+                    filename="/* KVM API — /dev/kvm ioctl 흐름 */"
+                />
+            </Section>
+
+            {/* 13.2 VMCS / VMCB */}
+            <Section id="s1312" title="13.2  VMCS / VMCB — VMENTRY · VMEXIT 제어">
+                <Prose>
+                    Intel VT-x는 <strong className="text-gray-800 dark:text-gray-200">VMCS</strong>(Virtual Machine Control Structure),
+                    AMD-V는 <strong className="text-gray-800 dark:text-gray-200">VMCB</strong>(VM Control Block)를 사용합니다.
+                    이 자료 구조가 게스트·호스트 CPU 상태와 VM 실행 정책을 모두 관리합니다.
+                </Prose>
+
+                {/* VMENTRY / VMEXIT 흐름 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        VMENTRY / VMEXIT 사이클
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                        {[
+                            { step: 'VMRESUME', desc: 'KVM이 게스트 실행 재개', color: '#10b981' },
+                            { step: '게스트 실행', desc: '일반 명령 → 하드웨어 직접 실행', color: '#3b82f6' },
+                            { step: 'VMEXIT', desc: '특권 명령 / I/O / 인터럽트 발생', color: '#ef4444' },
+                            { step: 'KVM 핸들러', desc: 'exit_reason 분석 → 에뮬레이션/처리', color: '#f59e0b' },
+                        ].map((s, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                                <div
+                                    className="w-full rounded-lg px-3 py-2.5 text-center text-xs font-mono font-bold"
+                                    style={{ backgroundColor: s.color + '20', color: s.color, border: `1px solid ${s.color}44` }}
+                                >
+                                    {s.step}
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                                    {s.desc}
+                                </p>
+                                {i < 3 && (
+                                    <div className="text-gray-400 text-xs hidden sm:block">→</div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <CodeBlock
+                    code={vmcsCode}
+                    language="c"
+                    filename="/* VMCS 구조 — Intel VT-x */"
+                />
+
+                {/* VMEXIT 원인 테이블 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                    <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                            주요 VMEXIT 원인
+                        </span>
+                    </div>
+                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {[
+                            { reason: 'EXTERNAL_INTERRUPT', desc: '호스트 하드웨어 인터럽트 (타이머, NIC IRQ)', overhead: '낮음' },
+                            { reason: 'EPT_VIOLATION', desc: '게스트 물리 주소가 EPT에 미매핑', overhead: '중간' },
+                            { reason: 'CPUID', desc: '게스트가 CPUID 명령 실행', overhead: '낮음' },
+                            { reason: 'HLT', desc: 'vCPU 유휴 상태 진입', overhead: '낮음' },
+                            { reason: 'IO_INSTRUCTION', desc: '에뮬레이션된 I/O 포트 접근', overhead: '높음' },
+                            { reason: 'MSR_WRITE', desc: '특정 MSR 레지스터 쓰기', overhead: '중간' },
+                            { reason: 'VMCALL', desc: '게스트→호스트 hypercall (KVM PV)', overhead: '낮음' },
+                        ].map((row) => (
+                            <div key={row.reason} className="px-4 py-2.5 flex items-center gap-3">
+                                <code className="text-xs font-mono text-blue-600 dark:text-blue-400 w-48 shrink-0">
+                                    {row.reason}
+                                </code>
+                                <span className="text-xs text-gray-600 dark:text-gray-400 flex-1">
+                                    {row.desc}
+                                </span>
+                                <span className={`text-xs font-mono shrink-0 ${
+                                    row.overhead === '높음' ? 'text-red-500' :
+                                        row.overhead === '중간' ? 'text-yellow-500' : 'text-green-500'
+                                }`}>
+                                    {row.overhead}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Section>
+
+            {/* 13.3 EPT */}
+            <Section id="s1313" title="13.3  EPT — 중첩 페이지 테이블">
+                <Prose>
+                    EPT(Extended Page Tables)는 <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong> 변환을
+                    하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 VMEXIT 횟수를 크게 줄입니다.
+                </Prose>
+
+                {/* 주소 변환 2단계 다이어그램 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+                    <div className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        2단계 주소 변환 (Two-Dimensional Paging)
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                        {[
+                            { label: '게스트 VA', color: '#8b5cf6' },
+                            { label: '→ 게스트 PT →', color: '#6b7280', arrow: true },
+                            { label: '게스트 PA', color: '#3b82f6' },
+                            { label: '→ EPT →', color: '#6b7280', arrow: true },
+                            { label: '호스트 PA', color: '#10b981' },
+                            { label: '(물리 DRAM)', color: '#6b7280', small: true },
+                        ].map((item, i) => (
+                            <span key={i} style={{ color: item.color }} className={item.small ? 'text-gray-400 dark:text-gray-600' : ''}>
+                                {item.label}
+                            </span>
+                        ))}
+                    </div>
+
+                    {/* EPT vs Shadow PT 비교 */}
+                    <div className="grid grid-cols-2 gap-3 mt-2">
+                        {[
+                            {
+                                title: 'Shadow Page Table',
+                                color: '#ef4444',
+                                points: [
+                                    'KVM 소프트웨어가 직접 관리',
+                                    'CR3 쓰기 시마다 VMEXIT',
+                                    '게스트 PT 변경 시 VMEXIT',
+                                    '높은 오버헤드',
+                                    'EPT 미지원 구형 CPU에서 사용',
+                                ],
+                            },
+                            {
+                                title: 'EPT (Extended Page Tables)',
+                                color: '#10b981',
+                                points: [
+                                    'CPU 하드웨어가 직접 처리',
+                                    'CR3 쓰기 시 VMEXIT 없음',
+                                    '게스트 PT 변경 시 VMEXIT 없음',
+                                    '낮은 오버헤드',
+                                    'Intel Nehalem+ / AMD-V NPT',
+                                ],
+                            },
+                        ].map((card) => (
+                            <div
+                                key={card.title}
+                                className="rounded-xl border p-3 space-y-2"
+                                style={{ borderColor: card.color + '44', backgroundColor: card.color + '08' }}
+                            >
+                                <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                                    {card.title}
+                                </div>
+                                <ul className="space-y-1">
+                                    {card.points.map((p, i) => (
+                                        <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
+                                            <span style={{ color: card.color }} className="shrink-0">▸</span>
+                                            <span>{p}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <CodeBlock
+                    code={eptCode}
+                    language="c"
+                    filename="/* EPT — 중첩 페이지 테이블 구조 */"
+                />
+            </Section>
+
+            {/* 13.4 virtio */}
+            <Section id="s1314" title="13.4  virtio — 반가상화 I/O">
+                <Prose>
+                    순수 에뮬레이션(예: e1000 NIC 에뮬레이션)은 게스트 드라이버가 하드웨어 레지스터를 읽고 쓸 때마다
+                    VMEXIT가 발생합니다. <strong className="text-gray-800 dark:text-gray-200">virtio</strong>는
+                    게스트-호스트 간 공유 메모리 링 버퍼(<code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">virtqueue</code>)로
+                    I/O를 전달해 VMEXIT를 최소화합니다.
+                </Prose>
+
+                {/* virtio 디바이스 종류 */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {[
+                        { name: 'virtio-net', desc: '가상 NIC — 네트워크 I/O', color: '#3b82f6', pci: 'virtio-net-pci' },
+                        { name: 'virtio-blk', desc: '가상 블록 디바이스 — 디스크', color: '#10b981', pci: 'virtio-blk-pci' },
+                        { name: 'virtio-scsi', desc: 'SCSI 호스트 어댑터 에뮬레이션', color: '#8b5cf6', pci: 'virtio-scsi-pci' },
+                        { name: 'virtio-balloon', desc: '동적 메모리 조절 (balloon driver)', color: '#f59e0b', pci: 'virtio-balloon-pci' },
+                        { name: 'virtio-fs', desc: 'DAX 기반 호스트 파일시스템 공유', color: '#ef4444', pci: 'vhost-user-fs' },
+                        { name: 'virtio-rng', desc: '하드웨어 엔트로피 소스 공유', color: '#06b6d4', pci: 'virtio-rng-pci' },
+                    ].map((d) => (
+                        <div
+                            key={d.name}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-3 space-y-1.5"
+                            style={{ borderColor: d.color + '55' }}
+                        >
+                            <div className="text-xs font-mono font-bold" style={{ color: d.color }}>
+                                {d.name}
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {d.desc}
+                            </p>
+                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">
+                                {d.pci}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* vhost-net */}
+                <div className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/50 dark:bg-green-950/20 p-4 space-y-2">
+                    <div className="text-sm font-semibold text-green-700 dark:text-green-300 font-mono">
+                        vhost-net — QEMU 바이패스로 성능 향상
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                        일반 virtio-net은 QEMU 프로세스가 virtqueue를 폴링합니다.
+                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded mx-1">vhost-net</code>은
+                        커널 스레드가 직접 virtqueue를 처리해 QEMU 컨텍스트 스위칭을 제거합니다.
+                        KVM 네트워크 성능의 핵심 최적화 기법입니다.
+                    </p>
+                </div>
+
+                <CodeBlock
+                    code={virtioCode}
+                    language="c"
+                    filename="/* virtio — virtqueue 구조 & 패킷 전송 흐름 */"
+                />
+            </Section>
+
+            {/* 13.5 KVM 관리 실전 */}
+            <Section id="s1315" title="13.5  KVM 관리 실전">
+                <Prose>
+                    QEMU, libvirt(virsh), 그리고 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">perf kvm</code>으로
+                    KVM 환경을 생성·관리·분석하는 실전 명령어입니다.
+                </Prose>
+                <CodeBlock
+                    code={kvmMgmtCode}
+                    language="bash"
+                    filename="# KVM 실전 관리 및 성능 분석"
+                />
+
+                {/* 클라우드 연관성 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        클라우드 인프라와 KVM
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[
+                            {
+                                title: 'AWS EC2 (Nitro 이전)',
+                                color: '#f59e0b',
+                                items: ['KVM + QEMU 기반', 'Xen에서 KVM으로 전환 (2017~)', 'virtio-net, virtio-blk 사용'],
+                            },
+                            {
+                                title: 'AWS EC2 (Nitro)',
+                                color: '#10b981',
+                                items: ['KVM + Nitro 전용 하이퍼바이저', 'PCIe SR-IOV로 NIC/EBS 직접 접근', 'QEMU 완전 제거 → 오버헤드 최소화'],
+                            },
+                            {
+                                title: 'Google Cloud (GCE)',
+                                color: '#3b82f6',
+                                items: ['KVM 기반 커스텀 하이퍼바이저', 'Live Migration 지원 (서비스 중단 없는 이동)', 'gVNIC(virtio 발전형) 사용'],
+                            },
+                            {
+                                title: 'OpenStack / Proxmox',
+                                color: '#8b5cf6',
+                                items: ['KVM + QEMU + libvirt 오픈소스 스택', '온프레미스 프라이빗 클라우드', 'vCPU 오버커밋, 라이브 마이그레이션 지원'],
+                            },
+                        ].map((card) => (
+                            <div
+                                key={card.title}
+                                className="rounded-xl border bg-white dark:bg-gray-900 p-3 space-y-2"
+                                style={{ borderColor: card.color + '55' }}
+                            >
+                                <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                                    {card.title}
+                                </div>
+                                <ul className="space-y-1">
+                                    {card.items.map((item, i) => (
+                                        <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
+                                            <span style={{ color: card.color }} className="shrink-0">▸</span>
+                                            <span>{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Section>
+
+            {/* 완료 카드 */}
+            <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    KVM / 가상화 학습 완료
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
+                    KVM의 VMENTRY/VMEXIT 사이클, VMCS를 통한 제어, EPT로 주소 변환 효율화,
+                    virtio 공유 메모리 I/O까지 — 클라우드 인프라를 떠받치는 가상화 레이어를 살펴봤습니다.
+                </p>
+                <a
+                    href="#/"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+                >
+                    <span>←</span>
+                    홈으로 돌아가기
+                </a>
+            </div>
+        </div>
+    )
+}

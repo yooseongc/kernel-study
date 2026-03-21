@@ -14,6 +14,7 @@ import Topic09 from './pages/topic09-synchronization'
 import Topic10 from './pages/topic10-drivers'
 import Topic11 from './pages/topic11-debugging'
 import Topic12 from './pages/topic12-security'
+import Topic13 from './pages/topic13-kvm'
 import Glossary from './pages/Glossary'
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
                         <Route path="topic/10-drivers" element={<Topic10 />} />
                         <Route path="topic/11-debugging" element={<Topic11 />} />
                         <Route path="topic/12-security" element={<Topic12 />} />
+                        <Route path="topic/13-kvm" element={<Topic13 />} />
                         <Route path="glossary" element={<Glossary />} />
                     </Route>
                 </Routes>

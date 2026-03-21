@@ -75,6 +75,50 @@ stat /etc/passwd
 df -i /
 # Filesystem  Inodes  IUsed  IFree  IUse%`
 
+// ── 4.5 블록 I/O 코드 상수 ──────────────────────────────────────────────────
+
+const blockIOCode = `/* bio — 블록 I/O 요청의 기본 단위 (include/linux/blk_types.h) */
+struct bio {
+    struct block_device *bi_bdev;     /* 대상 블록 디바이스 */
+    blk_opf_t            bi_opf;      /* REQ_OP_READ / REQ_OP_WRITE 등 */
+    sector_t             bi_iter.bi_sector; /* 시작 섹터 번호 */
+    struct bio_vec      *bi_io_vec;   /* 물리 페이지 조각 배열 */
+    bio_end_io_t        *bi_end_io;   /* 완료 콜백 */
+};
+
+/* 상위 계층(ext4)에서 bio를 생성·제출하는 흐름 */
+// ext4_writepage()
+//   └─ mpage_submit_page()
+//        └─ bio_alloc()           ← bio 할당
+//        └─ bio_add_page()        ← 페이지 첨부
+//        └─ submit_bio()          ← I/O 스케줄러에 전달
+//             └─ blk_mq_submit_bio()
+//                  └─ blk_mq_get_request()   ← request 래핑
+//                  └─ blk_mq_sched_insert_request() ← 스케줄러 삽입
+//                  └─ blk_mq_run_hw_queue()  ← 드라이버 dispatch`
+
+const blockSchedCode = `# 현재 I/O 스케줄러 확인
+cat /sys/block/sda/queue/scheduler
+# [mq-deadline] kyber bfq none
+
+# 스케줄러 변경
+echo bfq > /sys/block/sda/queue/scheduler
+
+# I/O 통계 (blkstat)
+iostat -x 1
+# Device  r/s  w/s  rkB/s  wkB/s  await  %util
+# sda     10   50   480    2400   2.3    15
+
+# blktrace — 블록 I/O 이벤트 추적
+blktrace -d /dev/sda -o trace &
+blkparse trace.blktrace.0 | head -20
+# 8,0  3  1  0.000000000  Q  WS 1234 + 8 [kworker]  ← 큐 삽입
+# 8,0  3  2  0.000123456  D  WS 1234 + 8 [kworker]  ← 드라이버 dispatch
+
+# 프로세스별 I/O 우선순위
+ionice -c 2 -n 0 dd if=/dev/zero of=/tmp/test bs=1M count=100
+# -c 2: Best-effort 클래스, -n 0: 최고 우선순위`
+
 // ── 4.2 AnimatedDiagram steps ──────────────────────────────────────────────
 
 const openFlowSteps = [
@@ -557,6 +601,109 @@ export default function Topic11Filesystem() {
                     code={ext4Code}
                     language="bash"
                     filename="# ext4 실전 명령어"
+                />
+            </section>
+
+            {/* 4.5 블록 I/O 경로 */}
+            <section className="space-y-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-blue-500 dark:text-blue-400 mr-2">4.5</span>블록 I/O 경로 — bio에서 드라이버까지
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+          파일시스템이 데이터를 읽고 쓸 때 최종적으로는{' '}
+                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
+            submit_bio()
+                    </code>
+          를 호출해 블록 레이어로 I/O를 전달합니다.
+          블록 레이어는 <strong className="text-gray-900 dark:text-gray-100">bio</strong> →{' '}
+                    <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
+                    <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.
+                </p>
+
+                {/* 블록 I/O 계층 다이어그램 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                    <div className="text-xs font-mono text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+            블록 I/O 계층 구조
+                    </div>
+                    <div className="space-y-1.5">
+                        {[
+                            { label: 'VFS / 파일시스템 (ext4, XFS…)', color: '#3b82f6', indent: 0 },
+                            { label: '페이지 캐시 (Page Cache)', color: '#8b5cf6', indent: 1 },
+                            { label: 'submit_bio()  →  bio (scatter-gather 페이지 목록)', color: '#10b981', indent: 1 },
+                            { label: '블록 멀티큐 (blk-mq)  —  request 래핑', color: '#f59e0b', indent: 2 },
+                            { label: 'I/O 스케줄러 (mq-deadline / kyber / BFQ / none)', color: '#ef4444', indent: 3 },
+                            { label: 'NVMe / SCSI / virtio 드라이버  →  DMA', color: '#06b6d4', indent: 2 },
+                            { label: '물리 디스크 / SSD', color: '#6b7280', indent: 1 },
+                        ].map((row, i) => (
+                            <div
+                                key={i}
+                                className="flex items-center gap-2 text-xs font-mono"
+                                style={{ paddingLeft: `${row.indent * 20}px` }}
+                            >
+                                <div
+                                    className="w-2 h-2 rounded-full shrink-0"
+                                    style={{ backgroundColor: row.color }}
+                                />
+                                <span className="text-gray-700 dark:text-gray-300">{row.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* bio 구조체 & 스케줄러 테이블 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                        {
+                            title: 'mq-deadline',
+                            badge: '기본 (HDD·SSD)',
+                            color: '#10b981',
+                            desc: '읽기 요청에 낮은 데드라인, 쓰기 요청은 배치. 지연 보장이 필요한 HDD에 적합. read_expire=500ms, write_expire=5s.',
+                        },
+                        {
+                            title: 'kyber',
+                            badge: '저지연 (NVMe)',
+                            color: '#3b82f6',
+                            desc: '읽기·동기 쓰기·비동기 쓰기 3개 디스패치 큐로 분리. 고속 NVMe에서 큐 경합을 최소화합니다.',
+                        },
+                        {
+                            title: 'BFQ',
+                            badge: '공정성',
+                            color: '#f59e0b',
+                            desc: 'Budget Fair Queueing. 프로세스별 I/O 버짓을 공정하게 배분. 데스크탑·혼합 워크로드에 적합합니다.',
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
+                            style={{ borderColor: card.color + '55' }}
+                        >
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-mono font-bold" style={{ color: card.color }}>
+                                    {card.title}
+                                </span>
+                                <span
+                                    className="text-xs px-1.5 py-0.5 rounded-full font-mono"
+                                    style={{ backgroundColor: card.color + '22', color: card.color }}
+                                >
+                                    {card.badge}
+                                </span>
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {card.desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                <CodeBlock
+                    code={blockIOCode}
+                    language="c"
+                    filename="include/linux/blk_types.h — bio 구조체 & submit 흐름"
+                />
+                <CodeBlock
+                    code={blockSchedCode}
+                    language="bash"
+                    filename="# 블록 I/O 스케줄러 실전"
                 />
             </section>
 

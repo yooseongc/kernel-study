@@ -167,13 +167,13 @@
 | 작업 | 상태 |
 |------|------|
 | Topic 01 — 커널 소스 트리 구조 다이어그램 (arch/, net/, fs/, mm/ 등) | ✅ |
-| Topic 04 — 블록 I/O 경로 섹션 (bio → request_queue → I/O 스케줄러, mq-deadline) | ⬜ |
-| Topic 12 — namespace와 보안 모델 연결 섹션 (user ns / mount ns 권한 격리) | ⬜ |
+| Topic 04 — 블록 I/O 경로 섹션 (bio → request_queue → I/O 스케줄러, mq-deadline) | ✅ |
+| Topic 12 — namespace와 보안 모델 연결 섹션 (user ns / mount ns 권한 격리) | ✅ |
 
 ### 🟢 낮음
 | 작업 | 상태 |
 |------|------|
-| 신규 Topic 13 — KVM/가상화 (VMCS, EPT, virtio 드라이버) | ⬜ |
+| 신규 Topic 13 — KVM/가상화 (VMCS, EPT, virtio 드라이버) | ✅ |
 
 ---
 

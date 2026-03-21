@@ -168,6 +168,68 @@ setenforce 0
 restorecon -Rv /var/www/html`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 12.6 Namespace code strings
+// ─────────────────────────────────────────────────────────────────────────────
+
+const namespaceOverviewCode = `# 현재 프로세스의 namespace 확인
+ls -la /proc/self/ns/
+# lrwxrwxrwx 1 root root 0 Mar 21 cgroup -> cgroup:[4026531835]
+# lrwxrwxrwx 1 root root 0 Mar 21 ipc    -> ipc:[4026531839]
+# lrwxrwxrwx 1 root root 0 Mar 21 mnt    -> mnt:[4026531840]
+# lrwxrwxrwx 1 root root 0 Mar 21 net    -> net:[4026531992]
+# lrwxrwxrwx 1 root root 0 Mar 21 pid    -> pid:[4026531836]
+# lrwxrwxrwx 1 root root 0 Mar 21 time   -> time:[4026531834]
+# lrwxrwxrwx 1 root root 0 Mar 21 user   -> user:[4026531837]
+# lrwxrwxrwx 1 root root 0 Mar 21 uts    -> uts:[4026531838]
+
+# 새 namespace에서 프로세스 실행 (unshare)
+unshare --mount --pid --user --fork bash
+# 위 명령은 마운트·PID·user namespace를 새로 생성하고 bash를 실행합니다
+
+# Docker 컨테이너의 namespace 확인
+docker inspect <container_id> | jq '.[].State.Pid'
+ls -la /proc/<pid>/ns/  # 호스트와 다른 ns 번호 확인`
+
+const userNsCode = `/* user namespace — UID/GID 매핑 (비특권 컨테이너의 핵심) */
+
+# 새 user namespace 생성 (root 없이 가능)
+unshare --user --map-root-user bash
+# 이 셸 안에서는 uid=0 (root처럼 보임)
+id
+# uid=0(root) gid=0(root) groups=0(root),65534(nogroup)
+
+# 호스트에서 보면 일반 유저
+cat /proc/self/uid_map
+#         0       1000          1   ← 컨테이너 uid 0 = 호스트 uid 1000
+
+# 컨테이너 내부 uid 0~65535 → 호스트 uid 100000~165535
+cat /proc/<container_pid>/uid_map
+#         0     100000      65536
+
+# 보안 의미: 컨테이너 안의 root가 호스트에서 호출할 수 있는 capabilities
+# = 해당 user namespace 범위로 제한됨 → 호스트 커널에 영향 없음`
+
+const mountNsCode = `/* mount namespace — 독립 파일시스템 뷰 */
+
+# pivot_root로 루트 파일시스템 교체 (컨테이너 격리 핵심)
+# Docker가 컨테이너 시작 시 수행하는 절차:
+# 1. 새 mount namespace 생성
+unshare --mount bash
+# 2. 컨테이너 rootfs를 마운트
+mount --bind /var/lib/docker/overlay2/<layer>/merged /new_root
+# 3. pivot_root로 / 교체
+cd /new_root && pivot_root . old_root
+umount /old_root && rmdir /old_root
+
+# 호스트와 격리된 /proc, /sys 마운트
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+
+# 실전: 컨테이너 파일시스템 확인
+nsenter -t <pid> --mount -- df -h
+# 컨테이너 내부 마운트 정보를 호스트에서 확인`
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Table data
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -468,7 +530,144 @@ export default function Topic12() {
                 </div>
             </Section>
 
-            {/* 12.6 다음 토픽 링크 */}
+            {/* 12.6 Namespace와 보안 모델 */}
+            <Section id="s126" title="12.6  Namespace — 컨테이너 격리의 기반">
+                <Prose>
+          Linux namespace는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
+          Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, Capabilities·LSM과 결합해
+          컨테이너 보안을 구성합니다.
+                </Prose>
+
+                {/* 7가지 namespace 카드 */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                        { name: 'user', desc: 'UID/GID 매핑, capabilities 범위', color: '#8b5cf6', flag: 'CLONE_NEWUSER' },
+                        { name: 'mnt', desc: '마운트 포인트 독립 뷰', color: '#3b82f6', flag: 'CLONE_NEWNS' },
+                        { name: 'pid', desc: 'PID 1부터 독립 번호 부여', color: '#10b981', flag: 'CLONE_NEWPID' },
+                        { name: 'net', desc: '독립 네트워크 스택·인터페이스', color: '#f59e0b', flag: 'CLONE_NEWNET' },
+                        { name: 'ipc', desc: '세마포어·공유 메모리 격리', color: '#ef4444', flag: 'CLONE_NEWIPC' },
+                        { name: 'uts', desc: 'hostname·domainname 격리', color: '#06b6d4', flag: 'CLONE_NEWUTS' },
+                        { name: 'cgroup', desc: 'cgroup 루트 격리', color: '#84cc16', flag: 'CLONE_NEWCGROUP' },
+                        { name: 'time', desc: '단조 시계 오프셋 (Linux 5.6+)', color: '#f97316', flag: 'CLONE_NEWTIME' },
+                    ].map((ns) => (
+                        <div
+                            key={ns.name}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-3 space-y-1.5"
+                            style={{ borderColor: ns.color + '55' }}
+                        >
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: ns.color }} />
+                                <span className="text-xs font-mono font-bold" style={{ color: ns.color }}>
+                                    {ns.name}
+                                </span>
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {ns.desc}
+                            </p>
+                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">
+                                {ns.flag}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <CodeBlock
+                    code={namespaceOverviewCode}
+                    language="bash"
+                    filename="# Namespace 확인 및 unshare"
+                />
+
+                {/* user namespace — 비특권 컨테이너 */}
+                <div className="rounded-xl border border-purple-200 dark:border-purple-800/50 bg-purple-50/50 dark:bg-purple-950/20 p-4 space-y-3">
+                    <div className="text-sm font-semibold text-purple-700 dark:text-purple-300 font-mono">
+            user namespace — 비특권 컨테이너의 핵심
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            컨테이너 내부 uid 0(root)를 호스트의 일반 uid(예: 1000)에 매핑합니다.
+            컨테이너 안에서 root처럼 동작하지만, 호스트 커널에서는 권한이 없습니다.
+            이 덕분에 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">rootless Docker</code>,{' '}
+                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">Podman</code> 등이 동작합니다.
+                    </p>
+                    <CodeBlock
+                        code={userNsCode}
+                        language="bash"
+                        filename="# user namespace — UID 매핑"
+                    />
+                </div>
+
+                {/* mount namespace */}
+                <div className="rounded-xl border border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-3">
+                    <div className="text-sm font-semibold text-blue-700 dark:text-blue-300 font-mono">
+            mount namespace — pivot_root와 컨테이너 rootfs
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            각 컨테이너는 독립된 마운트 namespace를 갖습니다. Docker는 컨테이너 시작 시
+            overlay2 레이어를 마운트한 뒤 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">pivot_root</code>로
+            루트 파일시스템을 교체합니다. 호스트의 파일시스템은 보이지 않습니다.
+                    </p>
+                    <CodeBlock
+                        code={mountNsCode}
+                        language="bash"
+                        filename="# mount namespace — pivot_root 절차"
+                    />
+                </div>
+
+                {/* 보안 레이어 요약 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                    <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+              컨테이너 보안 레이어 (중첩 적용)
+                        </span>
+                    </div>
+                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {[
+                            {
+                                layer: 'Namespace',
+                                role: '리소스 뷰 격리 (PID, 네트워크, 파일시스템)',
+                                example: 'net ns → 독립 eth0, lo',
+                                color: '#3b82f6',
+                            },
+                            {
+                                layer: 'cgroup',
+                                role: '리소스 사용량 제한 (CPU, 메모리, I/O)',
+                                example: 'memory.limit_in_bytes = 512M',
+                                color: '#10b981',
+                            },
+                            {
+                                layer: 'Capabilities',
+                                role: 'root 권한 세분화 — 불필요한 권한 제거',
+                                example: '--cap-drop=ALL --cap-add=NET_BIND',
+                                color: '#f59e0b',
+                            },
+                            {
+                                layer: 'seccomp',
+                                role: '허용 시스템 콜 화이트리스트',
+                                example: 'Docker 기본 프로파일: 44개 syscall 차단',
+                                color: '#ef4444',
+                            },
+                            {
+                                layer: 'LSM (AppArmor/SELinux)',
+                                role: '파일·소켓·execve 접근 강제',
+                                example: 'AppArmor 프로파일로 /proc/sysrq 차단',
+                                color: '#8b5cf6',
+                            },
+                        ].map((row) => (
+                            <div key={row.layer} className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: row.color }} />
+                                <div className="min-w-0 flex-1">
+                                    <div className="text-xs font-mono font-bold" style={{ color: row.color }}>
+                                        {row.layer}
+                                    </div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{row.role}</div>
+                                    <div className="text-xs text-gray-400 dark:text-gray-600 font-mono mt-0.5">{row.example}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Section>
+
+            {/* 12.7 다음 토픽 링크 */}
             <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
           Linux 보안 모델 학습 완료
