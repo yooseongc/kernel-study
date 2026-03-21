@@ -335,10 +335,6 @@ function Section({ id, title, children }: { id: string; title: string; children:
     )
 }
 
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
-}
-
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 
 export default function Topic11Filesystem() {

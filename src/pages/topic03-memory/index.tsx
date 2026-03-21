@@ -314,7 +314,7 @@ function PageTableWalkViz({ step }: { step: number }) {
                             opacity: step === 4 ? 1 : 0.3,
                         }}
                     >
-                        <div className="text-[10px] text-gray-400">Physical</div>
+                        <div className="text-[10px] text-gray-300">Physical</div>
                         <div className="text-xs font-mono text-green-300 font-bold">PFN + offset</div>
                         <div className="text-[10px] text-gray-500">0x2000_DEEF</div>
                     </div>
@@ -810,7 +810,7 @@ function renderSlubViz(
 
     svg.style('background', bg)
 
-    const padL = 12, padT = 10
+    const padL = 16, padT = 10
 
     const g = svg.append('g')
 
@@ -902,8 +902,8 @@ function renderSlubViz(
         }
     })
 
-    // kmalloc size class table on the right
-    const tableX = padL + width * 0.55
+    // kmalloc size class table on the right — clamp to prevent overflow
+    const tableX = Math.min(padL + width * 0.55, width - 160)
     const tableY = padT
     const sizes = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]
     const rowH = 16
@@ -1102,10 +1102,6 @@ function Section({ id, title, children }: { id: string; title: string; children:
     )
 }
 
-function Prose({ children }: { children: React.ReactNode }) {
-    return <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{children}</p>
-}
-
 // Main Page Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic03() {
@@ -1180,6 +1176,47 @@ export default function Topic03() {
                     renderStep={step => <PageTableWalkViz step={step} />}
                     autoPlayInterval={2500}
                 />
+
+                {/* VA bit-field 시각화 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 space-y-3">
+                    <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">VA 비트 분해 — 48비트 가상 주소 구조</div>
+                    <div className="flex flex-wrap gap-1 font-mono text-xs">
+                        {[
+                            { label: 'PGD', bits: '[47:39]', width: '9bit', bg: 'bg-purple-100 dark:bg-purple-900/40', text: 'text-purple-800 dark:text-purple-200', border: 'border-purple-300 dark:border-purple-700' },
+                            { label: 'PUD', bits: '[38:30]', width: '9bit', bg: 'bg-blue-100 dark:bg-blue-900/40', text: 'text-blue-800 dark:text-blue-200', border: 'border-blue-300 dark:border-blue-700' },
+                            { label: 'PMD', bits: '[29:21]', width: '9bit', bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-800 dark:text-emerald-200', border: 'border-emerald-300 dark:border-emerald-700' },
+                            { label: 'PTE', bits: '[20:12]', width: '9bit', bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-800 dark:text-amber-200', border: 'border-amber-300 dark:border-amber-700' },
+                            { label: 'Offset', bits: '[11:0]', width: '12bit', bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-800 dark:text-red-200', border: 'border-red-300 dark:border-red-700' },
+                        ].map(f => (
+                            <div key={f.label} className={`flex-1 min-w-[60px] rounded border ${f.bg} ${f.border} px-2 py-1.5 text-center`}>
+                                <div className={`font-bold ${f.text}`}>{f.label}</div>
+                                <div className="text-gray-500 dark:text-gray-400 text-[10px]">{f.bits}</div>
+                                <div className="text-gray-400 dark:text-gray-500 text-[10px]">{f.width}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        각 레벨은 9비트(= 512가지 엔트리)로 테이블을 인덱싱합니다. Page Offset 12비트는 4KB 페이지 내 위치(0~4095)를 가리킵니다.
+                        48비트 = 9+9+9+9+12 = 4레벨 × 9비트 + 12비트 offset.
+                    </p>
+                </div>
+
+                {/* CR3/PGD/PUD/PMD/PTE/Offset 용어 설명 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                        { term: 'CR3', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800', desc: 'Control Register 3. 현재 프로세스의 PGD 물리 주소를 저장하는 CPU 레지스터. 컨텍스트 스위치 시 변경됨.' },
+                        { term: 'PGD', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800', desc: 'Page Global Directory. 4단계 중 최상위. VA bits[47:39]로 인덱싱. 엔트리가 PUD의 물리 주소를 가리킴.' },
+                        { term: 'PUD', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800', desc: 'Page Upper Directory. 2번째 레벨. VA bits[38:30]로 인덱싱. 엔트리가 PMD 물리 주소를 가리킴.' },
+                        { term: 'PMD', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800', desc: 'Page Middle Directory. 3번째 레벨. VA bits[29:21]로 인덱싱. 엔트리가 PTE 테이블 물리 주소를 가리킴.' },
+                        { term: 'PTE', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800', desc: 'Page Table Entry. 최하위 레벨. VA bits[20:12]로 인덱싱. PFN(물리 페이지 번호) + 접근 권한 비트(Present, RW, User, NX) 저장.' },
+                        { term: 'Offset', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800', desc: 'Page Offset. VA bits[11:0], 12비트. 4KB 페이지 내에서의 바이트 위치. PTE에서 얻은 PFN << 12 + Offset = 최종 물리 주소.' },
+                    ].map(item => (
+                        <div key={item.term} className={`rounded-lg border p-3 ${item.bg}`}>
+                            <div className={`font-mono font-bold text-sm mb-1 ${item.color}`}>{item.term}</div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
 
                 {/* TLB */}
                 <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-2">
@@ -1390,6 +1427,21 @@ void flush_tlb_mm_range(struct mm_struct *mm,
           가상 주소에 접근했을 때 물리 페이지가 없으면 MMU가 Page Fault 예외를 발생시킵니다.
           커널은 fault 핸들러에서 적절한 물리 페이지를 확보하고 PTE를 업데이트한 뒤 명령어를 재실행합니다.
                 </p>
+
+                {/* 핵심 용어 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                        { term: 'MMU', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800', desc: 'Memory Management Unit. CPU 안에 있는 하드웨어. 가상 주소를 물리 주소로 변환(page table walk)하고, 접근 권한을 검사한다. 변환 실패 시 #PF(Page Fault) 예외를 CPU에 전달.' },
+                        { term: 'CR2', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800', desc: 'Control Register 2. Page Fault가 발생했을 때 CPU가 자동으로 fault 가상 주소를 저장하는 레지스터. 커널 핸들러 do_page_fault()가 CR2를 읽어 어느 주소에서 fault가 났는지 파악한다.' },
+                        { term: 'PTE.Present', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800', desc: 'Page Table Entry의 bit 0. 1이면 물리 페이지가 메모리에 존재. 0이면 MMU가 #PF를 발생. 커널이 페이지를 할당한 뒤 이 비트를 1로 세팅하고 TLB를 flush한다.' },
+                    ].map(item => (
+                        <div key={item.term} className={`rounded-lg border p-3 ${item.bg}`}>
+                            <div className={`font-mono font-bold text-sm mb-1 ${item.color}`}>{item.term}</div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
                 <AnimatedDiagram
                     steps={pageFaultSteps}
                     renderStep={step => <PageFaultViz step={step} />}
@@ -1421,6 +1473,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.5 Buddy Allocator */}
             <Section id="s335" title="3.5  Buddy Allocator (인터랙티브)">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <strong className="text-gray-800 dark:text-gray-200">Buddy Allocator</strong>는 아직 사용되지 않은 <strong className="text-gray-800 dark:text-gray-200">free 물리 페이지</strong>를 관리하는
+          커널의 핵심 메모리 관리자입니다. Page Fault, kmalloc, mmap 등 모든 물리 페이지 할당 요청이 여기서 처리됩니다.
+                </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
           커널은 물리 메모리를 2의 거듭제곱(2^order) 크기 블록으로 관리합니다. order 0 = 4KB(1 page), order 1 = 8KB,
           ..., order 10 = 4MB. 아래 시뮬레이터는 32페이지(128KB) 존에서 buddy 할당/해제를 보여줍니다.
@@ -1634,6 +1690,19 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     </div>
                 </div>
+                {/* pages_min 동작 설명 */}
+                <div className={`rounded-lg border px-4 py-3 text-sm ${
+                    isDark ? 'border-red-800/50 bg-red-900/20 text-red-200' : 'border-red-200 bg-red-50 text-red-800'
+                }`}>
+                    <div className="font-bold mb-1">⚠ pages_min 이하 — Direct Reclaim</div>
+                    <p className="text-xs leading-relaxed">
+                        free page가 <span className="font-mono font-bold">pages_min</span> 이하로 떨어지면 kswapd가 따라잡지 못한 위기 상태입니다.
+                        이때는 메모리를 <em>요청한 그 프로세스가 직접</em> 회수(direct reclaim)를 수행해야 할당이 이루어집니다.
+                        프로세스가 자신의 페이지 폴트 처리 중에 수십 ms씩 지연될 수 있어 응답 레이턴시가 급격히 나빠집니다.
+                        실무에서는 <span className="font-mono">vm.min_free_kbytes</span> 튜닝과 <span className="font-mono">vm.swappiness</span> 조정으로 이 상황을 예방합니다.
+                    </p>
+                </div>
+
                 {/* LRU List Table */}
                 <div className="overflow-x-auto">
                     <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Linux LRU 리스트 구조 (5개)</div>

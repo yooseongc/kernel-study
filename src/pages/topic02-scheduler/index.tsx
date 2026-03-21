@@ -1618,7 +1618,7 @@ export default function Topic02Scheduler() {
                         <div className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
               같은 물리 코어의 논리 CPU들. 캐시 완전 공유. 가장 빠른 마이그레이션.
                         </div>
-                        <div className="rounded-lg bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1.5 font-mono text-xs text-blue-700 dark:text-blue-300">
+                        <div className="rounded-lg bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1.5 font-mono text-xs text-blue-700 dark:text-blue-300 break-all">
               /sys/devices/system/cpu/cpu0/topology/thread_siblings
                         </div>
                     </div>
@@ -1628,7 +1628,7 @@ export default function Topic02Scheduler() {
                         <div className="text-xs text-green-700 dark:text-green-400 leading-relaxed">
               같은 소켓의 코어들. LLC(L3) 공유. 빠른 마이그레이션.
                         </div>
-                        <div className="rounded-lg bg-green-100 dark:bg-green-900/30 px-2.5 py-1.5 font-mono text-xs text-green-700 dark:text-green-300">
+                        <div className="rounded-lg bg-green-100 dark:bg-green-900/30 px-2.5 py-1.5 font-mono text-xs text-green-700 dark:text-green-300 break-all">
               /sys/devices/system/cpu/cpu0/topology/core_siblings
                         </div>
                     </div>
