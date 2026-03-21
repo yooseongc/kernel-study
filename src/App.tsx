@@ -18,6 +18,7 @@ const Topic11  = lazy(() => import('./pages/topic11-debugging'))
 const Topic12  = lazy(() => import('./pages/topic12-security'))
 const Topic13  = lazy(() => import('./pages/topic13-kvm'))
 const Glossary = lazy(() => import('./pages/Glossary'))
+const Graph    = lazy(() => import('./pages/Graph'))
 
 function PageFallback() {
     return (
@@ -54,6 +55,7 @@ export default function App() {
                             <Route path="topic/12-security"        element={<Topic12  />} />
                             <Route path="topic/13-kvm"             element={<Topic13  />} />
                             <Route path="glossary"                 element={<Glossary />} />
+                            <Route path="graph"                    element={<Graph    />} />
                         </Route>
                     </Route>
                 </Routes>
