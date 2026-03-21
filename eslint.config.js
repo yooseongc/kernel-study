@@ -22,6 +22,7 @@ export default defineConfig([
         rules: {
             'no-tabs': 'error',
             'indent': ['error', 4, { SwitchCase: 1 }],
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         },
     },
 ])

@@ -22,7 +22,6 @@ export function AppLayout() {
     const location = useLocation()
     const mainRef = useRef<HTMLElement>(null)
     const searchOpenRef = useRef(false)
-    searchOpenRef.current = searchOpen
 
     // sidebarOpen을 상태가 아닌 "현재 라우트 키와 일치하는지"로 유도 → effect 안 setState 불필요
     const [sidebarOpenKey, setSidebarOpenKey] = useState<string | null>(null)
@@ -38,6 +37,11 @@ export function AppLayout() {
         localStorage.setItem('panel-right', String(next))
         return next
     })
+
+    // ref를 렌더 중에 직접 갱신하지 않고 effect에서 동기화 (react-hooks/refs 규칙)
+    useEffect(() => {
+        searchOpenRef.current = searchOpen
+    }, [searchOpen])
 
     // 라우트 변경 시 스크롤 최상단 복귀 (DOM 조작 → useLayoutEffect)
     // sidebarOpen은 location.key 유도값이므로 별도 setState 불필요

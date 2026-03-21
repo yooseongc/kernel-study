@@ -583,6 +583,126 @@ const bottleneckTableRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 11.12  Flame Graph
+// ─────────────────────────────────────────────────────────────────────────────
+
+const flameGenCode = `# 1. perf로 CPU 샘플 수집 (30초, 99Hz)
+perf record -F 99 -a --call-graph dwarf -g sleep 30
+# 또는 특정 프로세스만
+perf record -F 99 -p $(pgrep nginx) --call-graph fp sleep 30
+
+# 2. perf script로 스택 트레이스 추출
+perf script > out.perf
+
+# 3. FlameGraph 스크립트로 변환 (Brendan Gregg)
+git clone https://github.com/brendangregg/FlameGraph
+./FlameGraph/stackcollapse-perf.pl out.perf > out.folded
+./FlameGraph/flamegraph.pl out.folded > flamegraph.svg
+
+# 결과: 브라우저에서 flamegraph.svg 열기 (인터랙티브)
+
+# 4. bpftrace로 직접 수집 (커널 함수만)
+bpftrace -e 'profile:hz:99 { @[kstack] = count(); }' \\
+         -c "sleep 30" > out.bt
+./FlameGraph/stackcollapse-bpftrace.pl out.bt > out.folded
+./FlameGraph/flamegraph.pl out.folded > kernel_flame.svg
+
+# 5. off-CPU flame graph (블로킹 시간 분석)
+offcputime -df -p $(pgrep myapp) 30 | flamegraph.pl > offcpu.svg`
+
+interface FlameNode {
+    label: string
+    widthPct: number
+    color: string
+    children?: FlameNode[]
+}
+
+const flameTreeData: FlameNode = {
+    label: 'main',
+    widthPct: 100,
+    color: '#ef4444',
+    children: [
+        {
+            label: 'process_request',
+            widthPct: 70,
+            color: '#f97316',
+            children: [
+                {
+                    label: 'db_query',
+                    widthPct: 40,
+                    color: '#f59e0b',
+                    children: [
+                        { label: 'pg_exec', widthPct: 25, color: '#eab308' },
+                        { label: 'pg_parse', widthPct: 15, color: '#84cc16' },
+                    ],
+                },
+                { label: 'json_encode', widthPct: 30, color: '#22c55e' },
+            ],
+        },
+        { label: 'idle', widthPct: 30, color: '#06b6d4' },
+    ],
+}
+
+const flameInterpretCards = [
+    {
+        title: '넓은 평평한 상단 블록',
+        color: '#ef4444',
+        desc: '해당 함수가 CPU 사용량이 많음 → 최적화 대상',
+    },
+    {
+        title: '좁고 깊은 타워',
+        color: '#f97316',
+        desc: '깊은 재귀 또는 많은 중간 호출 → 불필요한 추상화 확인',
+    },
+    {
+        title: 'kernel 스택 넓게 나타남',
+        color: '#8b5cf6',
+        desc: '시스템 콜 또는 인터럽트 처리 병목',
+    },
+    {
+        title: 'idle이 전체의 대부분',
+        color: '#06b6d4',
+        desc: 'CPU 바운드가 아닌 I/O 바운드 → off-CPU 분석 필요',
+    },
+]
+
+const cpuTypeRows: TableRow[] = [
+    { cells: ['on-CPU', 'CPU를 실제로 쓰는 시간', 'perf, bpftrace profile:'] },
+    { cells: ['off-CPU', '블로킹(락, I/O) 대기 시간', 'offcputime (bcc), wakeuptime'] },
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Flame Graph mock visualisation component
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FlameBlock({ node, offsetPct }: { node: FlameNode; offsetPct: number }) {
+    return (
+        <div
+            style={{ width: `${node.widthPct}%`, marginLeft: `${offsetPct}%`, position: 'relative' }}
+            className="flex flex-col-reverse"
+        >
+            {/* render children above (visually they appear above because of flex-col-reverse on parent) */}
+            {node.children && node.children.length > 0 && (
+                <div className="flex items-end w-full" style={{ position: 'relative' }}>
+                    {node.children.map((child) => (
+                        <FlameBlock key={child.label} node={child} offsetPct={0} />
+                    ))}
+                </div>
+            )}
+            <div
+                title={`${node.label} — ${node.widthPct}%`}
+                style={{ backgroundColor: node.color, width: '100%' }}
+                className="h-8 flex items-center justify-center overflow-hidden border border-white/20 dark:border-black/30 cursor-default select-none rounded-sm"
+            >
+                <span className="text-white text-xs font-mono font-semibold truncate px-1">
+                    {node.label} <span className="opacity-75">({node.widthPct}%)</span>
+                </span>
+            </div>
+        </div>
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -787,7 +907,7 @@ export default function Topic10() {
             {/* 11.6 ftrace */}
             <Section id="s116" title="11.6  ftrace">
                 <Prose>
-          <T id="ftrace">ftrace</T>는 커널 함수 호출 추적 도구입니다.{' '}
+                    <T id="ftrace">ftrace</T>는 커널 함수 호출 추적 도구입니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">
             /sys/kernel/debug/tracing/
                     </code>{' '}
@@ -994,6 +1114,79 @@ lock(B) ← 대기   lock(A) ← 대기
                         </div>
                     ))}
                 </div>
+            </Section>
+
+            {/* 11.12 Flame Graph */}
+            <Section id="s1112" title="11.12  Flame Graph — CPU 병목 시각화">
+                <Prose>
+                    <strong className="text-gray-800 dark:text-gray-200">Flame Graph</strong>는
+                    Brendan Gregg가 개발한 <strong>CPU 시간 사용 시각화</strong> 기법입니다.
+                    함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록 CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">perf record</code> →{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">perf script</code> →{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">FlameGraph</code> 스크립트
+                    파이프라인으로 생성합니다.
+                </Prose>
+
+                {/* Axis legend */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                    {[
+                        { axis: 'X축', desc: '샘플 수 (시간 비율). 왼→오른쪽 순서는 의미 없음 (알파벳 순)' },
+                        { axis: 'Y축', desc: '콜 스택 깊이. 아래가 호출자(caller), 위가 피호출자(callee)' },
+                        { axis: '폭', desc: '해당 함수가 샘플에 등장한 횟수 → CPU 사용 비율' },
+                        { axis: '색상', desc: '의미 없음(구분용). 빨간계열=유저 공간, 파란계열=커널 공간 관례' },
+                    ].map((item) => (
+                        <div
+                            key={item.axis}
+                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-1"
+                        >
+                            <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{item.axis}</span>
+                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Mock flame graph visualisation */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 p-4 space-y-2">
+                    <p className="text-xs font-mono text-gray-500 dark:text-gray-500 mb-3">
+                        ▲ 콜스택 (위 = callee) &nbsp;|&nbsp; 폭 = CPU 사용 비율
+                    </p>
+                    <div className="w-full flex flex-col-reverse">
+                        <FlameBlock node={flameTreeData} offsetPct={0} />
+                    </div>
+                    <p className="text-xs text-gray-400 dark:text-gray-600 pt-1">
+                        * 모의 시각화 — 실제 flame graph는 SVG 인터랙티브로 열립니다
+                    </p>
+                </div>
+
+                {/* Pipeline code */}
+                <CodeBlock code={flameGenCode} language="bash" filename="# Flame Graph 생성 파이프라인" />
+
+                {/* Interpretation cards */}
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">해석 예시</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {flameInterpretCards.map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
+                            style={{ borderColor: card.color + '55' }}
+                        >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                                {card.title}
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
+                                {card.desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* on-CPU vs off-CPU table */}
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">on-CPU vs off-CPU</p>
+                <InfoTable
+                    headers={['유형', '측정 대상', '도구']}
+                    rows={cpuTypeRows}
+                />
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">

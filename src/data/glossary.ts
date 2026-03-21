@@ -56,6 +56,14 @@ export const glossary: GlossaryTerm[] = [
         definition: '실행 중인 태스크를 강제로 중단하고 다른 태스크를 실행하는 것. 리눅스는 CONFIG_PREEMPT 설정에 따라 커널 코드 실행 중에도 선점이 가능합니다(Fully Preemptible Kernel). 실시간 시스템에서 특히 중요합니다.',
         topicRef: '02-scheduler',
     },
+    {
+        id: 'sched_deadline',
+        term: 'SCHED_DEADLINE',
+        aliases: ['EDF', 'CBS'],
+        category: 'process',
+        definition: '리눅스의 실시간 스케줄링 정책 중 하나. EDF(Earliest Deadline First) 알고리즘으로 마감 시간이 가장 가까운 태스크를 우선 실행합니다. CBS(Constant Bandwidth Server)로 대역폭을 보장하면서 일반 태스크 아사(starvation)를 방지합니다. sched_setattr()로 runtime/deadline/period를 설정합니다.',
+        topicRef: '02-scheduler',
+    },
 
     // ── 메모리 관리 ──────────────────────────────────────────────────────────
     {
@@ -156,6 +164,14 @@ export const glossary: GlossaryTerm[] = [
 
     // ── 파일시스템 / VFS ──────────────────────────────────────────────────────
     {
+        id: 'cow',
+        term: 'CoW',
+        aliases: ['Copy-on-Write', '쓰기 시 복사'],
+        category: 'memory',
+        definition: '쓰기 시 복사(Copy-on-Write). fork() 후 부모·자식 프로세스가 동일한 물리 페이지를 읽기 전용으로 공유하다가, 어느 한쪽이 쓰려 할 때 Page Fault가 발생하여 해당 페이지를 복사하는 기법. 불필요한 복사를 줄여 fork() 성능을 향상시킵니다.',
+        topicRef: '03-memory',
+    },
+    {
         id: 'vfs',
         term: 'VFS',
         aliases: ['Virtual File System', '가상 파일 시스템'],
@@ -188,6 +204,22 @@ export const glossary: GlossaryTerm[] = [
         topicRef: '04-filesystem',
     },
     {
+        id: 'write_back',
+        term: 'Write-back',
+        aliases: ['Writeback', 'dirty page', '더티 페이지'],
+        category: 'fs',
+        definition: '쓰기 요청을 즉시 디스크에 반영하지 않고, 페이지 캐시에 "더티(dirty)" 상태로 표시한 후 나중에 일괄 기록하는 I/O 전략. dirty_expire_centisecs(기본 30초) 이후 또는 dirty 비율이 임계치를 초과하면 writeback 스레드(bdi-default/flush)가 디스크에 씁니다. 쓰기 성능이 높지만 전원 차단 시 데이터 손실 위험이 있습니다.',
+        topicRef: '04-filesystem',
+    },
+    {
+        id: 'overlayfs',
+        term: 'OverlayFS',
+        aliases: ['overlay', 'overlay2'],
+        category: 'fs',
+        definition: '두 디렉토리(lower RO + upper RW)를 겹쳐 merged 뷰를 만드는 유니온 파일 시스템. Docker/Podman이 컨테이너 이미지 레이어링에 사용합니다. lower 레이어는 읽기 전용 이미지이고 upper는 컨테이너 수정 사항을 담습니다. 첫 쓰기 시 lower 파일을 upper로 복사(copy-up)한 후 수정합니다.',
+        topicRef: '04-filesystem',
+    },
+    {
         id: 'bio',
         term: 'bio',
         aliases: ['Block I/O', 'struct bio'],
@@ -197,6 +229,14 @@ export const glossary: GlossaryTerm[] = [
     },
 
     // ── 인터럽트 / 비동기 ─────────────────────────────────────────────────────
+    {
+        id: 'irq_coalescing',
+        term: 'IRQ Coalescing',
+        aliases: ['인터럽트 병합', 'ethtool -C', 'rx-usecs'],
+        category: 'interrupt',
+        definition: 'NIC이 패킷 수신마다 인터럽트를 발생시키는 대신, 일정 시간(rx-usecs) 또는 패킷 수(rx-frames)만큼 묶어 하나의 인터럽트로 처리하는 기법. 고속 트래픽 환경에서 인터럽트 처리 오버헤드를 줄입니다. ethtool -C eth0으로 파라미터를 조정하며, NAPI와 함께 작동합니다.',
+        topicRef: '05-interrupts',
+    },
     {
         id: 'irq',
         term: 'IRQ',
@@ -264,6 +304,14 @@ export const glossary: GlossaryTerm[] = [
         topicRef: '06-network-stack',
     },
     {
+        id: 'cubic',
+        term: 'TCP CUBIC',
+        aliases: ['CUBIC', 'BBR', 'Bottleneck Bandwidth and RTT'],
+        category: 'network',
+        definition: 'Linux 기본 TCP 혼잡 제어 알고리즘. 패킷 손실을 기반으로 혼잡 윈도우를 3차 함수(cubic)로 증가시켜 빠른 회복과 높은 처리량을 달성합니다. Google이 개발한 BBR(Bottleneck Bandwidth and RTT)은 손실 대신 대역폭·RTT 측정을 기반으로 하여 높은 BDP 경로에서 CUBIC 대비 처리량이 뛰어납니다.',
+        topicRef: '06-network-stack',
+    },
+    {
         id: 'io_uring',
         term: 'io_uring',
         category: 'network',
@@ -311,6 +359,14 @@ export const glossary: GlossaryTerm[] = [
     },
 
     // ── 동기화 ───────────────────────────────────────────────────────────────
+    {
+        id: 'grace_period',
+        term: 'Grace Period',
+        aliases: ['RCU grace period', '유예 기간'],
+        category: 'sync',
+        definition: 'RCU에서 기존 포인터를 사용하는 모든 읽기 크리티컬 섹션이 종료될 때까지 기다리는 기간. 쓰기 측은 데이터를 복사·수정하고 포인터를 교체한 뒤 grace period가 끝날 때까지 구 버전을 해제하지 않습니다. synchronize_rcu()로 대기하거나 call_rcu()로 콜백을 등록합니다.',
+        topicRef: '09-synchronization',
+    },
     {
         id: 'spinlock',
         term: 'Spinlock',
@@ -387,6 +443,21 @@ export const glossary: GlossaryTerm[] = [
     },
 
     // ── 디버깅 / 성능 ─────────────────────────────────────────────────────────
+    {
+        id: 'bpftrace',
+        term: 'bpftrace',
+        category: 'debug',
+        definition: '고급 eBPF 추적 언어 및 도구. kprobe, uprobe, tracepoint, USDT 등 다양한 프로브에 짧은 스크립트를 붙여 커널·애플리케이션 동작을 실시간으로 관찰합니다. DTrace/awk와 유사한 문법으로 복잡한 분석을 한 줄 명령(one-liner)으로 표현할 수 있습니다.',
+        topicRef: '08-xdp-ebpf',
+    },
+    {
+        id: 'flame_graph',
+        term: 'Flame Graph',
+        aliases: ['플레임 그래프', '불꽃 그래프'],
+        category: 'debug',
+        definition: '프로파일링 스택 트레이스를 시각화하는 도구. X축은 샘플 비율(CPU 점유율), Y축은 콜 스택 깊이를 나타냅니다. perf record → perf script → stackcollapse-perf.pl → flamegraph.pl 파이프라인으로 생성합니다. 병목 함수를 직관적으로 파악할 수 있습니다.',
+        topicRef: '11-debugging',
+    },
     {
         id: 'ftrace',
         term: 'ftrace',
@@ -475,6 +546,14 @@ export const glossary: GlossaryTerm[] = [
         topicRef: '12-security',
     },
     {
+        id: 'pid_namespace',
+        term: 'PID Namespace',
+        aliases: ['pid ns', 'CLONE_NEWPID'],
+        category: 'security',
+        definition: '프로세스 ID 공간을 격리하는 네임스페이스. 각 PID 네임스페이스에서 PID 1부터 독립적으로 할당됩니다. 컨테이너 내부에서 PID 1은 init 역할을 하며 SIGKILL 수신 시 컨테이너가 종료됩니다. /proc/[pid]/status의 NSpid 필드로 네임스페이스별 PID를 확인할 수 있습니다.',
+        topicRef: '12-security',
+    },
+    {
         id: 'seccomp',
         term: 'seccomp-BPF',
         aliases: ['seccomp', 'Secure Computing'],
@@ -519,9 +598,17 @@ export const glossary: GlossaryTerm[] = [
     {
         id: 'virtio',
         term: 'virtio',
-        aliases: ['virtqueue', 'vhost-net'],
+        aliases: ['virtqueue'],
         category: 'virt',
-        definition: '게스트-호스트 간 공유 메모리 링 버퍼(virtqueue)로 I/O를 전달하는 반가상화 표준. virtio-net(네트워크), virtio-blk(디스크), virtio-fs(파일시스템) 등이 있습니다. vhost-net은 QEMU를 바이패스해 커널 스레드가 직접 처리하여 성능을 향상시킵니다.',
+        definition: '게스트-호스트 간 공유 메모리 링 버퍼(virtqueue)로 I/O를 전달하는 반가상화 표준. virtio-net(네트워크), virtio-blk(디스크), virtio-fs(파일시스템) 등이 있습니다. 게스트 드라이버(frontend)와 호스트 백엔드(backend)가 virtqueue를 통해 디스크립터를 교환합니다.',
+        topicRef: '13-kvm',
+    },
+    {
+        id: 'vhost',
+        term: 'vhost / vhost-user',
+        aliases: ['vhost-net', 'vhost-user', 'DPDK vhost'],
+        category: 'virt',
+        definition: 'QEMU 유저 공간을 바이패스하여 virtio 데이터 패스를 가속하는 기술. vhost-net은 커널 스레드가 직접 virtqueue를 처리하고, vhost-user는 DPDK 등 유저 공간 프로세스가 처리합니다. I/O 처리 경로에서 QEMU 컨텍스트 스위치를 제거해 네트워크 처리량과 지연시간을 크게 개선합니다.',
         topicRef: '13-kvm',
     },
 

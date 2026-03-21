@@ -1,13 +1,6 @@
-import { createContext, useLayoutEffect, useState } from 'react'
-
-type Theme = 'dark' | 'light'
-
-export interface ThemeContextValue {
-    theme: Theme
-    toggle: () => void
-}
-
-export const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', toggle: () => {} })
+import { useLayoutEffect, useState } from 'react'
+import { ThemeContext } from './ThemeContextDef'
+import type { Theme } from './ThemeContextDef'
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) ?? 'dark')

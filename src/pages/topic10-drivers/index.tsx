@@ -596,6 +596,108 @@ MODULE_PARM_DESC(rx_ring_size, "RX 링 버퍼 크기 (기본 256)");
 /* 런타임: echo 2 > /sys/module/my_driver/parameters/debug_level */`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 10.X  캐릭터 디바이스 전체 생명주기
+// ─────────────────────────────────────────────────────────────────────────────
+
+const chardevDriverCode = `/* mydev.c — 최소 캐릭터 디바이스 드라이버 */
+#include <linux/module.h>
+#include <linux/fs.h>
+#include <linux/cdev.h>
+#include <linux/device.h>
+#include <linux/uaccess.h>
+
+#define DEVICE_NAME "mydev"
+#define BUF_SIZE    256
+
+static dev_t dev_num;           /* major:minor */
+static struct cdev my_cdev;
+static struct class *my_class;
+static char kbuf[BUF_SIZE];
+static size_t kbuf_len;
+
+/* file_operations 구현 */
+static int mydev_open(struct inode *inode, struct file *file)
+{
+    pr_info("mydev: open\\n");
+    return 0;
+}
+
+static ssize_t mydev_read(struct file *file, char __user *buf,
+                           size_t count, loff_t *ppos)
+{
+    size_t to_copy = min(count, kbuf_len - (size_t)*ppos);
+    if (copy_to_user(buf, kbuf + *ppos, to_copy))
+        return -EFAULT;
+    *ppos += to_copy;
+    return to_copy;
+}
+
+static ssize_t mydev_write(struct file *file, const char __user *buf,
+                            size_t count, loff_t *ppos)
+{
+    size_t to_copy = min(count, (size_t)BUF_SIZE);
+    if (copy_from_user(kbuf, buf, to_copy))
+        return -EFAULT;
+    kbuf_len = to_copy;
+    return to_copy;
+}
+
+static const struct file_operations mydev_fops = {
+    .owner   = THIS_MODULE,
+    .open    = mydev_open,
+    .read    = mydev_read,
+    .write   = mydev_write,
+    .release = NULL,   /* 필요 시 구현 */
+};
+
+static int __init mydev_init(void)
+{
+    alloc_chrdev_region(&dev_num, 0, 1, DEVICE_NAME);
+    cdev_init(&my_cdev, &mydev_fops);
+    cdev_add(&my_cdev, dev_num, 1);
+    my_class = class_create(DEVICE_NAME);
+    device_create(my_class, NULL, dev_num, NULL, DEVICE_NAME);
+    pr_info("mydev: loaded (major=%d)\\n", MAJOR(dev_num));
+    return 0;
+}
+
+static void __exit mydev_exit(void)
+{
+    device_destroy(my_class, dev_num);
+    class_destroy(my_class);
+    cdev_del(&my_cdev);
+    unregister_chrdev_region(dev_num, 1);
+    pr_info("mydev: unloaded\\n");
+}
+
+module_init(mydev_init);
+module_exit(mydev_exit);
+MODULE_LICENSE("GPL");`
+
+const chardevCommandsCode = `# 모듈 빌드 및 로드
+make -C /lib/modules/$(uname -r)/build M=$PWD modules
+insmod mydev.ko
+lsmod | grep mydev
+
+# major 번호 확인
+cat /proc/devices | grep mydev
+# 234 mydev
+
+# /dev 노드 자동 생성 확인 (udev가 class_create 감지)
+ls -la /dev/mydev
+# crw------- 1 root root 234, 0 ...
+
+# 유저 공간 테스트
+echo "hello kernel" > /dev/mydev
+cat /dev/mydev
+# hello kernel
+
+# 모듈 제거
+rmmod mydev
+dmesg | tail -5
+# mydev: unloaded`
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Static table data
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -913,7 +1015,7 @@ export default function Topic09() {
             {/* 10.8 platform_driver */}
             <Section id="s108" title="10.8  platform_driver — 임베디드 드라이버 모델">
                 <Prose>
-          <T id="pci">PCI</T>, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
+                    <T id="pci">PCI</T>, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
                     <strong className="text-gray-700 dark:text-gray-300">Device Tree</strong>와{' '}
                     <strong className="text-gray-700 dark:text-gray-300">platform_driver</strong>가 이를 해결합니다.
                 </Prose>
@@ -1025,6 +1127,133 @@ export default function Topic09() {
                                 'CPU 어피니티 최적화 → 멀티코어 확장성',
                             ],
                             color: '#3b82f6',
+                        },
+                    ].map((item) => (
+                        <div
+                            key={item.title}
+                            className="rounded-lg px-3 py-3 space-y-1.5"
+                            style={{
+                                background: item.color + (isDark ? '18' : '0d'),
+                                border: `1px solid ${item.color}55`,
+                            }}
+                        >
+                            <div className="font-mono font-bold mb-2" style={{ color: item.color }}>
+                                {item.title}
+                            </div>
+                            <ul className="space-y-1">
+                                {item.items.map((text) => (
+                                    <li key={text} className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                                        <span style={{ color: item.color }}>·</span>
+                                        {text}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </Section>
+
+            {/* 10.10 캐릭터 디바이스 전체 생명주기 */}
+            <Section id="s110" title="10.10  캐릭터 디바이스 전체 생명주기 — module_init에서 module_exit까지">
+                <Prose>
+          캐릭터 디바이스 드라이버는 가장 단순한 리눅스 드라이버 형태입니다.
+          터미널, 시리얼, 커스텀 하드웨어처럼 바이트 스트림으로 읽고 쓰는 장치를 관리하며,{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> →{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">cdev_init</code> →{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">device_create</code> →{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">file_operations</code>{' '}
+          등록 → 유저 open/read/write/ioctl → <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code> 전체 흐름을 한 번에 이해할 수 있습니다.
+                </Prose>
+
+                {/* 생명주기 다이어그램 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-5 text-xs font-mono space-y-3">
+                    <div className="text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-2">생명주기 플로우</div>
+
+                    {/* module_init 블록 */}
+                    <div className="rounded-lg border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 space-y-1.5">
+                        <div className="font-bold text-amber-700 dark:text-amber-400 text-sm">module_init()</div>
+                        {[
+                            { fn: 'alloc_chrdev_region()', desc: 'major/minor 번호 할당' },
+                            { fn: 'cdev_init(&cdev, &fops)', desc: 'file_operations 등록' },
+                            { fn: 'cdev_add()', desc: '커널 cdev 목록에 등록' },
+                            { fn: 'device_create()', desc: '/dev/mydev 노드 생성 (udev 트리거)' },
+                        ].map((step) => (
+                            <div key={step.fn} className="flex items-start gap-2 pl-4">
+                                <span className="text-amber-500 dark:text-amber-400 select-none">├─</span>
+                                <span className="text-amber-800 dark:text-amber-300">{step.fn}</span>
+                                <span className="text-gray-400 dark:text-gray-500 ml-1">← {step.desc}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* 유저 공간 블록 */}
+                    <div className="rounded-lg border border-blue-400/40 bg-blue-50 dark:bg-blue-950/30 px-4 py-3 space-y-1.5">
+                        <div className="font-bold text-blue-700 dark:text-blue-400 text-sm">유저 공간 시스템 콜</div>
+                        {[
+                            { call: 'open("/dev/mydev", O_RDWR)', handler: '.open()', desc: '드라이버 open 핸들러' },
+                            { call: 'read(fd, buf, n)', handler: '.read()', desc: '드라이버 read 핸들러' },
+                            { call: 'ioctl(fd, CMD, arg)', handler: '.unlocked_ioctl()', desc: '드라이버 ioctl 핸들러' },
+                            { call: 'close(fd)', handler: '.release()', desc: '드라이버 release 핸들러' },
+                        ].map((step) => (
+                            <div key={step.call} className="pl-4 space-y-0.5">
+                                <div className="text-blue-800 dark:text-blue-300">{step.call}</div>
+                                <div className="flex items-center gap-2 pl-4">
+                                    <span className="text-blue-400 dark:text-blue-500 select-none">└─</span>
+                                    <span className="text-blue-700 dark:text-blue-400">{step.handler}</span>
+                                    <span className="text-gray-400 dark:text-gray-500">→ {step.desc}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* module_exit 블록 */}
+                    <div className="rounded-lg border border-rose-400/40 bg-rose-50 dark:bg-rose-950/30 px-4 py-3 space-y-1.5">
+                        <div className="font-bold text-rose-700 dark:text-rose-400 text-sm">module_exit()</div>
+                        {[
+                            { fn: 'device_destroy()', desc: '/dev/mydev 제거' },
+                            { fn: 'cdev_del()', desc: 'cdev 목록에서 제거' },
+                            { fn: 'unregister_chrdev_region()', desc: 'major/minor 반환' },
+                        ].map((step) => (
+                            <div key={step.fn} className="flex items-start gap-2 pl-4">
+                                <span className="text-rose-500 dark:text-rose-400 select-none">├─</span>
+                                <span className="text-rose-800 dark:text-rose-300">{step.fn}</span>
+                                <span className="text-gray-400 dark:text-gray-500 ml-1">← {step.desc}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <CodeBlock
+                    code={chardevDriverCode}
+                    language="c"
+                    filename="mydev.c — 최소 캐릭터 디바이스 드라이버"
+                />
+                <CodeBlock
+                    code={chardevCommandsCode}
+                    language="bash"
+                    filename="# 빌드 · 로드 · 테스트 · 제거"
+                />
+
+                {/* copy_to_user / copy_from_user 핵심 설명 */}
+                <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+                    {[
+                        {
+                            title: 'copy_to_user(ubuf, kbuf, n)',
+                            items: [
+                                '커널 → 유저 안전 복사',
+                                '반환값 = 못 복사한 바이트 수 (0이면 성공)',
+                                '실패 시 -EFAULT 반환 필수',
+                            ],
+                            color: '#3b82f6',
+                        },
+                        {
+                            title: 'copy_from_user(kbuf, ubuf, n)',
+                            items: [
+                                '유저 → 커널 안전 복사',
+                                '페이지 폴트 안전 처리 (슬립 허용)',
+                                '커널이 유저 포인터를 직접 역참조하면 안 됨 (다른 주소 공간)',
+                            ],
+                            color: '#f59e0b',
                         },
                     ].map((item) => (
                         <div

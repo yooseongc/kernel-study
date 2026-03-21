@@ -120,6 +120,34 @@ struct vring {
 modprobe vhost_net
 ls /dev/vhost-net`
 
+const vhostCode = `# vhost-net 모듈 로드
+modprobe vhost_net
+ls /dev/vhost-net
+
+# QEMU에서 vhost-net 사용
+qemu-system-x86_64 \
+  -enable-kvm \
+  -netdev tap,id=net0,vhost=on,vhostfd=3 \
+  -device virtio-net-pci,netdev=net0 \
+  3<>/dev/vhost-net
+
+# vhost_worker 스레드 확인 (커널 스레드)
+ps aux | grep vhost
+# root  1234  [vhost-1234]  ← VM의 virtqueue 처리
+
+# vhost-net 통계
+cat /proc/net/dev | grep tap
+# tap0: RX bytes=... TX bytes=...
+
+# vhost-user 소켓 경로 (OVS-DPDK)
+ovs-vsctl add-port br0 vhost0 \
+  -- set Interface vhost0 type=dpdkvhostuserclient \
+     options:vhost-server-path=/tmp/vhost0.sock
+
+# SR-IOV VF 생성 (Intel X710)
+echo 4 > /sys/bus/pci/devices/0000:01:00.0/sriov_numvfs
+# 4개의 Virtual Function 생성 → VM에 PCI passthrough`
+
 const kvmMgmtCode = `# KVM 지원 확인
 egrep -c '(vmx|svm)' /proc/cpuinfo   # > 0 이면 지원
 lsmod | grep kvm
@@ -130,8 +158,8 @@ lsmod | grep kvm
 qemu-system-x86_64 \
   -enable-kvm \
   -m 2G \
-  -cpu host \           # 호스트 CPU 모델 그대로 노출
-  -smp 2 \              # vCPU 2개
+  -cpu host \\          # 호스트 CPU 모델 그대로 노출
+  -smp 2 \\             # vCPU 2개
   -hda ubuntu.qcow2 \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -nographic
@@ -536,6 +564,170 @@ export default function Topic13Kvm() {
                         ))}
                     </div>
                 </div>
+            </Section>
+
+            {/* 13.6 vhost */}
+            <Section id="s1316" title="13.6  vhost — 커널 내 virtio 백엔드">
+                <Prose>
+                    기본 <T id="virtio">virtio</T>는 I/O 요청을 QEMU 유저 공간 백엔드가 처리합니다.
+                    <strong className="text-gray-800 dark:text-gray-200"> vhost</strong>는 커널 내부에서 virtio 큐를 직접 처리해
+                    <strong className="text-gray-800 dark:text-gray-200"> 컨텍스트 스위치 없이</strong> 패킷/I/O를 처리합니다.
+                    vhost-net(네트워크)과 vhost-blk(블록 I/O)이 대표적입니다.
+                </Prose>
+
+                {/* 처리 경로 비교 다이어그램 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* 기본 virtio */}
+                    <div className="rounded-xl border border-orange-200 dark:border-orange-800/50 bg-orange-50/50 dark:bg-orange-950/20 p-4 space-y-3">
+                        <div className="text-xs font-mono font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wide">
+                            기본 virtio (QEMU 유저공간 백엔드)
+                        </div>
+                        <div className="space-y-1.5">
+                            {[
+                                { label: '게스트 VM', color: '#f97316' },
+                                { label: '↓ virtio 큐', color: '#9ca3af' },
+                                { label: 'QEMU (유저공간)', color: '#f97316' },
+                                { label: '↓ 소켓 / 파일', color: '#9ca3af' },
+                                { label: '호스트 커널', color: '#f97316' },
+                            ].map((row, i) => (
+                                <div
+                                    key={i}
+                                    className="text-xs font-mono px-3 py-1.5 rounded-lg"
+                                    style={row.label.startsWith('↓') ? { color: row.color } : {
+                                        backgroundColor: '#f9731618',
+                                        border: '1px solid #f9731644',
+                                        color: row.color,
+                                    }}
+                                >
+                                    {row.label}
+                                </div>
+                            ))}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            컨텍스트 스위치: VM exit → <T id="kvm">KVM</T> → QEMU 유저공간
+                        </p>
+                    </div>
+
+                    {/* vhost */}
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-3">
+                        <div className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+                            vhost (커널 백엔드)
+                        </div>
+                        <div className="space-y-1.5">
+                            {[
+                                { label: '게스트 VM', color: '#3b82f6' },
+                                { label: '↓ virtio 큐', color: '#9ca3af' },
+                                { label: 'vhost 커널 스레드', color: '#3b82f6' },
+                                { label: '↓ 소켓 / 파일', color: '#9ca3af' },
+                                { label: '(유저공간 생략!)', color: '#10b981' },
+                            ].map((row, i) => (
+                                <div
+                                    key={i}
+                                    className="text-xs font-mono px-3 py-1.5 rounded-lg"
+                                    style={row.label.startsWith('↓') ? { color: row.color } : {
+                                        backgroundColor: row.color === '#10b981' ? '#10b98118' : '#3b82f618',
+                                        border: `1px solid ${row.color === '#10b981' ? '#10b98144' : '#3b82f644'}`,
+                                        color: row.color,
+                                    }}
+                                >
+                                    {row.label}
+                                </div>
+                            ))}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            컨텍스트 스위치: VM exit → KVM → vhost_worker (커널 스레드, 유저공간 생략!)
+                        </p>
+                    </div>
+                </div>
+
+                {/* vhost-net 동작 원리 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        vhost-net 동작 원리
+                    </div>
+                    <div className="space-y-2">
+                        {[
+                            { step: '1', desc: 'vhost_net 커널 모듈이 /dev/vhost-net 생성', color: '#3b82f6' },
+                            { step: '2', desc: 'QEMU가 /dev/vhost-net을 열고 ioctl로 virtqueue 등록', color: '#8b5cf6' },
+                            { step: '3', desc: '이후 게스트 TX 요청은 QEMU 개입 없이 vhost_worker 스레드가 직접 TAP 소켓으로 전달', color: '#10b981' },
+                            { step: '★', desc: '성능: QEMU 경유 대비 레이턴시 30–50% 감소, 처리량 최대 2배', color: '#f59e0b' },
+                        ].map((row) => (
+                            <div key={row.step} className="flex items-start gap-3">
+                                <div
+                                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0"
+                                    style={{ backgroundColor: row.color + '20', color: row.color, border: `1px solid ${row.color}44` }}
+                                >
+                                    {row.step}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed pt-0.5">
+                                    {row.desc}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* vhost-user */}
+                <div className="rounded-xl border border-purple-200 dark:border-purple-800/50 bg-purple-50/50 dark:bg-purple-950/20 p-4 space-y-2">
+                    <div className="text-sm font-semibold text-purple-700 dark:text-purple-300 font-mono">
+                        vhost-user (DPDK) — 호스트 커널도 우회
+                    </div>
+                    <ul className="space-y-1.5">
+                        {[
+                            'vhost-net의 한계: 호스트 커널을 거쳐야 함',
+                            'vhost-user: 유저 공간(DPDK)과 공유 메모리로 직접 통신. 커널 우회',
+                            'Open vSwitch + DPDK + vhost-user = 가장 빠른 VM 네트워킹',
+                        ].map((item, i) => (
+                            <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
+                                <span className="text-purple-500 shrink-0">▸</span>
+                                <span>{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* 방식 비교 테이블 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                    <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                            virtio 백엔드 방식 비교
+                        </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                            <thead>
+                                <tr className="border-b border-gray-100 dark:border-gray-800">
+                                    {['방식', '처리 위치', '레이턴시', '설정 복잡도'].map((h) => (
+                                        <th key={h} className="px-4 py-2.5 text-left font-semibold text-gray-500 dark:text-gray-400">
+                                            {h}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                {[
+                                    { method: 'virtio (에뮬레이션)', location: 'QEMU 유저공간', latency: '높음', complexity: '낮음', latencyColor: 'text-red-500', complexityColor: 'text-green-500' },
+                                    { method: 'vhost-net', location: '커널 스레드', latency: '중간', complexity: '낮음', latencyColor: 'text-yellow-500', complexityColor: 'text-green-500' },
+                                    { method: 'vhost-user (DPDK)', location: '유저 공간 (PMD)', latency: '낮음', complexity: '높음', latencyColor: 'text-green-500', complexityColor: 'text-red-500' },
+                                    { method: 'SR-IOV', location: '하드웨어 직접', latency: '최저', complexity: '매우 높음', latencyColor: 'text-blue-500', complexityColor: 'text-red-600' },
+                                ].map((row) => (
+                                    <tr key={row.method}>
+                                        <td className="px-4 py-2.5 font-mono text-gray-700 dark:text-gray-300">{row.method}</td>
+                                        <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.location}</td>
+                                        <td className={`px-4 py-2.5 font-mono ${row.latencyColor}`}>{row.latency}</td>
+                                        <td className={`px-4 py-2.5 font-mono ${row.complexityColor}`}>{row.complexity}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <CodeBlock
+                    code={vhostCode}
+                    language="bash"
+                    filename="# vhost-net / vhost-user / SR-IOV 실전 명령"
+                />
             </Section>
 
             {/* 이전 토픽 */}

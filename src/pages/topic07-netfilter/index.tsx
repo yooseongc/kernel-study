@@ -326,6 +326,25 @@ ipset list blocklist | wc -l
 ipset save > /etc/ipset.conf
 ipset restore < /etc/ipset.conf`
 
+const conntrackHelperCode = `# conntrack helper 모듈 로드
+modprobe nf_conntrack_ftp
+modprobe nf_conntrack_sip
+
+# 등록된 helper 확인
+cat /proc/net/nf_conntrack_expect
+# l3proto = IPv4 proto=tcp src=192.168.1.10 dst=203.0.113.5 sport=0 dport=45678
+# ↑ FTP 데이터 채널 expectation
+
+# 현재 conntrack 테이블 (RELATED 항목 확인)
+conntrack -L | grep RELATED
+# tcp 6 29 TIME_WAIT src=... dst=... RELATED [ASSURED]
+
+# nftables에서 helper 명시 설정 (커널 5.x+ 권장 방식)
+nft add rule inet filter input ct helper "ftp" accept
+
+# helper 비활성화 (보안상 필요 시)
+echo 0 > /proc/sys/net/netfilter/nf_conntrack_helper`
+
 const tproxyCode = `# TPROXY 설정 예시 (투명 프록시)
 
 # 1. 패킷을 특별 라우팅 테이블로 마크
@@ -416,351 +435,437 @@ export default function Topic06() {
             </header>
 
             <Section id="s771" title="7.1  Netfilter 구조">
-            <InfoBox>
-                <strong><T id="netfilter">Netfilter</T></strong>는 리눅스 커널 네트워크 스택의{' '}
-                <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅 포인트를 두고,
+                <InfoBox>
+                    <strong><T id="netfilter">Netfilter</T></strong>는 리눅스 커널 네트워크 스택의{' '}
+                    <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅 포인트를 두고,
         각 포인트에서 등록된 함수를 우선순위 순서대로 호출합니다.
-                <br /><br />
-                <strong><T id="iptables">iptables</T></strong>, <strong>nftables</strong>,{' '}
-                <strong><T id="conntrack">conntrack(연결 추적)</T></strong>, <strong>IPVS(로드밸런서)</strong> 등
+                    <br /><br />
+                    <strong><T id="iptables">iptables</T></strong>, <strong>nftables</strong>,{' '}
+                    <strong><T id="conntrack">conntrack(연결 추적)</T></strong>, <strong>IPVS(로드밸런서)</strong> 등
         대부분의 리눅스 네트워크 보안·제어 기능이 모두 Netfilter 훅 위에서 동작합니다.
-            </InfoBox>
+                </InfoBox>
             </Section>
 
             <Section id="s772" title="7.2  5개 훅 포인트 — 패킷 흐름">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
         수신 패킷은 PREROUTING → (라우팅 결정) → INPUT 또는 FORWARD 경로로 분기됩니다.
         송신 패킷은 OUTPUT → POSTROUTING 경로를 거칩니다.
         드래그·휠로 확대/축소할 수 있습니다.
-            </p>
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 mb-6">
-                <D3Container renderFn={renderFn} deps={[theme]} height={280} zoomable={true} />
-            </div>
-
-            {/* 훅 상세 인터랙션 버튼 */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
-                {Object.keys(hookDetails).map((hook) => (
-                    <button
-                        key={hook}
-                        onClick={() => setActiveHook(activeHook === hook ? null : hook)}
-                        className={`rounded-lg border px-2 py-2 text-xs font-mono font-semibold transition-colors ${
-                            activeHook === hook
-                                ? 'bg-blue-600 border-blue-500 text-white'
-                                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                    >
-                        {hook}
-                    </button>
-                ))}
-            </div>
-            {activeHook !== null && hookDetails[activeHook] !== undefined && (
-                <div className="rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/40 px-5 py-4 mb-6 text-sm">
-                    <div className="font-mono font-bold text-blue-700 dark:text-blue-300 mb-1">{activeHook}</div>
-                    <div className="text-gray-700 dark:text-gray-300 mb-1">{hookDetails[activeHook].desc}</div>
-                    <div className="text-gray-500 dark:text-gray-400 text-xs">
-            주요 용도:{' '}
-                        <span className="font-mono">{hookDetails[activeHook].examples}</span>
-                    </div>
+                </p>
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 mb-6">
+                    <D3Container renderFn={renderFn} deps={[theme]} height={280} zoomable={true} />
                 </div>
-            )}
+
+                {/* 훅 상세 인터랙션 버튼 */}
+                <div className="grid grid-cols-5 gap-2 mb-4">
+                    {Object.keys(hookDetails).map((hook) => (
+                        <button
+                            key={hook}
+                            onClick={() => setActiveHook(activeHook === hook ? null : hook)}
+                            className={`rounded-lg border px-2 py-2 text-xs font-mono font-semibold transition-colors ${
+                                activeHook === hook
+                                    ? 'bg-blue-600 border-blue-500 text-white'
+                                    : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                        >
+                            {hook}
+                        </button>
+                    ))}
+                </div>
+                {activeHook !== null && hookDetails[activeHook] !== undefined && (
+                    <div className="rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/40 px-5 py-4 mb-6 text-sm">
+                        <div className="font-mono font-bold text-blue-700 dark:text-blue-300 mb-1">{activeHook}</div>
+                        <div className="text-gray-700 dark:text-gray-300 mb-1">{hookDetails[activeHook].desc}</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs">
+            주요 용도:{' '}
+                            <span className="font-mono">{hookDetails[activeHook].examples}</span>
+                        </div>
+                    </div>
+                )}
 
             </Section>
 
             <Section id="s773" title="7.3  훅 포인트 상세">
-            <TableWrapper>
-                <thead>
-                    <tr>
-                        <Th>훅</Th>
-                        <Th>시점</Th>
-                        <Th>주요 용도</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <Td mono>PREROUTING</Td>
-                        <Td>라우팅 전 (수신 직후)</Td>
-                        <Td>DNAT, <T id="conntrack">conntrack</T></Td>
-                    </tr>
-                    <tr>
-                        <Td mono>INPUT</Td>
-                        <Td>로컬 프로세스로 전달 전</Td>
-                        <Td>방화벽 인바운드</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>FORWARD</Td>
-                        <Td>포워딩 패킷</Td>
-                        <Td>라우터 방화벽</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>OUTPUT</Td>
-                        <Td>로컬 프로세스 송신</Td>
-                        <Td>아웃바운드 필터</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>POSTROUTING</Td>
-                        <Td>송신 직전</Td>
-                        <Td>SNAT, Masquerade</Td>
-                    </tr>
-                </tbody>
-            </TableWrapper>
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>훅</Th>
+                            <Th>시점</Th>
+                            <Th>주요 용도</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td mono>PREROUTING</Td>
+                            <Td>라우팅 전 (수신 직후)</Td>
+                            <Td>DNAT, <T id="conntrack">conntrack</T></Td>
+                        </tr>
+                        <tr>
+                            <Td mono>INPUT</Td>
+                            <Td>로컬 프로세스로 전달 전</Td>
+                            <Td>방화벽 인바운드</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>FORWARD</Td>
+                            <Td>포워딩 패킷</Td>
+                            <Td>라우터 방화벽</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>OUTPUT</Td>
+                            <Td>로컬 프로세스 송신</Td>
+                            <Td>아웃바운드 필터</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>POSTROUTING</Td>
+                            <Td>송신 직전</Td>
+                            <Td>SNAT, Masquerade</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
 
             </Section>
 
             <Section id="s774" title="7.4  iptables와 nftables">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         두 도구 모두 <T id="netfilter">Netfilter</T> 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다.
         현대 배포판(RHEL 8+, Debian 10+)은 nftables를 기본값으로 채택했습니다.
-            </p>
-            <TableWrapper>
-                <thead>
-                    <tr>
-                        <Th>항목</Th>
-                        <Th>iptables</Th>
-                        <Th>nftables</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <Td>아키텍처</Td>
-                        <Td>테이블별 별도 커널 모듈</Td>
-                        <Td>단일 프레임워크</Td>
-                    </tr>
-                    <tr>
-                        <Td>성능</Td>
-                        <Td>규칙 수 많을수록 선형 탐색</Td>
-                        <Td>JIT 컴파일, 집합(set) 지원</Td>
-                    </tr>
-                    <tr>
-                        <Td>IPv4/IPv6</Td>
-                        <Td>별도 (iptables / ip6tables)</Td>
-                        <Td>통합 (nftables)</Td>
-                    </tr>
-                    <tr>
-                        <Td>현재 상태</Td>
-                        <Td>유지보수 모드</Td>
-                        <Td>기본값 (RHEL 8+, Debian 10+)</Td>
-                    </tr>
-                </tbody>
-            </TableWrapper>
-            <CodeBlock
-                code={iptablesVsNftablesCode}
-                language="bash"
-                filename="iptables vs nftables"
-            />
+                </p>
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>항목</Th>
+                            <Th>iptables</Th>
+                            <Th>nftables</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td>아키텍처</Td>
+                            <Td>테이블별 별도 커널 모듈</Td>
+                            <Td>단일 프레임워크</Td>
+                        </tr>
+                        <tr>
+                            <Td>성능</Td>
+                            <Td>규칙 수 많을수록 선형 탐색</Td>
+                            <Td>JIT 컴파일, 집합(set) 지원</Td>
+                        </tr>
+                        <tr>
+                            <Td>IPv4/IPv6</Td>
+                            <Td>별도 (iptables / ip6tables)</Td>
+                            <Td>통합 (nftables)</Td>
+                        </tr>
+                        <tr>
+                            <Td>현재 상태</Td>
+                            <Td>유지보수 모드</Td>
+                            <Td>기본값 (RHEL 8+, Debian 10+)</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
+                <CodeBlock
+                    code={iptablesVsNftablesCode}
+                    language="bash"
+                    filename="iptables vs nftables"
+                />
 
-            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
+                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
         iptables 핵심 문법
-            </h3>
-            <CodeBlock
-                code={iptablesMainSyntaxCode}
-                language="bash"
-                filename="# iptables 주요 규칙 예시"
-            />
-            <CodeBlock
-                code={nftablesSyntaxCode}
-                language="bash"
-                filename="# nftables 동일 규칙"
-            />
+                </h3>
+                <CodeBlock
+                    code={iptablesMainSyntaxCode}
+                    language="bash"
+                    filename="# iptables 주요 규칙 예시"
+                />
+                <CodeBlock
+                    code={nftablesSyntaxCode}
+                    language="bash"
+                    filename="# nftables 동일 규칙"
+                />
 
             </Section>
 
             <Section id="s775" title="7.5  conntrack (연결 추적)">
-            <InfoBox>
-        <T id="netfilter">Netfilter</T> <strong><T id="conntrack">conntrack</T></strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
+                <InfoBox>
+                    <T id="netfilter">Netfilter</T> <strong><T id="conntrack">conntrack</T></strong>은 stateful 방화벽의 핵심 컴포넌트입니다.
         커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
         응답 패킷을 자동으로 허용하거나 NAT 역변환을 처리합니다.
-            </InfoBox>
-            <TableWrapper>
-                <thead>
-                    <tr>
-                        <Th>상태</Th>
-                        <Th>의미</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <Td mono>NEW</Td>
-                        <Td>첫 번째 패킷 (연결 시작)</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>ESTABLISHED</Td>
-                        <Td>양방향 패킷이 확인된 연결</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>RELATED</Td>
-                        <Td>기존 연결과 관련된 새 연결 (FTP data 등)</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>INVALID</Td>
-                        <Td>추적 불가 패킷</Td>
-                    </tr>
-                </tbody>
-            </TableWrapper>
-            <CodeBlock
-                code={conntrackCode}
-                language="bash"
-                filename="conntrack CLI"
-            />
+                </InfoBox>
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>상태</Th>
+                            <Th>의미</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td mono>NEW</Td>
+                            <Td>첫 번째 패킷 (연결 시작)</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>ESTABLISHED</Td>
+                            <Td>양방향 패킷이 확인된 연결</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>RELATED</Td>
+                            <Td>기존 연결과 관련된 새 연결 (FTP data 등)</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>INVALID</Td>
+                            <Td>추적 불가 패킷</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
+                <CodeBlock
+                    code={conntrackCode}
+                    language="bash"
+                    filename="conntrack CLI"
+                />
 
-            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
+                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
         conntrack 성능 튜닝
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         고트래픽 환경에서 <T id="conntrack">conntrack</T> 테이블이 가득 차면 새 연결이 차단됩니다. 적절한 크기 조정이 필요합니다.
-            </p>
-            <CodeBlock
-                code={conntrackTuningCode}
-                language="bash"
-                filename="# conntrack 튜닝"
-            />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="rounded-xl border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                    <div className="font-semibold text-yellow-700 dark:text-yellow-400 mb-2">용량 부족 증상</div>
-                    <code className="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                </p>
+                <CodeBlock
+                    code={conntrackTuningCode}
+                    language="bash"
+                    filename="# conntrack 튜닝"
+                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div className="rounded-xl border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
+                        <div className="font-semibold text-yellow-700 dark:text-yellow-400 mb-2">용량 부족 증상</div>
+                        <code className="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
             dmesg | grep "nf_conntrack: table full"
-                    </code>
-                    <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                        </code>
+                        <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
             새 연결 REJECT, 기존 연결은 유지됩니다.
-                    </p>
-                </div>
-                <div className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                    <div className="font-semibold text-purple-700 dark:text-purple-400 mb-2">메모리 사용량</div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                        </p>
+                    </div>
+                    <div className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
+                        <div className="font-semibold text-purple-700 dark:text-purple-400 mb-2">메모리 사용량</div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
             conntrack 엔트리 1개 ≈ 320바이트<br />
             100만 연결 ≈ <strong>320MB RAM</strong>
-                    </p>
+                        </p>
+                    </div>
                 </div>
-            </div>
 
             </Section>
 
             <Section id="s776" title="7.6  TPROXY와 정책 기반 라우팅">
-            <InfoBox>
-                <ul className="space-y-1 list-disc list-inside">
-                    <li>
-                        <strong>TPROXY</strong>: 패킷을 실제 목적지가 아닌{' '}
-                        <em>로컬 소켓</em>으로 리다이렉트합니다.
+                <InfoBox>
+                    <ul className="space-y-1 list-disc list-inside">
+                        <li>
+                            <strong>TPROXY</strong>: 패킷을 실제 목적지가 아닌{' '}
+                            <em>로컬 소켓</em>으로 리다이렉트합니다.
             NAT와 달리 패킷의 목적지 IP/포트를 변경하지 않습니다.
-                    </li>
-                    <li>
+                        </li>
+                        <li>
             투명 프록시(transparent proxy) 구현에 필수이며,
             Envoy, Squid 등에서 활용됩니다.
-                    </li>
-                    <li>
-                        <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
               ip rule
-                        </code>{' '}
+                            </code>{' '}
             +{' '}
-                        <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                            <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
               ip route
-                        </code>
+                            </code>
             로 정책 기반 라우팅과 연동해야 합니다.
-                    </li>
-                </ul>
-            </InfoBox>
-            <CodeBlock
-                code={tproxyCode}
-                language="bash"
-                filename="TPROXY 설정"
-            />
+                        </li>
+                    </ul>
+                </InfoBox>
+                <CodeBlock
+                    code={tproxyCode}
+                    language="bash"
+                    filename="TPROXY 설정"
+                />
 
             </Section>
 
             <Section id="s777" title="7.7  TC Hook (Traffic Control)">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
         TC(Traffic Control)는 <T id="netfilter">Netfilter</T>와 독립적인 패킷 처리 포인트입니다.
         XDP보다 늦지만 <T id="netfilter">Netfilter</T>보다 빠른 위치에서 동작하여,
         eBPF 프로그램과 결합하면 매우 유연한 패킷 제어가 가능합니다.
-            </p>
-            <TableWrapper>
-                <thead>
-                    <tr>
-                        <Th>위치</Th>
-                        <Th>시점</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <Td mono>ingress TC</Td>
-                        <Td>드라이버 → ip_rcv() 사이 (PREROUTING 전)</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>egress TC</Td>
-                        <Td>ip_output() → 드라이버 사이 (POSTROUTING 후)</Td>
-                    </tr>
-                </tbody>
-            </TableWrapper>
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-5 py-4 text-sm text-gray-600 dark:text-gray-400 mb-8">
-                <div className="font-mono text-xs leading-7">
-                    <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
-                    {' → '}
-                    <span className="font-bold text-blue-600 dark:text-blue-400">[ingress TC]</span>
-                    {' → '}
-                    <span className="text-gray-500">PREROUTING</span>
-                    {' → ... → '}
-                    <span className="text-gray-500">POSTROUTING</span>
-                    {' → '}
-                    <span className="font-bold text-purple-600 dark:text-purple-400">[egress TC]</span>
-                    {' → '}
-                    <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
-                </div>
-                <p className="mt-3 text-xs">
+                </p>
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>위치</Th>
+                            <Th>시점</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td mono>ingress TC</Td>
+                            <Td>드라이버 → ip_rcv() 사이 (PREROUTING 전)</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>egress TC</Td>
+                            <Td>ip_output() → 드라이버 사이 (POSTROUTING 후)</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-5 py-4 text-sm text-gray-600 dark:text-gray-400 mb-8">
+                    <div className="font-mono text-xs leading-7">
+                        <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
+                        {' → '}
+                        <span className="font-bold text-blue-600 dark:text-blue-400">[ingress TC]</span>
+                        {' → '}
+                        <span className="text-gray-500">PREROUTING</span>
+                        {' → ... → '}
+                        <span className="text-gray-500">POSTROUTING</span>
+                        {' → '}
+                        <span className="font-bold text-purple-600 dark:text-purple-400">[egress TC]</span>
+                        {' → '}
+                        <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
+                    </div>
+                    <p className="mt-3 text-xs">
           TC BPF는{' '}
-                    <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">cls_bpf</code>를
+                        <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">cls_bpf</code>를
           통해 eBPF 프로그램을 연결하며, 패킷 수정·리다이렉션·드롭 등의 액션을 수행할 수 있습니다.
           다음 토픽(XDP / eBPF)에서 더 자세히 다룹니다.
-                </p>
-            </div>
+                    </p>
+                </div>
 
             </Section>
 
             <Section id="s778" title="7.8  ipset — 대규모 IP 집합 매칭">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        <T id="iptables">iptables</T> 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <T id="iptables">iptables</T> 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다.
         차단 목록, 화이트리스트, GeoIP 차단에 활용됩니다.
-            </p>
-            <InfoBox>
-                <strong>성능 비교:</strong> <T id="iptables">iptables</T> 규칙 10만 개 → O(n) 순차 매칭 vs{' '}
-                <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">ipset hash:ip</code>{' '}
+                </p>
+                <InfoBox>
+                    <strong>성능 비교:</strong> <T id="iptables">iptables</T> 규칙 10만 개 → O(n) 순차 매칭 vs{' '}
+                    <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">ipset hash:ip</code>{' '}
         → O(1) 해시 룩업. 대규모 차단 목록에서 압도적인 성능 차이가 발생합니다.
-            </InfoBox>
-            <CodeBlock
-                code={ipsetCode}
-                language="bash"
-                filename="# ipset 사용법"
-            />
-            <TableWrapper>
-                <thead>
-                    <tr>
-                        <Th>타입</Th>
-                        <Th>설명</Th>
-                        <Th>예시</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <Td mono>hash:ip</Td>
-                        <Td>단일 IP 매칭</Td>
-                        <Td>차단 IP 목록</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>hash:net</Td>
-                        <Td>CIDR 블록 매칭</Td>
-                        <Td>GeoIP 국가별 차단</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>hash:ip,port</Td>
-                        <Td>IP+포트 조합</Td>
-                        <Td>특정 서비스 차단</Td>
-                    </tr>
-                    <tr>
-                        <Td mono>bitmap:port</Td>
-                        <Td>포트 범위 (비트맵)</Td>
-                        <Td>포트 범위 차단</Td>
-                    </tr>
-                </tbody>
-            </TableWrapper>
+                </InfoBox>
+                <CodeBlock
+                    code={ipsetCode}
+                    language="bash"
+                    filename="# ipset 사용법"
+                />
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>타입</Th>
+                            <Th>설명</Th>
+                            <Th>예시</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td mono>hash:ip</Td>
+                            <Td>단일 IP 매칭</Td>
+                            <Td>차단 IP 목록</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>hash:net</Td>
+                            <Td>CIDR 블록 매칭</Td>
+                            <Td>GeoIP 국가별 차단</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>hash:ip,port</Td>
+                            <Td>IP+포트 조합</Td>
+                            <Td>특정 서비스 차단</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>bitmap:port</Td>
+                            <Td>포트 범위 (비트맵)</Td>
+                            <Td>포트 범위 차단</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
 
+            </Section>
+
+            <Section id="s779" title="7.9  Conntrack Helpers — 복잡한 프로토콜 추적">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <T id="conntrack">conntrack</T>(연결 추적)은 기본적으로 패킷의 5-tuple(src IP, dst IP,
+                    src port, dst port, proto)로 연결을 식별합니다. 하지만 <strong>FTP</strong>, <strong>SIP</strong>처럼
+                    페이로드 안에 추가 IP:PORT가 포함된 프로토콜은 별도 <strong>conntrack helper</strong>(ALG:
+                    Application Layer Gateway)가 필요합니다.
+                </p>
+
+                <InfoBox>
+                    <strong>FTP ACTIVE 모드 문제:</strong> 제어 채널(클라이언트 → 서버 21번 포트)은 conntrack이
+                    추적하지만, 데이터 채널(서버 → 클라이언트 임의 포트)은 <em>새로운 연결</em>이므로 방화벽이
+                    기본적으로 차단합니다. <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">nf_conntrack_ftp</code>{' '}
+                    모듈이 제어 채널 페이로드를 파싱해 <strong>RELATED</strong> expectation을 등록함으로써 이를 해결합니다.
+                </InfoBox>
+
+                <div className="my-6 space-y-3">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Helper 동작 흐름</h3>
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-5 font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed space-y-1">
+                        <div className="text-blue-600 dark:text-blue-400 font-semibold">[패킷 수신]</div>
+                        <div className="pl-4">↓</div>
+                        <div><span className="text-green-600 dark:text-green-400 font-semibold">[conntrack]</span> → 5-tuple 매칭 → ESTABLISHED</div>
+                        <div className="pl-4">↓ <span className="text-gray-500 dark:text-gray-500">(miss 또는 새 연결)</span></div>
+                        <div><span className="text-amber-600 dark:text-amber-400 font-semibold">[helper 검사]</span> → nf_conntrack_ftp / sip / h323 등</div>
+                        <div className="pl-4">↓ <span className="text-gray-500 dark:text-gray-500">(페이로드 파싱)</span></div>
+                        <div><span className="text-purple-600 dark:text-purple-400 font-semibold">[expectation 등록]</span> → /proc/net/nf_conntrack_expect</div>
+                        <div className="pl-4">↓ <span className="text-gray-500 dark:text-gray-500">(예상 패킷 도착)</span></div>
+                        <div className="text-green-600 dark:text-green-400 font-semibold">[RELATED 상태로 허용]</div>
+                    </div>
+                </div>
+
+                <div className="my-6 space-y-3">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">SIP ALG 동작</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        SIP INVITE 메시지 바디(SDP)에 미디어 IP:PORT가 포함됩니다.{' '}
+                        <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">nf_conntrack_sip</code>{' '}
+                        모듈이 SDP를 파싱해 RTP 포트 expectation을 등록하고, NAT 환경에서는{' '}
+                        <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">nf_nat_sip</code>{' '}
+                        이 SDP 내부 IP도 함께 rewrite합니다.
+                        단, 암호화된 SIP(TLS)는 helper가 파싱 불가하므로 별도 SBC(Session Border Controller)가 필요합니다.
+                    </p>
+                </div>
+
+                <TableWrapper>
+                    <thead>
+                        <tr>
+                            <Th>Helper 모듈</Th>
+                            <Th>프로토콜</Th>
+                            <Th>페이로드에서 추출</Th>
+                            <Th>사용 포트</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <Td mono>nf_conntrack_ftp</Td>
+                            <Td>FTP</Td>
+                            <Td>PORT/PASV 명령의 IP:PORT</Td>
+                            <Td mono>21</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>nf_conntrack_sip</Td>
+                            <Td>SIP</Td>
+                            <Td>SDP의 m= 라인 IP:PORT</Td>
+                            <Td mono>5060</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>nf_conntrack_h323</Td>
+                            <Td>H.323</Td>
+                            <Td>H.245 TCS 메시지</Td>
+                            <Td mono>1720</Td>
+                        </tr>
+                        <tr>
+                            <Td mono>nf_conntrack_tftp</Td>
+                            <Td>TFTP</Td>
+                            <Td>첫 패킷의 src port</Td>
+                            <Td mono>69</Td>
+                        </tr>
+                    </tbody>
+                </TableWrapper>
+
+                <CodeBlock
+                    code={conntrackHelperCode}
+                    language="bash"
+                    filename="# conntrack helper 활용"
+                />
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">

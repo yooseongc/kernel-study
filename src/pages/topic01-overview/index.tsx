@@ -645,6 +645,48 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf, size_t, count
     return ret;
 }`
 
+const syscallCatalogCode = `# x86-64 syscall 테이블
+cat /usr/include/asm/unistd_64.h | grep -E "define __NR_(read|write|open|fork|execve|mmap|socket|epoll)"
+
+# strace로 프로그램의 syscall 추적
+strace -c ls /tmp
+# % time  seconds  usecs/call  calls  syscall
+# 22.34   0.000312    6         52    read
+# 18.72   0.000261    26        10    mmap
+# ...
+
+# strace 상세 출력 (syscall 이름 + 인자)
+strace -e trace=openat,read,write cat /etc/hostname
+# openat(AT_FDCWD, "/etc/hostname", O_RDONLY) = 3
+# read(3, "myserver\\n", 131072) = 9
+# write(1, "myserver\\n", 9) = 9
+
+# perf로 syscall 빈도 측정
+perf stat -e syscalls:sys_enter_read,syscalls:sys_enter_write ./myapp
+
+# /proc/PID/syscall — 현재 진행 중인 syscall
+cat /proc/$$/syscall
+# 7 0x1 0x7ffd1234 0x100 ...  ← syscall 번호, 인자들`
+
+const syscallTableRows = [
+    { name: 'open()',       nr: 2,   role: '파일 열기 → fd 반환',                   concepts: 'VFS, dentry, inode' },
+    { name: 'read()',       nr: 0,   role: 'fd에서 데이터 읽기',                    concepts: '페이지 캐시, copy_to_user' },
+    { name: 'write()',      nr: 1,   role: 'fd에 데이터 쓰기',                      concepts: 'dirty page, write-back' },
+    { name: 'fork()',       nr: 57,  role: '자식 프로세스 생성',                    concepts: 'CoW, task_struct 복제' },
+    { name: 'execve()',     nr: 59,  role: '새 프로그램 로드·실행',                  concepts: 'ELF, 메모리 맵 교체' },
+    { name: 'mmap()',       nr: 9,   role: '가상 메모리 영역 매핑',                  concepts: 'VMA, 파일 매핑, 익명 매핑' },
+    { name: 'socket()',     nr: 41,  role: '소켓 fd 생성',                          concepts: '프로토콜 패밀리, sk_buff' },
+    { name: 'epoll_wait()', nr: 232, role: 'I/O 이벤트 다중 대기',                  concepts: '이벤트 루프, 레벨/엣지 트리거' },
+    { name: 'clone()',      nr: 56,  role: '스레드/프로세스 생성 (플래그 제어)',      concepts: 'CLONE_VM, CLONE_NEWPID' },
+    { name: 'ioctl()',      nr: 16,  role: '디바이스 제어 명령',                    concepts: '캐릭터 디바이스, 드라이버 인터페이스' },
+]
+
+const forkCompareRows = [
+    { fn: 'fork()',   posix: 'O', memory: 'CoW (독립)',              usage: '자식 프로세스 생성' },
+    { fn: 'vfork()',  posix: 'O', memory: '완전 공유 (exec 전까지)', usage: '구식, execve 직전에만 사용' },
+    { fn: 'clone()',  posix: 'X (리눅스)', memory: '플래그로 선택',  usage: '스레드(CLONE_VM), 컨테이너(CLONE_NEWPID)' },
+]
+
 export default function Topic01Overview() {
     const [selectedRing, setSelectedRing] = useState<RingInfo>(ringData[1]) // default: Ring 0
 
@@ -917,6 +959,129 @@ export default function Topic01Overview() {
                             <div className="text-xs text-gray-400 leading-relaxed">{card.desc}</div>
                         </div>
                     ))}
+                </div>
+            </Section>
+
+            {/* 섹션 8: 주요 시스템 콜 카탈로그 */}
+            <Section id="s18" title="1.8  주요 시스템 콜 카탈로그">
+                <Prose>
+                    유저 공간 프로그램이 커널 기능을 사용하는 유일한 공식 경로가{' '}
+                    <T id="syscall">시스템 콜</T>입니다. x86-64 리눅스에는 300개 이상의
+                    syscall이 있지만, 대부분의 프로그램은 10여 개로 대부분의 작업을 처리합니다.
+                </Prose>
+
+                {/* 주요 syscall 비교 표 */}
+                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 mt-4">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-gray-800 text-left">
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 font-mono">시스템 콜</th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 text-right whitespace-nowrap">번호(x86-64)</th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">역할</th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">관련 개념</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {syscallTableRows.map((row, i) => (
+                                <tr
+                                    key={row.name}
+                                    className={`border-t border-gray-100 dark:border-gray-800 ${
+                                        i % 2 === 0
+                                            ? 'bg-white dark:bg-gray-900'
+                                            : 'bg-gray-50 dark:bg-gray-800/50'
+                                    }`}
+                                >
+                                    <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-300 font-medium whitespace-nowrap">
+                                        {row.name}
+                                    </td>
+                                    <td className="px-4 py-2.5 font-mono text-gray-500 dark:text-gray-400 text-right">
+                                        {row.nr}
+                                    </td>
+                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">
+                                        {row.role}
+                                    </td>
+                                    <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">
+                                        {row.concepts}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* syscall 번호 확인 CodeBlock */}
+                <CodeBlock code={syscallCatalogCode} language="bash" filename="strace / perf / /proc" />
+
+                {/* syscall 진입 흐름 카드 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                    {[
+                        {
+                            title: '빠른 경로 (vDSO)',
+                            body: 'gettimeofday(), clock_gettime() 등 일부 syscall은 커널 진입 없이 유저 공간에서 직접 실행됩니다 (vDSO 매핑). Ring 전환이 없어 성능이 극대화됩니다.',
+                            color: 'green',
+                        },
+                        {
+                            title: '일반 경로',
+                            body: 'syscall 어셈블리 명령 → CPU 특권 레벨 전환(Ring3→Ring0) → entry_SYSCALL_64 → syscall 테이블 참조 → 핸들러 실행 → sysret → 유저 복귀',
+                            color: 'blue',
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.title}
+                            className={`rounded-xl border p-4 space-y-1.5 ${
+                                card.color === 'green'
+                                    ? 'bg-green-950/20 border-green-800/50'
+                                    : 'bg-blue-950/20 border-blue-800/50'
+                            }`}
+                        >
+                            <div
+                                className={`text-xs font-semibold uppercase tracking-wide ${
+                                    card.color === 'green' ? 'text-green-400' : 'text-blue-400'
+                                }`}
+                            >
+                                {card.title}
+                            </div>
+                            <div className="text-xs text-gray-400 leading-relaxed">{card.body}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* fork() vs clone() vs vfork() 비교 */}
+                <div className="mt-4">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        fork() vs clone() vs vfork() 비교
+                    </p>
+                    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-gray-100 dark:bg-gray-800 text-left">
+                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 font-mono">함수</th>
+                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">POSIX</th>
+                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">메모리 공유</th>
+                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">주요 용도</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {forkCompareRows.map((row, i) => (
+                                    <tr
+                                        key={row.fn}
+                                        className={`border-t border-gray-100 dark:border-gray-800 ${
+                                            i % 2 === 0
+                                                ? 'bg-white dark:bg-gray-900'
+                                                : 'bg-gray-50 dark:bg-gray-800/50'
+                                        }`}
+                                    >
+                                        <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-300 font-medium whitespace-nowrap">
+                                            {row.fn}
+                                        </td>
+                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.posix}</td>
+                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.memory}</td>
+                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">{row.usage}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </Section>
 

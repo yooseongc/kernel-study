@@ -8,6 +8,7 @@ import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { InfoTable } from '../../components/ui/InfoTable'
 
 // ── 2.3 프로세스 상태 전이 D3 다이어그램 ────────────────────────────────────
 function renderProcessStateDiagram(
@@ -785,9 +786,44 @@ function ContextSwitchViz({ step }: { step: number }) {
     )
 }
 
+// ── 2.11 SCHED_DEADLINE 코드 예제 ────────────────────────────────────────────
+const deadlineSettattrCode = `/* SCHED_DEADLINE 설정 — sched_setattr() */
+#include <linux/sched.h>
+
+struct sched_attr attr = {
+    .size        = sizeof(attr),
+    .sched_policy   = SCHED_DEADLINE,
+    .sched_runtime  =  5000000,   /* 5 ms */
+    .sched_deadline = 10000000,   /* 10 ms */
+    .sched_period   = 20000000,   /* 20 ms — 50Hz */
+};
+
+if (sched_setattr(0, &attr, 0) < 0) {
+    /* -EBUSY: 합계 대역폭 초과로 허용 거부 */
+    perror("sched_setattr");
+    exit(1);
+}
+
+/* 확인: /proc/PID/sched */
+// dl_runtime   : 5000000
+// dl_deadline  : 10000000
+// dl_period    : 20000000`
+
+const deadlineChrtCode = `# SCHED_DEADLINE 프로세스 실행 (chrt 8 이상)
+chrt --deadline --sched-runtime 5000000 \\
+     --sched-deadline 10000000 \\
+     --sched-period 20000000 \\
+     0 ./realtime_app
+
+# 현재 스케줄링 정책 확인
+chrt -p $$
+# scheduling policy: SCHED_DEADLINE
+# runtime/deadline/period: 5000000/10000000/20000000`
+
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function Topic02Scheduler() {
     const { theme } = useTheme()
+    const isDark = theme === 'dark'
     const [selectedNode, setSelectedNode] = useState<SelectedNodeInfo | null>(null)
     const [cfsTree, setCfsTree] = useState<CfsNode>(initialTree)
     const [simCount, setSimCount] = useState(0)
@@ -830,14 +866,14 @@ export default function Topic02Scheduler() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderProcessStateDiagram(svg, w, h)
         },
-        [theme]
+        [isDark]
     )
 
     const renderCgroupTreeCb = useCallback(
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderCgroupTree(svg, w, h)
         },
-        [theme]
+        [isDark]
     )
 
     const renderCFSWithState = useCallback(
@@ -1630,6 +1666,91 @@ export default function Topic02Scheduler() {
               numactl --hardware
                         </div>
                     </div>
+                </div>
+            </Section>
+
+            {/* 2.11 SCHED_DEADLINE */}
+            <Section id="s211" title="2.11  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
+                <Prose>
+                    <p>
+                        SCHED_FIFO와 SCHED_RR은 고정 우선순위 기반으로 동작하지만,{' '}
+                        <strong>SCHED_DEADLINE</strong>은 각 태스크에{' '}
+                        <code>runtime</code> / <code>deadline</code> / <code>period</code>를
+                        명시하여 CBS(Constant Bandwidth Server) 알고리즘으로 CPU 대역폭을
+                        수학적으로 보장합니다. EDF(Earliest Deadline First) 정책에 따라 절대
+                        데드라인이 가장 임박한 태스크를 우선 선점하므로, 멀티미디어 코덱이나
+                        산업용 제어 루프처럼 실시간 응답이 필수적인 환경에 적합합니다.
+                    </p>
+                </Prose>
+
+                {/* 3개 파라미터 카드 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-4 space-y-2">
+                        <div className="font-semibold text-blue-800 dark:text-blue-300 text-sm font-mono">sched_runtime</div>
+                        <div className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
+                            주기마다 태스크가 사용할 수 있는 <strong>최대 CPU 시간</strong>.
+                            이 값을 소진하면 다음 주기까지 실행이 스로틀됩니다.
+                        </div>
+                        <div className="rounded-lg bg-blue-100 dark:bg-blue-900/40 px-2.5 py-1.5 font-mono text-xs text-blue-700 dark:text-blue-300">
+                            예: 5,000,000 ns (5 ms)
+                        </div>
+                    </div>
+                    <div className="rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 p-4 space-y-2">
+                        <div className="font-semibold text-orange-800 dark:text-orange-300 text-sm font-mono">sched_deadline</div>
+                        <div className="text-xs text-orange-700 dark:text-orange-400 leading-relaxed">
+                            런타임을 소진해야 하는 <strong>절대 시점 기한</strong>. EDF는 이
+                            값이 가장 작은(가장 임박한) 태스크를 먼저 선택합니다.
+                        </div>
+                        <div className="rounded-lg bg-orange-100 dark:bg-orange-900/40 px-2.5 py-1.5 font-mono text-xs text-orange-700 dark:text-orange-300">
+                            예: 10,000,000 ns (10 ms)
+                        </div>
+                    </div>
+                    <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-4 space-y-2">
+                        <div className="font-semibold text-green-800 dark:text-green-300 text-sm font-mono">sched_period</div>
+                        <div className="text-xs text-green-700 dark:text-green-400 leading-relaxed">
+                            태스크 실행 <strong>주기</strong>. runtime / period ≤ 1 조건이
+                            반드시 충족되어야 하며, 위반 시 설정이 거부됩니다.
+                        </div>
+                        <div className="rounded-lg bg-green-100 dark:bg-green-900/40 px-2.5 py-1.5 font-mono text-xs text-green-700 dark:text-green-300">
+                            예: 20,000,000 ns (20 ms · 50 Hz)
+                        </div>
+                    </div>
+                </div>
+
+                {/* 정책 비교 표 */}
+                <div className="mt-6 space-y-2">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">스케줄링 정책 비교</h3>
+                    <InfoTable
+                        headers={['정책', '기준', '선점', '용도']}
+                        rows={[
+                            { cells: ['SCHED_OTHER', 'CFS vruntime', 'CFS', '일반 프로세스'] },
+                            { cells: ['SCHED_FIFO', '고정 우선순위', '더 높은 RT만', '단순 RT'] },
+                            { cells: ['SCHED_RR', '고정 우선순위 + 타임슬라이스', '더 높은 RT만', 'RT 라운드로빈'] },
+                            { cells: ['SCHED_DEADLINE', 'EDF (최소 deadline 우선)', '더 급박한 deadline', '멀티미디어·제어'] },
+                        ]}
+                    />
+                </div>
+
+                {/* Admission Control */}
+                <div className="mt-6 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20 p-4 space-y-2">
+                    <div className="font-semibold text-red-800 dark:text-red-300 text-sm">Admission Control</div>
+                    <div className="text-xs text-red-700 dark:text-red-400 leading-relaxed">
+                        새 DEADLINE 태스크를 추가할 때 커널은{' '}
+                        <code className="bg-red-100 dark:bg-red-900/40 px-1 rounded">
+                            Σ (runtime / period) ≤ 1
+                        </code>{' '}
+                        조건을 검사합니다. 이 조건을 초과하면{' '}
+                        <code className="bg-red-100 dark:bg-red-900/40 px-1 rounded">-EBUSY</code>를
+                        반환하고 설정을 거부하여, CPU 과부하를 원천적으로 차단합니다.
+                        즉, 시스템에 등록된 모든 DEADLINE 태스크의 대역폭 합이 1(100%)을
+                        넘을 수 없습니다.
+                    </div>
+                </div>
+
+                {/* 코드 예제 */}
+                <div className="mt-6 space-y-4">
+                    <CodeBlock code={deadlineSettattrCode} language="c" filename="sched_setattr() 예제" />
+                    <CodeBlock code={deadlineChrtCode} language="bash" filename="chrt — SCHED_DEADLINE 실행" />
                 </div>
             </Section>
 

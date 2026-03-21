@@ -478,6 +478,86 @@ function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 5.9  IRQ Coalescing — coalescing 파라미터 카드 및 트레이드오프 데이터
+// ─────────────────────────────────────────────────────────────────────────────
+
+const coalescingParams = [
+    {
+        name: 'rx-usecs',
+        dir: 'RX',
+        default: '50–100 μs',
+        color: 'border-blue-700/60',
+        titleColor: 'text-blue-300',
+        desc: 'RX 인터럽트 합치기 시간(μs). 낮추면 레이턴시↓ 처리량↓, 높이면 레이턴시↑ 처리량↑',
+    },
+    {
+        name: 'rx-frames',
+        dir: 'RX',
+        default: '0 (비활성)',
+        color: 'border-cyan-700/60',
+        titleColor: 'text-cyan-300',
+        desc: 'N개 프레임이 쌓이면 인터럽트 발생. rx-usecs와 OR 조건으로 동작',
+    },
+    {
+        name: 'tx-usecs',
+        dir: 'TX',
+        default: '50 μs',
+        color: 'border-amber-700/60',
+        titleColor: 'text-amber-300',
+        desc: 'TX 완료 인터럽트 합치기 시간. 송신 처리량 최적화에 사용',
+    },
+    {
+        name: 'tx-frames',
+        dir: 'TX',
+        default: '0 (비활성)',
+        color: 'border-orange-700/60',
+        titleColor: 'text-orange-300',
+        desc: 'TX 방향 프레임 수 기준 인터럽트. tx-usecs와 OR 조건',
+    },
+    {
+        name: 'adaptive-rx',
+        dir: 'RX',
+        default: 'on (지원 시)',
+        color: 'border-green-700/60',
+        titleColor: 'text-green-300',
+        desc: '드라이버가 트래픽 패턴을 분석해 coalescing 값을 자동 조정 (Intel ixgbe 등 지원)',
+    },
+]
+
+const coalescingTradeoff = [
+    { usecs: 0, label: '0 μs', throughput: 20, latency: 5 },
+    { usecs: 50, label: '50 μs', throughput: 55, latency: 30 },
+    { usecs: 200, label: '200 μs', throughput: 75, latency: 55 },
+    { usecs: 500, label: '500 μs', throughput: 88, latency: 75 },
+    { usecs: 1000, label: '1000 μs', throughput: 96, latency: 92 },
+]
+
+const irqCoalescingCode = `# 현재 coalescing 설정 확인
+ethtool -c eth0
+# Coalesce parameters for eth0:
+# Adaptive RX: on  TX: on
+# rx-usecs: 50    rx-frames: 0
+# tx-usecs: 50    tx-frames: 0
+
+# 저레이턴시 설정 (HFT, 실시간 게임)
+ethtool -C eth0 rx-usecs 0 rx-frames 1
+
+# 고처리량 설정 (스트리밍, 파일 전송)
+ethtool -C eth0 rx-usecs 1000 rx-frames 256
+
+# Adaptive coalescing 활성화
+ethtool -C eth0 adaptive-rx on adaptive-tx on
+
+# NAPI poll 통계 확인
+cat /proc/net/softnet_stat
+# 열 1: 처리된 패킷 수
+# 열 2: 드롭된 패킷 수 (budget 소진)
+# 열 3: throttled 횟수 (CPU 과부하)
+
+# IRQ 분배 확인 (RPS/RFS)
+cat /proc/irq/*/smp_affinity`
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -594,7 +674,7 @@ export default function Topic04() {
 
             <Section id="s552" title="5.2  IRQ 처리 흐름">
                 <Prose>
-          <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
+                    <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
           ISR은 가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
                 </Prose>
                 <AnimatedDiagram
@@ -654,7 +734,7 @@ export default function Topic04() {
             <Section id="s554" title="5.4  Softirq, Tasklet, Workqueue 비교">
                 <Prose>
           Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
-          <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
+                    <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
           경로는 <T id="softirq">Softirq</T>, 드라이버의 일반 지연 처리는 <T id="tasklet">Tasklet</T>, 파일시스템 등 sleep이 필요한
           작업은 <T id="workqueue">Workqueue</T>를 사용합니다.
                 </Prose>
@@ -1048,6 +1128,124 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         </p>
                     </div>
                 </div>
+            </Section>
+
+            <Section id="s559" title="5.9  IRQ Coalescing — 인터럽트 합치기와 NAPI 폴링">
+
+                <Prose>
+          고속 NIC에서 패킷이 초당 수백만 건 수신되면 패킷마다 인터럽트를 발생시킬 경우
+          CPU가 인터럽트 처리에만 매몰되는{' '}
+                    <strong className="text-gray-200">interrupt storm</strong>이 발생합니다.
+          IRQ coalescing은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만
+          인터럽트를 발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
+                </Prose>
+
+                <SubTitle>NAPI 폴링 모드 동작 흐름</SubTitle>
+                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 mb-6 space-y-3">
+                    {[
+                        {
+                            step: '①',
+                            color: 'text-blue-400',
+                            border: 'border-blue-700/50',
+                            text: '첫 패킷 도착 → 인터럽트 발생 → IRQ handler: 인터럽트 비활성화 + softirq 스케줄',
+                        },
+                        {
+                            step: '②',
+                            color: 'text-cyan-400',
+                            border: 'border-cyan-700/50',
+                            text: 'NET_RX_SOFTIRQ 실행 → napi_poll() → 최대 budget(기본 300)개 패킷을 폴링으로 처리',
+                        },
+                        {
+                            step: '③',
+                            color: 'text-green-400',
+                            border: 'border-green-700/50',
+                            text: 'budget 소진 또는 큐가 비면 → 인터럽트 재활성화 → 다음 패킷 대기',
+                        },
+                    ].map((item) => (
+                        <div
+                            key={item.step}
+                            className={`flex items-start gap-3 rounded-lg border ${item.border} bg-gray-800/60 p-3`}
+                        >
+                            <span className={`font-bold text-sm shrink-0 ${item.color}`}>{item.step}</span>
+                            <p className="text-sm text-gray-300 leading-relaxed">{item.text}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <SubTitle>Coalescing 파라미터</SubTitle>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {coalescingParams.map((p) => (
+                        <div
+                            key={p.name}
+                            className={`rounded-xl border ${p.color} bg-gray-900/50 p-4`}
+                        >
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className={`font-mono font-bold text-sm ${p.titleColor}`}>{p.name}</span>
+                                <span className="text-xs text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">{p.dir}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 mb-2">기본값: {p.default}</div>
+                            <p className="text-xs text-gray-400 leading-relaxed">{p.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <SubTitle>레이턴시 vs 처리량 트레이드오프</SubTitle>
+                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 mb-6">
+                    <div className="flex items-center gap-6 mb-4 text-xs text-gray-400">
+                        <span className="flex items-center gap-1.5">
+                            <span className="inline-block w-3 h-3 rounded-sm bg-blue-500/70"></span>처리량 (높을수록 좋음)
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="inline-block w-3 h-3 rounded-sm bg-red-500/70"></span>레이턴시 (낮을수록 좋음)
+                        </span>
+                    </div>
+                    <div className="space-y-3">
+                        {coalescingTradeoff.map((row) => (
+                            <div key={row.label} className="grid grid-cols-[80px_1fr] gap-3 items-center">
+                                <span className="text-xs font-mono text-gray-400 text-right">{row.label}</span>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <div
+                                            className="h-3 rounded-sm bg-blue-500/70"
+                                            style={{ width: `${row.throughput}%` }}
+                                        />
+                                        <span className="text-xs text-gray-500">{row.throughput}%</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div
+                                            className="h-3 rounded-sm bg-red-500/70"
+                                            style={{ width: `${row.latency}%` }}
+                                        />
+                                        <span className="text-xs text-gray-500">{row.latency}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                        * 처리량과 레이턴시는 상대 수치(%). coalescing 시간이 길수록 처리량은 증가하나 레이턴시도 함께 증가합니다.
+                    </p>
+                </div>
+
+                <CodeBlock
+                    code={irqCoalescingCode}
+                    language="bash"
+                    filename="# IRQ Coalescing 설정 및 NAPI 통계 확인"
+                />
+
+                <div className="rounded-xl border border-blue-700/50 bg-blue-900/10 p-4 mt-4">
+                    <div className="flex items-start gap-3">
+                        <span className="text-blue-400 text-sm font-bold mt-0.5 shrink-0">tip</span>
+                        <p className="text-sm text-blue-200/80 leading-relaxed">
+                            HFT(초고빈도 거래) 또는 실시간 게임 서버는{' '}
+                            <strong className="text-blue-300">rx-usecs 0, rx-frames 1</strong>로
+                            인터럽트를 즉시 발생시켜 레이턴시를 최소화합니다.
+                            반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로 설정해
+                            CPU 사용률을 낮추고 처리량을 극대화합니다.
+                        </p>
+                    </div>
+                </div>
+
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">

@@ -1024,6 +1024,87 @@ cat /proc/*/fdinfo/* 2>/dev/null | grep "sq_ring"
 apt install liburing-dev  # Ubuntu`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 6.13  TCP 혼잡 제어 — CUBIC과 BBR
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface CongCtrlCard {
+    name: string
+    subtitle: string
+    color: string
+    items: string[]
+    kernel: string
+}
+
+const congCtrlCards: CongCtrlCard[] = [
+    {
+        name: 'CUBIC',
+        subtitle: '손실 기반 (Loss-based)',
+        color: 'blue',
+        items: [
+            '패킷 손실 = 혼잡 신호',
+            '창 크기를 cubic 함수로 증가 (손실 후 빠른 회복)',
+            '기본 리눅스 알고리즘 (2.6.19+)',
+            '공정성 우수: 여러 TCP 흐름이 공평하게 대역폭 공유',
+            '고레이턴시 링크에서 under-utilization 가능 (버퍼가 차야 감지)',
+        ],
+        kernel: 'tcp_cubic.c',
+    },
+    {
+        name: 'BBR',
+        subtitle: '대역폭 기반 (Bandwidth-based)',
+        color: 'green',
+        items: [
+            'RTT 측정 + 전송률로 bottleneck BW 추정',
+            '손실이 아닌 지연(delay) 증가를 혼잡 신호로 사용',
+            '버퍼 충만 없이도 최대 대역폭 활용 가능',
+            'Google 내부 테스트: 장거리 링크에서 CUBIC 대비 최대 25% 처리량 향상',
+            '커널 4.9+, BBR v3은 6.8+',
+        ],
+        kernel: 'tcp_bbr.c',
+    },
+]
+
+interface CongCompareRow {
+    item: string
+    cubic: string
+    bbr: string
+}
+
+const congCompareRows: CongCompareRow[] = [
+    { item: '혼잡 감지', cubic: '패킷 손실', bbr: 'RTT + 대역폭 추정' },
+    { item: '버퍼 사용', cubic: '버퍼 풀 채움', bbr: '최소 버퍼 유지' },
+    { item: '레이턴시', cubic: '버퍼 풀 시 증가', bbr: '낮게 유지' },
+    { item: '공정성', cubic: 'CUBIC 간 공정', bbr: 'CUBIC 흐름과 공유 어려울 수 있음' },
+    { item: '적합 환경', cubic: '일반 인터넷', bbr: '장거리(위성·DC간), 고손실 링크' },
+    { item: '기본값', cubic: 'Linux 2.6.19+', bbr: '선택 설정 필요' },
+]
+
+const congCtrlCode = `# 현재 혼잡 제어 알고리즘 확인
+cat /proc/sys/net/ipv4/tcp_congestion_control
+# cubic
+
+# 사용 가능한 알고리즘 목록
+cat /proc/sys/net/ipv4/tcp_available_congestion_control
+# reno cubic bbr
+
+# BBR로 변경 (커널 모듈 로드 필요)
+modprobe tcp_bbr
+echo bbr > /proc/sys/net/ipv4/tcp_congestion_control
+
+# 영구 설정 (/etc/sysctl.conf)
+echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf
+echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf   # BBR 권장 qdisc
+sysctl -p
+
+# 소켓별 혼잡 제어 확인 (ss)
+ss -tin | grep -A2 "ESTAB"
+# cubic rto:204 rtt:1.5/0.75 mss:1448 cwnd:10
+
+# BBR 상태 확인
+ss -tin | grep bbr
+# bbr bw:100Mbps mrtt:1.5`
+
+// ─────────────────────────────────────────────────────────────────────────────
 // UI Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1032,6 +1113,7 @@ apt install liburing-dev  # Ubuntu`
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic05() {
     const { theme } = useTheme()
+    const isDark = theme === 'dark'
     const [_step, setStep] = useState(0)
     void _step
 
@@ -1039,7 +1121,7 @@ export default function Topic05() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, width: number, height: number) => {
             renderNetworkLayers(svg, width, height)
         },
-        [theme]
+        [isDark]
     )
 
     return (
@@ -1530,6 +1612,97 @@ export default function Topic05() {
                         </div>
                     </div>
                 </div>
+            </Section>
+
+            {/* ─── 6.13  TCP 혼잡 제어 ─────────────────────────────────────────── */}
+            <Section id="s6613" title="6.13  TCP 혼잡 제어 — CUBIC과 BBR">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    TCP 혼잡 제어는 네트워크 혼잡을 감지하고 전송 속도를 조절하는 메커니즘입니다.
+                    리눅스에서 <code className="font-mono text-blue-400">net.ipv4.tcp_congestion_control</code>로 알고리즘을 선택하며,
+                    대표 알고리즘은 기본값인 <strong>CUBIC</strong>과 Google이 개발한 <strong>BBR</strong>입니다.
+                </p>
+
+                {/* CUBIC vs BBR 비교 카드 */}
+                <div className="grid grid-cols-2 gap-4">
+                    {congCtrlCards.map((card) => (
+                        <div
+                            key={card.name}
+                            className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-3 ${
+                                card.color === 'blue'
+                                    ? 'border-blue-300 dark:border-blue-700'
+                                    : 'border-green-300 dark:border-green-700'
+                            }`}
+                        >
+                            <div className="space-y-0.5">
+                                <div className={`text-sm font-bold ${card.color === 'blue' ? 'text-blue-500 dark:text-blue-400' : 'text-green-500 dark:text-green-400'}`}>
+                                    {card.name}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">{card.subtitle}</div>
+                            </div>
+                            <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                {card.items.map((item, i) => (
+                                    <li key={i}>• {item}</li>
+                                ))}
+                            </ul>
+                            <div className={`text-xs font-mono px-2 py-1 rounded ${
+                                card.color === 'blue'
+                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300'
+                                    : 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300'
+                            }`}>
+                                {card.kernel}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* 비교 표 */}
+                <div className="overflow-x-auto">
+                    <table className="w-full text-xs border-collapse">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-gray-800">
+                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-gray-700 dark:text-gray-300 font-semibold">항목</th>
+                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-blue-600 dark:text-blue-400 font-semibold">CUBIC</th>
+                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-green-600 dark:text-green-400 font-semibold">BBR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {congCompareRows.map((row, i) => (
+                                <tr key={i} className={i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'}>
+                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 font-medium text-gray-700 dark:text-gray-300">{row.item}</td>
+                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-600 dark:text-gray-400">{row.cubic}</td>
+                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-600 dark:text-gray-400">{row.bbr}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Slow Start → Congestion Avoidance 상태 설명 */}
+                <div className="space-y-2">
+                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">혼잡 제어 상태 전이</div>
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-3 space-y-1">
+                            <div className="text-xs font-bold text-yellow-600 dark:text-yellow-400">Slow Start</div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                cwnd를 ACK마다 2배 증가 (지수적 증가). ssthresh 도달 전까지 지속.
+                            </div>
+                        </div>
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-3 space-y-1">
+                            <div className="text-xs font-bold text-blue-600 dark:text-blue-400">Congestion Avoidance</div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                ssthresh 도달 후 선형 증가. 매 RTT마다 cwnd += 1 MSS.
+                            </div>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-3 space-y-1">
+                            <div className="text-xs font-bold text-red-600 dark:text-red-400">Fast Retransmit / Recovery</div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                손실 감지 시: ssthresh = cwnd / 2, 빠른 재전송 후 회복 단계 진입.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <CodeBlock code={congCtrlCode} language="bash" filename="# TCP 혼잡 제어 설정 및 확인" />
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">

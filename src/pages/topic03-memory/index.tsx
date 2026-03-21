@@ -1243,18 +1243,67 @@ madvise(ptr, size, MADV_HUGEPAGE);   # THP 요청
 madvise(ptr, size, MADV_NOHUGEPAGE); # THP 억제 (Redis 등)`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 3.11  CoW — Copy-on-Write
+// ─────────────────────────────────────────────────────────────────────────────
+const cowBashCode = `# CoW 동작 확인 — /proc/PID/smaps의 Private_Dirty vs Shared_Clean
+cat /proc/$$/smaps | grep -E "^[0-9a-f]|Private_Dirty|Shared_Clean"
+
+# fork 전후 RSS(Resident Set Size) 변화 관찰
+# fork 직후: 자식 RSS ≈ 0 (CoW로 공유 중)
+# 자식이 쓰기 후: RSS 증가 (페이지가 복사됨)
+ps aux | grep myprocess
+
+# perf로 page fault 카운트
+perf stat -e major-faults,minor-faults ./my_fork_program
+# minor-faults: X  ← CoW로 발생한 페이지 복사 횟수`
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3.12  NUMA 메모리 정책
+// ─────────────────────────────────────────────────────────────────────────────
+const numaCtrlCode = `/* mbind() — 특정 메모리 범위에 NUMA 정책 적용 */
+#include <numaif.h>
+
+unsigned long nodemask = 1 << 0;  /* Node 0 */
+mbind(addr, length,
+      MPOL_BIND,
+      &nodemask, sizeof(nodemask) * 8,
+      MPOL_MF_MOVE);  /* 기존 페이지도 이동 */
+
+/* set_mempolicy() — 프로세스 전체 정책 */
+set_mempolicy(MPOL_INTERLEAVE, &nodemask, 2);`
+
+const numaBashCode = `# numactl — NUMA 정책으로 프로그램 실행
+numactl --cpunodebind=0 --membind=0 ./db_server   # Node 0에 고정
+numactl --interleave=all ./memory_intensive_app    # 전 노드 분산
+
+# NUMA 토폴로지 확인
+numactl --hardware
+# available: 2 nodes (0-1)
+# node 0 cpus: 0-15  node 0 size: 65536 MB
+# node 1 cpus: 16-31 node 1 size: 65536 MB
+# node distances: node 0 1
+#                      0: 10 21
+#                      1: 21 10
+
+# 현재 NUMA 통계 (원격 접근 비율 확인)
+numastat -p $$
+# Node  0    1
+# Numa_Hit   ...  ← 로컬 노드 히트
+# Numa_Miss  ...  ← 원격 노드에서 할당`
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Page Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Topic03() {
     const { theme } = useTheme()
     const isDark = theme === 'dark'
+    const [cowStep, setCowStep] = useState(0)
 
     const slubRenderFn = useCallback(
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, width: number, height: number) => {
             renderSlubViz(svg, width, height)
         },
-        [theme],
+        [isDark],
     )
 
     return (
@@ -1668,8 +1717,8 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.6 SLUB Allocator */}
             <Section id="s336" title="3.6  SLUB Allocator">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          <T id="buddy_allocator">Buddy Allocator</T>는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의 작은 객체를 자주 할당합니다.
-          <T id="slub">SLUB</T>은 특정 크기의 객체 전용 캐시(<code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어
+                    <T id="buddy_allocator">Buddy Allocator</T>는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의 작은 객체를 자주 할당합니다.
+                    <T id="slub">SLUB</T>은 특정 크기의 객체 전용 캐시(<code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어
           빠르게 재사용합니다.
                 </p>
                 <D3Container
@@ -2003,6 +2052,285 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     ))}
                 </div>
+            </Section>
+
+            {/* ── 3.11  CoW — Copy-on-Write ── */}
+            <Section id="s3311" title="3.11  CoW — Copy-on-Write: fork() 후 쓰기 최적화">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <code className="font-mono text-blue-500 dark:text-blue-400">fork()</code> 호출 시 자식 프로세스의 가상 주소 공간은 부모와 동일하지만,
+                    물리 페이지는 즉시 복사하지 않고 <strong>읽기 전용(RO)으로 공유</strong>됩니다.
+                    최초 쓰기 시 <T id="page_fault">Page Fault</T>가 발생하고, 커널이 페이지를 복사한 뒤 각자 독립 페이지를 보유합니다.
+                </p>
+
+                {/* Step-by-step animation */}
+                <div className="space-y-4">
+                    <div className="flex gap-2">
+                        {['fork() 직후', '쓰기 시도 (Page Fault)', '복사 완료 (독립 페이지)'].map((label, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCowStep(i)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                    cowStep === i
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                Step {i} — {label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 space-y-4 min-h-[260px]">
+                        {cowStep === 0 && (
+                            <div className="space-y-4">
+                                <div className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Step 0 — fork() 직후: 물리 페이지 공유</div>
+                                <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
+                                    {/* Parent */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">부모 프로세스</div>
+                                        <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">PTE (RO)</div>
+                                        <div className="text-xs text-gray-400">↘</div>
+                                    </div>
+                                    {/* Shared physical page */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="rounded-xl border-2 border-purple-500 dark:border-purple-400 bg-purple-100 dark:bg-purple-900 px-6 py-4 text-sm font-bold text-purple-800 dark:text-purple-200 text-center">
+                                            물리 페이지 A<br />
+                                            <span className="text-xs font-normal">(공유, 읽기 전용)</span>
+                                        </div>
+                                        <div className="text-xs text-center mt-1 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 font-semibold">
+                                            물리 메모리: 1 페이지 (공유)
+                                        </div>
+                                    </div>
+                                    {/* Child */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">자식 프로세스</div>
+                                        <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">PTE (RO)</div>
+                                        <div className="text-xs text-gray-400">↙</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {cowStep === 1 && (
+                            <div className="space-y-4">
+                                <div className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">Step 1 — 자식이 해당 주소에 쓰기 시도 → Page Fault</div>
+                                <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">부모 프로세스</div>
+                                        <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-xs font-mono text-gray-500 dark:text-gray-400">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-xs font-mono text-gray-500 dark:text-gray-400">PTE (RO)</div>
+                                    </div>
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="rounded-xl border-2 border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-950 px-6 py-4 text-sm font-bold text-red-700 dark:text-red-300 text-center">
+                                            물리 페이지 A<br />
+                                            <span className="text-xs font-normal">(RO — 쓰기 불가!)</span>
+                                        </div>
+                                        <div className="rounded-lg border border-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900 px-4 py-2 text-xs font-bold text-red-700 dark:text-red-300 text-center animate-pulse">
+                                            ⚡ 쓰기 → Page Fault (Protection Fault)<br />
+                                            <span className="font-normal">커널: do_wp_page() 호출</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-red-500 dark:text-red-400">자식 프로세스 ✎ 쓰기</div>
+                                        <div className="rounded-lg border border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950 px-4 py-2 text-xs font-mono text-red-700 dark:text-red-300">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950 px-4 py-2 text-xs font-mono text-red-700 dark:text-red-300">PTE (RO) ← FAULT</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {cowStep === 2 && (
+                            <div className="space-y-4">
+                                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Step 2 — 커널이 페이지 복사 완료: 독립 페이지</div>
+                                <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">부모 프로세스</div>
+                                        <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">PTE (RW)</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-100 dark:bg-emerald-900 px-4 py-3 text-xs font-bold text-emerald-800 dark:text-emerald-200 text-center">
+                                            물리 페이지 A<br /><span className="font-normal">(RW, 독립)</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center">
+                                        <div className="text-center px-3 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                                            물리 메모리: 2 페이지 (독립)
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">자식 프로세스</div>
+                                        <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">VMA</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">PTE (RW)</div>
+                                        <div className="text-xs text-gray-400">↓</div>
+                                        <div className="rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-100 dark:bg-emerald-900 px-4 py-3 text-xs font-bold text-emerald-800 dark:text-emerald-200 text-center">
+                                            물리 페이지 B<br /><span className="font-normal">(새로 복사, RW)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={() => setCowStep((s) => Math.max(0, s - 1))}
+                            disabled={cowStep === 0}
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 disabled:opacity-40 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            ← 이전
+                        </button>
+                        <button
+                            onClick={() => setCowStep((s) => Math.min(2, s + 1))}
+                            disabled={cowStep === 2}
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 disabled:opacity-40 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            다음 →
+                        </button>
+                    </div>
+                </div>
+
+                {/* Key points */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                        {
+                            title: 'vfork()',
+                            color: 'text-amber-600 dark:text-amber-400',
+                            border: 'border-amber-400 dark:border-amber-600',
+                            points: [
+                                'CoW도 없이 부모 메모리를 완전 공유',
+                                'exec() 또는 _exit() 전까지만 허용',
+                                '부모는 자식이 끝날 때까지 정지',
+                            ],
+                        },
+                        {
+                            title: 'mmap(MAP_PRIVATE)',
+                            color: 'text-blue-600 dark:text-blue-400',
+                            border: 'border-blue-400 dark:border-blue-600',
+                            points: [
+                                '파일 페이지를 쓸 때 CoW 복사',
+                                '파일 원본은 변경되지 않음',
+                                '프로세스 독자 수정본만 메모리에 유지',
+                            ],
+                        },
+                        {
+                            title: '커널 함수 호출 경로',
+                            color: 'text-purple-600 dark:text-purple-400',
+                            border: 'border-purple-400 dark:border-purple-600',
+                            points: [
+                                'do_wp_page() — 쓰기 보호 폴트 진입점',
+                                'alloc_page() — 새 물리 페이지 할당',
+                                'copy_user_highpage() — 페이지 내용 복사',
+                            ],
+                        },
+                        {
+                            title: '성능 이점',
+                            color: 'text-emerald-600 dark:text-emerald-400',
+                            border: 'border-emerald-400 dark:border-emerald-600',
+                            points: [
+                                'fork+exec 패턴: 복사 비용 거의 없음',
+                                'exec()가 새 이미지로 덮으면 복사 불필요',
+                                'Redis: THP + CoW 조합 시 latency spike 주의',
+                            ],
+                        },
+                    ].map((card) => (
+                        <div key={card.title} className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-2 ${card.border}`}>
+                            <div className={`text-sm font-bold ${card.color}`}>{card.title}</div>
+                            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+                                {card.points.map((p) => <li key={p}>{p}</li>)}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+
+                <CodeBlock code={cowBashCode} language="bash" filename="# CoW 동작 확인" />
+            </Section>
+
+            {/* ── 3.12  NUMA 메모리 정책 ── */}
+            <Section id="s3312" title="3.12  NUMA 메모리 정책 — mbind()와 numactl">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    NUMA(Non-Uniform Memory Access) 시스템에서 CPU는 자신과 연결된 <strong>로컬 메모리</strong>에 빠르게 접근하고,
+                    원격 노드 메모리는 더 느립니다. 메모리 정책(memory policy)으로 어느 NUMA 노드에 할당할지 제어할 수 있습니다.
+                </p>
+
+                {/* Topology diagram */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 space-y-4">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">NUMA 토폴로지 예시</div>
+                    <div className="flex flex-col md:flex-row items-center gap-4 justify-center">
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="rounded-xl border-2 border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950 px-6 py-3 text-center">
+                                <div className="text-xs font-bold text-blue-700 dark:text-blue-300">CPU 0–15</div>
+                                <div className="text-xs text-blue-600 dark:text-blue-400">Socket 0</div>
+                            </div>
+                            <div className="text-xs text-gray-400">↕ 로컬 ~80 ns</div>
+                            <div className="rounded-xl border-2 border-blue-400 dark:border-blue-600 bg-blue-100 dark:bg-blue-900 px-6 py-3 text-center">
+                                <div className="text-xs font-bold text-blue-800 dark:text-blue-200">Memory Node 0</div>
+                                <div className="text-xs text-blue-600 dark:text-blue-400">64 GB</div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center gap-1 px-4">
+                            <div className="text-xs text-orange-500 dark:text-orange-400 font-semibold">원격 ~120 ns</div>
+                            <div className="w-full border-t-2 border-dashed border-orange-400 dark:border-orange-600 min-w-[80px]" />
+                            <div className="text-xs text-orange-500 dark:text-orange-400">Interconnect</div>
+                        </div>
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="rounded-xl border-2 border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-6 py-3 text-center">
+                                <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300">CPU 16–31</div>
+                                <div className="text-xs text-emerald-600 dark:text-emerald-400">Socket 1</div>
+                            </div>
+                            <div className="text-xs text-gray-400">↕ 로컬 ~80 ns</div>
+                            <div className="rounded-xl border-2 border-emerald-400 dark:border-emerald-600 bg-emerald-100 dark:bg-emerald-900 px-6 py-3 text-center">
+                                <div className="text-xs font-bold text-emerald-800 dark:text-emerald-200">Memory Node 1</div>
+                                <div className="text-xs text-emerald-600 dark:text-emerald-400">64 GB</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4 policy cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                        {
+                            title: 'MPOL_DEFAULT',
+                            color: 'text-gray-700 dark:text-gray-300',
+                            border: 'border-gray-300 dark:border-gray-600',
+                            desc: '현재 스레드가 실행 중인 CPU의 로컬 노드에 우선 할당. 기본 동작.',
+                        },
+                        {
+                            title: 'MPOL_BIND',
+                            color: 'text-red-600 dark:text-red-400',
+                            border: 'border-red-400 dark:border-red-600',
+                            desc: '지정된 노드에서만 할당. 해당 노드에 여유 메모리가 없으면 OOM 발생.',
+                        },
+                        {
+                            title: 'MPOL_PREFERRED',
+                            color: 'text-amber-600 dark:text-amber-400',
+                            border: 'border-amber-400 dark:border-amber-600',
+                            desc: '선호 노드에 우선 할당. 여유 없으면 다른 노드로 폴백. 유연한 로컬 선호.',
+                        },
+                        {
+                            title: 'MPOL_INTERLEAVE',
+                            color: 'text-purple-600 dark:text-purple-400',
+                            border: 'border-purple-400 dark:border-purple-600',
+                            desc: '여러 노드에 라운드로빈으로 분산 할당. 대역폭 최대화, 레이턴시는 평균화.',
+                        },
+                    ].map((card) => (
+                        <div key={card.title} className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-2 ${card.border}`}>
+                            <div className={`text-sm font-bold font-mono ${card.color}`}>{card.title}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{card.desc}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <CodeBlock code={numaCtrlCode} language="c" filename="mbind() / set_mempolicy()" />
+                <CodeBlock code={numaBashCode} language="bash" filename="# numactl — NUMA 정책 제어" />
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">

@@ -732,6 +732,75 @@ docker run --security-opt seccomp=unconfined my_image
 strace -c -f my_program 2>&1 | tail -20`
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 8.12 bpftrace
+// ─────────────────────────────────────────────────────────────────────────────
+
+const bpftraceProbeCards = [
+    {
+        title: 'kprobe: / uprobe:',
+        color: '#f59e0b',
+        desc: '커널/유저 함수 진입점. 임의 커널 함수에 동적 연결. 예: kprobe:tcp_sendmsg',
+    },
+    {
+        title: 'kretprobe: / uretprobe:',
+        color: '#06b6d4',
+        desc: '함수 반환 시점. 반환값 확인 가능. 예: kretprobe:vfs_read { @read_bytes = hist(retval); }',
+    },
+    {
+        title: 'tracepoint:',
+        color: '#22c55e',
+        desc: '커널 내장 정적 탐침. 안정적 ABI. 예: tracepoint:syscalls:sys_enter_read',
+    },
+    {
+        title: 'profile:',
+        color: '#8b5cf6',
+        desc: '시간 기반 샘플링. CPU 프로파일링. 예: profile:hz:99 { @[kstack] = count(); }',
+    },
+]
+
+const bpftraceOnelinersCode = `# 1. 시스템 콜별 횟수 (5초간)
+bpftrace -e 'tracepoint:syscalls:sys_enter_* { @[probe] = count(); }' -c "sleep 5"
+
+# 2. 프로세스별 읽기 바이트 분포 (히스토그램)
+bpftrace -e 'kretprobe:vfs_read /retval > 0/ { @[comm] = hist(retval); }'
+
+# 3. TCP 연결 생성 추적 (IP + 포트)
+bpftrace -e 'kprobe:tcp_connect {
+    printf("%s → %s:%d\\n", comm,
+           ntop(((struct sock*)arg0)->__sk_common.skc_daddr),
+           ((struct sock*)arg0)->__sk_common.skc_dport);
+}'
+
+# 4. 디스크 I/O 레이턴시 히스토그램
+bpftrace -e 'tracepoint:block:block_rq_issue { @start[args->sector] = nsecs; }
+tracepoint:block:block_rq_complete /@start[args->sector]/
+{ @latency_us = hist((nsecs - @start[args->sector]) / 1000);
+  delete(@start[args->sector]); }'
+
+# 5. OOM killer 발동 추적
+bpftrace -e 'kprobe:oom_kill_process { printf("OOM killed: %s (pid %d)\\n", comm, pid); }'
+
+# 6. CPU 플레임그래프용 스택 샘플링
+bpftrace -e 'profile:hz:99 { @[kstack, ustack, comm] = count(); }' -o out.bt
+# → bpftrace에서 직접 flamegraph 데이터 생성 가능`
+
+const bpftraceSyntaxCards = [
+    { label: 'probe { action }', desc: '기본 구조' },
+    { label: '@map[key] = count()', desc: '집계 맵' },
+    { label: 'hist(expr)', desc: '2의 거듭제곱 히스토그램' },
+    { label: 'lhist(expr, min, max, step)', desc: '선형 히스토그램' },
+    { label: 'kstack / ustack', desc: '커널/유저 스택 트레이스' },
+    { label: '/filter/', desc: '조건부 실행' },
+    { label: 'comm, pid, tid, nsecs', desc: '내장 변수' },
+]
+
+const bpftraceVsBccRows: TableRow[] = [
+    { cells: ['bpftrace', '탐색/일회성. 빠른 원라이너. 고수준 언어'] },
+    { cells: ['bcc (Python)', '장기 실행 도구. 복잡한 로직. libbpf/CO-RE 대안 있음'] },
+    { cells: ['bpftool', 'eBPF 프로그램/맵 관리. 커널 BTF 정보 접근'] },
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -773,7 +842,7 @@ export default function Topic07() {
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
                 <Prose>
-          <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는
+                    <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는
           고성능 경로입니다. 기존 커널 네트워크 스택 대비 10~100배 빠릅니다. 패킷이 DMA 버퍼에서
           곧바로 <T id="ebpf">eBPF</T> 프로그램으로 넘어가기 때문에 메모리 할당 및 복사 오버헤드가 없습니다.
                 </Prose>
@@ -817,7 +886,7 @@ export default function Topic07() {
             {/* 8.3 eBPF 실행 모델 */}
             <Section id="s83" title="8.3  eBPF 실행 모델">
                 <Prose>
-          <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
+                    <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
           범용 VM입니다. <T id="xdp">XDP</T>뿐만 아니라 <T id="kprobe">kprobe</T>, tracepoint, cgroup, perf 등 다양한 지점에서
           동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
                 </Prose>
@@ -874,7 +943,7 @@ export default function Topic07() {
             {/* 8.5 eBPF 맵 */}
             <Section id="s85" title="8.5  eBPF 맵 (Maps)">
                 <Prose>
-          <T id="ebpf">eBPF</T> 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
+                    <T id="ebpf">eBPF</T> 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
           커널과 사용자 공간 모두에서 읽고 쓸 수 있으며 fd를 통해 접근합니다.
                 </Prose>
                 <InfoTable
@@ -1289,6 +1358,58 @@ export default function Topic07() {
                         </div>
                     ))}
                 </div>
+            </Section>
+
+            {/* 8.12 bpftrace */}
+            <Section id="s812" title="8.12  bpftrace — 커널 추적 원라이너">
+                <Prose>
+                    bpftrace는 DTrace에서 영감을 받은 고수준 커널 추적 언어입니다.{' '}
+                    <T id="ebpf">eBPF</T> 프로그램을 자동으로 생성해 kprobe, uprobe, tracepoint, USDT를
+                    단 한 줄 명령으로 탐색할 수 있습니다. <code>bpftool</code>, <code>bcc</code>와 함께
+                    현대 리눅스 관측성(observability)의 핵심 도구입니다.
+                </Prose>
+
+                {/* 프로브 유형 카드 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    {bpftraceProbeCards.map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-lg px-4 py-3 space-y-1.5"
+                            style={{
+                                background: card.color + (isDark ? '18' : '0d'),
+                                border: `1px solid ${card.color}55`,
+                            }}
+                        >
+                            <div className="font-mono font-bold" style={{ color: card.color }}>
+                                {card.title}
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-400 leading-snug">{card.desc}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* 원라이너 예시 */}
+                <CodeBlock code={bpftraceOnelinersCode} language="bash" filename="# bpftrace 실용 원라이너" />
+
+                {/* 문법 핵심 요소 */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800 text-xs overflow-hidden">
+                    <div className="grid grid-cols-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 font-semibold text-gray-700 dark:text-gray-300">
+                        <span>문법 요소</span>
+                        <span>설명</span>
+                    </div>
+                    {bpftraceSyntaxCards.map((row) => (
+                        <div key={row.label} className="grid grid-cols-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                            <code className="text-blue-600 dark:text-blue-400">{row.label}</code>
+                            <span className="text-gray-600 dark:text-gray-400">{row.desc}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* bcc / bpftool 비교 */}
+                <InfoTable
+                    headers={['도구', '특징']}
+                    rows={bpftraceVsBccRows}
+                />
             </Section>
 
             <nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
