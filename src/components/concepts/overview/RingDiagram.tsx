@@ -111,7 +111,7 @@ export function renderRingDiagram(
         .attr('text-anchor', 'middle')
         .attr('fill', ringData[0].textColor)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('Ring −1 · Hypervisor')
 
     // ── Concentric circles, outside → inside (painter's algo) ─────────────
@@ -147,7 +147,7 @@ export function renderRingDiagram(
             .attr('fill', ring.textColor)
             .attr('font-size', '11px')
             .attr('font-weight', ring.used ? '600' : '400')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('pointer-events', 'none')
             .text(ring.label)
 
@@ -157,7 +157,7 @@ export function renderRingDiagram(
             .attr('text-anchor', 'middle')
             .attr('fill', ring.color)
             .attr('font-size', '9px')
-            .attr('font-family', 'sans-serif')
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('pointer-events', 'none')
             .text(ring.sublabel)
     })
@@ -188,7 +188,7 @@ export function renderRingDiagram(
         .attr('fill', ringData[1].textColor)
         .attr('font-size', '10px')
         .attr('font-weight', '700')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('pointer-events', 'none')
         .text('Ring 0')
 
@@ -199,7 +199,7 @@ export function renderRingDiagram(
         .attr('dominant-baseline', 'middle')
         .attr('fill', ringData[1].color)
         .attr('font-size', '8px')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .attr('pointer-events', 'none')
         .text('Kernel')
 }

@@ -63,7 +63,7 @@ function renderProcessStateDiagram(
             .attr('dominant-baseline', 'middle')
             .attr('fill', textFill)
             .attr('font-size', '11px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(l1)
         g.append('text')
@@ -73,7 +73,7 @@ function renderProcessStateDiagram(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'sans-serif')
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .text(l2)
     }
 
@@ -93,7 +93,7 @@ function renderProcessStateDiagram(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', labelFill)
                 .attr('font-size', '9px')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(label)
         }
     }

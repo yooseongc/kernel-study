@@ -135,7 +135,7 @@ function renderDriverTree(
             .attr('dominant-baseline', 'middle')
             .attr('fill', colors.text)
             .attr('font-size', '10px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(nd.data.name)
 
@@ -147,7 +147,7 @@ function renderDriverTree(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', c.textMuted)
                 .attr('font-size', '8px')
-                .attr('font-family', 'monospace')
+                .attr('font-family', "'JetBrains Mono', monospace")
                 .text(nd.data.sub)
         }
     })

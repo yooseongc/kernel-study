@@ -207,7 +207,7 @@ function renderGraph(
         .attr('dominant-baseline', 'middle')
         .attr('fill', (d) => topicStroke(d.topicIndex!, isDark))
         .attr('font-size', '13px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', 'bold')
         .attr('pointer-events', 'none')
         .text((d) => String((d.topicIndex ?? 0) + 1).padStart(2, '0'))
@@ -220,7 +220,7 @@ function renderGraph(
         .attr('y', (d) => d.r + 14)
         .attr('fill', (d) => topicStroke(d.topicIndex!, isDark))
         .attr('font-size', '10px')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .attr('pointer-events', 'none')
         .text((d) => {
             const title = d.label.replace(/^\d+\.\s*/, '')
@@ -236,7 +236,7 @@ function renderGraph(
         .attr('dominant-baseline', 'middle')
         .attr('fill', (d) => CAT_COLOR[d.category ?? 'general'])
         .attr('font-size', '9px')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .attr('pointer-events', 'none')
         .text((d) => d.label)
 

@@ -93,7 +93,7 @@ export function renderDeferredWorkFlow(
             .attr('fill', s.titleColor)
             .attr('font-size', '12px')
             .attr('font-weight', 'bold')
-            .attr('font-family', 'sans-serif')
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .text(s.title)
 
         svg.append('text')
@@ -102,7 +102,7 @@ export function renderDeferredWorkFlow(
             .attr('text-anchor', 'middle')
             .attr('fill', subFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(s.sub)
 
         svg.append('line')
@@ -120,7 +120,7 @@ export function renderDeferredWorkFlow(
                 .attr('y', boxY + 64 + ii * 19)
                 .attr('fill', textFill)
                 .attr('font-size', '10px')
-                .attr('font-family', 'monospace')
+                .attr('font-family', "'JetBrains Mono', monospace")
                 .text(`• ${item}`)
         })
 
@@ -144,7 +144,7 @@ export function renderDeferredWorkFlow(
                 .attr('text-anchor', 'middle')
                 .attr('fill', labelColor)
                 .attr('font-size', '9px')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text('스케줄링')
         }
     })

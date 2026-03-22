@@ -67,7 +67,7 @@ function renderLockComparison(
             .attr('text-anchor', 'middle')
             .attr('fill', d.color)
             .attr('font-size', '10px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(`${d.overhead}`)
 
@@ -77,7 +77,7 @@ function renderLockComparison(
             .attr('text-anchor', 'middle')
             .attr('fill', textColor)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(d.label)
     })
 
@@ -94,7 +94,7 @@ function renderLockComparison(
         .attr('y', padTop - 6)
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('상대적 오버헤드 →')
 
     g.append('text')
@@ -103,7 +103,7 @@ function renderLockComparison(
         .attr('text-anchor', 'end')
         .attr('fill', dimColor)
         .attr('font-size', '8.5px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('낮을수록 오버헤드 적음')
 }
 

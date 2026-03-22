@@ -124,7 +124,7 @@ function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefi
         .attr('dominant-baseline', 'middle')
         .attr('fill', (d) => colorMap[d.data.type]?.text ?? textFill)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', 'bold')
         .text((d) => d.data.name)
 
@@ -136,7 +136,7 @@ function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefi
         .attr('dominant-baseline', 'middle')
         .attr('fill', dimFill)
         .attr('font-size', '8px')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text((d) => d.data.detail ?? '')
 }
 

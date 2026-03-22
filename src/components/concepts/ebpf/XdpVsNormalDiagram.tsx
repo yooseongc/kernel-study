@@ -37,7 +37,7 @@ function renderXdpVsNormal(
         .attr('fill', dimColor)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('일반 경로 (Normal Path)')
 
     g.append('text')
@@ -47,7 +47,7 @@ function renderXdpVsNormal(
         .attr('fill', c.amberStroke)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('XDP 경로 (eXpress Data Path)')
 
     // divider
@@ -88,7 +88,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', textColor)
             .attr('font-size', '10px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(label)
 
@@ -100,7 +100,7 @@ function renderXdpVsNormal(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', dimColor)
                 .attr('font-size', '8px')
-                .attr('font-family', 'monospace')
+                .attr('font-family', "'JetBrains Mono', monospace")
                 .text(sublabel)
         }
     }
@@ -210,7 +210,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', act.color)
             .attr('font-size', '8px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(act.label)
 
@@ -221,7 +221,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '7.5px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(act.desc)
 
         // arrow from xdp hook down to actions
@@ -238,7 +238,7 @@ function renderXdpVsNormal(
         .attr('text-anchor', 'middle')
         .attr('fill', passAction.color)
         .attr('font-size', '7.5px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('↓ 일반 경로 계속')
 }
 

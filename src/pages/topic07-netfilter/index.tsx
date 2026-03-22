@@ -105,7 +105,7 @@ function renderNetfilterFlow(
             .attr('fill', textFill)
             .attr('font-size', '10px')
             .attr('font-weight', 'bold')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(label)
         if (sub) {
             g.append('text')
@@ -115,7 +115,7 @@ function renderNetfilterFlow(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', dimFill)
                 .attr('font-size', '8px')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(sub)
         }
     }
@@ -138,7 +138,7 @@ function renderNetfilterFlow(
             .attr('dominant-baseline', 'middle')
             .attr('fill', c.indigoText)
             .attr('font-size', '9px')
-            .attr('font-family', 'sans-serif')
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('font-weight', 'bold')
             .text('라우팅')
         g.append('text')
@@ -148,7 +148,7 @@ function renderNetfilterFlow(
             .attr('dominant-baseline', 'middle')
             .attr('fill', c.indigoText)
             .attr('font-size', '9px')
-            .attr('font-family', 'sans-serif')
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('font-weight', 'bold')
             .text('결정')
     }
@@ -168,7 +168,7 @@ function renderNetfilterFlow(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', labelFill)
                 .attr('font-size', '8px')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(label)
         }
     }
@@ -250,7 +250,7 @@ function renderNetfilterFlow(
         .attr('text-anchor', 'middle')
         .attr('fill', dimFill)
         .attr('font-size', '9px')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('Netfilter 훅 포인트 — 패킷 흐름')
 
     // Legend
@@ -279,7 +279,7 @@ function renderNetfilterFlow(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(l.label)
     })
 }

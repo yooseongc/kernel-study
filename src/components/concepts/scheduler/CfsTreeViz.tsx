@@ -158,7 +158,7 @@ function renderCFSTree(
         .attr('y', -3)
         .attr('fill', (d) => (d.data.color === 'red' ? c.redText : c.text))
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('pointer-events', 'none')
         .text((d) => d.data.name)
 
@@ -169,7 +169,7 @@ function renderCFSTree(
         .attr('y', 8)
         .attr('fill', (d) => (d.data.color === 'red' ? c.redStroke : c.textMuted))
         .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('pointer-events', 'none')
         .text((d) => `${d.data.vruntime}ms`)
 
@@ -181,7 +181,7 @@ function renderCFSTree(
         .attr('fill', c.blueText)
         .attr('font-size', '10px')
         .attr('font-weight', 'bold')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('pointer-events', 'none')
         .text('▶ NEXT')
 }

@@ -135,7 +135,7 @@ export function renderSubsystemGraph(
         .attr('dominant-baseline', 'middle')
         .attr('fill', c.text)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .each(function (d) {
             const lines = d.label.split('\n')
             const el = d3.select(this)

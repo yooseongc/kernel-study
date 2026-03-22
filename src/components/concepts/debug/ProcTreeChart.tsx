@@ -124,7 +124,7 @@ function renderProcTree(
         .attr('dominant-baseline', 'middle')
         .attr('fill', (d) => d.data.color ?? textColor)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', (d) => (d.depth <= 1 ? 'bold' : 'normal'))
         .text((d) => d.data.name)
 }

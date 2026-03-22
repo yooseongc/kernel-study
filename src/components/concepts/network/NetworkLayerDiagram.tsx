@@ -175,7 +175,7 @@ function renderNetworkLayers(
             .attr('dominant-baseline', 'auto')
             .attr('fill', layer.fnColor)
             .attr('font-size', 10)
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(layer.fn)
     })
 }

@@ -130,7 +130,7 @@ function renderBuddyViz(
         .attr('y', 14)
         .attr('fill', headerFill)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('Physical Pages (PFN 0–31)')
 
     // Page cells
@@ -159,7 +159,7 @@ function renderBuddyViz(
                 .attr('text-anchor', 'middle')
                 .attr('fill', dimFill)
                 .attr('font-size', '8px')
-                .attr('font-family', 'monospace')
+                .attr('font-family', "'JetBrains Mono', monospace")
                 .text(String(i))
         }
     }
@@ -189,7 +189,7 @@ function renderBuddyViz(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', '#fff')
                 .attr('font-size', '9px')
-                .attr('font-family', 'monospace')
+                .attr('font-family', "'JetBrains Mono', monospace")
                 .attr('font-weight', 'bold')
                 .text(`#${alloc.id}`)
         }
@@ -209,7 +209,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', headerFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(`ord-${o}`)
 
@@ -219,7 +219,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', dimFill)
             .attr('font-size', '8px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(`${1 << o}p`)
 
         const blockText = blocks.length > 0 ? blocks.join(',') : '—'
@@ -229,7 +229,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', blocks.length > 0 ? textFill : dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(blockText.length > 10 ? blockText.slice(0, 9) + '…' : blockText)
     }
 }

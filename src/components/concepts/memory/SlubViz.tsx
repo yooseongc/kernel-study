@@ -50,7 +50,7 @@ export function renderSlubViz(
         .attr('text-anchor', 'middle')
         .attr('fill', cacheColor)
         .attr('font-size', '11px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', 'bold')
         .text('kmem_cache')
 
@@ -60,7 +60,7 @@ export function renderSlubViz(
         .attr('text-anchor', 'middle')
         .attr('fill', dimFill)
         .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('task_struct  size=9536B  align=64')
 
     // 3 slab pages
@@ -98,7 +98,7 @@ export function renderSlubViz(
             .attr('text-anchor', 'middle')
             .attr('fill', slab.label === 'active' ? c.greenStroke : slab.label === 'partial' ? c.amberStroke : dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(slab.label)
 
@@ -151,7 +151,7 @@ export function renderSlubViz(
         .attr('y', tableY + 12)
         .attr('fill', textFill)
         .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', 'bold')
         .text('kmalloc size classes')
 
@@ -162,7 +162,7 @@ export function renderSlubViz(
             .attr('y', ry + 10)
             .attr('fill', dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(`kmalloc-${sz}   (${sz}B)`)
     })
 }

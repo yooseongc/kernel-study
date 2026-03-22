@@ -60,7 +60,7 @@ function renderEbpfPipeline(
             .attr('dominant-baseline', 'middle')
             .attr('fill', st.color)
             .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
             .text(st.label)
 
@@ -71,7 +71,7 @@ function renderEbpfPipeline(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '8px')
-            .attr('font-family', 'monospace')
+            .attr('font-family', "'JetBrains Mono', monospace")
             .text(st.sub)
 
         // Arrow to next stage
@@ -150,7 +150,7 @@ function renderEbpfPipeline(
         .attr('dominant-baseline', 'middle')
         .attr('fill', c2.redText)
         .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .attr('font-weight', 'bold')
         .text('로드 거부')
 
@@ -160,7 +160,7 @@ function renderEbpfPipeline(
         .attr('text-anchor', 'middle')
         .attr('fill', c2.redText)
         .attr('font-size', '8px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('실패')
 
     // title
@@ -169,7 +169,7 @@ function renderEbpfPipeline(
         .attr('y', height - 8)
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
+        .attr('font-family', "'JetBrains Mono', monospace")
         .text('eBPF 실행 파이프라인: 사용자 코드 → 커널 안전 실행')
 
     void textColor
