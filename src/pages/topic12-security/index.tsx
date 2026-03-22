@@ -6,6 +6,8 @@ import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { Alert } from '../../components/ui/Alert'
+import { InfoBox } from '../../components/ui/InfoBox'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -706,8 +708,119 @@ export default function Topic12() {
                 <CodeBlock code={snippets.pidNsCloneCode} language="c" filename="clone() — 새 PID namespace 생성" />
             </Section>
 
-            {/* 12.8 관련 커널 파라미터 */}
-            <Section id="s128" title="12.8  관련 커널 파라미터">
+            {/* 12.9 cgroup v2 심화 */}
+            <Section id="s129" title="12.9  cgroup v2 심화 — Unified Hierarchy">
+                <Prose>
+                    <T id="cgroup">cgroup v2</T> <KernelRef path="kernel/cgroup/cgroup.c" label="cgroup.c" />는
+                    모든 컨트롤러를 단일 계층 구조(unified hierarchy)로 통합한 차세대 자원 관리 인터페이스입니다.
+                    cgroup v1의 각 컨트롤러별 독립 마운트 방식을 폐기하고, /sys/fs/cgroup 하나에서 모든 자원을 관리합니다.
+                </Prose>
+                <InfoTable
+                    headers={['컨트롤러', '파일', '설명']}
+                    rows={[
+                        { cells: ['cpu', 'cpu.max / cpu.weight', 'CPU 시간 제한 (max: 절대 상한, weight: 상대 비율)'] },
+                        { cells: ['memory', 'memory.max / memory.high', 'max: 하드 제한(OOM), high: 소프트 제한(회수 압력)'] },
+                        { cells: ['io', 'io.max / io.weight', '블록 I/O 대역폭/IOPS 제한'] },
+                        { cells: ['pids', 'pids.max', '프로세스 수 제한 (fork bomb 방지)'] },
+                        { cells: ['cpuset', 'cpuset.cpus / cpuset.mems', 'CPU/NUMA 노드 고정 바인딩'] },
+                    ]}
+                />
+                <CodeBlock code={`# cgroup v2 마운트 확인
+mount | grep cgroup2
+# cgroup2 on /sys/fs/cgroup type cgroup2
+
+# 컨트롤러 목록
+cat /sys/fs/cgroup/cgroup.controllers
+# cpu io memory pids
+
+# 자식 그룹 생성 및 자원 제한
+mkdir /sys/fs/cgroup/myapp
+echo "+cpu +memory +io" > /sys/fs/cgroup/cgroup.subtree_control
+
+# CPU 제한: 200ms / 100ms = 2 CPU 코어 상한
+echo "200000 100000" > /sys/fs/cgroup/myapp/cpu.max
+
+# 메모리 제한: 하드 1GB, 소프트 512MB
+echo 1G > /sys/fs/cgroup/myapp/memory.max
+echo 512M > /sys/fs/cgroup/myapp/memory.high
+
+# 프로세스 수 제한
+echo 100 > /sys/fs/cgroup/myapp/pids.max
+
+# 프로세스 소속
+echo $$ > /sys/fs/cgroup/myapp/cgroup.procs
+
+# PSI (Pressure Stall Information) — 자원 부족 모니터링
+cat /sys/fs/cgroup/myapp/cpu.pressure
+# some avg10=0.50 avg60=0.30 avg300=0.10 total=12345678
+cat /sys/fs/cgroup/myapp/memory.pressure
+cat /sys/fs/cgroup/myapp/io.pressure`} language="bash" filename="# cgroup v2 설정 및 PSI 확인" />
+                <Alert variant="tip" title="PSI로 자원 부족을 정량적으로 파악">
+                    PSI(Pressure Stall Information)는 cgroup 내 태스크가 CPU/메모리/IO를 기다리며 멈춘 시간 비율을
+                    제공합니다. some(일부 태스크 대기)과 full(전체 태스크 대기)로 구분되어 병목 심각도를 판단할 수 있습니다.
+                </Alert>
+            </Section>
+
+            {/* 12.10 namespace 심화 */}
+            <Section id="s1210" title="12.10  namespace 심화 — 8종 격리 메커니즘">
+                <Prose>
+                    <T id="namespace">Linux namespace</T> <KernelRef path="kernel/nsproxy.c" sym="nsproxy" />는
+                    프로세스가 바라보는 시스템 자원의 <strong className="text-gray-800 dark:text-gray-200">뷰(view)</strong>를 격리합니다.
+                    컨테이너(Docker, K8s)는 여러 namespace를 조합하여 독립된 환경을 만듭니다. 리눅스 6.x 기준 8종이 있습니다.
+                </Prose>
+                <InfoTable
+                    headers={['namespace', 'Clone 플래그', '격리 대상', '도입 버전']}
+                    rows={[
+                        { cells: ['Mount (mnt)', 'CLONE_NEWNS', '파일시스템 마운트 포인트', '2.4.19'] },
+                        { cells: ['PID', 'CLONE_NEWPID', '프로세스 ID 공간', '2.6.24'] },
+                        { cells: ['Network (net)', 'CLONE_NEWNET', '네트워크 스택, IP, 라우팅', '2.6.29'] },
+                        { cells: ['UTS', 'CLONE_NEWUTS', 'hostname, domainname', '2.6.19'] },
+                        { cells: ['IPC', 'CLONE_NEWIPC', 'System V IPC, POSIX MQ', '2.6.19'] },
+                        { cells: ['User', 'CLONE_NEWUSER', 'UID/GID 매핑', '3.8'] },
+                        { cells: ['cgroup', 'CLONE_NEWCGROUP', 'cgroup 루트 뷰', '4.6'] },
+                        { cells: ['Time', 'CLONE_NEWTIME', 'CLOCK_MONOTONIC 오프셋', '5.6'] },
+                    ]}
+                />
+                <CodeBlock code={`# 현재 프로세스의 namespace 확인
+ls -la /proc/self/ns/
+# lrwxrwxrwx 1 root root 0 ... cgroup -> 'cgroup:[4026531835]'
+# lrwxrwxrwx 1 root root 0 ... ipc -> 'ipc:[4026531839]'
+# lrwxrwxrwx 1 root root 0 ... mnt -> 'mnt:[4026531840]'
+# lrwxrwxrwx 1 root root 0 ... net -> 'net:[4026531992]'
+# lrwxrwxrwx 1 root root 0 ... pid -> 'pid:[4026531836]'
+# lrwxrwxrwx 1 root root 0 ... user -> 'user:[4026531837]'
+# lrwxrwxrwx 1 root root 0 ... uts -> 'uts:[4026531838]'
+
+# 시스템 전체 namespace 목록
+lsns
+# NS TYPE   NPROCS PID  USER COMMAND
+# 4026531835 cgroup 120  1    root /sbin/init
+# 4026532196 net      2  5678 root nginx: master
+
+# unshare로 새 namespace 생성
+unshare --mount --pid --fork --mount-proc bash
+# → 새 PID namespace에서 bash 실행 (PID 1부터 시작)
+
+# nsenter로 기존 namespace 진입
+nsenter -t $(docker inspect -f '{{.State.Pid}}' mycontainer) \\
+    -n -m -p   # net + mnt + pid namespace 진입
+
+# User namespace (비루트 컨테이너)
+unshare --user --map-root-user bash
+id   # uid=0(root) — namespace 내에서만 root
+cat /proc/self/uid_map
+# 0  1000  1  (ns 내부 0 = 호스트 1000)`} language="bash" filename="# namespace 관리 명령어" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/nsproxy.c" sym="copy_namespaces" />
+                        <KernelRef path="kernel/pid_namespace.c" label="pid_namespace.c" />
+                        <KernelRef path="net/core/net_namespace.c" label="net_namespace.c" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* 12.11 관련 커널 파라미터 */}
+            <Section id="s1211" title="12.11  관련 커널 파라미터">
                 <Prose>
                     보안 강화에 관련된 주요 커널 파라미터입니다. 프로덕션 환경에서는 공격 표면을 줄이기 위해
                     적극적으로 설정해야 합니다.

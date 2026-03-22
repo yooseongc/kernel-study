@@ -11,6 +11,7 @@ import { InfoTable } from '../../components/ui/InfoTable'
 import { InfoBox } from '../../components/ui/InfoBox'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { Alert } from '../../components/ui/Alert'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import * as snippets from './codeSnippets'
 import {
@@ -1354,8 +1355,105 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 <CodeBlock code={snippets.numaBashCode} language="bash" filename="# numactl — NUMA 정책 제어" />
             </Section>
 
-            {/* ── 3.13 관련 커널 파라미터 ─────────────────────────────────── */}
-            <Section id="s3313" title="3.13  관련 커널 파라미터">
+            {/* 3.13 Memory Ordering */}
+            <Section id="s313" title="3.13  Memory Ordering — 메모리 배리어와 순서 보장">
+                <Prose>
+                    멀티코어 CPU에서는 성능 최적화를 위해 메모리 읽기/쓰기 순서가 프로그래머가 작성한 순서와 다를 수 있습니다.
+                    CPU의 store buffer, invalidation queue, 그리고 컴파일러 최적화가 순서를 바꿀 수 있으며,
+                    이를 제어하기 위해 커널은 <strong className="text-gray-800 dark:text-gray-200">메모리 배리어</strong>{' '}
+                    <KernelRef path="include/asm-generic/barrier.h" label="barrier.h" />를 제공합니다.
+                </Prose>
+                <InfoTable
+                    headers={['배리어', '함수', '보장 내용']}
+                    rows={[
+                        { cells: ['Full Barrier', 'mb() / smp_mb()', '배리어 이전의 모든 읽기/쓰기가 이후보다 먼저 완료'] },
+                        { cells: ['Read Barrier', 'rmb() / smp_rmb()', '배리어 이전의 읽기가 이후 읽기보다 먼저 완료'] },
+                        { cells: ['Write Barrier', 'wmb() / smp_wmb()', '배리어 이전의 쓰기가 이후 쓰기보다 먼저 완료'] },
+                        { cells: ['Acquire', 'smp_load_acquire()', '이후의 모든 읽기/쓰기가 이 읽기 이후에 실행'] },
+                        { cells: ['Release', 'smp_store_release()', '이전의 모든 읽기/쓰기가 이 쓰기 이전에 완료'] },
+                        { cells: ['Compiler Barrier', 'barrier()', 'CPU가 아닌 컴파일러의 재배치만 방지'] },
+                    ]}
+                />
+                <CodeBlock code={`/* 전형적인 생산자-소비자 패턴 */
+
+/* 생산자 (CPU 0) */
+data = prepare_data();
+smp_store_release(&flag, 1);  /* data 쓰기가 flag 쓰기보다 먼저 */
+
+/* 소비자 (CPU 1) */
+if (smp_load_acquire(&flag))  /* flag 읽기 이후에 data 읽기 */
+    use(data);                /* data가 반드시 준비된 상태 */
+
+/* acquire/release 없이는? */
+data = prepare_data();
+flag = 1;                /* ← CPU가 flag를 data보다 먼저 쓸 수 있음! */
+
+/* smp_wmb()를 쓰는 전통적 방법 */
+data = prepare_data();
+smp_wmb();               /* write barrier */
+flag = 1;
+
+/* 소비자 쪽 */
+if (flag) {
+    smp_rmb();            /* read barrier */
+    use(data);
+}`} language="c" filename="메모리 배리어 사용 예시" />
+                <Alert variant="tip" title="acquire/release가 권장됩니다">
+                    최신 커널 코드에서는 mb/rmb/wmb 대신 smp_load_acquire / smp_store_release 쌍을 권장합니다.
+                    의도가 명확하고, 아키텍처별 최적 배리어를 자동 선택합니다.
+                </Alert>
+            </Section>
+
+            {/* 3.14 zswap/zram */}
+            <Section id="s314" title="3.14  zswap / zram — 메모리 압축과 스왑 최적화">
+                <Prose>
+                    메모리가 부족할 때 커널은 페이지를 스왑 디바이스로 내보냅니다. 하지만 디스크 I/O는 느리므로,
+                    커널은 스왑 전에 페이지를 <strong className="text-gray-800 dark:text-gray-200">압축</strong>하여 메모리에
+                    더 오래 유지하는 메커니즘을 제공합니다.
+                </Prose>
+                <InfoTable
+                    headers={['메커니즘', '위치', '동작 방식', '사용 사례']}
+                    rows={[
+                        { cells: ['zswap', '스왑 경로 앞단 캐시', '스왑 아웃될 페이지를 압축하여 RAM 풀에 캐싱. 풀이 가득 차면 실제 스왑으로 방출', '디스크 스왑이 있는 일반 서버'] },
+                        { cells: ['zram', '블록 디바이스 (/dev/zram0)', '압축된 RAM 디스크를 스왑 디바이스로 마운트. 디스크 I/O 없음', '임베디드, 디스크 없는 환경, Android'] },
+                    ]}
+                />
+                <CodeBlock code={`# zswap 활성화 및 상태 확인
+echo 1 > /sys/module/zswap/parameters/enabled
+echo lz4 > /sys/module/zswap/parameters/compressor
+echo zsmalloc > /sys/module/zswap/parameters/zpool
+echo 20 > /sys/module/zswap/parameters/max_pool_percent
+
+# zswap 통계
+grep -r . /sys/kernel/debug/zswap/ 2>/dev/null
+# pool_total_size: 134217728   (압축 풀 크기)
+# stored_pages:    32768       (저장된 페이지 수)
+# written_back_pages: 1024     (디스크로 방출된 페이지)
+# reject_compress_poor: 256    (압축 효율 낮아 거부)
+
+# zram 설정 (4GB 압축 블록 디바이스)
+modprobe zram
+echo lz4 > /sys/block/zram0/comp_algorithm
+echo 4G > /sys/block/zram0/disksize
+mkswap /dev/zram0
+swapon -p 100 /dev/zram0   # 우선순위 높게 설정
+
+# zram 통계
+cat /sys/block/zram0/mm_stat
+# orig_data_size  compr_data_size  mem_used  ...
+# 2147483648      536870912        548405248
+# (압축률: 4:1)`} language="bash" filename="# zswap / zram 설정" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="mm/zswap.c" sym="zswap_frontswap_store" />
+                        <KernelRef path="drivers/block/zram/zram_drv.c" label="zram" />
+                        <KernelRef path="mm/zpool.c" label="zpool.c" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* ── 3.15 관련 커널 파라미터 ─────────────────────────────────── */}
+            <Section id="s3315" title="3.15  관련 커널 파라미터">
                 <Prose>
                     가상 메모리와 메모리 관리에 영향을 미치는 주요 커널 파라미터입니다.
                     <code>sysctl</code> 또는 <code>/proc/sys/vm</code>을 통해 런타임에 조정할 수 있습니다.

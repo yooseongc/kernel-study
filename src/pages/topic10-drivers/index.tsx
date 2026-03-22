@@ -6,6 +6,7 @@ import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { DriverTreeChart } from '../../components/concepts/driver/DriverTreeChart'
 import { DMAViz, dmaSteps } from '../../components/concepts/driver/DMAViz'
@@ -623,6 +624,138 @@ export default function Topic09() {
                 </Prose>
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={driverKernelParamRows} />
                 <CodeBlock code={snippets.driverKernelParamCode} language="bash" filename="# 드라이버/모듈 관련 파라미터 확인" />
+            </Section>
+
+            {/* 10.12 IOMMU */}
+            <Section id="s1012" title="10.12  IOMMU와 디바이스 격리">
+                <Prose>
+                    <T id="iommu">IOMMU</T> <KernelRef path="drivers/iommu/" label="drivers/iommu/" />는
+                    디바이스가 DMA로 접근할 수 있는 메모리 영역을 제한하는 하드웨어 유닛입니다.
+                    CPU의 MMU가 가상→물리 주소를 변환하듯, IOMMU는 디바이스의 DMA 주소(IOVA)를 물리 주소로 변환합니다.
+                </Prose>
+                <InfoTable
+                    headers={['구현', '플랫폼', '커널 드라이버']}
+                    rows={[
+                        { cells: ['Intel VT-d', 'x86 (Intel)', 'drivers/iommu/intel/'] },
+                        { cells: ['AMD-Vi', 'x86 (AMD)', 'drivers/iommu/amd/'] },
+                        { cells: ['ARM SMMU', 'ARM64', 'drivers/iommu/arm/'] },
+                    ]}
+                />
+                <Prose>
+                    IOMMU의 핵심 활용은 두 가지입니다. 첫째, <strong className="text-gray-800 dark:text-gray-200">DMA 격리</strong> —
+                    잘못된 드라이버나 악의적 디바이스가 임의 메모리를 읽고 쓰는 것을 차단합니다.
+                    둘째, <strong className="text-gray-800 dark:text-gray-200">VFIO 디바이스 패스스루</strong> — 가상 머신에 물리 디바이스를
+                    직접 할당할 때 IOMMU가 게스트 메모리 경계를 강제하여 안전한 패스스루를 보장합니다.
+                </Prose>
+                <CodeBlock code={`# IOMMU 활성화 상태 확인
+dmesg | grep -i iommu
+# DMAR: IOMMU enabled
+# DMAR: Intel(R) Virtualization Technology for Directed I/O
+
+# IOMMU 그룹 확인 (VFIO 패스스루 단위)
+find /sys/kernel/iommu_groups/ -type l | head -10
+# /sys/kernel/iommu_groups/0/devices/0000:00:02.0
+
+# 특정 디바이스의 IOMMU 그룹
+readlink /sys/bus/pci/devices/0000:03:00.0/iommu_group
+# ../../../kernel/iommu_groups/15
+
+# VFIO 패스스루 설정 (GPU 등)
+# 1. IOMMU 부트 파라미터
+# intel_iommu=on iommu=pt  (Intel)
+# amd_iommu=on iommu=pt    (AMD)
+
+# 2. 디바이스를 vfio-pci에 바인딩
+echo "10de 1b80" > /sys/bus/pci/drivers/vfio-pci/new_id
+echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+echo 0000:03:00.0 > /sys/bus/pci/drivers/vfio-pci/bind`} language="bash" filename="# IOMMU 설정 및 확인" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="drivers/iommu/iommu.c" sym="iommu_map" />
+                        <KernelRef path="drivers/vfio/vfio.c" label="VFIO" />
+                        <KernelRef path="include/linux/iommu.h" label="iommu.h" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* 10.13 전력 관리 */}
+            <Section id="s1013" title="10.13  전력 관리 — Runtime PM과 System Sleep">
+                <Prose>
+                    리눅스 커널의 전력 관리는 두 축으로 구성됩니다.{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">System Sleep</strong>은 시스템 전체를 절전 모드(Suspend/Hibernate)로
+                    전환하고, <strong className="text-gray-800 dark:text-gray-200">Runtime PM</strong>{' '}
+                    <KernelRef path="drivers/base/power/runtime.c" label="runtime.c" />은 개별 디바이스를 유휴 시 자동으로 저전력 상태로
+                    전환합니다.
+                </Prose>
+                <InfoTable
+                    headers={['메커니즘', '범위', '드라이버 콜백', '사용 예']}
+                    rows={[
+                        { cells: ['Runtime PM', '개별 디바이스', 'runtime_suspend / runtime_resume', 'NIC가 유휴 시 클럭 차단'] },
+                        { cells: ['System Suspend', '시스템 전체', 'suspend / resume', '노트북 덮개 닫기'] },
+                        { cells: ['System Hibernate', '시스템 전체', 'freeze / thaw / restore', '메모리 → 디스크 저장 후 전원 차단'] },
+                    ]}
+                />
+                <CodeBlock code={`/* 드라이버의 Runtime PM 콜백 등록 */
+static const struct dev_pm_ops my_pm_ops = {
+    /* Runtime PM */
+    SET_RUNTIME_PM_OPS(
+        my_runtime_suspend,   /* 유휴 시 호출 */
+        my_runtime_resume,    /* 다시 활성화 시 호출 */
+        NULL
+    )
+    /* System Sleep */
+    SET_SYSTEM_SLEEP_PM_OPS(
+        my_suspend,           /* 시스템 절전 진입 */
+        my_resume             /* 시스템 깨어남 */
+    )
+};
+
+static struct platform_driver my_driver = {
+    .driver = {
+        .name = "my_device",
+        .pm   = &my_pm_ops,
+    },
+    .probe  = my_probe,
+    .remove = my_remove,
+};
+
+/* 프로브 함수에서 Runtime PM 활성화 */
+static int my_probe(struct platform_device *pdev)
+{
+    /* ... 초기화 ... */
+    pm_runtime_enable(&pdev->dev);
+    pm_runtime_set_autosuspend_delay(&pdev->dev, 200); /* 200ms */
+    pm_runtime_use_autosuspend(&pdev->dev);
+    return 0;
+}
+
+/* 디바이스 사용 시 pm_runtime_get/put */
+pm_runtime_get_sync(&pdev->dev);   /* 활성화 보장 */
+/* ... I/O 작업 ... */
+pm_runtime_put_autosuspend(&pdev->dev);  /* 유휴 타이머 시작 */`} language="c" filename="drivers/my_device.c" />
+                <CodeBlock code={`# Runtime PM 상태 확인
+cat /sys/devices/.../power/runtime_status
+# active / suspended / suspending
+
+# autosuspend 지연 시간 (ms)
+cat /sys/devices/.../power/autosuspend_delay_ms
+
+# Runtime PM 사용 횟수
+cat /sys/devices/.../power/runtime_usage
+
+# 시스템 절전 상태 확인
+cat /sys/power/state
+# freeze mem disk
+
+# 절전 모드 진입
+echo mem > /sys/power/state  # Suspend-to-RAM`} language="bash" filename="# 전력 관리 상태 확인" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="drivers/base/power/runtime.c" sym="pm_runtime_get_sync" />
+                        <KernelRef path="include/linux/pm.h" label="pm.h" />
+                        <KernelRef path="kernel/power/suspend.c" sym="suspend_enter" />
+                    </div>
+                </InfoBox>
             </Section>
 
             <TopicNavigation topicId="10-drivers" />

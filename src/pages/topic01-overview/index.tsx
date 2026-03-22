@@ -17,6 +17,7 @@ import { renderSubsystemGraph } from '../../components/concepts/overview/Subsyst
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
 import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { Alert } from '../../components/ui/Alert'
 import { KernelRef } from '../../components/ui/KernelRef'
 import {
     syscallFlowChart,
@@ -422,8 +423,102 @@ export default function Topic01Overview() {
                 </div>
             </Section>
 
-            {/* 섹션 9: 관련 커널 파라미터 */}
-            <Section id="s19" title="1.9  관련 커널 파라미터">
+            {/* 1.10 Kconfig */}
+            <Section id="s110" title="1.10  Kconfig — 커널 설정 시스템">
+                <Prose>
+                    리눅스 커널은 수천 개의 설정 옵션(CONFIG_*)을 통해 어떤 기능을 포함할지 결정합니다.
+                    <strong className="text-gray-800 dark:text-gray-200">Kconfig</strong> 시스템이 이 설정을 관리하며,
+                    각 옵션은 <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">y</code>(내장),{' '}
+                    <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">m</code>(모듈),{' '}
+                    <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">n</code>(제외) 중 하나를 선택합니다.
+                </Prose>
+                <InfoTable
+                    headers={['명령', '인터페이스', '설명']}
+                    rows={[
+                        { cells: ['make menuconfig', 'ncurses TUI', '터미널 기반 메뉴 설정 (가장 일반적)'] },
+                        { cells: ['make defconfig', '없음', '현재 아키텍처의 기본 설정 생성'] },
+                        { cells: ['make oldconfig', '텍스트 Q&A', '기존 .config 기반으로 새 옵션만 질문'] },
+                        { cells: ['make localmodconfig', '없음', '현재 로드된 모듈만 포함 (최소 커널)'] },
+                    ]}
+                />
+                <CodeBlock code={`# 현재 커널 설정 확인
+cat /boot/config-$(uname -r) | grep CONFIG_KASAN
+# CONFIG_KASAN=y
+
+# 또는 /proc에서 (CONFIG_IKCONFIG_PROC=y 필요)
+zcat /proc/config.gz | grep CONFIG_PREEMPT
+
+# Kconfig 파일 문법 예시 (drivers/net/Kconfig)
+# config IGB
+#     tristate "Intel(R) 82575/82576 PCI-Express Gigabit Ethernet"
+#     depends on PCI
+#     select PHYLIB
+#     help
+#       This driver supports Intel(R) 82575/82576 gigabit ethernet.
+
+# 의존성 확인
+# depends on: 이 옵션이 활성화되려면 필요한 조건
+# select: 이 옵션 활성화 시 자동으로 켜지는 옵션
+# tristate: y/m/n 선택 가능 (bool은 y/n만)`} language="bash" filename="# Kconfig 시스템" />
+            </Section>
+
+            {/* 1.11 커널 빌드 */}
+            <Section id="s111_build" title="1.11  커널 빌드 과정">
+                <Prose>
+                    커널 소스를 다운로드하고 컴파일하여 설치하는 전체 과정입니다.
+                    배포판 커널 대신 직접 빌드하면 불필요한 드라이버를 제거하거나 디버깅 옵션(KASAN, lockdep)을 활성화할 수 있습니다.
+                </Prose>
+                <CodeBlock code={`# 1. 커널 소스 다운로드
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.8.tar.xz
+tar xf linux-6.8.tar.xz && cd linux-6.8
+
+# 2. 설정 (.config 생성)
+make defconfig                 # 아키텍처 기본값
+# 또는
+cp /boot/config-$(uname -r) .config
+make olddefconfig              # 기존 설정 + 새 옵션 기본값
+
+# 3. 필요 시 커스터마이징
+make menuconfig
+# → General setup → Preemption Model → Voluntary
+# → Kernel hacking → KASAN, lockdep 등 활성화
+
+# 4. 빌드 (병렬 컴파일)
+make -j$(nproc)                # vmlinux + 모듈 빌드
+# 또는 deb 패키지로 빌드 (Ubuntu/Debian)
+make -j$(nproc) bindeb-pkg
+
+# 5. 모듈 설치
+sudo make modules_install      # /lib/modules/6.8.0/ 에 설치
+
+# 6. 커널 설치
+sudo make install              # /boot/vmlinuz-6.8.0 + initramfs 생성
+# 또는 deb 패키지 설치
+sudo dpkg -i ../linux-image-6.8.0_*.deb
+
+# 7. 부트로더 업데이트
+sudo update-grub               # GRUB 메뉴에 추가
+
+# 8. 재부팅 후 확인
+uname -r                       # 6.8.0`} language="bash" filename="# 커널 빌드 전체 과정" />
+                <InfoTable
+                    headers={['빌드 산출물', '경로', '설명']}
+                    rows={[
+                        { cells: ['vmlinux', '소스 루트', 'ELF 형식 커널 이미지 (디버깅용, 비압축)'] },
+                        { cells: ['bzImage', 'arch/x86/boot/', '압축된 부팅 가능 커널 이미지'] },
+                        { cells: ['*.ko', '각 드라이버 디렉터리', '커널 모듈 오브젝트 파일'] },
+                        { cells: ['System.map', '소스 루트', '심볼 → 주소 매핑 (oops 분석용)'] },
+                        { cells: ['.config', '소스 루트', '이번 빌드의 전체 설정 기록'] },
+                    ]}
+                />
+                <Alert variant="tip" title="localmodconfig로 빌드 시간 단축">
+                    make localmodconfig는 현재 시스템에 로드된 모듈만 포함하여 빌드 시간을 대폭 줄입니다.
+                    일반 defconfig 대비 50~70% 빠르게 빌드할 수 있습니다.
+                </Alert>
+            </Section>
+
+            {/* 섹션 12: 관련 커널 파라미터 */}
+            <Section id="s112" title="1.12  관련 커널 파라미터">
                 <Prose>
                     커널 동작을 제어하는 주요 sysctl 파라미터입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">

@@ -8,6 +8,7 @@ import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { InfoBox } from '../../components/ui/InfoBox'
+import { Alert } from '../../components/ui/Alert'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/RaceConditionViz'
 import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
@@ -800,8 +801,67 @@ void cleanup(void) {
                 <CodeBlock code={snippets.rcuGracePeriodCode} language="c" filename="rcu_grace_period.c" />
             </Section>
 
-            {/* 9.15 관련 커널 파라미터 */}
-            <Section id="s915" title="9.15  관련 커널 파라미터">
+            {/* 9.15 futex */}
+            <Section id="s915" title="9.15  futex — 유저 공간 동기화의 핵심">
+                <Prose>
+                    <strong className="text-gray-800 dark:text-gray-200">futex</strong> (Fast Userspace muTEX){' '}
+                    <KernelRef path="kernel/futex/core.c" sym="do_futex" />는 유저 공간 동기화 프리미티브의
+                    핵심 빌딩 블록입니다. pthread_mutex, pthread_cond, Go의 sync.Mutex 등 대부분의 유저 공간 잠금이
+                    내부적으로 futex 시스템 콜을 사용합니다.
+                </Prose>
+                <Prose>
+                    futex의 핵심 아이디어는 <strong className="text-gray-800 dark:text-gray-200">fast path</strong>와{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">slow path</strong>의 분리입니다.
+                    경합이 없는 경우(fast path)에는 유저 공간에서 atomic CAS 한 번으로 잠금을 획득하고,
+                    경합이 발생할 때만(slow path) 커널로 진입하여 대기 큐에서 슬립합니다.
+                </Prose>
+                <InfoTable
+                    headers={['연산', '시스템 콜', '동작']}
+                    rows={[
+                        { cells: ['FUTEX_WAIT', 'futex(addr, FUTEX_WAIT, val)', '*addr == val이면 슬립, 아니면 즉시 리턴 (spurious wakeup 방지)'] },
+                        { cells: ['FUTEX_WAKE', 'futex(addr, FUTEX_WAKE, n)', 'addr에서 대기 중인 스레드 최대 n개 깨움'] },
+                        { cells: ['FUTEX_LOCK_PI', 'futex(addr, FUTEX_LOCK_PI)', 'Priority Inheritance 지원 잠금 — RT 태스크 우선순위 역전 방지'] },
+                        { cells: ['FUTEX_WAIT_BITSET', 'futex(addr, FUTEX_WAIT_BITSET, val, mask)', '비트마스크로 선택적 대기/깨움 (condition variable 구현)'] },
+                    ]}
+                />
+                <CodeBlock code={`/* futex 기반 간단한 뮤텍스 (개념적 구현) */
+
+/* Fast path: 유저 공간 atomic CAS */
+int lock(int *futex_word) {
+    /* 0(unlocked) → 1(locked) 시도 */
+    if (atomic_cmpxchg(futex_word, 0, 1) == 0)
+        return 0;  /* 성공 — 커널 진입 없음! */
+
+    /* Slow path: 경합 발생 → 커널 대기 */
+    while (atomic_xchg(futex_word, 2) != 0)
+        futex(futex_word, FUTEX_WAIT, 2, ...);
+    return 0;
+}
+
+int unlock(int *futex_word) {
+    if (atomic_xchg(futex_word, 0) == 2)
+        futex(futex_word, FUTEX_WAKE, 1, ...);
+    return 0;
+}
+
+/* 상태값:  0 = unlocked
+ *          1 = locked (대기자 없음)
+ *          2 = locked (대기자 있음) */`} language="c" filename="futex 기반 뮤텍스 개념" />
+                <Alert variant="tip" title="경합 없는 잠금은 syscall 0회">
+                    대부분의 잠금 획득은 경합 없이 성공합니다. 이 경우 futex는 유저 공간 atomic 연산 하나로 완료되어
+                    시스템 콜 오버헤드가 전혀 없습니다. 이것이 futex가 빠른 핵심 이유입니다.
+                </Alert>
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/futex/core.c" sym="do_futex" />
+                        <KernelRef path="kernel/futex/waitqueue.c" label="waitqueue.c" />
+                        <KernelRef path="include/uapi/linux/futex.h" label="futex.h" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* 9.16 관련 커널 파라미터 */}
+            <Section id="s916" title="9.16  관련 커널 파라미터">
                 <Prose>
                     동기화 및 락 디버깅과 관련된 주요 커널 파라미터입니다.
                     RT 태스크 제한, hung task 감지, 락 통계 수집 등 운영 환경에서 유용한 설정들입니다.

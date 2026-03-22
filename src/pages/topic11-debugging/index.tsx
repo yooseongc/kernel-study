@@ -10,6 +10,7 @@ import { ProcTreeChart } from '../../components/concepts/debug/ProcTreeChart'
 import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkBottleneckChart'
 import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { Alert } from '../../components/ui/Alert'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -449,6 +450,147 @@ lock(B) ← 대기   lock(A) ← 대기
                 </Prose>
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.debugParamRows} />
                 <CodeBlock code={snippets.debugParamCheckCode} language="bash" filename="# 디버깅 파라미터 확인/변경" />
+            </Section>
+
+            {/* 11.14 KASAN 심화 */}
+            <Section id="s1114" title="11.14  KASAN 심화 — Shadow Memory와 KFENCE">
+                <Prose>
+                    KASAN은 커널 메모리의 모든 바이트에 대해 <strong className="text-gray-800 dark:text-gray-200">shadow memory</strong>를
+                    유지합니다. 실제 메모리 8바이트마다 1바이트의 shadow를 할당하여, 해당 메모리가 접근 가능한지를 기록합니다.
+                    메모리 접근 시 컴파일러가 삽입한 인라인 체크가 shadow를 확인하고, 위반 시 즉시 보고합니다.
+                </Prose>
+                <InfoTable
+                    headers={['모드', '메모리 오버헤드', '성능 영향', '용도']}
+                    rows={[
+                        { cells: ['Generic KASAN', '~2x', '~2x 느림', '개발·CI 환경 전용'] },
+                        { cells: ['SW-Tag KASAN', '~1.5x', '~1.5x 느림', 'ARM64 MTE 활용'] },
+                        { cells: ['HW-Tag KASAN', '최소', '~5% 느림', 'ARM64 MTE 하드웨어 지원'] },
+                        { cells: ['KFENCE', '무시 가능', '<1%', '프로덕션 환경 샘플링 탐지'] },
+                    ]}
+                />
+                <Prose>
+                    프로덕션에서는 KASAN 대신{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">KFENCE</strong>{' '}
+                    <KernelRef path="mm/kfence/" label="KFENCE" />를 사용합니다.
+                    KFENCE는 일정 간격(기본 100ms)으로 slab 할당 중 일부를 가드 페이지로 감싸,
+                    use-after-free와 out-of-bounds를 샘플링 방식으로 탐지합니다.
+                    오버헤드가 1% 미만이라 프로덕션에서도 상시 가동할 수 있습니다.
+                </Prose>
+                <CodeBlock code={`# KFENCE 활성화 (커널 6.0+, 대부분 배포판 기본 포함)
+# CONFIG_KFENCE=y
+
+# 샘플링 간격 조정 (부트 파라미터)
+# kfence.sample_interval=100  (기본 100ms)
+
+# KFENCE 상태 확인
+cat /sys/kernel/debug/kfence/stats
+# enabled: 1
+# allocated: 512 (가드 페이지로 보호된 객체 수)
+# freed: 489
+
+# KFENCE 버그 리포트 (dmesg)
+dmesg | grep -A 20 "BUG: KFENCE:"
+# BUG: KFENCE: use-after-free in my_func+0x18/0x40
+# Use-after-free access at 0xffff8881234abcd0 (in kfence-#73):
+#  my_func+0x18/0x40
+#  ...`} language="bash" filename="# KFENCE 설정 및 확인" />
+                <Alert variant="tip" title="KASAN vs KFENCE 사용 전략">
+                    개발·CI에서는 KASAN(Generic)으로 모든 메모리 버그를 잡고,
+                    프로덕션에서는 KFENCE를 상시 가동하여 필드에서만 발생하는 간헐적 버그를 포착합니다.
+                </Alert>
+            </Section>
+
+            {/* 11.15 lockdep 심화 */}
+            <Section id="s1115" title="11.15  lockdep 심화 — 의존성 그래프와 경고 해석">
+                <Prose>
+                    lockdep은 커널이 실행 중에 관찰한 모든 잠금 획득 순서를 <strong className="text-gray-800 dark:text-gray-200">의존성
+                    그래프</strong>로 기록합니다. 새 잠금 획득이 기존 그래프에 사이클을 형성하면 — 실제 데드락이 발생하지 않았더라도 —
+                    즉시 경고를 출력합니다. 이 "미래 예측형" 탐지가 lockdep의 핵심 가치입니다.
+                </Prose>
+                <InfoTable
+                    headers={['경고 유형', '의미', '대응 방법']}
+                    rows={[
+                        { cells: ['possible circular locking dependency', 'A→B, B→A 순서 불일치 탐지 (ABBA)', '잠금 획득 순서를 전역적으로 일관되게 통일'] },
+                        { cells: ['inconsistent lock state', 'IRQ-safe / IRQ-unsafe 혼용', 'IRQ 컨텍스트에서 사용하는 잠금은 반드시 spin_lock_irqsave() 사용'] },
+                        { cells: ['possible recursive locking', '같은 잠금 클래스를 중첩 획득', 'lockdep_set_class()로 클래스 분리 또는 설계 변경'] },
+                        { cells: ['lock held when returning to user space', '유저 복귀 시 잠금 미해제', '모든 경로에서 unlock 보장'] },
+                    ]}
+                />
+                <CodeBlock code={`# lockdep 경고 전체 보기
+dmesg | grep -B 5 -A 50 "possible circular locking"
+
+# 잠금 통계 (경합 핫스팟 찾기)
+# CONFIG_LOCK_STAT=y 필요
+cat /proc/lock_stat | sort -k2 -rn | head -20
+# class name     con-bounces  contentions  waittime-avg  ...
+# &rq->lock        12345        6789         1.23us
+
+# lockdep가 추적 중인 잠금 클래스 수 확인
+cat /proc/lockdep_stats
+# lock-classes:    1234
+# direct dependencies:   5678
+# all dependencies:      12345`} language="bash" filename="# lockdep 경고 분석" />
+                <Prose>
+                    lockdep 경고의 핵심은 <strong className="text-gray-800 dark:text-gray-200">두 개의 잠금 체인</strong>을 보여주는
+                    부분입니다. "기존에 관찰된 순서"와 "이번에 시도된 순서"가 충돌하면 사이클이 형성됩니다.
+                    경고 메시지의 Chain 부분을 읽고, 어떤 코드 경로에서 순서가 뒤바뀌는지 추적합니다.
+                </Prose>
+            </Section>
+
+            {/* 11.16 bpftool */}
+            <Section id="s1116" title="11.16  bpftool — eBPF 프로그램 관리와 디버깅">
+                <Prose>
+                    <strong className="text-gray-800 dark:text-gray-200">bpftool</strong>은 커널에 로드된 eBPF 프로그램과 맵을
+                    검사·관리하는 공식 CLI 도구입니다. <T id="bcc">BCC</T>나 <T id="bpftrace">bpftrace</T>가 생성한 프로그램의
+                    상태를 확인하거나, 맵 내용을 덤프하여 실시간 디버깅에 활용합니다.
+                </Prose>
+                <CodeBlock code={`# 로드된 eBPF 프로그램 목록
+bpftool prog list
+# 42: tracepoint  name sys_enter  tag abc123  gpl
+#     loaded_at 2024-01-15T10:30:00  uid 0
+#     xlated 2048B  jited 1234B  memlock 4096B
+#     btf_id 5
+
+# 특정 프로그램 상세 정보 (바이트코드 포함)
+bpftool prog dump xlated id 42
+bpftool prog dump jited  id 42   # JIT 컴파일된 네이티브 코드
+
+# eBPF 맵 목록 및 내용 확인
+bpftool map list
+bpftool map dump id 15
+# key: 0a 00 00 01  value: 00 00 03 e8
+# key: 0a 00 00 02  value: 00 00 07 d0
+
+# 맵 엔트리 업데이트/삭제
+bpftool map update id 15 key 0a 00 00 01 value 00 00 00 00
+bpftool map delete id 15 key 0a 00 00 02
+
+# 네트워크 인터페이스에 붙은 XDP/TC 프로그램 확인
+bpftool net show
+# xdp:
+#   eth0(2) driver id 42
+# tc:
+#   eth0(2) clsact/ingress id 55
+
+# BTF 정보 확인 (구조체 정의)
+bpftool btf dump id 5 format c | head -30
+
+# perf 이벤트 버퍼 확인
+bpftool perf list`} language="bash" filename="# bpftool 주요 명령어" />
+                <InfoTable
+                    headers={['명령', '용도', '활용 예']}
+                    rows={[
+                        { cells: ['bpftool prog list', '로드된 프로그램 목록', '의도치 않게 남은 프로그램 확인'] },
+                        { cells: ['bpftool map dump', '맵 내용 출력', '실시간 카운터/통계 확인'] },
+                        { cells: ['bpftool net show', '네트워크 훅 확인', 'XDP/TC 프로그램 연결 상태'] },
+                        { cells: ['bpftool prog tracelog', '트레이스 로그 스트림', 'bpf_printk() 디버그 출력'] },
+                        { cells: ['bpftool btf dump', 'BTF 타입 정보', '구조체 필드 오프셋 확인'] },
+                    ]}
+                />
+                <Alert variant="tip" title="bpftool은 커널 소스에 포함">
+                    bpftool은 커널 소스 트리의 tools/bpf/bpftool/에 포함되어 있으며,
+                    배포판에서는 bpftool 또는 linux-tools 패키지로 설치할 수 있습니다.
+                </Alert>
             </Section>
 
             <TopicNavigation topicId="11-debugging" />
