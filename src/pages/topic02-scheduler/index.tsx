@@ -8,6 +8,7 @@ import { InfoTable } from '../../components/ui/InfoTable'
 import { InfoBox } from '../../components/ui/InfoBox'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { Alert } from '../../components/ui/Alert'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { ProcessStateDiagram } from '../../components/concepts/scheduler/ProcessStateDiagram'
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
@@ -144,16 +145,13 @@ export default function Topic02Scheduler() {
                 </div>
 
                 {/* 팁 박스 */}
-                <div className="flex gap-3 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/50 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
-                    <span className="text-lg shrink-0">💡</span>
-                    <span>
-                        리눅스에서 스레드는 특별한 존재가 아닙니다.{' '}
-                        <code className="bg-yellow-100 dark:bg-yellow-900/50 px-1 rounded font-mono text-xs">
-                            clone()
-                        </code>{' '}
-                        시스템 콜로 생성된, 자원을 공유하는 프로세스일 뿐입니다.
-                    </span>
-                </div>
+                <Alert variant="tip">
+                    리눅스에서 스레드는 특별한 존재가 아닙니다.{' '}
+                    <code className="bg-yellow-100 dark:bg-yellow-900/50 px-1 rounded font-mono text-xs">
+                        clone()
+                    </code>{' '}
+                    시스템 콜로 생성된, 자원을 공유하는 프로세스일 뿐입니다.
+                </Alert>
             </Section>
 
             {/* 2.2 task_struct */}
@@ -362,13 +360,10 @@ export default function Topic02Scheduler() {
                     사용합니다. 트리의 가장 왼쪽 노드가 항상 다음 실행 대상입니다.
                 </Prose>
 
-                <div className="flex gap-3 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/50 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
-                    <span className="text-lg shrink-0">💡</span>
-                    <span>
-                        vruntime은 실제 실행 시간을 nice 값(우선순위)으로 보정한 값입니다. nice=-20(높은 우선순위)은
-                        vruntime이 천천히 증가하고, nice=+19(낮은 우선순위)는 빠르게 증가합니다.
-                    </span>
-                </div>
+                <Alert variant="tip">
+                    vruntime은 실제 실행 시간을 nice 값(우선순위)으로 보정한 값입니다. nice=-20(높은 우선순위)은
+                    vruntime이 천천히 증가하고, nice=+19(낮은 우선순위)는 빠르게 증가합니다.
+                </Alert>
 
                 <CfsTreeViz />
 
@@ -706,13 +701,10 @@ cat /proc/loadavg
                                 </li>
                             </ul>
                         </div>
-                        <div className="flex gap-3 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/50 rounded-xl text-xs text-orange-700 dark:text-orange-300">
-                            <span className="shrink-0">⚠️</span>
-                            <span>
-                                CPU를 너무 좁게 고정하면 과부하 시 다른 CPU로 분산이 불가능해집니다. 프로덕션에서는
-                                모니터링과 함께 적용하세요.
-                            </span>
-                        </div>
+                        <Alert variant="warning">
+                            CPU를 너무 좁게 고정하면 과부하 시 다른 CPU로 분산이 불가능해집니다. 프로덕션에서는
+                            모니터링과 함께 적용하세요.
+                        </Alert>
                     </div>
                 </div>
             </Section>
@@ -1119,20 +1111,17 @@ cat /proc/loadavg
                     </div>
                 </div>
 
-                <div className="flex gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-xl text-sm text-blue-800 dark:text-blue-200">
-                    <span className="text-lg shrink-0">🐳</span>
-                    <span>
-                        <strong>Docker 컨테이너</strong>는 내부적으로{' '}
-                        <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--cpus</code>,{' '}
-                        <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--memory</code>{' '}
-                        옵션을 cgroup v2의{' '}
-                        <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">cpu.max</code>,{' '}
-                        <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">
-                            memory.max
-                        </code>
-                        로 변환합니다. Kubernetes의 resource limits도 마찬가지입니다.
-                    </span>
-                </div>
+                <Alert variant="info" title="Docker 컨테이너">
+                    내부적으로{' '}
+                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--cpus</code>,{' '}
+                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--memory</code>{' '}
+                    옵션을 cgroup v2의{' '}
+                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">cpu.max</code>,{' '}
+                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">
+                        memory.max
+                    </code>
+                    로 변환합니다. Kubernetes의 resource limits도 마찬가지입니다.
+                </Alert>
             </Section>
 
             {/* 2.10 스케줄러 통계와 분석 */}

@@ -87,17 +87,14 @@ export default function Topic01Overview() {
 
             {/* 섹션 2: 유저/커널 공간 */}
             <Section id="s12" title="1.2  유저 공간과 커널 공간">
-                <div className="flex gap-3 p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/50 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
-                    <span className="text-lg">💡</span>
-                    <span>
-                        x86 CPU는 <strong>권한 레벨(Ring 0~3)</strong>을 제공합니다. 유저 프로그램은 Ring 3(최소 권한),
-                        커널은 Ring 0(최대 권한)에서 실행됩니다. 이 경계를 넘는 것이 바로{' '}
-                        <strong>
-                            <T id="syscall">시스템 콜</T>
-                        </strong>
-                        입니다.
-                    </span>
-                </div>
+                <Alert variant="tip">
+                    x86 CPU는 <strong>권한 레벨(Ring 0~3)</strong>을 제공합니다. 유저 프로그램은 Ring 3(최소 권한),
+                    커널은 Ring 0(최대 권한)에서 실행됩니다. 이 경계를 넘는 것이 바로{' '}
+                    <strong>
+                        <T id="syscall">시스템 콜</T>
+                    </strong>
+                    입니다.
+                </Alert>
 
                 <div className="overflow-x-auto">
                     <MermaidDiagram chart={syscallFlowChart} />
