@@ -14,7 +14,7 @@ import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
 
-// ── 2.5 컨텍스트 스위치 steps ───────────────────────────────────────────────
+// ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────
 const contextSwitchSteps = [
     {
         label: '① Process A 실행 중',
@@ -470,8 +470,80 @@ export default function Topic02Scheduler() {
                 </InfoBox>
             </Section>
 
-            {/* 2.5 컨텍스트 스위치 */}
-            <Section id="s26" title="2.6  컨텍스트 스위치 단계별 애니메이션">
+            {/* Run Queue */}
+            <Section id="s26_rq" title="2.6  Run Queue — Per-CPU 실행 대기열">
+                <Prose>
+                    CFS가 "다음에 실행할 태스크"를 선택하는 곳이 바로 <strong className="text-gray-800 dark:text-gray-200">
+                    Run Queue(rq)</strong> <KernelRef path="kernel/sched/sched.h" sym="rq" />입니다.
+                    각 CPU는 자신만의 run queue를 갖고 있으며, 이 안에 CFS run queue(cfs_rq), RT run queue(rt_rq),
+                    Deadline run queue(dl_rq) 등이 포함됩니다.
+                </Prose>
+                <CodeBlock code={`/* kernel/sched/sched.h — Per-CPU Run Queue */
+struct rq {
+    unsigned int         nr_running;    /* 이 CPU에서 실행 가능한 태스크 수 */
+    struct cfs_rq        cfs;           /* CFS 스케줄러의 Red-Black 트리 */
+    struct rt_rq         rt;            /* RT 스케줄러의 우선순위 큐 */
+    struct dl_rq         dl;            /* Deadline 스케줄러의 큐 */
+    struct task_struct  *curr;          /* 현재 실행 중인 태스크 */
+    struct task_struct  *idle;          /* 유휴 태스크 (swapper) */
+    u64                  clock;         /* rq 로컬 클럭 */
+    spinlock_t           __lock;        /* rq 접근 보호 잠금 */
+    /* ... */
+};
+
+/* CFS Run Queue — vruntime 기반 Red-Black 트리 */
+struct cfs_rq {
+    struct rb_root_cached tasks_timeline; /* RB 트리 (leftmost 캐싱) */
+    unsigned int          nr_running;     /* CFS에 등록된 태스크 수 */
+    u64                   min_vruntime;   /* 트리 내 최소 vruntime */
+    struct sched_entity  *curr;           /* 현재 실행 중인 엔티티 */
+    /* ... */
+};`} language="c" filename="kernel/sched/sched.h" />
+                <InfoTable
+                    headers={['구성 요소', '역할', '선택 알고리즘']}
+                    rows={[
+                        { cells: ['cfs_rq', '일반 태스크 (SCHED_NORMAL/BATCH)', 'vruntime 최소인 태스크 선택 — O(1) leftmost'] },
+                        { cells: ['rt_rq', '실시간 태스크 (SCHED_FIFO/RR)', '고정 우선순위 0~99 중 가장 높은 태스크'] },
+                        { cells: ['dl_rq', '데드라인 태스크 (SCHED_DEADLINE)', '마감이 가장 가까운 태스크 (EDF)'] },
+                    ]}
+                />
+                <Prose>
+                    스케줄러가 <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">
+                    __schedule()</code>을 호출하면, 먼저 dl_rq → rt_rq → cfs_rq 순서로 확인하여 가장 우선순위가 높은
+                    태스크를 선택합니다. CFS 태스크는 cfs_rq의 Red-Black 트리에서 leftmost 노드(vruntime 최소)를 O(1)로 꺼냅니다.
+                </Prose>
+                <Prose>
+                    <strong className="text-gray-800 dark:text-gray-200">로드 밸런싱</strong>: 멀티코어 환경에서 각 CPU의 rq에
+                    태스크가 편중되면 성능이 저하됩니다. 커널의 load balancer가 주기적으로 CPU 간 태스크를 이동(migration)하여
+                    부하를 균등하게 분산합니다. <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">
+                    /proc/schedstat</code>에서 각 CPU의 run queue 통계를 확인할 수 있습니다.
+                </Prose>
+                <CodeBlock code={`# Per-CPU run queue 상태 확인
+cat /proc/schedstat
+# cpu0: 실행 횟수, 대기 시간, 타임슬라이스 등
+
+# 특정 프로세스의 스케줄링 정보
+cat /proc/<pid>/sched
+# se.vruntime         : 12345678.901234
+# nr_switches          : 5678
+# nr_voluntary_switches: 4000  (자발적 양보)
+# nr_involuntary_switches: 1678  (타임슬라이스 만료)
+
+# 실시간 run queue 길이 모니터
+cat /proc/loadavg
+# 0.15 0.10 0.05 2/150 1234
+# (1분/5분/15분 평균, 실행중/전체 스레드, 최근 PID)`} language="bash" filename="# run queue 상태 확인" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/sched/sched.h" sym="rq" />
+                        <KernelRef path="kernel/sched/core.c" sym="__schedule" />
+                        <KernelRef path="kernel/sched/fair.c" sym="pick_next_task_fair" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* 2.7 컨텍스트 스위치 */}
+            <Section id="s27" title="2.7  컨텍스트 스위치 단계별 애니메이션">
                 <Prose>
                     <T id="context_switch">컨텍스트 스위치</T>는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다. CPU
                     레지스터 전체를 저장하고 복원해야 하므로 일반 함수 호출보다 수백~수천 배 비쌉니다. 아래
@@ -492,7 +564,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.5.1 __schedule() 콜스택 */}
-            <Section id="s261" title="2.6.1  __schedule() 콜스택 분석">
+            <Section id="s271" title="2.7.1  __schedule() 콜스택 분석">
                 <Prose>
                     자발적·비자발적 <T id="context_switch">컨텍스트 스위치</T> 모두{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
@@ -557,7 +629,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.6 CPU Affinity와 CPU Pinning */}
-            <Section id="s27" title="2.7  CPU Affinity와 CPU Pinning">
+            <Section id="s28" title="2.8  CPU Affinity와 CPU Pinning">
                 <Prose>
                     기본적으로 <T id="cfs">CFS</T>는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다. 하지만{' '}
                     <strong className="text-gray-900 dark:text-gray-100">CPU affinity(CPU 친화성)</strong>를 설정하면
@@ -646,7 +718,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.7 SMP와 NUMA */}
-            <Section id="s28" title="2.8  SMP와 NUMA — 멀티코어 환경의 스케줄링">
+            <Section id="s29" title="2.9  SMP와 NUMA — 멀티코어 환경의 스케줄링">
                 <Prose>
                     현대 서버는 단일 CPU가 아닙니다. 리눅스 스케줄러는 멀티코어·멀티소켓 환경을 지원하기 위해
                     <strong className="text-gray-900 dark:text-gray-100"> SMP</strong>와{' '}
@@ -745,7 +817,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.8 RT 스케줄러 */}
-            <Section id="s29" title="2.9  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
+            <Section id="s210" title="2.10  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
                 <Prose>
                     <T id="cfs">CFS</T>는 공정성(fairness)을 목표로 하지만, 일부 태스크는{' '}
                     <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다. 리눅스
@@ -898,7 +970,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.9 cgroups */}
-            <Section id="s210" title="2.10  cgroups — 프로세스 자원 제어의 핵심">
+            <Section id="s211" title="2.11  cgroups — 프로세스 자원 제어의 핵심">
                 <Prose>
                     <strong className="text-gray-900 dark:text-gray-100">
                         <T id="cgroup">cgroups</T>(Control Groups)
@@ -1064,7 +1136,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.10 스케줄러 통계와 분석 */}
-            <Section id="s211" title="2.11  스케줄러 통계와 분석">
+            <Section id="s212" title="2.12  스케줄러 통계와 분석">
                 <Prose>
                     스케줄링 문제(높은 레이턴시, CPU 불균형)는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
@@ -1133,7 +1205,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.11 SCHED_DEADLINE */}
-            <Section id="s212" title="2.12  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
+            <Section id="s213" title="2.13  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
                 <Prose>
                     <p>
                         SCHED_FIFO와 SCHED_RR은 고정 우선순위 기반으로 동작하지만, <strong><T id="sched_deadline">SCHED_DEADLINE</T></strong>은 각
@@ -1226,7 +1298,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* ── 2.12 관련 커널 파라미터 ─────────────────────────────────── */}
-            <Section id="s213" title="2.13  관련 커널 파라미터">
+            <Section id="s214" title="2.14  관련 커널 파라미터">
                 <Prose>
                     CFS 스케줄러의 동작을 튜닝할 수 있는 주요 커널 파라미터입니다.
                     <code>sysctl</code> 또는 <code>/proc/sys/kernel</code>을 통해 런타임에 조정할 수 있습니다.

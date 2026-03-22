@@ -301,170 +301,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 9.7 Atomic Operations */}
-            <Section id="s97" title="9.7  Atomic Operations">
-                <Prose>
-                    하드웨어 수준의 <T id="atomic">atomic</T> 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를
-                    통해 버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
-                    적합합니다.
-                </Prose>
-
-                <InfoTable headers={['함수', '동작']} rows={atomicRows} />
-
-                <div className="rounded-lg border border-cyan-200 dark:border-cyan-800/40 bg-cyan-50 dark:bg-cyan-900/10 px-4 py-3 text-xs text-cyan-800 dark:text-cyan-200">
-                    <span className="font-bold text-cyan-700 dark:text-cyan-300">CAS 패턴:</span>{' '}
-                    <code className="font-mono">atomic_cmpxchg(&v, old, new)</code>은 락-프리 알고리즘의 핵심입니다.
-                    현재 값이 old와 같을 때만 new로 교체하며, 반환값으로 성공 여부를 판단합니다.
-                </div>
-            </Section>
-
-            {/* 9.8 메모리 배리어 */}
-            <Section id="s98" title="9.8  메모리 배리어 — CPU 재순서화 제어">
-                <Prose>
-                    현대 CPU는 성능을 위해 메모리 읽기/쓰기 순서를 재배치합니다. 멀티코어 환경에서 이 재배치가 동기화
-                    버그를 일으킬 수 있어 <strong>메모리 배리어</strong>로 순서를 강제합니다.
-                </Prose>
-
-                <InfoTable headers={['배리어', '함수', '설명']} rows={membarrierRows} />
-
-                <CodeBlock code={snippets.membarrierCode} language="c" filename="메모리 배리어 사용 예" />
-            </Section>
-
-            {/* 9.9 RCU */}
-            <Section id="s99" title="9.9  RCU (Read-Copy-Update)">
-                <Prose>
-                    읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화 메커니즘입니다.{' '}
-                    <T id="rcu">RCU</T> 읽기 측은 lock이 전혀 없습니다.
-                </Prose>
-
-                {/* RCU 3단계 카드 */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {[
-                        {
-                            step: '1. Read',
-                            api: 'rcu_read_lock()',
-                            desc: '실제 락 없음. 그냥 <T id="preemption">선점(preemption)</T> 비활성화만 수행. O(1).',
-                            color: '#06b6d4',
-                        },
-                        {
-                            step: '2. Copy & Update',
-                            api: 'rcu_assign_pointer()',
-                            desc: '쓰기 측이 복사본을 만들어 수정한 뒤 포인터를 원자적으로 교체. 기존 reader는 구버전 계속 사용.',
-                            color: '#8b5cf6',
-                        },
-                        {
-                            step: '3. Reclaim',
-                            api: 'synchronize_rcu()',
-                            desc: 'Grace period: 모든 기존 reader가 완료될 때까지 대기. 이후 구버전 메모리를 안전하게 kfree.',
-                            color: '#22c55e',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.step}
-                            className="rounded-xl p-4 space-y-2"
-                            style={{
-                                background: card.color + (isDark ? '18' : '0d'),
-                                border: `1px solid ${card.color}44`,
-                            }}
-                        >
-                            <div className="font-mono text-xs font-bold" style={{ color: card.color }}>
-                                {card.step}
-                            </div>
-                            <code
-                                className="text-[11px] font-mono px-1.5 py-0.5 rounded"
-                                style={{
-                                    background: card.color + '22',
-                                    color: card.color,
-                                }}
-                            >
-                                {card.api}
-                            </code>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <CodeBlock code={snippets.rcuCode} language="c" filename="rcu.c" />
-
-                <div className="rounded-lg border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 px-4 py-3 text-xs text-green-800 dark:text-green-200">
-                    <span className="font-bold text-green-700 dark:text-green-300">사용 예:</span> 커널 내부의{' '}
-                    <code className="font-mono">task_list</code>, 라우팅 테이블, 네트워크 디바이스 목록은 모두
-                    <T id="rcu">RCU</T>로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
-                </div>
-
-                <InfoBox color="gray" title="관련 커널 소스">
-                    <div className="flex flex-wrap gap-2">
-                        <KernelRef path="kernel/rcu/tree.c" sym="synchronize_rcu" />
-                        <KernelRef path="include/linux/rcupdate.h" label="rcupdate.h" />
-                        <KernelRef path="kernel/rcu/tree.c" sym="rcu_gp_kthread" />
-                    </div>
-                </InfoBox>
-            </Section>
-
-            {/* 9.10 멀티코어 환경에서 네트워크 성능 */}
-            <Section id="s910" title="9.10  멀티코어 환경에서 네트워크 성능">
-                <Prose>
-                    여러 CPU가 동시에 패킷을 처리할 때 동기화 비용이 병목이 됩니다. 다음 기법들로 락 경합을
-                    최소화합니다.
-                </Prose>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: 'RSS (Receive Side Scaling)',
-                            subtitle: 'NIC 하드웨어 분산',
-                            desc: 'NIC 하드웨어가 패킷을 해시(src IP, dst IP, port)로 여러 수신 큐에 분배합니다. CPU당 큐를 할당하므로 큐 접근 시 락 경합이 없습니다.',
-                            color: '#3b82f6',
-                            tags: ['NIC', 'Interrupt affinity', 'IRQ balancing'],
-                        },
-                        {
-                            title: 'RPS / RFS',
-                            subtitle: '소프트웨어 RSS',
-                            desc: 'NIC가 RSS를 지원하지 않는 경우 소프트웨어로 구현합니다. RFS는 패킷을 처리할 CPU를 해당 소켓을 소유한 프로세스가 실행 중인 CPU로 조정하여 cache locality를 개선합니다.',
-                            color: '#8b5cf6',
-                            tags: ['rps_cpus', 'rfs_flow_cnt', 'sk_buff'],
-                        },
-                        {
-                            title: 'per-CPU 변수',
-                            subtitle: 'DEFINE_PER_CPU',
-                            desc: 'CPU마다 별도 복사본을 유지하므로 락이 필요 없습니다. 통계 카운터, per-CPU 캐시 등에 사용하며, 합산 시에만 전체를 순회합니다.',
-                            color: '#10b981',
-                            tags: ['per_cpu()', 'this_cpu_inc()', 'preempt_disable'],
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3 hover:shadow-lg transition-shadow"
-                        >
-                            <div>
-                                <div className="text-xs font-mono font-bold mb-0.5" style={{ color: card.color }}>
-                                    {card.title}
-                                </div>
-                                <div className="text-gray-500 dark:text-gray-400 text-xs">{card.subtitle}</div>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
-                            <div className="flex flex-wrap gap-1.5">
-                                {card.tags.map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-                                        style={{
-                                            background: card.color + (isDark ? '22' : '11'),
-                                            color: card.color,
-                                            border: `1px solid ${card.color}44`,
-                                        }}
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </Section>
-
-            {/* 9.11 Wait Queue */}
-            <Section id="s911" title="9.11  Wait Queue — 블로킹 I/O의 핵심">
+            {/* 9.7 Wait Queue */}
+            <Section id="s97" title="9.7  Wait Queue — 블로킹 I/O의 핵심">
                 <Prose>
                     <T id="wait_queue">Wait Queue</T>는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는
                     기본 메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
@@ -589,8 +427,8 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
                 />
             </Section>
 
-            {/* 9.12 Completion */}
-            <Section id="s912" title="9.12  Completion — 일회성 완료 신호">
+            {/* 9.8 Completion */}
+            <Section id="s98" title="9.8  Completion — 일회성 완료 신호">
                 <Prose>
                     Wait Queue가 "반복적인 조건 대기"라면,{' '}
                     <T id="completion">Completion</T>은
@@ -684,8 +522,108 @@ void cleanup(void) {
                 </div>
             </Section>
 
-            {/* 9.13 RCU Grace Period */}
-            <Section id="s913" title="9.13  RCU Grace Period — 독자 완전 탈출 후 메모리 해제">
+            {/* 9.9 Atomic Operations */}
+            <Section id="s99" title="9.9  Atomic Operations">
+                <Prose>
+                    하드웨어 수준의 <T id="atomic">atomic</T> 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를
+                    통해 버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
+                    적합합니다.
+                </Prose>
+
+                <InfoTable headers={['함수', '동작']} rows={atomicRows} />
+
+                <div className="rounded-lg border border-cyan-200 dark:border-cyan-800/40 bg-cyan-50 dark:bg-cyan-900/10 px-4 py-3 text-xs text-cyan-800 dark:text-cyan-200">
+                    <span className="font-bold text-cyan-700 dark:text-cyan-300">CAS 패턴:</span>{' '}
+                    <code className="font-mono">atomic_cmpxchg(&v, old, new)</code>은 락-프리 알고리즘의 핵심입니다.
+                    현재 값이 old와 같을 때만 new로 교체하며, 반환값으로 성공 여부를 판단합니다.
+                </div>
+            </Section>
+
+            {/* 9.10 메모리 배리어 */}
+            <Section id="s910" title="9.10  메모리 배리어 — CPU 재순서화 제어">
+                <Prose>
+                    현대 CPU는 성능을 위해 메모리 읽기/쓰기 순서를 재배치합니다. 멀티코어 환경에서 이 재배치가 동기화
+                    버그를 일으킬 수 있어 <strong>메모리 배리어</strong>로 순서를 강제합니다.
+                </Prose>
+
+                <InfoTable headers={['배리어', '함수', '설명']} rows={membarrierRows} />
+
+                <CodeBlock code={snippets.membarrierCode} language="c" filename="메모리 배리어 사용 예" />
+            </Section>
+
+            {/* 9.11 RCU */}
+            <Section id="s911" title="9.11  RCU (Read-Copy-Update)">
+                <Prose>
+                    읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화 메커니즘입니다.{' '}
+                    <T id="rcu">RCU</T> 읽기 측은 lock이 전혀 없습니다.
+                </Prose>
+
+                {/* RCU 3단계 카드 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        {
+                            step: '1. Read',
+                            api: 'rcu_read_lock()',
+                            desc: '실제 락 없음. 그냥 <T id="preemption">선점(preemption)</T> 비활성화만 수행. O(1).',
+                            color: '#06b6d4',
+                        },
+                        {
+                            step: '2. Copy & Update',
+                            api: 'rcu_assign_pointer()',
+                            desc: '쓰기 측이 복사본을 만들어 수정한 뒤 포인터를 원자적으로 교체. 기존 reader는 구버전 계속 사용.',
+                            color: '#8b5cf6',
+                        },
+                        {
+                            step: '3. Reclaim',
+                            api: 'synchronize_rcu()',
+                            desc: 'Grace period: 모든 기존 reader가 완료될 때까지 대기. 이후 구버전 메모리를 안전하게 kfree.',
+                            color: '#22c55e',
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.step}
+                            className="rounded-xl p-4 space-y-2"
+                            style={{
+                                background: card.color + (isDark ? '18' : '0d'),
+                                border: `1px solid ${card.color}44`,
+                            }}
+                        >
+                            <div className="font-mono text-xs font-bold" style={{ color: card.color }}>
+                                {card.step}
+                            </div>
+                            <code
+                                className="text-[11px] font-mono px-1.5 py-0.5 rounded"
+                                style={{
+                                    background: card.color + '22',
+                                    color: card.color,
+                                }}
+                            >
+                                {card.api}
+                            </code>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <CodeBlock code={snippets.rcuCode} language="c" filename="rcu.c" />
+
+                <div className="rounded-lg border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 px-4 py-3 text-xs text-green-800 dark:text-green-200">
+                    <span className="font-bold text-green-700 dark:text-green-300">사용 예:</span> 커널 내부의{' '}
+                    <code className="font-mono">task_list</code>, 라우팅 테이블, 네트워크 디바이스 목록은 모두
+                    <T id="rcu">RCU</T>로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
+                </div>
+
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/rcu/tree.c" sym="synchronize_rcu" />
+                        <KernelRef path="include/linux/rcupdate.h" label="rcupdate.h" />
+                        <KernelRef path="kernel/rcu/tree.c" sym="rcu_gp_kthread" />
+                    </div>
+                </InfoBox>
+            </Section>
+
+            {/* 9.12 RCU Grace Period */}
+            <Section id="s912" title="9.12  RCU Grace Period — 독자 완전 탈출 후 메모리 해제">
                 <Prose>
                     <T id="rcu">RCU</T> 업데이터는 새 버전 포인터로 교체(publish) 후, 기존 데이터를 즉시 해제할 수
                     없습니다. <strong>이미 구버전을 읽고 있는 독자(reader)</strong>가 있을 수 있기 때문입니다. Grace
@@ -756,8 +694,8 @@ void cleanup(void) {
                 <CodeBlock code={snippets.rcuGracePeriodCode} language="c" filename="rcu_grace_period.c" />
             </Section>
 
-            {/* 9.14 futex */}
-            <Section id="s914" title="9.14  futex — 유저 공간 동기화의 핵심">
+            {/* 9.13 futex */}
+            <Section id="s913" title="9.13  futex — 유저 공간 동기화의 핵심">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">futex</strong> (Fast Userspace muTEX){' '}
                     <KernelRef path="kernel/futex/core.c" sym="do_futex" />는 유저 공간 동기화 프리미티브의
@@ -813,6 +751,68 @@ int unlock(int *futex_word) {
                         <KernelRef path="include/uapi/linux/futex.h" label="futex.h" />
                     </div>
                 </InfoBox>
+            </Section>
+
+            {/* 9.14 멀티코어 환경에서 네트워크 성능 */}
+            <Section id="s914" title="9.14  멀티코어 환경에서 네트워크 성능">
+                <Prose>
+                    여러 CPU가 동시에 패킷을 처리할 때 동기화 비용이 병목이 됩니다. 다음 기법들로 락 경합을
+                    최소화합니다.
+                </Prose>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        {
+                            title: 'RSS (Receive Side Scaling)',
+                            subtitle: 'NIC 하드웨어 분산',
+                            desc: 'NIC 하드웨어가 패킷을 해시(src IP, dst IP, port)로 여러 수신 큐에 분배합니다. CPU당 큐를 할당하므로 큐 접근 시 락 경합이 없습니다.',
+                            color: '#3b82f6',
+                            tags: ['NIC', 'Interrupt affinity', 'IRQ balancing'],
+                        },
+                        {
+                            title: 'RPS / RFS',
+                            subtitle: '소프트웨어 RSS',
+                            desc: 'NIC가 RSS를 지원하지 않는 경우 소프트웨어로 구현합니다. RFS는 패킷을 처리할 CPU를 해당 소켓을 소유한 프로세스가 실행 중인 CPU로 조정하여 cache locality를 개선합니다.',
+                            color: '#8b5cf6',
+                            tags: ['rps_cpus', 'rfs_flow_cnt', 'sk_buff'],
+                        },
+                        {
+                            title: 'per-CPU 변수',
+                            subtitle: 'DEFINE_PER_CPU',
+                            desc: 'CPU마다 별도 복사본을 유지하므로 락이 필요 없습니다. 통계 카운터, per-CPU 캐시 등에 사용하며, 합산 시에만 전체를 순회합니다.',
+                            color: '#10b981',
+                            tags: ['per_cpu()', 'this_cpu_inc()', 'preempt_disable'],
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3 hover:shadow-lg transition-shadow"
+                        >
+                            <div>
+                                <div className="text-xs font-mono font-bold mb-0.5" style={{ color: card.color }}>
+                                    {card.title}
+                                </div>
+                                <div className="text-gray-500 dark:text-gray-400 text-xs">{card.subtitle}</div>
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {card.tags.map((tag) => (
+                                    <span
+                                        key={tag}
+                                        className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                                        style={{
+                                            background: card.color + (isDark ? '22' : '11'),
+                                            color: card.color,
+                                            border: `1px solid ${card.color}44`,
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </Section>
 
             {/* 9.15 관련 커널 파라미터 */}

@@ -47,7 +47,7 @@ const bottleneckTableRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 11.12  Flame Graph
+// 11.6  Flame Graph
 // ─────────────────────────────────────────────────────────────────────────────
 
 const cpuTypeRows: TableRow[] = [
@@ -84,6 +84,7 @@ export default function Topic10() {
                     'Kernel Oops 메시지를 해석하고 /proc, /sys 인터페이스로 시스템 상태를 진단하는 방법을 파악합니다',
                 ]}
             />
+
 
             {/* 11.1 /proc와 /sys 활용 */}
             <Section id="s111" title="11.1  /proc와 /sys 활용">
@@ -225,8 +226,30 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 11.6 ftrace */}
-            <Section id="s116" title="11.6  ftrace">
+            {/* 11.6 Flame Graph */}
+            <Section id="s116" title="11.6  Flame Graph — CPU 병목 시각화">
+                <Prose>
+                    <T id="flame_graph">Flame Graph</T>는 Brendan Gregg가 개발한{' '}
+                    <strong>CPU 시간 사용 시각화</strong> 기법입니다. 함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록
+                    CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">perf record</code> →{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">perf script</code> →{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">FlameGraph</code> 스크립트
+                    파이프라인으로 생성합니다.
+                </Prose>
+
+                <FlameGraphViz />
+
+                {/* Pipeline code */}
+                <CodeBlock code={snippets.flameGenCode} language="bash" filename="# Flame Graph 생성 파이프라인" />
+
+                {/* on-CPU vs off-CPU table */}
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">on-CPU vs off-CPU</p>
+                <InfoTable headers={['유형', '측정 대상', '도구']} rows={cpuTypeRows} />
+            </Section>
+
+            {/* 11.7 ftrace */}
+            <Section id="s117" title="11.7  ftrace">
                 <Prose>
                     <T id="ftrace">ftrace</T> <KernelRef path="kernel/trace/ftrace.c" label="ftrace" />는 커널 함수 호출 추적 도구입니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">/sys/kernel/debug/tracing/</code>{' '}
@@ -241,68 +264,8 @@ export default function Topic10() {
                 </div>
             </Section>
 
-            {/* 11.7 네트워크 병목 분석 */}
-            <Section id="s117" title="11.7  네트워크 병목 분석">
-                <Prose>
-                    네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다. 체크
-                    우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
-                </Prose>
-                <NetworkBottleneckChart />
-                <InfoTable headers={['위치', '확인 방법', '조치']} rows={bottleneckTableRows} />
-            </Section>
-
-            {/* 11.8 sar */}
-            <Section id="s118" title="11.8  sar를 이용한 시스템 모니터링">
-                <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">sar</code>(System Activity Reporter)는
-                    CPU, 메모리, 네트워크, 디스크 통계를 시계열로 수집합니다. cron으로 자동 수집하면 문제 발생 시점의
-                    시스템 상태를 사후 분석할 수 있습니다.
-                </Prose>
-                <CodeBlock code={snippets.sarCode} language="bash" filename="sar 명령어" />
-            </Section>
-
-            {/* 11.9 컨테이너 환경 디버깅 */}
-            <Section id="s119" title="11.9  컨테이너 환경 디버깅">
-                <Prose>
-                    컨테이너(Docker/K8s)는 <T id="cgroup">cgroup</T>과 <T id="namespace">namespace</T>로 격리됩니다. <T id="oom_killer">OOM</T>, 성능 저하 문제의 원인이 컨테이너
-                    내부인지 호스트인지 구분하는 방법입니다.
-                </Prose>
-                <CodeBlock code={snippets.containerCgroupCode} language="bash" filename="# 컨테이너 cgroup 디버깅" />
-                <CodeBlock code={snippets.containerNamespaceCode} language="bash" filename="# namespace 디버깅" />
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: 'OOM 진단',
-                            color: '#ef4444',
-                            desc: 'memory.max 초과 → OOMKilled. memory.events를 확인하고 limit을 상향하거나 코드를 최적화합니다.',
-                        },
-                        {
-                            title: 'CPU Throttle',
-                            color: '#f59e0b',
-                            desc: 'cpu.max quota 소진 → 응답 지연. cpu.stat의 throttled_time 값을 확인합니다.',
-                        },
-                        {
-                            title: '네트워크 격리 문제',
-                            color: '#3b82f6',
-                            desc: 'nsenter로 컨테이너 내부에서 직접 ip, ss, tcpdump를 실행하여 네임스페이스 내부 상태를 진단합니다.',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
-                            style={{ borderColor: card.color + '55' }}
-                        >
-                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
-                                {card.title}
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
-                        </div>
-                    ))}
-                </div>
-            </Section>
-
-            {/* 11.10 lockdep */}
-            <Section id="s1110" title="11.10  lockdep — 잠금 순서 검증기">
+            {/* 11.8 lockdep */}
+            <Section id="s118" title="11.8  lockdep — 잠금 순서 검증기">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>{' '}
                     <KernelRef path="kernel/locking/lockdep.c" label="lockdep" />은 커널에 내장된 동적
@@ -363,10 +326,44 @@ lock(B) ← 대기   lock(A) ← 대기
                         </div>
                     ))}
                 </div>
+
+                <Prose>
+                    lockdep은 커널이 실행 중에 관찰한 모든 잠금 획득 순서를 <strong className="text-gray-800 dark:text-gray-200">의존성
+                    그래프</strong>로 기록합니다. 새 잠금 획득이 기존 그래프에 사이클을 형성하면 — 실제 데드락이 발생하지 않았더라도 —
+                    즉시 경고를 출력합니다. 이 "미래 예측형" 탐지가 lockdep의 핵심 가치입니다.
+                </Prose>
+                <InfoTable
+                    headers={['경고 유형', '의미', '대응 방법']}
+                    rows={[
+                        { cells: ['possible circular locking dependency', 'A→B, B→A 순서 불일치 탐지 (ABBA)', '잠금 획득 순서를 전역적으로 일관되게 통일'] },
+                        { cells: ['inconsistent lock state', 'IRQ-safe / IRQ-unsafe 혼용', 'IRQ 컨텍스트에서 사용하는 잠금은 반드시 spin_lock_irqsave() 사용'] },
+                        { cells: ['possible recursive locking', '같은 잠금 클래스를 중첩 획득', 'lockdep_set_class()로 클래스 분리 또는 설계 변경'] },
+                        { cells: ['lock held when returning to user space', '유저 복귀 시 잠금 미해제', '모든 경로에서 unlock 보장'] },
+                    ]}
+                />
+                <CodeBlock code={`# lockdep 경고 전체 보기
+dmesg | grep -B 5 -A 50 "possible circular locking"
+
+# 잠금 통계 (경합 핫스팟 찾기)
+# CONFIG_LOCK_STAT=y 필요
+cat /proc/lock_stat | sort -k2 -rn | head -20
+# class name     con-bounces  contentions  waittime-avg  ...
+# &rq->lock        12345        6789         1.23us
+
+# lockdep가 추적 중인 잠금 클래스 수 확인
+cat /proc/lockdep_stats
+# lock-classes:    1234
+# direct dependencies:   5678
+# all dependencies:      12345`} language="bash" filename="# lockdep 경고 분석" />
+                <Prose>
+                    lockdep 경고의 핵심은 <strong className="text-gray-800 dark:text-gray-200">두 개의 잠금 체인</strong>을 보여주는
+                    부분입니다. "기존에 관찰된 순서"와 "이번에 시도된 순서"가 충돌하면 사이클이 형성됩니다.
+                    경고 메시지의 Chain 부분을 읽고, 어떤 코드 경로에서 순서가 뒤바뀌는지 추적합니다.
+                </Prose>
             </Section>
 
-            {/* 11.11 KASAN */}
-            <Section id="s1111" title="11.11  KASAN — 메모리 버그 탐지기">
+            {/* 11.9 KASAN */}
+            <Section id="s119" title="11.9  KASAN — 메모리 버그 탐지기">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">
                         <T id="kasan">KASAN</T> (Kernel Address Sanitizer)
@@ -418,32 +415,7 @@ lock(B) ← 대기   lock(A) ← 대기
                         </div>
                     ))}
                 </div>
-            </Section>
 
-            {/* 11.12 Flame Graph */}
-            <Section id="s1112" title="11.12  Flame Graph — CPU 병목 시각화">
-                <Prose>
-                    <T id="flame_graph">Flame Graph</T>는 Brendan Gregg가 개발한{' '}
-                    <strong>CPU 시간 사용 시각화</strong> 기법입니다. 함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록
-                    CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">perf record</code> →{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">perf script</code> →{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">FlameGraph</code> 스크립트
-                    파이프라인으로 생성합니다.
-                </Prose>
-
-                <FlameGraphViz />
-
-                {/* Pipeline code */}
-                <CodeBlock code={snippets.flameGenCode} language="bash" filename="# Flame Graph 생성 파이프라인" />
-
-                {/* on-CPU vs off-CPU table */}
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">on-CPU vs off-CPU</p>
-                <InfoTable headers={['유형', '측정 대상', '도구']} rows={cpuTypeRows} />
-            </Section>
-
-            {/* 11.13 KASAN 심화 */}
-            <Section id="s1113" title="11.13  KASAN 심화 — Shadow Memory와 KFENCE">
                 <Prose>
                     KASAN은 커널 메모리의 모든 바이트에 대해 <strong className="text-gray-800 dark:text-gray-200">shadow memory</strong>를
                     유지합니다. 실제 메모리 8바이트마다 1바이트의 shadow를 할당하여, 해당 메모리가 접근 가능한지를 기록합니다.
@@ -490,45 +462,8 @@ dmesg | grep -A 20 "BUG: KFENCE:"
                 </Alert>
             </Section>
 
-            {/* 11.14 lockdep 심화 */}
-            <Section id="s1114" title="11.14  lockdep 심화 — 의존성 그래프와 경고 해석">
-                <Prose>
-                    lockdep은 커널이 실행 중에 관찰한 모든 잠금 획득 순서를 <strong className="text-gray-800 dark:text-gray-200">의존성
-                    그래프</strong>로 기록합니다. 새 잠금 획득이 기존 그래프에 사이클을 형성하면 — 실제 데드락이 발생하지 않았더라도 —
-                    즉시 경고를 출력합니다. 이 "미래 예측형" 탐지가 lockdep의 핵심 가치입니다.
-                </Prose>
-                <InfoTable
-                    headers={['경고 유형', '의미', '대응 방법']}
-                    rows={[
-                        { cells: ['possible circular locking dependency', 'A→B, B→A 순서 불일치 탐지 (ABBA)', '잠금 획득 순서를 전역적으로 일관되게 통일'] },
-                        { cells: ['inconsistent lock state', 'IRQ-safe / IRQ-unsafe 혼용', 'IRQ 컨텍스트에서 사용하는 잠금은 반드시 spin_lock_irqsave() 사용'] },
-                        { cells: ['possible recursive locking', '같은 잠금 클래스를 중첩 획득', 'lockdep_set_class()로 클래스 분리 또는 설계 변경'] },
-                        { cells: ['lock held when returning to user space', '유저 복귀 시 잠금 미해제', '모든 경로에서 unlock 보장'] },
-                    ]}
-                />
-                <CodeBlock code={`# lockdep 경고 전체 보기
-dmesg | grep -B 5 -A 50 "possible circular locking"
-
-# 잠금 통계 (경합 핫스팟 찾기)
-# CONFIG_LOCK_STAT=y 필요
-cat /proc/lock_stat | sort -k2 -rn | head -20
-# class name     con-bounces  contentions  waittime-avg  ...
-# &rq->lock        12345        6789         1.23us
-
-# lockdep가 추적 중인 잠금 클래스 수 확인
-cat /proc/lockdep_stats
-# lock-classes:    1234
-# direct dependencies:   5678
-# all dependencies:      12345`} language="bash" filename="# lockdep 경고 분석" />
-                <Prose>
-                    lockdep 경고의 핵심은 <strong className="text-gray-800 dark:text-gray-200">두 개의 잠금 체인</strong>을 보여주는
-                    부분입니다. "기존에 관찰된 순서"와 "이번에 시도된 순서"가 충돌하면 사이클이 형성됩니다.
-                    경고 메시지의 Chain 부분을 읽고, 어떤 코드 경로에서 순서가 뒤바뀌는지 추적합니다.
-                </Prose>
-            </Section>
-
-            {/* 11.15 bpftool */}
-            <Section id="s1115" title="11.15  bpftool — eBPF 프로그램 관리와 디버깅">
+            {/* 11.10 bpftool */}
+            <Section id="s1110" title="11.10  bpftool — eBPF 프로그램 관리와 디버깅">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">bpftool</strong>은 커널에 로드된 eBPF 프로그램과 맵을
                     검사·관리하는 공식 CLI 도구입니다. <T id="bcc">BCC</T>나 <T id="bpftrace">bpftrace</T>가 생성한 프로그램의
@@ -583,8 +518,68 @@ bpftool perf list`} language="bash" filename="# bpftool 주요 명령어" />
                 </Alert>
             </Section>
 
-            {/* 11.16 관련 커널 파라미터 */}
-            <Section id="s1116" title="11.16  관련 커널 파라미터">
+            {/* 11.11 sar */}
+            <Section id="s1111" title="11.11  sar를 이용한 시스템 모니터링">
+                <Prose>
+                    <code className="font-mono text-blue-600 dark:text-blue-400">sar</code>(System Activity Reporter)는
+                    CPU, 메모리, 네트워크, 디스크 통계를 시계열로 수집합니다. cron으로 자동 수집하면 문제 발생 시점의
+                    시스템 상태를 사후 분석할 수 있습니다.
+                </Prose>
+                <CodeBlock code={snippets.sarCode} language="bash" filename="sar 명령어" />
+            </Section>
+
+            {/* 11.12 네트워크 병목 분석 */}
+            <Section id="s1112" title="11.12  네트워크 병목 분석">
+                <Prose>
+                    네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다. 체크
+                    우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
+                </Prose>
+                <NetworkBottleneckChart />
+                <InfoTable headers={['위치', '확인 방법', '조치']} rows={bottleneckTableRows} />
+            </Section>
+
+            {/* 11.13 컨테이너 환경 디버깅 */}
+            <Section id="s1113" title="11.13  컨테이너 환경 디버깅">
+                <Prose>
+                    컨테이너(Docker/K8s)는 <T id="cgroup">cgroup</T>과 <T id="namespace">namespace</T>로 격리됩니다. <T id="oom_killer">OOM</T>, 성능 저하 문제의 원인이 컨테이너
+                    내부인지 호스트인지 구분하는 방법입니다.
+                </Prose>
+                <CodeBlock code={snippets.containerCgroupCode} language="bash" filename="# 컨테이너 cgroup 디버깅" />
+                <CodeBlock code={snippets.containerNamespaceCode} language="bash" filename="# namespace 디버깅" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        {
+                            title: 'OOM 진단',
+                            color: '#ef4444',
+                            desc: 'memory.max 초과 → OOMKilled. memory.events를 확인하고 limit을 상향하거나 코드를 최적화합니다.',
+                        },
+                        {
+                            title: 'CPU Throttle',
+                            color: '#f59e0b',
+                            desc: 'cpu.max quota 소진 → 응답 지연. cpu.stat의 throttled_time 값을 확인합니다.',
+                        },
+                        {
+                            title: '네트워크 격리 문제',
+                            color: '#3b82f6',
+                            desc: 'nsenter로 컨테이너 내부에서 직접 ip, ss, tcpdump를 실행하여 네임스페이스 내부 상태를 진단합니다.',
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
+                            style={{ borderColor: card.color + '55' }}
+                        >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                                {card.title}
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </Section>
+
+            {/* 11.14 관련 커널 파라미터 */}
+            <Section id="s1114" title="11.14  관련 커널 파라미터">
                 <Prose>
                     디버깅과 성능 분석에 영향을 미치는 주요 커널 파라미터입니다. 개발/테스트 환경에서는 제한을
                     완화하고, 프로덕션에서는 보안을 고려하여 설정합니다.

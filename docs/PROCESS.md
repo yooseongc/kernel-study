@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 47)
+> 마지막 업데이트: 2026-03-22 (Sprint 48)
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Sprint | 내용 | 완료일 |
 |--------|------|--------|
+| 48 | 커널 선생님 리뷰 기반 재정렬 — Topic 02 Run Queue 섹션 추가, Topic 09 학습 순서 재정렬 (Wait Queue/Completion 앞으로, RCU Grace Period→RCU 뒤로), Topic 11 lockdep/KASAN 기본+심화 통합, Flame Graph→perf 뒤로, 응용 섹션 후반 배치 | 2026-03-22 |
 | 47 | 콘텐츠 개선 Phase 3 — Topic 11 확장 (KASAN 심화/lockdep 심화/bpftool), Topic 10 확장 (IOMMU/전력관리), Topic 09 futex 심화, Topic 03 memory ordering/zswap·zram, Topic 12 cgroup v2/namespace 심화, Topic 01 Kconfig/커널 빌드 과정 | 2026-03-22 |
 | 46 | 콘텐츠 개선 Phase 2 — "관련 커널 소스" 요약 박스 (topic02/03/06/09 핵심 섹션에 InfoBox+KernelRef 집합), KernelRef 미사용 8개 토픽에 소스 링크 추가 (topic01/04/05/07/10/11/12/13) | 2026-03-22 |
 | 45 | 콘텐츠 개선 Phase 1 — KernelRef URL 버그 수정 (#L→/C/ident/), glossary 15개 용어 추가 (92개→), 전 13개 토픽 `<T>` 링크 감사·보강 (~40개 추가), 중복 `<T>` 제거 (topic04) | 2026-03-22 |
