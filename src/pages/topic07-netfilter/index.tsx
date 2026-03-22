@@ -12,14 +12,14 @@ import { InfoTable } from '../../components/ui/InfoTable'
 import { Prose } from '../../components/ui/Prose'
 import * as snippets from './codeSnippets'
 
-// ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
+// ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
 function renderNetfilterFlow(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
     _width: number,
     _height: number,
 ) {
-    const VW = 960,
-        VH = 300
+    const VW = 1100,
+        VH = 420
     svg.attr('viewBox', `0 0 ${VW} ${VH}`).attr('preserveAspectRatio', 'xMidYMid meet')
 
     const isDark = document.documentElement.classList.contains('dark')
@@ -27,16 +27,26 @@ function renderNetfilterFlow(
     const textFill = c.text
     const dimFill = c.textMuted
     const edgeColor = c.textMuted
-    const labelFill = c.textMuted
     const bgFill = c.bg
     const bgStroke = c.border
 
-    // Hook colors
-    const hookBlue = { fill: c.blueFill, stroke: c.blueStroke }
-    const hookGreen = { fill: c.greenFill, stroke: c.greenStroke }
-    const hookYellow = { fill: c.amberFill, stroke: c.amberStroke }
-    const hookRed = { fill: c.redFill, stroke: c.redStroke }
-    const hookPurple = { fill: c.purpleFill, stroke: c.purpleStroke }
+    // Table colors
+    const TBL = {
+        conntrack: { fill: c.cyanFill, stroke: c.cyanStroke, label: 'conntrack' },
+        raw: { fill: c.bgCard, stroke: c.border, label: 'raw' },
+        mangle: { fill: c.purpleFill, stroke: c.purpleStroke, label: 'mangle' },
+        nat: { fill: c.greenFill, stroke: c.greenStroke, label: 'nat' },
+        filter: { fill: c.redFill, stroke: c.redStroke, label: 'filter' },
+    }
+
+    // Hook node border colors
+    const hookColors: Record<string, { fill: string; stroke: string }> = {
+        PREROUTING: { fill: c.blueFill, stroke: c.blueStroke },
+        INPUT: { fill: c.greenFill, stroke: c.greenStroke },
+        FORWARD: { fill: c.amberFill, stroke: c.amberStroke },
+        OUTPUT: { fill: c.redFill, stroke: c.redStroke },
+        POSTROUTING: { fill: c.purpleFill, stroke: c.purpleStroke },
+    }
 
     const defs = svg.append('defs')
     defs.append('marker')
@@ -44,8 +54,8 @@ function renderNetfilterFlow(
         .attr('viewBox', '0 0 10 10')
         .attr('refX', 9)
         .attr('refY', 5)
-        .attr('markerWidth', 5)
-        .attr('markerHeight', 5)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M 0 0 L 10 5 L 0 10 z')
@@ -54,51 +64,115 @@ function renderNetfilterFlow(
     const g = svg.append('g')
 
     // ── Layout constants ──────────────────────────────────────────────────────
-    const PAD_L = 20
-    // Row Y positions
-    const TOP_Y = 70 // top path: INPUT → PROCESS → OUTPUT
-    const MID_Y = 145 // main horizontal flow
-    const BOT_Y = 215 // FORWARD path
+    const MID_Y = 190
+    const TOP_Y = 60
+    const BOT_Y = 320
+    const NR = 6
 
-    // Node dimensions
-    const NW = 100,
-        NH = 32,
-        NR = 6
-    const HW = 116,
-        HH = 34 // hook node (slightly larger)
+    // Hook node dimensions (tall enough for table list)
+    const HW = 130
+    const HH = 110
+    // Small box dimensions
+    const SW = 90
+    const SH = 36
 
-    // X positions of key elements (spread out to prevent overlaps)
-    const NIC_IN_X = PAD_L + 10
-    const PREROUT_X = NIC_IN_X + 90 + 30 // 150
-    const DIAMOND_X = PREROUT_X + 100 + 40 // 290
-    const INPUT_X = DIAMOND_X - 20 // 270  (top path)
-    const FORWARD_X = DIAMOND_X + 70 // 360  (bottom path)
-    const POSTRT_X = FORWARD_X + 120 + 40 // 550
-    const NIC_OUT_X = POSTRT_X + 100 + 30 // 680
-    const OUTPUT_X = POSTRT_X + 10 // 560 (top path, roughly above POSTROUTING)
-    const PROCESS_X = (INPUT_X + OUTPUT_X) / 2 // midpoint of top path
+    // Table pill dimensions
+    const PILL_W = 110
+    const PILL_H = 14
+    const PILL_GAP = 2
+
+    // X positions
+    const NIC_IN_X = 30
+    const PREROUT_X = 160
+    const DIAMOND1_X = 340
+    const INPUT_X = 230
+    const PROCESS_X = 450
+    const FORWARD_X = 450
+    const OUTPUT_X = 650
+    const DIAMOND2_X = 810
+    const POSTRT_X = 860
+    const NIC_OUT_X = 1020
 
     // ── Helpers ───────────────────────────────────────────────────────────────
-    function drawBox(
+    type TableEntry = { fill: string; stroke: string; label: string }
+
+    function drawHookNode(
         cx: number,
         cy: number,
-        w: number,
-        h: number,
-        label: string,
-        sub: string,
-        fill: string,
-        stroke: string,
-        strokeW = 1.5,
+        name: string,
+        tables: TableEntry[],
+        col: { fill: string; stroke: string },
     ) {
+        const h = HH
+        // Background rect
         g.append('rect')
-            .attr('x', cx - w / 2)
+            .attr('x', cx - HW / 2)
             .attr('y', cy - h / 2)
-            .attr('width', w)
+            .attr('width', HW)
             .attr('height', h)
             .attr('rx', NR)
-            .attr('fill', fill)
-            .attr('stroke', stroke)
-            .attr('stroke-width', strokeW)
+            .attr('fill', col.fill)
+            .attr('stroke', col.stroke)
+            .attr('stroke-width', 2)
+
+        // Hook name
+        g.append('text')
+            .attr('x', cx)
+            .attr('y', cy - h / 2 + 16)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('fill', textFill)
+            .attr('font-size', '11px')
+            .attr('font-weight', 'bold')
+            .attr('font-family', "'JetBrains Mono', monospace")
+            .text(name)
+
+        // Separator line
+        const sepY = cy - h / 2 + 28
+        g.append('line')
+            .attr('x1', cx - HW / 2 + 6)
+            .attr('y1', sepY)
+            .attr('x2', cx + HW / 2 - 6)
+            .attr('y2', sepY)
+            .attr('stroke', col.stroke)
+            .attr('stroke-opacity', 0.5)
+            .attr('stroke-width', 1)
+
+        // Table pills
+        const startY = sepY + 6
+        tables.forEach((t, i) => {
+            const py = startY + i * (PILL_H + PILL_GAP)
+            g.append('rect')
+                .attr('x', cx - PILL_W / 2)
+                .attr('y', py)
+                .attr('width', PILL_W)
+                .attr('height', PILL_H)
+                .attr('rx', 3)
+                .attr('fill', t.fill)
+                .attr('stroke', t.stroke)
+                .attr('stroke-width', 1)
+            g.append('text')
+                .attr('x', cx)
+                .attr('y', py + PILL_H / 2)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'middle')
+                .attr('fill', textFill)
+                .attr('font-size', '8.5px')
+                .attr('font-family', "'JetBrains Mono', monospace")
+                .text(t.label)
+        })
+    }
+
+    function drawSmallBox(cx: number, cy: number, label: string, sub: string) {
+        g.append('rect')
+            .attr('x', cx - SW / 2)
+            .attr('y', cy - SH / 2)
+            .attr('width', SW)
+            .attr('height', SH)
+            .attr('rx', NR)
+            .attr('fill', bgFill)
+            .attr('stroke', bgStroke)
+            .attr('stroke-width', 1.5)
         g.append('text')
             .attr('x', cx)
             .attr('y', sub ? cy - 5 : cy)
@@ -122,12 +196,9 @@ function renderNetfilterFlow(
         }
     }
 
-    function drawHook(cx: number, cy: number, label: string, sub: string, col: { fill: string; stroke: string }) {
-        drawBox(cx, cy, HW, HH, label, sub, col.fill, col.stroke, 2)
-    }
-
-    function drawDiamond(cx: number, cy: number, w: number, h: number) {
-        const path = `M ${cx},${cy - h / 2} L ${cx + w / 2},${cy} L ${cx},${cy + h / 2} L ${cx - w / 2},${cy} Z`
+    function drawDiamond(cx: number, cy: number, label1: string, label2: string) {
+        const dw = 60, dh = 44
+        const path = `M ${cx},${cy - dh / 2} L ${cx + dw / 2},${cy} L ${cx},${cy + dh / 2} L ${cx - dw / 2},${cy} Z`
         g.append('path')
             .attr('d', path)
             .attr('fill', c.indigoFill)
@@ -142,7 +213,7 @@ function renderNetfilterFlow(
             .attr('font-size', '9px')
             .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('font-weight', 'bold')
-            .text('라우팅')
+            .text(label1)
         g.append('text')
             .attr('x', cx)
             .attr('y', cy + 7)
@@ -152,7 +223,7 @@ function renderNetfilterFlow(
             .attr('font-size', '9px')
             .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('font-weight', 'bold')
-            .text('결정')
+            .text(label2)
     }
 
     function arrow(d: string, label?: string, lx?: number, ly?: number) {
@@ -160,15 +231,27 @@ function renderNetfilterFlow(
             .attr('d', d)
             .attr('fill', 'none')
             .attr('stroke', edgeColor)
-            .attr('stroke-width', 1.3)
+            .attr('stroke-width', 1.5)
             .attr('marker-end', 'url(#nf-arrow)')
         if (label && lx !== undefined && ly !== undefined) {
+            // Background rect for label readability
+            const tempText = g.append('text').attr('font-size', '8px').text(label)
+            const bbox = (tempText.node() as SVGTextElement).getBBox()
+            tempText.remove()
+            g.append('rect')
+                .attr('x', lx - bbox.width / 2 - 3)
+                .attr('y', ly - bbox.height / 2 - 1)
+                .attr('width', bbox.width + 6)
+                .attr('height', bbox.height + 2)
+                .attr('rx', 2)
+                .attr('fill', bgFill)
+                .attr('fill-opacity', 0.85)
             g.append('text')
                 .attr('x', lx)
                 .attr('y', ly)
                 .attr('text-anchor', 'middle')
                 .attr('dominant-baseline', 'middle')
-                .attr('fill', labelFill)
+                .attr('fill', dimFill)
                 .attr('font-size', '8px')
                 .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(label)
@@ -177,73 +260,92 @@ function renderNetfilterFlow(
 
     // ── Draw nodes ────────────────────────────────────────────────────────────
     // NIC (수신)
-    drawBox(NIC_IN_X + NW / 2, MID_Y, NW, NH, 'NIC (수신)', '', bgFill, bgStroke)
+    drawSmallBox(NIC_IN_X + SW / 2, MID_Y, 'NIC (수신)', '')
 
-    // PREROUTING hook
-    drawHook(PREROUT_X + HW / 2, MID_Y, 'PREROUTING', 'DNAT · conntrack', hookBlue)
+    // PREROUTING
+    drawHookNode(PREROUT_X + HW / 2, MID_Y, 'PREROUTING', [
+        TBL.conntrack, TBL.raw, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' },
+    ], hookColors.PREROUTING)
 
-    // Routing diamond
-    drawDiamond(DIAMOND_X, MID_Y, 64, 44)
+    // Routing diamond 1 (after PREROUTING)
+    drawDiamond(DIAMOND1_X, MID_Y, '라우팅', '결정')
 
-    // INPUT hook (top path)
-    drawHook(INPUT_X, TOP_Y, 'INPUT', '방화벽 인바운드', hookGreen)
+    // INPUT (top path)
+    drawHookNode(INPUT_X + HW / 2, TOP_Y, 'INPUT', [
+        TBL.mangle, TBL.filter, TBL.nat,
+    ], hookColors.INPUT)
 
-    // FORWARD hook (bottom path)
-    drawHook(FORWARD_X + HW / 2, BOT_Y, 'FORWARD', '라우터 방화벽', hookYellow)
+    // Process (top path)
+    drawSmallBox(PROCESS_X, TOP_Y, '프로세스', '(User Space)')
 
-    // Process box (top path)
-    drawBox(PROCESS_X, TOP_Y, NW, NH, '프로세스', '(User Space)', bgFill, bgStroke)
+    // OUTPUT (top path)
+    drawHookNode(OUTPUT_X + HW / 2, TOP_Y, 'OUTPUT', [
+        TBL.conntrack, TBL.raw, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' }, TBL.filter,
+    ], hookColors.OUTPUT)
 
-    // OUTPUT hook (top path)
-    drawHook(OUTPUT_X, TOP_Y, 'OUTPUT', '아웃바운드 필터', hookRed)
+    // FORWARD (bottom path)
+    drawHookNode(FORWARD_X + HW / 2, BOT_Y, 'FORWARD', [
+        TBL.mangle, TBL.filter,
+    ], hookColors.FORWARD)
 
-    // POSTROUTING hook
-    drawHook(POSTRT_X + HW / 2, MID_Y, 'POSTROUTING', 'SNAT · Masquerade', hookPurple)
+    // Routing diamond 2 (after OUTPUT, merge point)
+    drawDiamond(DIAMOND2_X, MID_Y, '라우팅', '결정')
+
+    // POSTROUTING
+    drawHookNode(POSTRT_X + HW / 2, MID_Y, 'POSTROUTING', [
+        TBL.mangle, { ...TBL.nat, label: 'nat (SNAT)' },
+    ], hookColors.POSTROUTING)
 
     // NIC (송신)
-    drawBox(NIC_OUT_X + NW / 2, MID_Y, NW, NH, 'NIC (송신)', '', bgFill, bgStroke)
+    drawSmallBox(NIC_OUT_X + SW / 2, MID_Y, 'NIC (송신)', '')
 
     // ── Draw arrows ───────────────────────────────────────────────────────────
-    // NIC → PREROUTING
-    arrow(`M ${NIC_IN_X + NW},${MID_Y} L ${PREROUT_X},${MID_Y}`)
+    // NIC_IN → PREROUTING
+    arrow(`M ${NIC_IN_X + SW},${MID_Y} L ${PREROUT_X},${MID_Y}`)
 
-    // PREROUTING → Diamond
-    arrow(`M ${PREROUT_X + HW},${MID_Y} L ${DIAMOND_X - 32},${MID_Y}`)
+    // PREROUTING → Diamond1
+    arrow(`M ${PREROUT_X + HW},${MID_Y} L ${DIAMOND1_X - 30},${MID_Y}`)
 
-    // Diamond → INPUT (up-left)
+    // Diamond1 → INPUT (curve up)
+    const inputRight = INPUT_X + HW
     arrow(
-        `M ${DIAMOND_X - 16},${MID_Y - 18} C ${DIAMOND_X - 40},${MID_Y - 55} ${INPUT_X + 20},${TOP_Y + 20} ${INPUT_X + HW / 2},${TOP_Y + HH / 2}`,
+        `M ${DIAMOND1_X},${MID_Y - 22} C ${DIAMOND1_X},${MID_Y - 70} ${inputRight - 20},${TOP_Y + HH / 2 + 30} ${inputRight},${TOP_Y + HH / 2}`,
         'LOCAL_IN',
-        DIAMOND_X - 60,
-        MID_Y - 45,
+        DIAMOND1_X - 10,
+        MID_Y - 60,
     )
 
-    // Diamond → FORWARD (down)
+    // Diamond1 → FORWARD (curve down)
     arrow(
-        `M ${DIAMOND_X},${MID_Y + 22} L ${DIAMOND_X},${BOT_Y - HH / 2}`,
+        `M ${DIAMOND1_X},${MID_Y + 22} C ${DIAMOND1_X},${MID_Y + 70} ${FORWARD_X},${BOT_Y - HH / 2 - 30} ${FORWARD_X},${BOT_Y - HH / 2}`,
         'FORWARD',
-        DIAMOND_X + 22,
-        (MID_Y + 22 + BOT_Y - HH / 2) / 2,
+        DIAMOND1_X + 30,
+        MID_Y + 65,
     )
-
-    // FORWARD → POSTROUTING (curve up)
-    arrow(
-        `M ${FORWARD_X + HW},${BOT_Y} C ${FORWARD_X + HW + 30},${BOT_Y} ${POSTRT_X},${BOT_Y + 10} ${POSTRT_X + HW / 2 - HW / 2},${MID_Y + HH / 2}`,
-    )
-
-    // POSTROUTING → NIC out
-    arrow(`M ${POSTRT_X + HW},${MID_Y} L ${NIC_OUT_X},${MID_Y}`)
 
     // INPUT → Process
-    arrow(`M ${INPUT_X + HW / 2},${TOP_Y} L ${PROCESS_X - NW / 2},${TOP_Y}`)
+    arrow(`M ${inputRight},${TOP_Y} L ${PROCESS_X - SW / 2},${TOP_Y}`)
 
     // Process → OUTPUT
-    arrow(`M ${PROCESS_X + NW / 2},${TOP_Y} L ${OUTPUT_X - HW / 2},${TOP_Y}`)
+    arrow(`M ${PROCESS_X + SW / 2},${TOP_Y} L ${OUTPUT_X},${TOP_Y}`)
 
-    // OUTPUT → POSTROUTING (top path merges down)
+    // OUTPUT → Diamond2 (curve down to mid)
+    const outputRight = OUTPUT_X + HW
     arrow(
-        `M ${OUTPUT_X + HW / 2},${TOP_Y + HH / 2} C ${OUTPUT_X + HW / 2 + 20},${TOP_Y + 55} ${POSTRT_X + HW / 2},${MID_Y - 50} ${POSTRT_X + HW / 2},${MID_Y - HH / 2}`,
+        `M ${outputRight},${TOP_Y + HH / 2} C ${outputRight + 20},${TOP_Y + HH / 2 + 40} ${DIAMOND2_X},${MID_Y - 60} ${DIAMOND2_X},${MID_Y - 22}`,
     )
+
+    // FORWARD → Diamond2 (curve up to mid)
+    const fwdRight = FORWARD_X + HW
+    arrow(
+        `M ${fwdRight},${BOT_Y - HH / 2} C ${fwdRight + 30},${BOT_Y - HH / 2 - 40} ${DIAMOND2_X},${MID_Y + 60} ${DIAMOND2_X},${MID_Y + 22}`,
+    )
+
+    // Diamond2 → POSTROUTING
+    arrow(`M ${DIAMOND2_X + 30},${MID_Y} L ${POSTRT_X},${MID_Y}`)
+
+    // POSTROUTING → NIC_OUT
+    arrow(`M ${POSTRT_X + HW},${MID_Y} L ${NIC_OUT_X},${MID_Y}`)
 
     // ── Section label ─────────────────────────────────────────────────────────
     g.append('text')
@@ -253,18 +355,19 @@ function renderNetfilterFlow(
         .attr('fill', dimFill)
         .attr('font-size', '9px')
         .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
-        .text('Netfilter 훅 포인트 — 패킷 흐름')
+        .text('Netfilter 훅 포인트 — 패킷 흐름 (table 처리 순서 포함)')
 
-    // Legend
+    // ── Legend (table colors) ─────────────────────────────────────────────────
     const legends = [
-        { col: hookBlue, label: 'PREROUTING' },
-        { col: hookGreen, label: 'INPUT' },
-        { col: hookYellow, label: 'FORWARD' },
-        { col: hookRed, label: 'OUTPUT' },
-        { col: hookPurple, label: 'POSTROUTING' },
+        { fill: TBL.conntrack.fill, stroke: TBL.conntrack.stroke, label: 'conntrack' },
+        { fill: TBL.raw.fill, stroke: TBL.raw.stroke, label: 'raw' },
+        { fill: TBL.mangle.fill, stroke: TBL.mangle.stroke, label: 'mangle' },
+        { fill: TBL.nat.fill, stroke: TBL.nat.stroke, label: 'nat' },
+        { fill: TBL.filter.fill, stroke: TBL.filter.stroke, label: 'filter' },
     ]
+    const legendStartX = VW / 2 - (legends.length * 130) / 2
     legends.forEach((l, i) => {
-        const lx = PAD_L + i * 180 + 10
+        const lx = legendStartX + i * 130
         const ly = VH - 28
         g.append('rect')
             .attr('x', lx)
@@ -272,8 +375,8 @@ function renderNetfilterFlow(
             .attr('width', 12)
             .attr('height', 12)
             .attr('rx', 2)
-            .attr('fill', l.col.fill)
-            .attr('stroke', l.col.stroke)
+            .attr('fill', l.fill)
+            .attr('stroke', l.stroke)
             .attr('stroke-width', 1.5)
         g.append('text')
             .attr('x', lx + 16)
@@ -393,7 +496,7 @@ export default function Topic06() {
                     POSTROUTING 경로를 거칩니다. 드래그·휠로 확대/축소할 수 있습니다.
                 </p>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 mb-6">
-                    <D3Container renderFn={renderFn} deps={[theme]} height={280} zoomable={true} />
+                    <D3Container renderFn={renderFn} deps={[theme]} height={420} zoomable={true} />
                 </div>
 
                 {/* 훅 상세 인터랙션 버튼 */}
