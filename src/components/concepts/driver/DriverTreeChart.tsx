@@ -83,11 +83,11 @@ function renderDriverTree(
     const innerH = height - padY * 2
 
     const root = d3.hierarchy<DriverNode>(driverTreeData)
-    const treeLayout = d3.tree<DriverNode>().size([innerH, innerW])
+    const treeLayout = d3.tree<DriverNode>().size([innerH, innerW]).separation(() => 1.4)
     treeLayout(root)
 
-    const nodeW = 108
-    const nodeH = 36
+    const nodeW = 112
+    const nodeH = 40
 
     const linkColor = c.link
 
@@ -168,7 +168,7 @@ export function DriverTreeChart() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700">
-            <D3Container renderFn={renderFn} deps={[isDark]} height={260} zoomable={true} />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={380} zoomable={true} />
         </div>
     )
 }
