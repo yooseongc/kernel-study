@@ -36,10 +36,15 @@ export default function Glossary() {
     const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
     useEffect(() => {
-        const hash = window.location.hash.split('#')[1]
-        if (hash) {
-            const el = document.getElementById(hash)
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // HashRouter URL: #/glossary#spinlock → 마지막 # 뒤가 앵커
+        const parts = window.location.hash.split('#')
+        const anchor = parts.length >= 3 ? parts[parts.length - 1] : null
+        if (anchor) {
+            // DOM 렌더링 후 스크롤
+            requestAnimationFrame(() => {
+                const el = document.getElementById(anchor)
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            })
         }
     }, [])
 
