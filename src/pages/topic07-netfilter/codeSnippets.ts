@@ -127,6 +127,18 @@ nft add rule inet filter input ct helper "ftp" accept
 # helper 비활성화 (보안상 필요 시)
 echo 0 > /proc/sys/net/netfilter/nf_conntrack_helper`
 
+export const natExamplesCode = `# SNAT: 내부 네트워크 → 외부 (고정 IP)
+iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j SNAT --to-source 203.0.113.1
+
+# MASQUERADE: 동적 IP 환경
+iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j MASQUERADE
+
+# DNAT: 포트 포워딩 (외부 80 → 내부 서버 8080)
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 192.168.1.100:8080
+
+# conntrack으로 NAT 상태 확인
+conntrack -L -n`
+
 export const tproxyCode = `# TPROXY 설정 예시 (투명 프록시)
 
 # 1. 패킷을 특별 라우팅 테이블로 마크

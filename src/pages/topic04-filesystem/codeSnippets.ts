@@ -135,6 +135,21 @@ blkparse trace.blktrace.0 | head -20
 ionice -c 2 -n 0 dd if=/dev/zero of=/tmp/test bs=1M count=100
 # -c 2: Best-effort 클래스, -n 0: 최고 우선순위`
 
+// 4.7 파일 종류와 권한
+export const filePermCode = `# 파일 타입 확인
+ls -la /dev/sda /etc/passwd /tmp
+# brw-rw---- ... /dev/sda       (블록 디바이스)
+# -rw-r--r-- ... /etc/passwd    (일반 파일)
+# drwxrwxrwt ... /tmp           (sticky bit 디렉토리)
+
+# setuid 예시 — passwd 명령
+ls -la /usr/bin/passwd
+# -rwsr-xr-x ... /usr/bin/passwd  (s = setuid)
+
+# ACL 설정/조회
+setfacl -m u:nginx:rx /var/www/html
+getfacl /var/www/html`
+
 // 4.6 파일시스템 비교
 export const fsOverviewCode = `# 커널이 지원하는 파일시스템 목록 (nodev = 블록 디바이스 불필요)
 cat /proc/filesystems

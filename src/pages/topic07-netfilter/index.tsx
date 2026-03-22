@@ -8,6 +8,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { InfoTable } from '../../components/ui/InfoTable'
 import * as snippets from './codeSnippets'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
@@ -505,6 +506,85 @@ export default function Topic06() {
                 </h3>
                 <CodeBlock code={snippets.iptablesMainSyntaxCode} language="bash" filename="# iptables 주요 규칙 예시" />
                 <CodeBlock code={snippets.nftablesSyntaxCode} language="bash" filename="# nftables 동일 규칙" />
+            </Section>
+
+            <Section id="s7741" title="7.4.1  iptables Table × Chain 매트릭스">
+                <InfoBox>
+                    <strong>iptables</strong>는 4개의 <em>테이블</em>을 가지며, 각 테이블은 특정 체인에만 규칙을 등록할 수 있습니다.
+                    <ul className="mt-3 space-y-2 list-disc list-inside">
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">filter</code> — 기본 테이블.
+                            패킷 허용/차단 (INPUT, FORWARD, OUTPUT)
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">nat</code> — 주소 변환.
+                            SNAT/DNAT/MASQUERADE (PREROUTING, OUTPUT, POSTROUTING)
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">mangle</code> — 패킷 헤더 수정.
+                            TTL, TOS, MARK 변경 (5개 chain 모두)
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">raw</code> — conntrack 제외 설정.
+                            NOTRACK 타겟 (PREROUTING, OUTPUT)
+                        </li>
+                    </ul>
+                </InfoBox>
+
+                <InfoTable
+                    headers={['Table', 'PREROUTING', 'INPUT', 'FORWARD', 'OUTPUT', 'POSTROUTING']}
+                    rows={[
+                        { cells: ['raw', '✓', '', '', '✓', ''] },
+                        { cells: ['mangle', '✓', '✓', '✓', '✓', '✓'] },
+                        { cells: ['nat', '✓', '', '', '✓', '✓'] },
+                        { cells: ['filter', '', '✓', '✓', '✓', ''] },
+                    ]}
+                />
+
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-2">
+                    <strong>처리 우선순위:</strong>{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">raw</code>
+                    {' → '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mangle</code>
+                    {' → '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">nat</code>
+                    {' → '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">filter</code>
+                    {' '}순으로 평가됩니다. 같은 체인에 여러 테이블이 등록되어 있으면 이 순서대로 실행됩니다.
+                </p>
+            </Section>
+
+            <Section id="s7742" title="7.4.2  NAT — 네트워크 주소 변환">
+                <InfoBox>
+                    <strong>NAT(Network Address Translation)</strong>는 패킷의 IP 주소/포트를 변환합니다.
+                    <T id="conntrack">conntrack</T>이 매핑을 추적하여 응답 패킷을 자동으로 역변환합니다.
+                    <ul className="mt-3 space-y-2 list-disc list-inside">
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">SNAT</code> — 소스 주소 변경
+                            (POSTROUTING). 내부 → 외부 통신 시 출발지 IP를 공인 IP로 변환
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">DNAT</code> — 목적지 주소 변경
+                            (PREROUTING). 포트 포워딩, 로드밸런싱에 활용
+                        </li>
+                        <li>
+                            <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">MASQUERADE</code> — 동적 IP용 SNAT.
+                            PPPoE, DHCP 환경에서 인터페이스 IP가 바뀌어도 자동 적용
+                        </li>
+                    </ul>
+                </InfoBox>
+
+                <CodeBlock code={snippets.natExamplesCode} language="bash" filename="# NAT iptables 명령어 예시" />
+
+                <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300 mt-4 mb-6">
+                    <div className="font-semibold text-green-700 dark:text-green-400 mb-2">NAT와 conntrack의 관계</div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                        NAT 규칙이 적용되면 <T id="conntrack">conntrack</T>이 원본 주소와 변환된 주소의 매핑을 기록합니다.
+                        이후 응답 패킷이 돌아올 때 conntrack이 자동으로 역변환(reverse NAT)을 수행하므로, 별도의 역방향 규칙이 필요 없습니다.
+                        <br />
+                        <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">conntrack -L -n</code> 명령으로 현재 NAT 매핑 상태를 확인할 수 있습니다.
+                    </p>
+                </div>
             </Section>
 
             <Section id="s775" title="7.5  conntrack (연결 추적)">

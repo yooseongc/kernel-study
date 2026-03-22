@@ -6,6 +6,7 @@ import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { NetworkLayerDiagram } from '../../components/concepts/network/NetworkLayerDiagram'
 import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
@@ -222,6 +223,66 @@ export default function Topic05() {
                     레이어로 넘깁니다.
                 </p>
 
+                {/* ── 단계별 수신 과정 설명 ── */}
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">패킷 수신 7단계</div>
+                    <ol className="space-y-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed list-decimal list-inside">
+                        <li>
+                            <span className="font-semibold text-red-600 dark:text-red-400">NIC 수신 &amp; DMA 복사</span>{' '}
+                            &mdash; 네트워크 카드가 전기 신호를 프레임으로 조립하고,{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">DMA</code>로
+                            메인 메모리의 RX 링 버퍼에 복사합니다. CPU 개입 없이 하드웨어가 직접 수행합니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-amber-600 dark:text-amber-400">IRQ → NAPI poll</span>{' '}
+                            &mdash; NIC가 <T id="irq">IRQ</T>를 발생시키면, 드라이버의 인터럽트 핸들러가{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">napi_schedule()</code>을
+                            호출하여 NAPI 폴링을 등록합니다. 이후 softirq 컨텍스트에서{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">napi_poll()</code>이
+                            링 버퍼의 패킷들을 <T id="sk_buff">sk_buff</T>로 변환합니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-pink-600 dark:text-pink-400">L2 처리 (Data Link)</span>{' '}
+                            &mdash;{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">netif_receive_skb()</code>가
+                            호출되면{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">eth_type_trans()</code>로
+                            Ethernet 헤더를 파싱하여 상위 프로토콜(IP, ARP 등)을 결정합니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-purple-600 dark:text-purple-400">L3 처리 (Network)</span>{' '}
+                            &mdash;{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">ip_rcv()</code>에서
+                            IP 헤더 검증, TTL 체크, 라우팅 테이블 조회를 수행합니다. 이 패킷이 로컬 호스트 대상인지,
+                            포워딩 대상인지 결정합니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-indigo-600 dark:text-indigo-400">L4 처리 (Transport)</span>{' '}
+                            &mdash;{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">tcp_v4_rcv()</code> 또는{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">udp_rcv()</code>에서
+                            포트 번호로 소켓을 찾고, TCP의 경우 시퀀스 번호 확인 및 ACK 처리를 합니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-blue-600 dark:text-blue-400">소켓 수신 큐</span>{' '}
+                            &mdash; 매칭된 소켓의{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">sk_receive_queue</code>에
+                            sk_buff를 추가하고, 대기 중인 프로세스를 깨웁니다.
+                        </li>
+                        <li>
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">사용자 프로세스</span>{' '}
+                            &mdash;{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">recv()</code> 또는{' '}
+                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">read()</code>
+                            시스템 콜로 커널의 수신 큐에서 사용자 버퍼로 데이터를 복사합니다.
+                        </li>
+                    </ol>
+                </div>
+
+                {/* ── 레이어 시각화 (아래→위 방향) ── */}
+                <div className="text-xs text-center text-gray-500 dark:text-gray-500 mt-2 mb-1">
+                    아래(NIC)에서 위(사용자)로 패킷이 올라가며 각 레이어의 함수가 처리합니다
+                </div>
                 <NetworkLayerDiagram />
 
                 <div className="grid grid-cols-3 gap-3 text-xs">
@@ -248,6 +309,21 @@ export default function Topic05() {
                         </div>
                     ))}
                 </div>
+
+                {/* ── NAPI 핵심 포인트 InfoBox ── */}
+                <InfoBox color="amber" title="NAPI가 중요한 이유">
+                    <p>
+                        과거에는 패킷마다 하드웨어 인터럽트(IRQ)가 발생했습니다. 10Gbps 환경에서는 초당 수백만 개의
+                        패킷이 도착하므로 CPU가 인터럽트 처리에만 소모되는{' '}
+                        <strong>인터럽트 폭풍(interrupt storm)</strong>이 발생합니다.
+                    </p>
+                    <p className="mt-1">
+                        <strong>NAPI</strong>는 첫 패킷의 인터럽트 이후 <strong>폴링(polling) 모드</strong>로
+                        전환하여, softirq 컨텍스트에서 budget(기본 64)만큼 한꺼번에 처리합니다.
+                        큐가 비면 다시 인터럽트 모드로 복귀합니다. 이 방식으로 인터럽트 오버헤드를 극적으로 줄이고
+                        throughput을 최적화합니다.
+                    </p>
+                </InfoBox>
             </Section>
 
             <Section id="s662" title="6.2  NIC 드라이버와 NAPI">

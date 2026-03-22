@@ -5,6 +5,8 @@ import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { InfoBox } from '../../components/ui/InfoBox'
+import { InfoTable } from '../../components/ui/InfoTable'
+import { Alert } from '../../components/ui/Alert'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
@@ -820,6 +822,99 @@ f_flags: O_RDONLY`}</pre>
                 </div>
 
                 <CodeBlock code={snippets.fsOverviewCode} language="bash" filename="# 파일시스템 탐색 실전 명령어" />
+            </Section>
+
+            {/* 4.7 리눅스 파일 종류와 권한 */}
+            <Section id="s447" title="4.7  리눅스 파일 종류와 권한">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    리눅스에서 "모든 것은 파일"입니다. 일반 파일뿐 아니라 디렉토리, 디바이스, 파이프, 소켓까지 7종의 파일
+                    타입이 존재하며, 각 파일에는 <strong className="text-gray-900 dark:text-gray-100">mode bits(rwx)</strong>로
+                    접근 권한을 제어합니다.
+                </p>
+
+                {/* 7종 파일 타입 테이블 */}
+                <InfoTable
+                    headers={['문자', '타입', '예시']}
+                    rows={[
+                        { cells: ['-', '일반 파일', '/etc/passwd'] },
+                        { cells: ['d', '디렉토리', '/home/user'] },
+                        { cells: ['l', '심볼릭 링크', '/usr/bin/python → python3'] },
+                        { cells: ['b', '블록 디바이스', '/dev/sda'] },
+                        { cells: ['c', '캐릭터 디바이스', '/dev/tty0'] },
+                        { cells: ['p', '파이프 (FIFO)', 'mkfifo /tmp/pipe'] },
+                        { cells: ['s', '소켓', '/var/run/docker.sock'] },
+                    ]}
+                />
+
+                {/* mode bits 설명 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+                    <div className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        mode bits — rwx 권한과 8진수 표기법
+                    </div>
+                    <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <p>
+                            파일 권한은 <strong className="text-gray-900 dark:text-gray-100">owner / group / others</strong> 3개
+                            그룹으로 나뉘며, 각 그룹에 <code className="font-mono text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1 rounded">r(4) w(2) x(1)</code> 비트를
+                            조합합니다.
+                        </p>
+                        <div className="flex flex-wrap gap-3 font-mono text-xs">
+                            {[
+                                { label: '0755', desc: 'rwxr-xr-x — 소유자 전체, 나머지 읽기+실행' },
+                                { label: '0644', desc: 'rw-r--r-- — 소유자 읽기+쓰기, 나머지 읽기만' },
+                                { label: '0700', desc: 'rwx------ — 소유자만 전체 권한' },
+                            ].map((ex) => (
+                                <div key={ex.label} className="flex-1 min-w-[200px] rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 px-3 py-2">
+                                    <span className="text-blue-600 dark:text-blue-300 font-bold">{ex.label}</span>
+                                    <span className="text-gray-500 dark:text-gray-400 ml-2">{ex.desc}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 특수 비트 */}
+                    <div className="space-y-1.5">
+                        <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                            특수 비트
+                        </div>
+                        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                            <table className="w-full text-xs">
+                                <thead>
+                                    <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">비트</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">8진수</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">표시</th>
+                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">설명</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    {[
+                                        { name: 'setuid', octal: '4000', display: 's (owner x 위치)', desc: '실행 시 소유자 권한으로 실행' },
+                                        { name: 'setgid', octal: '2000', display: 's (group x 위치)', desc: '실행 시 그룹 권한으로 실행 / 디렉토리: 새 파일이 그룹 상속' },
+                                        { name: 'sticky', octal: '1000', display: 't (others x 위치)', desc: '디렉토리 내 파일을 소유자만 삭제 가능 (/tmp)' },
+                                    ].map((row) => (
+                                        <tr key={row.name} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                            <td className="px-3 py-2">
+                                                <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-mono">{row.name}</code>
+                                            </td>
+                                            <td className="px-3 py-2 font-mono text-gray-700 dark:text-gray-300">{row.octal}</td>
+                                            <td className="px-3 py-2 font-mono text-gray-700 dark:text-gray-300">{row.display}</td>
+                                            <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{row.desc}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <CodeBlock code={snippets.filePermCode} language="bash" filename="# 파일 타입·권한 실전 명령어" />
+
+                <Alert variant="warning" title="setuid/setgid 보안 주의">
+                    setuid 바이너리는 실행 시 소유자(보통 root) 권한으로 실행됩니다. 공격자가 setuid 바이너리의
+                    취약점을 악용하면 권한 상승(privilege escalation)이 가능하므로, setuid가 설정된 파일을 정기적으로
+                    점검해야 합니다. <code className="font-mono text-xs bg-orange-100 dark:bg-orange-900/30 px-1 rounded">find / -perm -4000 -type f</code>로
+                    시스템 내 setuid 파일을 검색할 수 있습니다.
+                </Alert>
             </Section>
 
             <TopicNavigation topicId="04-filesystem" />

@@ -67,7 +67,7 @@ export default function Topic08() {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">동기화와 멀티코어 환경</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Synchronization & Multi-core</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    Race Condition, Spinlock, Mutex, RWLock, Atomic, RCU, Wait Queue, Completion, seqlock, 메모리 배리어
+                    Race Condition, <T id="spinlock">Spinlock</T>, <T id="mutex">Mutex</T>, RWLock, <T id="atomic">Atomic</T>, <T id="rcu">RCU</T>, Wait Queue, Completion, seqlock, 메모리 배리어
                 </p>
             </header>
 

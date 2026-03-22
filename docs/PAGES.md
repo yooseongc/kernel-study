@@ -92,6 +92,9 @@
 - open() 흐름 단계별 애니메이션
 - 페이지 캐시 구조
 - ext4 저널링 메커니즘
+- 블록 I/O 경로
+- 대표 파일시스템 비교
+- 리눅스 파일 종류와 권한 (7종 파일 타입, mode bits, 특수 비트, setuid 보안)
 
 ---
 
@@ -125,6 +128,8 @@
 - Netfilter 5개 훅 포인트 흐름도 (PREROUTING/INPUT/FORWARD/OUTPUT/POSTROUTING)
 - D3 Sankey 다이어그램으로 패킷 경로
 - iptables 규칙 적용 순서 시뮬레이션
+- iptables Table × Chain 매트릭스 (raw/mangle/nat/filter)
+- NAT 종류 (SNAT/DNAT/MASQUERADE) 설명 및 명령어 예제
 
 ---
 

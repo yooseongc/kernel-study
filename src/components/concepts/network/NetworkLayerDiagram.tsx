@@ -10,6 +10,7 @@ import { D3Container } from '../../../components/viz/D3Container'
 interface LayerInfo {
     label: string
     fn: string
+    step: string
     fill: string
     stroke: string
     textColor: string
@@ -22,6 +23,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'User Process',
             fn: 'recv() / read()',
+            step: '\u2776 app이 데이터를 읽음',
             fill: isDark ? 'oklch(22% 0.06 250)' : 'oklch(93% 0.02 250)',
             stroke: isDark ? 'oklch(62% 0.20 250)' : 'oklch(50% 0.20 250)',
             textColor: c.text,
@@ -30,6 +32,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Socket Layer',
             fn: 'sock_recvmsg()',
+            step: '\u2775 소켓 수신 큐에서 복사',
             fill: c.blueFill,
             stroke: c.blueStroke,
             textColor: c.blueText,
@@ -38,6 +41,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Transport Layer L4',
             fn: 'tcp_v4_rcv() / udp_rcv()',
+            step: '\u2774 TCP/UDP 처리, 포트 매칭',
             fill: c.indigoFill,
             stroke: c.indigoStroke,
             textColor: c.indigoText,
@@ -46,6 +50,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Network Layer L3',
             fn: 'ip_rcv() / ip_route_input()',
+            step: '\u2773 IP 주소 확인, 라우팅 결정',
             fill: c.purpleFill,
             stroke: c.purpleStroke,
             textColor: c.purpleText,
@@ -54,6 +59,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Link Layer L2',
             fn: 'eth_type_trans() / arp_rcv()',
+            step: '\u2772 MAC 주소 확인, 프로토콜 분류',
             fill: c.pinkFill,
             stroke: c.pinkStroke,
             textColor: c.pinkText,
@@ -62,6 +68,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Driver / NAPI',
             fn: 'netif_receive_skb() / napi_poll()',
+            step: '\u2771 NAPI poll로 sk_buff 생성',
             fill: c.amberFill,
             stroke: c.amberStroke,
             textColor: c.amberText,
@@ -70,6 +77,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'NIC Hardware',
             fn: 'DMA Ring Buffer / IRQ',
+            step: '\u2460 패킷 수신, DMA로 링 버퍼 복사',
             fill: c.redFill,
             stroke: c.redStroke,
             textColor: c.redText,
@@ -160,17 +168,26 @@ function renderNetworkLayers(
         // Layer label (left aligned)
         g.append('text')
             .attr('x', layerAreaX + 14)
-            .attr('y', y + layerH / 2 - 2)
+            .attr('y', y + layerH * 0.35)
             .attr('dominant-baseline', 'auto')
             .attr('fill', layer.textColor)
             .attr('font-size', 13)
             .attr('font-weight', '600')
             .text(layer.label)
 
+        // Step description (left aligned, below label)
+        g.append('text')
+            .attr('x', layerAreaX + 14)
+            .attr('y', y + layerH * 0.65)
+            .attr('dominant-baseline', 'auto')
+            .attr('fill', layer.fnColor)
+            .attr('font-size', 11)
+            .text(layer.step)
+
         // Function name (right side, smaller)
         g.append('text')
             .attr('x', layerAreaX + layerAreaW - 14)
-            .attr('y', y + layerH / 2 + 10)
+            .attr('y', y + layerH * 0.55)
             .attr('text-anchor', 'end')
             .attr('dominant-baseline', 'auto')
             .attr('fill', layer.fnColor)
@@ -194,7 +211,7 @@ export function NetworkLayerDiagram() {
         <D3Container
             renderFn={renderFn}
             deps={[theme]}
-            height={340}
+            height={420}
             className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950"
         />
     )
