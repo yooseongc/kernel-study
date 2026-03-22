@@ -67,8 +67,8 @@ function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefi
         process: { fill: c.cyanFill, stroke: c.cyanStroke, text: c.cyanText },
     }
 
-    const NW = 104,
-        NH = 34,
+    const NW = 114,
+        NH = 38,
         NR = 6
     const padX = NW / 2 + 8
     const padY = NH / 2 + 8
@@ -76,7 +76,9 @@ function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefi
     const innerH = height - padY * 2
 
     const root = d3.hierarchy<CgroupNode>(cgroupTreeData, (d) => d.children)
-    d3.tree<CgroupNode>().size([innerH, innerW])(root)
+    d3.tree<CgroupNode>()
+        .size([innerH, innerW])
+        .separation((a, b) => (a.parent === b.parent ? 1.4 : 2))(root)
     root.each((d) => {
         ;(d as d3.HierarchyPointNode<CgroupNode>).y += padX
         ;(d as d3.HierarchyPointNode<CgroupNode>).x += padY
@@ -157,7 +159,7 @@ export function CgroupTreeViz() {
                     cgroup v2 계층 구조 — /sys/fs/cgroup/
                 </span>
             </div>
-            <D3Container renderFn={renderFn} height={300} deps={[theme]} zoomable />
+            <D3Container renderFn={renderFn} height={420} deps={[theme]} zoomable />
         </div>
     )
 }
