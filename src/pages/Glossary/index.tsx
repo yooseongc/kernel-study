@@ -1,35 +1,7 @@
 import { useEffect, useState } from 'react'
-import { glossary } from '../../data/glossary'
+import { glossary, CATEGORY_LABEL, CATEGORY_COLOR, type GlossaryCategory } from '../../data/glossary'
 
-const categoryLabel: Record<string, string> = {
-    process: '프로세스 / 스케줄러',
-    memory: '메모리 관리',
-    network: '네트워크',
-    interrupt: '인터럽트 / 비동기',
-    sync: '동기화',
-    driver: '드라이버',
-    debug: '디버깅 / 성능',
-    general: '일반',
-    fs: '파일시스템',
-    security: '보안',
-    virt: '가상화',
-}
-
-const categoryColor: Record<string, string> = {
-    process: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300',
-    memory: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300',
-    network: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300',
-    interrupt: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300',
-    sync: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300',
-    driver: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300',
-    debug: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-    general: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300',
-    fs: 'bg-lime-100 dark:bg-lime-900/40 text-lime-700 dark:text-lime-300',
-    security: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
-    virt: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
-}
-
-const allCategories = Object.keys(categoryLabel)
+const allCategories = Object.keys(CATEGORY_LABEL) as GlossaryCategory[]
 
 export default function Glossary() {
     const [searchQuery, setSearchQuery] = useState('')
@@ -122,11 +94,11 @@ export default function Glossary() {
                             onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                             className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                                 activeCategory === cat
-                                    ? `${categoryColor[cat]} border-current`
+                                    ? `${CATEGORY_COLOR[cat]} border-current`
                                     : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-400 dark:hover:border-blue-600'
                             }`}
                         >
-                            {categoryLabel[cat]} ({count})
+                            {CATEGORY_LABEL[cat]} ({count})
                         </button>
                     )
                 })}
@@ -156,9 +128,9 @@ export default function Glossary() {
                                 )}
                             </div>
                             <span
-                                className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${categoryColor[term.category]}`}
+                                className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLOR[term.category]}`}
                             >
-                                {categoryLabel[term.category]}
+                                {CATEGORY_LABEL[term.category]}
                             </span>
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{term.definition}</p>

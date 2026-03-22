@@ -8,42 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
-import { glossary, type GlossaryTerm } from '../../data/glossary'
-
-// ── 카테고리 한국어 레이블 ──────────────────────────────────────────────────
-const CATEGORY_LABEL: Record<GlossaryTerm['category'], string> = {
-    process: '프로세스',
-    memory: '메모리',
-    network: '네트워크',
-    interrupt: '인터럽트',
-    sync: '동기화',
-    driver: '드라이버',
-    debug: '디버깅',
-    general: '일반',
-    fs: '파일시스템',
-    security: '보안',
-    virt: '가상화',
-}
-
-// ── 카테고리별 뱃지 색 ─────────────────────────────────────────────────────
-const CATEGORY_COLOR: Record<GlossaryTerm['category'], string> = {
-    process:
-        'text-blue-600   dark:text-blue-400   bg-blue-50   dark:bg-blue-950/50   border-blue-200   dark:border-blue-800',
-    memory: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-800',
-    network:
-        'text-green-600  dark:text-green-400  bg-green-50  dark:bg-green-950/50  border-green-200  dark:border-green-800',
-    interrupt:
-        'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800',
-    sync: 'text-red-600    dark:text-red-400    bg-red-50    dark:bg-red-950/50    border-red-200    dark:border-red-800',
-    driver: 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/50 border-yellow-200 dark:border-yellow-800',
-    debug: 'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
-    general:
-        'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
-    fs: 'text-teal-600   dark:text-teal-400   bg-teal-50   dark:bg-teal-950/50   border-teal-200   dark:border-teal-800',
-    security:
-        'text-rose-600   dark:text-rose-400   bg-rose-50   dark:bg-rose-950/50   border-rose-200   dark:border-rose-800',
-    virt: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800',
-}
+import { glossary, CATEGORY_LABEL, CATEGORY_COLOR } from '../../data/glossary'
 
 // ── glossary를 id → entry 맵으로 변환 (모듈 초기화 시 1회) ─────────────────
 const glossaryMap = new Map(glossary.map((g) => [g.id, g]))
