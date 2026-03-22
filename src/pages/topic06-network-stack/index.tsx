@@ -86,7 +86,7 @@ const rssModes: RssMode[] = [
     {
         name: 'RSS',
         subtitle: 'Receive Side Scaling',
-        color: 'text-blue-400',
+        color: 'text-blue-600 dark:text-blue-400',
         flow: [
             'NIC 하드웨어',
             '5-튜플 해시 (src/dst IP·Port, proto)',
@@ -98,7 +98,7 @@ const rssModes: RssMode[] = [
     {
         name: 'RPS',
         subtitle: 'Receive Packet Steering',
-        color: 'text-purple-400',
+        color: 'text-purple-600 dark:text-purple-400',
         flow: [
             '단일 RX 큐 (NIC RSS 미지원)',
             '소프트웨어 해시 계산',
@@ -110,7 +110,7 @@ const rssModes: RssMode[] = [
     {
         name: 'RFS',
         subtitle: 'Receive Flow Steering',
-        color: 'text-green-400',
+        color: 'text-green-600 dark:text-green-400',
         flow: [
             'RPS 확장',
             'socket affinity 테이블 참조',
@@ -244,7 +244,7 @@ export default function Topic05() {
                     ].map((item) => (
                         <div key={item.label} className={`rounded-lg border px-3 py-2 ${item.color}`}>
                             <div className="font-semibold mb-1">{item.label}</div>
-                            <div className="text-gray-400">{item.desc}</div>
+                            <div className="text-gray-500 dark:text-gray-400">{item.desc}</div>
                         </div>
                     ))}
                 </div>
@@ -253,16 +253,16 @@ export default function Topic05() {
             <Section id="s662" title="6.2  NIC 드라이버와 NAPI">
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <p>
-                        <span className="font-semibold text-red-400">과거 인터럽트 방식:</span> 패킷마다{' '}
+                        <span className="font-semibold text-red-600 dark:text-red-400">과거 인터럽트 방식:</span> 패킷마다{' '}
                         <T id="irq">IRQ</T>가 발생하여 고속 트래픽 환경에서 인터럽트 폭풍(interrupt storm)이 발생합니다.
                         CPU가 인터럽트 처리에만 소모되어 실제 작업이 불가능해집니다.
                     </p>
                     <p>
-                        <span className="font-semibold text-green-400">
+                        <span className="font-semibold text-green-600 dark:text-green-400">
                             <T id="napi">NAPI</T> (New API):
                         </span>{' '}
                         첫 패킷에서만 인터럽트를 발생시키고, 이후에는 polling 방식으로 전환합니다.{' '}
-                        <code className="font-mono bg-gray-800 px-1 rounded text-yellow-300">budget</code> 파라미터로
+                        <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">budget</code> 파라미터로
                         poll()이 한 번에 처리할 최대 패킷 수를 제한합니다 (기본값: 64).
                     </p>
                 </div>
@@ -274,15 +274,15 @@ export default function Topic05() {
 
             <Section id="s663" title="6.3  sk_buff 구조">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono bg-gray-800 text-blue-300 px-1 rounded">sk_buff</code>
+                    <code className="font-mono bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1 rounded">sk_buff</code>
                     (소켓 버퍼)는 패킷이 커널을 통과하는 내내 동반하는 메타데이터 구조체입니다. 실제 데이터를 복사하지
                     않고 포인터만 이동시켜 헤더 추가/제거를 O(1)에 처리합니다.
                 </p>
 
                 <CodeBlock code={snippets.skbuffCode} language="c" filename="include/linux/skbuff.h" />
 
-                <div className="rounded-xl border border-gray-700 bg-gray-900 p-4">
-                    <div className="text-sm font-semibold text-gray-300 mb-3">메모리 레이아웃 시각화</div>
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">메모리 레이아웃 시각화</div>
                     <SkbuffLayout />
                 </div>
 
@@ -313,10 +313,10 @@ export default function Topic05() {
                     연결되어 소켓 객체와 <T id="sk_buff">sk_buff</T>를 조작합니다.
                 </p>
 
-                <div className="rounded-xl border border-gray-700 overflow-hidden">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-gray-800 text-gray-300">
+                            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                                 <th className="text-left px-4 py-2 font-semibold font-mono">시스템 콜</th>
                                 <th className="text-left px-4 py-2 font-semibold font-mono">커널 함수</th>
                                 <th className="text-left px-4 py-2 font-semibold">동작</th>
@@ -326,13 +326,13 @@ export default function Topic05() {
                             {syscallRows.map((row, i) => (
                                 <tr
                                     key={i}
-                                    className={`border-t border-gray-700 ${
+                                    className={`border-t border-gray-200 dark:border-gray-700 ${
                                         i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'
                                     }`}
                                 >
-                                    <td className="px-4 py-2.5 font-mono text-blue-400">{row.syscall}</td>
-                                    <td className="px-4 py-2.5 font-mono text-purple-400">{row.kernelFn}</td>
-                                    <td className="px-4 py-2.5 text-gray-300">{row.desc}</td>
+                                    <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-400">{row.syscall}</td>
+                                    <td className="px-4 py-2.5 font-mono text-purple-600 dark:text-purple-400">{row.kernelFn}</td>
+                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.desc}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -340,18 +340,18 @@ export default function Topic05() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="rounded-lg border border-blue-800/40 bg-blue-950/20 p-3">
-                        <div className="font-semibold text-blue-400 mb-1">송신 경로 (TX)</div>
-                        <div className="font-mono text-gray-400 space-y-0.5">
+                    <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-950/20 p-3">
+                        <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">송신 경로 (TX)</div>
+                        <div className="font-mono text-gray-500 dark:text-gray-400 space-y-0.5">
                             <div>send() → tcp_sendmsg()</div>
                             <div>→ ip_queue_xmit()</div>
                             <div>→ dev_queue_xmit()</div>
                             <div>→ NIC DMA 전송</div>
                         </div>
                     </div>
-                    <div className="rounded-lg border border-green-800/40 bg-green-950/20 p-3">
-                        <div className="font-semibold text-green-400 mb-1">수신 경로 (RX)</div>
-                        <div className="font-mono text-gray-400 space-y-0.5">
+                    <div className="rounded-lg border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-950/20 p-3">
+                        <div className="font-semibold text-green-600 dark:text-green-400 mb-1">수신 경로 (RX)</div>
+                        <div className="font-mono text-gray-500 dark:text-gray-400 space-y-0.5">
                             <div>NIC IRQ → NAPI poll()</div>
                             <div>→ netif_receive_skb()</div>
                             <div>→ ip_rcv() → tcp_v4_rcv()</div>
@@ -363,15 +363,15 @@ export default function Topic05() {
 
             <Section id="s666" title="6.6  net_cls cgroup — 네트워크와 cgroup 연결">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono bg-gray-800 text-green-300 px-1 rounded">net_cls</code> 서브시스템은 특정
+                    <code className="font-mono bg-gray-100 dark:bg-gray-800 text-green-600 dark:text-green-300 px-1 rounded">net_cls</code> 서브시스템은 특정
                     cgroup에 속한 프로세스의 패킷에 classid 태그를 부여합니다. TC(Traffic Control)는 이 태그를 기반으로
                     대역폭을 제한하거나 우선순위를 설정할 수 있습니다.
                 </p>
 
-                <div className="rounded-lg border border-gray-700/50 bg-gray-900/50 px-4 py-3 text-sm text-gray-300 space-y-1">
-                    <div className="font-semibold text-gray-200 mb-2">동작 원리</div>
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                    <div className="font-semibold text-gray-800 dark:text-gray-200 mb-2">동작 원리</div>
                     <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-green-900 border border-green-700 flex items-center justify-center text-xs text-green-300 shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 flex items-center justify-center text-xs text-green-700 dark:text-green-300 shrink-0 mt-0.5">
                             1
                         </div>
                         <div>
@@ -380,13 +380,13 @@ export default function Topic05() {
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center text-xs text-blue-300 shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 flex items-center justify-center text-xs text-blue-700 dark:text-blue-300 shrink-0 mt-0.5">
                             2
                         </div>
                         <div>TC filter가 classid를 읽어 해당 패킷을 특정 qdisc class로 분류</div>
                     </div>
                     <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-purple-900 border border-purple-700 flex items-center justify-center text-xs text-purple-300 shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900 border border-purple-300 dark:border-purple-700 flex items-center justify-center text-xs text-purple-700 dark:text-purple-300 shrink-0 mt-0.5">
                             3
                         </div>
                         <div>HTB(Hierarchical Token Bucket)로 대역폭 제한 적용</div>
@@ -410,18 +410,18 @@ export default function Topic05() {
 
             <Section id="s668" title="6.8  TSO / GSO — 세그멘테이션 오프로드">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <span className="font-semibold text-blue-400">TSO (TCP Segmentation Offload)</span>: 커널이 큰 TCP
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">TSO (TCP Segmentation Offload)</span>: 커널이 큰 TCP
                     버퍼를 통째로 NIC에 넘기고, NIC 하드웨어가 MSS 단위로 분할합니다. CPU 부담을 크게 줄입니다.{' '}
-                    <span className="font-semibold text-purple-400">GSO (Generic Segmentation Offload)</span>: TSO를
+                    <span className="font-semibold text-purple-600 dark:text-purple-400">GSO (Generic Segmentation Offload)</span>: TSO를
                     지원하지 않는 NIC를 위한 소프트웨어 대안으로, 드라이버 직전 단계에서 지연 분할합니다.{' '}
-                    <span className="font-semibold text-green-400">LRO / GRO</span>: 수신 시 작은 패킷 여럿을 큰 하나로
+                    <span className="font-semibold text-green-600 dark:text-green-400">LRO / GRO</span>: 수신 시 작은 패킷 여럿을 큰 하나로
                     합쳐 CPU 인터럽트 오버헤드를 줄입니다 (LRO는 NIC 하드웨어, GRO는 <T id="napi">NAPI</T> 소프트웨어).
                 </p>
 
-                <div className="rounded-xl border border-gray-700 overflow-hidden">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-gray-800 text-gray-300">
+                            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                                 <th className="text-left px-4 py-2 font-semibold">기법</th>
                                 <th className="text-left px-4 py-2 font-semibold">처리 위치</th>
                                 <th className="text-left px-4 py-2 font-semibold">방향</th>
@@ -432,10 +432,10 @@ export default function Topic05() {
                             {tsoGsoRows.map((row, i) => (
                                 <tr
                                     key={i}
-                                    className={`border-t border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'}`}
+                                    className={`border-t border-gray-200 dark:border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'}`}
                                 >
-                                    <td className="px-4 py-2.5 font-mono font-bold text-blue-400">{row.name}</td>
-                                    <td className="px-4 py-2.5 text-gray-300">{row.location}</td>
+                                    <td className="px-4 py-2.5 font-mono font-bold text-blue-600 dark:text-blue-400">{row.name}</td>
+                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.location}</td>
                                     <td className="px-4 py-2.5">
                                         <span
                                             className={`px-2 py-0.5 rounded text-xs font-mono ${
@@ -447,7 +447,7 @@ export default function Topic05() {
                                             {row.direction}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-2.5 text-gray-400 text-xs">{row.effect}</td>
+                                    <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">{row.effect}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -494,15 +494,15 @@ export default function Topic05() {
 
             <Section id="s6610" title="6.10  Zero-copy — sendfile과 splice">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    일반 <code className="font-mono text-blue-400">read()+write()</code> 방식은 데이터를
-                    커널→유저→커널로 두 번 복사합니다. <code className="font-mono text-purple-400">sendfile()</code>과{' '}
-                    <code className="font-mono text-green-400">splice()</code>는 유저공간을 거치지 않고 커널 내에서 직접
+                    일반 <code className="font-mono text-blue-600 dark:text-blue-400">read()+write()</code> 방식은 데이터를
+                    커널→유저→커널로 두 번 복사합니다. <code className="font-mono text-purple-600 dark:text-purple-400">sendfile()</code>과{' '}
+                    <code className="font-mono text-green-600 dark:text-green-400">splice()</code>는 유저공간을 거치지 않고 커널 내에서 직접
                     전달합니다. Nginx, Apache의 정적 파일 서빙 성능의 핵심인 <T id="zero_copy">zero-copy</T> 기법입니다.
                 </p>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
-                        <div className="text-sm font-bold text-red-400">일반 read+write (복사 4회)</div>
+                        <div className="text-sm font-bold text-red-600 dark:text-red-400">일반 read+write (복사 4회)</div>
                         <div className="space-y-1.5 text-xs text-gray-600 dark:text-gray-400 font-mono">
                             <div>1. disk → 페이지 캐시 (DMA)</div>
                             <div>2. 페이지 캐시 → 유저 버퍼 (CPU 복사)</div>
@@ -514,7 +514,7 @@ export default function Topic05() {
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
-                        <div className="text-sm font-bold text-green-400">sendfile (복사 2회 → 0회)</div>
+                        <div className="text-sm font-bold text-green-600 dark:text-green-400">sendfile (복사 2회 → 0회)</div>
                         <div className="space-y-1.5 text-xs text-gray-600 dark:text-gray-400 font-mono">
                             <div>1. disk → 페이지 캐시 (DMA)</div>
                             <div>2. 페이지 캐시 → NIC (DMA, NIC가 scatter-gather 지원 시)</div>
@@ -529,20 +529,20 @@ export default function Topic05() {
 
                 <div className="grid grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-blue-400">페이지 캐시 공유</div>
+                        <div className="text-sm font-bold text-blue-600 dark:text-blue-400">페이지 캐시 공유</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             <code className="font-mono">sendfile</code>은 파일의 페이지 캐시를 소켓 버퍼에 참조로 등록.
                             복사 없이 포인터만 전달
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-purple-400">SG-DMA</div>
+                        <div className="text-sm font-bold text-purple-600 dark:text-purple-400">SG-DMA</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             NIC가 Scatter-Gather DMA를 지원하면 불연속 페이지를 직접 읽어 전송 → CPU 개입 0
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-green-400">tcp_nopush + sendfile</div>
+                        <div className="text-sm font-bold text-green-600 dark:text-green-400">tcp_nopush + sendfile</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             Nagle 알고리즘 비슷하게 작동 — 파일 전체가 준비될 때까지 모아서 한 번에 전송
                         </div>
@@ -558,13 +558,13 @@ export default function Topic05() {
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                         전통적으로 하나의 포트에는 하나의 소켓만 바인딩할 수 있었습니다.{' '}
-                        <code className="font-mono text-blue-400">SO_REUSEPORT</code>는 여러 소켓(각자 다른
+                        <code className="font-mono text-blue-600 dark:text-blue-400">SO_REUSEPORT</code>는 여러 소켓(각자 다른
                         스레드/프로세스)이 같은 포트를 바인딩하고, 커널이 패킷을 분산시킵니다.
                     </p>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                            <div className="text-sm font-bold text-red-400">SO_REUSEPORT 없이</div>
+                            <div className="text-sm font-bold text-red-600 dark:text-red-400">SO_REUSEPORT 없이</div>
                             <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                                 <li>• 포트 80에 소켓 1개</li>
                                 <li>• accept() 경쟁 → lock contention</li>
@@ -573,7 +573,7 @@ export default function Topic05() {
                             </ul>
                         </div>
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                            <div className="text-sm font-bold text-green-400">SO_REUSEPORT</div>
+                            <div className="text-sm font-bold text-green-600 dark:text-green-400">SO_REUSEPORT</div>
                             <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                                 <li>• 포트 80에 소켓 N개 (CPU당 1개)</li>
                                 <li>• 커널이 5-tuple 해시로 균등 분산</li>
@@ -600,19 +600,19 @@ export default function Topic05() {
 
                     <div className="grid grid-cols-3 gap-4">
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                            <div className="text-sm font-bold text-blue-400">veth pair</div>
+                            <div className="text-sm font-bold text-blue-600 dark:text-blue-400">veth pair</div>
                             <div className="text-xs text-gray-600 dark:text-gray-400">
                                 가상 이더넷 케이블. 한쪽에 넣으면 다른 쪽으로 나옴. 컨테이너↔호스트 연결
                             </div>
                         </div>
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                            <div className="text-sm font-bold text-purple-400">브리지 (docker0)</div>
+                            <div className="text-sm font-bold text-purple-600 dark:text-purple-400">브리지 (docker0)</div>
                             <div className="text-xs text-gray-600 dark:text-gray-400">
                                 Docker가 기본 생성. 여러 veth를 하나의 L2 스위치로 연결
                             </div>
                         </div>
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                            <div className="text-sm font-bold text-green-400">Overlay 네트워크</div>
+                            <div className="text-sm font-bold text-green-600 dark:text-green-400">Overlay 네트워크</div>
                             <div className="text-xs text-gray-600 dark:text-gray-400">
                                 VXLAN으로 여러 호스트의 컨테이너를 같은 L2처럼 연결 (K8s Flannel/Calico)
                             </div>
@@ -623,7 +623,7 @@ export default function Topic05() {
 
             <Section id="s6612" title="6.12  io_uring — 비동기 I/O의 새로운 표준">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono text-blue-400">io_uring</code>은 Linux 5.1(2019)에 도입된 비동기 I/O
+                    <code className="font-mono text-blue-600 dark:text-blue-400">io_uring</code>은 Linux 5.1(2019)에 도입된 비동기 I/O
                     인터페이스입니다. 전통적인 epoll+read/write 방식의 syscall 오버헤드를 공유 링 버퍼로 최소화해,
                     네트워크 서버의 성능을 크게 향상시킵니다. Nginx, Redis, RocksDB가 도입 중입니다.
                 </p>
@@ -631,7 +631,7 @@ export default function Topic05() {
                 {/* epoll vs io_uring 비교 */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-red-400">전통적 epoll + read/write</div>
+                        <div className="text-sm font-bold text-red-600 dark:text-red-400">전통적 epoll + read/write</div>
                         <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                             <li>• 이벤트 감지: epoll_wait() syscall</li>
                             <li>• 데이터 읽기: read() syscall</li>
@@ -641,7 +641,7 @@ export default function Topic05() {
                         </ul>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-green-400">io_uring</div>
+                        <div className="text-sm font-bold text-green-600 dark:text-green-400">io_uring</div>
                         <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                             <li>• 제출: SQ(Submission Queue) 링 버퍼에 직접 쓰기</li>
                             <li>• 완료: CQ(Completion Queue) 링 버퍼에서 직접 읽기</li>
@@ -654,21 +654,21 @@ export default function Topic05() {
 
                 {/* 링 버퍼 구조 시각화 */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-900/30 border border-blue-700 rounded-xl p-4">
-                        <div className="text-xs font-mono text-blue-300 mb-2">SQ Ring (Submission)</div>
-                        <div className="text-xs text-gray-400">유저 → 커널</div>
+                    <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
+                        <div className="text-xs font-mono text-blue-600 dark:text-blue-300 mb-2">SQ Ring (Submission)</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">유저 → 커널</div>
                         <div className="mt-2 space-y-1 font-mono text-xs">
-                            <div className="bg-blue-800/50 rounded px-2 py-1">SQE: IORING_OP_RECV, fd=5</div>
-                            <div className="bg-blue-800/50 rounded px-2 py-1">SQE: IORING_OP_SEND, fd=6</div>
-                            <div className="bg-gray-800/50 rounded px-2 py-1 text-gray-500">(빈 슬롯)</div>
+                            <div className="bg-blue-100 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 rounded px-2 py-1">SQE: IORING_OP_RECV, fd=5</div>
+                            <div className="bg-blue-100 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 rounded px-2 py-1">SQE: IORING_OP_SEND, fd=6</div>
+                            <div className="bg-gray-100 dark:bg-gray-800/50 rounded px-2 py-1 text-gray-500">(빈 슬롯)</div>
                         </div>
                     </div>
-                    <div className="bg-green-900/30 border border-green-700 rounded-xl p-4">
-                        <div className="text-xs font-mono text-green-300 mb-2">CQ Ring (Completion)</div>
-                        <div className="text-xs text-gray-400">커널 → 유저</div>
+                    <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-xl p-4">
+                        <div className="text-xs font-mono text-green-600 dark:text-green-300 mb-2">CQ Ring (Completion)</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">커널 → 유저</div>
                         <div className="mt-2 space-y-1 font-mono text-xs">
-                            <div className="bg-green-800/50 rounded px-2 py-1">CQE: res=1024 (읽은 바이트)</div>
-                            <div className="bg-gray-800/50 rounded px-2 py-1 text-gray-500">(대기 중)</div>
+                            <div className="bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 rounded px-2 py-1">CQE: res=1024 (읽은 바이트)</div>
+                            <div className="bg-gray-100 dark:bg-gray-800/50 rounded px-2 py-1 text-gray-500">(대기 중)</div>
                         </div>
                     </div>
                 </div>
@@ -679,21 +679,21 @@ export default function Topic05() {
                 {/* 성능 수치 카드 */}
                 <div className="grid grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-blue-400">syscall 감소</div>
+                        <div className="text-sm font-bold text-blue-600 dark:text-blue-400">syscall 감소</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             epoll+read/write = 요청당 3 syscall. <T id="io_uring">io_uring</T> batching = 수백 요청당 1
                             syscall
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-purple-400">SQPOLL 모드</div>
+                        <div className="text-sm font-bold text-purple-600 dark:text-purple-400">SQPOLL 모드</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             syscall 0. 커널 폴링 스레드(<code className="font-mono">io_uring-sq</code>)가 SQ를 지속
                             감시. CPU 1코어 상시 사용
                         </div>
                     </div>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-                        <div className="text-sm font-bold text-green-400">도입 사례</div>
+                        <div className="text-sm font-bold text-green-600 dark:text-green-400">도입 사례</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                             Redis 7.0+ (io_uring 옵션), RocksDB, Nginx (실험적). Cloudflare quiche(QUIC)
                         </div>
@@ -705,7 +705,7 @@ export default function Topic05() {
             <Section id="s6613" title="6.13  TCP 혼잡 제어 — CUBIC과 BBR">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     TCP 혼잡 제어는 네트워크 혼잡을 감지하고 전송 속도를 조절하는 메커니즘입니다. 리눅스에서{' '}
-                    <code className="font-mono text-blue-400">net.ipv4.tcp_congestion_control</code>로 알고리즘을
+                    <code className="font-mono text-blue-600 dark:text-blue-400">net.ipv4.tcp_congestion_control</code>로 알고리즘을
                     선택하며, 대표 알고리즘은 기본값인 <strong>CUBIC</strong>과 Google이 개발한 <strong>BBR</strong>
                     입니다.
                 </p>

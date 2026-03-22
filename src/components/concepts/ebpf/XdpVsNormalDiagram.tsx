@@ -25,6 +25,7 @@ function renderXdpVsNormal(
     const padX = 20
     const padY = 16
     const halfW = (width - padX * 2) / 2
+    const gap = 8
     const labelY = padY + 14
 
     // ── Section headers ────────────────────────────────────────────────────────
@@ -143,7 +144,7 @@ function renderXdpVsNormal(
     const boxW = Math.min(halfW - 28, 130)
     const boxH = 30
     const startY = labelY + 20
-    const stepY = (height - padY - startY - boxH) / (normalNodes.length - 1)
+    const stepY = Math.max(boxH + gap, (height - padY - startY - boxH) / (normalNodes.length - 1))
 
     normalNodes.forEach((node, i) => {
         const cy = startY + i * stepY + boxH / 2
@@ -253,7 +254,7 @@ export function XdpVsNormalDiagram() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <D3Container renderFn={renderFn} deps={[isDark]} height={260} zoomable={true} />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={380} zoomable={true} />
         </div>
     )
 }

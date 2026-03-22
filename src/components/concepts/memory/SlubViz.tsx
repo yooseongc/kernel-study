@@ -23,15 +23,15 @@ export function renderSlubViz(
     const padL = 12,
         padT = 10
 
-    // Split SVG: left 52% for slab visualization, right for kmalloc table
-    const slabSectionW = Math.floor(width * 0.52)
-    const tableSectionX = slabSectionW + 8
+    // Split SVG: left 58% for slab visualization, right for kmalloc table
+    const slabSectionW = Math.floor(width * 0.58)
+    const tableSectionX = slabSectionW + 16
 
     const g = svg.append('g')
 
     // kmem_cache header box
-    const cacheW = Math.min(220, slabSectionW * 0.8)
-    const cacheH = 44
+    const cacheW = Math.min(240, slabSectionW * 0.75)
+    const cacheH = 48
     g.append('rect')
         .attr('x', padL)
         .attr('y', padT)
@@ -68,15 +68,15 @@ export function renderSlubViz(
         { label: 'full (free)', objs: [false, false, false, false, false, false] },
     ]
     const slabAreaW = slabSectionW - padL
-    const slabW = slabAreaW / 3 - 8
-    const slabStartY = padT + cacheH + 16
+    const slabW = slabAreaW / 3 - 10
+    const slabStartY = padT + cacheH + 20
     const objCols = 3,
         objRows = 2
-    const objW = (slabW - 16) / objCols
-    const objH = 22
+    const objW = (slabW - 24) / objCols
+    const objH = 24
 
     slabs.forEach((slab, si) => {
-        const sx = padL + si * (slabW + 8)
+        const sx = padL + si * (slabW + 12)
         const sy = slabStartY
 
         // Slab container
@@ -84,7 +84,7 @@ export function renderSlubViz(
             .attr('x', sx)
             .attr('y', sy)
             .attr('width', slabW)
-            .attr('height', objRows * (objH + 4) + 32)
+            .attr('height', objRows * (objH + 6) + 36)
             .attr('rx', 6)
             .attr('fill', c.bg)
             .attr('stroke', borderColor)
@@ -105,8 +105,8 @@ export function renderSlubViz(
         slab.objs.forEach((allocated, oi) => {
             const col = oi % objCols
             const row = Math.floor(oi / objCols)
-            const ox = sx + 8 + col * (objW + 4)
-            const oy = sy + 20 + row * (objH + 4)
+            const ox = sx + 10 + col * (objW + 4)
+            const oy = sy + 24 + row * (objH + 6)
 
             g.append('rect')
                 .attr('x', ox)
@@ -142,7 +142,7 @@ export function renderSlubViz(
     const tableX = tableSectionX
     const tableY = padT
     const sizes = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]
-    const rowH = 16
+    const rowH = 18
 
     g.append('text')
         .attr('x', tableX)

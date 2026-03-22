@@ -95,8 +95,8 @@ export function PageFaultViz({ step }: { step: number }) {
                                             ? z.darkActive
                                             : z.lightActive
                                         : isDark
-                                          ? z.darkBg
-                                          : z.lightBg,
+                                            ? z.darkBg
+                                            : z.lightBg,
                                     border: `2px solid ${isActive ? (isDark ? z.darkBorder : z.lightBorder) : isDark ? '#374151' : '#d1d5db'}`,
                                 }}
                             >

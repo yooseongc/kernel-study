@@ -16,8 +16,8 @@ function renderNetfilterFlow(
     _width: number,
     _height: number,
 ) {
-    const VW = 860,
-        VH = 280
+    const VW = 960,
+        VH = 300
     svg.attr('viewBox', `0 0 ${VW} ${VH}`).attr('preserveAspectRatio', 'xMidYMid meet')
 
     const isDark = document.documentElement.classList.contains('dark')
@@ -65,15 +65,15 @@ function renderNetfilterFlow(
     const HW = 116,
         HH = 34 // hook node (slightly larger)
 
-    // X positions of key elements
+    // X positions of key elements (spread out to prevent overlaps)
     const NIC_IN_X = PAD_L + 10
-    const PREROUT_X = NIC_IN_X + 80 + 30 // 140
-    const DIAMOND_X = PREROUT_X + 90 + 40 // 270
-    const INPUT_X = DIAMOND_X - 30 // 240  (top path)
-    const FORWARD_X = DIAMOND_X + 60 // 330  (bottom path)
-    const POSTRT_X = FORWARD_X + 110 + 30 // 500
-    const NIC_OUT_X = POSTRT_X + 90 + 30 // 620
-    const OUTPUT_X = POSTRT_X - 10 // 490 (top path, roughly above POSTROUTING)
+    const PREROUT_X = NIC_IN_X + 90 + 30 // 150
+    const DIAMOND_X = PREROUT_X + 100 + 40 // 290
+    const INPUT_X = DIAMOND_X - 20 // 270  (top path)
+    const FORWARD_X = DIAMOND_X + 70 // 360  (bottom path)
+    const POSTRT_X = FORWARD_X + 120 + 40 // 550
+    const NIC_OUT_X = POSTRT_X + 100 + 30 // 680
+    const OUTPUT_X = POSTRT_X + 10 // 560 (top path, roughly above POSTROUTING)
     const PROCESS_X = (INPUT_X + OUTPUT_X) / 2 // midpoint of top path
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -262,7 +262,7 @@ function renderNetfilterFlow(
         { col: hookPurple, label: 'POSTROUTING' },
     ]
     legends.forEach((l, i) => {
-        const lx = PAD_L + i * 160 + 10
+        const lx = PAD_L + i * 180 + 10
         const ly = VH - 28
         g.append('rect')
             .attr('x', lx)
