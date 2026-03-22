@@ -185,7 +185,7 @@ function renderBuddyViz(
                 .attr('y', cy + cellH / 2 + 1)
                 .attr('text-anchor', 'middle')
                 .attr('dominant-baseline', 'middle')
-                .attr('fill', '#fff')
+                .attr('fill', isDark ? '#fff' : '#1f2937')
                 .attr('font-size', '9px')
                 .attr('font-family', "'JetBrains Mono', monospace")
                 .attr('font-weight', 'bold')
@@ -256,12 +256,12 @@ export function BuddyAllocatorViz() {
         <div className="space-y-3">
             {/* Controls */}
             <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-xs text-gray-400 font-mono">할당:</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">할당:</span>
                 {([0, 1, 2, 3, 4] as const).map((order) => (
                     <button
                         key={order}
                         onClick={() => handleAlloc(order)}
-                        className="px-3 py-1.5 rounded bg-blue-700 hover:bg-blue-600 text-white text-xs font-mono transition"
+                        className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono transition"
                     >
                         {1 << order}p ({4 * (1 << order)}KB)
                     </button>
@@ -269,13 +269,13 @@ export function BuddyAllocatorViz() {
                 <button
                     onClick={handleFree}
                     disabled={buddyState.allocations.length === 0}
-                    className="px-3 py-1.5 rounded bg-amber-700 hover:bg-amber-600 text-white text-xs font-mono transition disabled:opacity-40"
+                    className="px-3 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white text-xs font-mono transition disabled:opacity-40"
                 >
                     마지막 해제
                 </button>
                 <button
                     onClick={() => setBuddyState(initBuddy())}
-                    className="px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-mono transition"
+                    className="px-3 py-1.5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-mono transition"
                 >
                     초기화
                 </button>
@@ -284,11 +284,11 @@ export function BuddyAllocatorViz() {
             <D3Container renderFn={renderFn} deps={[buddyState, theme]} height={200} />
 
             {/* Log */}
-            <div className="rounded-lg border border-gray-700 bg-gray-900 p-3">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3">
                 <div className="text-xs text-gray-500 font-mono mb-2">동작 로그</div>
                 {buddyState.log.map((entry, i) => (
-                    <div key={i} className="text-xs font-mono text-gray-300">
-                        <span className="text-gray-600 mr-2">{buddyState.log.length - i}.</span>
+                    <div key={i} className="text-xs font-mono text-gray-700 dark:text-gray-300">
+                        <span className="text-gray-400 dark:text-gray-600 mr-2">{buddyState.log.length - i}.</span>
                         {entry}
                     </div>
                 ))}
