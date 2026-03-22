@@ -1,3 +1,5 @@
+import { useTheme } from '../../../hooks/useTheme'
+
 type IRQZone = 'device' | 'cpu' | 'memory'
 
 interface IRQStepData {
@@ -40,37 +42,42 @@ interface ZoneDef {
     activeBorder: string
 }
 
-const irqZones: ZoneDef[] = [
-    {
-        id: 'device',
-        label: '장치 (NIC)',
-        sub: 'IRQ 라인',
-        color: '#1a1f2e',
-        activeColor: '#7f1d1d',
-        border: '#374151',
-        activeBorder: '#ef4444',
-    },
-    {
-        id: 'cpu',
-        label: 'CPU / 커널',
-        sub: 'ISR · softirq',
-        color: '#1a1f2e',
-        activeColor: '#1e3a5f',
-        border: '#374151',
-        activeBorder: '#3b82f6',
-    },
-    {
-        id: 'memory',
-        label: '메모리 (IDT/ISR)',
-        sub: 'IDT 테이블',
-        color: '#1a1f2e',
-        activeColor: '#14532d',
-        border: '#374151',
-        activeBorder: '#22c55e',
-    },
-]
+function getIrqZones(isDark: boolean): ZoneDef[] {
+    return [
+        {
+            id: 'device',
+            label: '장치 (NIC)',
+            sub: 'IRQ 라인',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#7f1d1d' : '#fee2e2',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#ef4444',
+        },
+        {
+            id: 'cpu',
+            label: 'CPU / 커널',
+            sub: 'ISR · softirq',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#1e3a5f' : '#dbeafe',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#3b82f6',
+        },
+        {
+            id: 'memory',
+            label: '메모리 (IDT/ISR)',
+            sub: 'IDT 테이블',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#14532d' : '#dcfce7',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#22c55e',
+        },
+    ]
+}
 
 export function IRQViz({ step }: { step: number }) {
+    const { theme } = useTheme()
+    const isDark = theme === 'dark'
+    const irqZones = getIrqZones(isDark)
     const current = irqStepData[step]
 
     return (

@@ -2,6 +2,7 @@
 // 6.4  L2/L3/L4 처리 흐름 시각화 (AnimatedDiagram용 step 컴포넌트)
 // ─────────────────────────────────────────────────────────────────────────────
 import { AnimatedDiagram } from '../../../components/viz/AnimatedDiagram'
+import { useTheme } from '../../../hooks/useTheme'
 
 const flowSteps = [
     {
@@ -48,38 +49,40 @@ interface FlowZoneInfo {
     activeBorder: string
 }
 
-const flowZones: FlowZoneInfo[] = [
-    {
-        id: 'nic',
-        label: 'NIC / 드라이버',
-        sublabel: 'DMA, NAPI, netif_receive_skb',
-        activeStep: [0],
-        color: '#1c1a0e',
-        activeColor: '#451a03',
-        border: '#374151',
-        activeBorder: '#f59e0b',
-    },
-    {
-        id: 'kernel',
-        label: '커널 네트워크 스택',
-        sublabel: 'L2 → L3 → L4',
-        activeStep: [0, 1, 2, 3],
-        color: '#0f172a',
-        activeColor: '#1e1b4b',
-        border: '#374151',
-        activeBorder: '#6366f1',
-    },
-    {
-        id: 'socket',
-        label: '소켓 / 프로세스',
-        sublabel: 'receive_queue → copy_to_user',
-        activeStep: [4, 5],
-        color: '#052e16',
-        activeColor: '#14532d',
-        border: '#374151',
-        activeBorder: '#22c55e',
-    },
-]
+function getFlowZones(isDark: boolean): FlowZoneInfo[] {
+    return [
+        {
+            id: 'nic',
+            label: 'NIC / 드라이버',
+            sublabel: 'DMA, NAPI, netif_receive_skb',
+            activeStep: [0],
+            color: isDark ? '#1c1a0e' : '#f3f4f6',
+            activeColor: isDark ? '#451a03' : '#fef3c7',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#f59e0b',
+        },
+        {
+            id: 'kernel',
+            label: '커널 네트워크 스택',
+            sublabel: 'L2 → L3 → L4',
+            activeStep: [0, 1, 2, 3],
+            color: isDark ? '#0f172a' : '#f3f4f6',
+            activeColor: isDark ? '#1e1b4b' : '#e0e7ff',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#6366f1',
+        },
+        {
+            id: 'socket',
+            label: '소켓 / 프로세스',
+            sublabel: 'receive_queue → copy_to_user',
+            activeStep: [4, 5],
+            color: isDark ? '#052e16' : '#f3f4f6',
+            activeColor: isDark ? '#14532d' : '#dcfce7',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#22c55e',
+        },
+    ]
+}
 
 interface FlowStepDetail {
     zone: FlowZone
@@ -97,6 +100,9 @@ const flowStepDetails: FlowStepDetail[] = [
 ]
 
 function NetworkFlowStep({ step }: { step: number }) {
+    const { theme } = useTheme()
+    const isDark = theme === 'dark'
+    const flowZones = getFlowZones(isDark)
     const detail = flowStepDetails[step]
 
     return (
@@ -130,23 +136,16 @@ function NetworkFlowStep({ step }: { step: number }) {
             {/* Arrow indicators */}
             <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                 <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#451a03', border: '1px solid #f59e0b', color: '#fde68a' }}
+                    className="px-2 py-0.5 rounded font-mono bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-500 text-amber-700 dark:text-amber-200"
                 >
                     NIC/드라이버
                 </span>
                 <span>→</span>
-                <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#1e1b4b', border: '1px solid #6366f1', color: '#c7d2fe' }}
-                >
+                <span className="px-2 py-0.5 rounded font-mono bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-500 text-indigo-700 dark:text-indigo-200">
                     커널 스택
                 </span>
                 <span>→</span>
-                <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#14532d', border: '1px solid #22c55e', color: '#bbf7d0' }}
-                >
+                <span className="px-2 py-0.5 rounded font-mono bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-500 text-green-700 dark:text-green-200">
                     소켓/프로세스
                 </span>
             </div>

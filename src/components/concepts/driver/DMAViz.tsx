@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // NIC DMA flow animated visualisation
 // Extracted from src/pages/topic10-drivers/index.tsx
+import { useTheme } from '../../../hooks/useTheme'
 
 export const dmaSteps = [
     {
@@ -69,41 +70,46 @@ interface DmaZoneDef {
     activeBorder: string
 }
 
-const dmaZones: DmaZoneDef[] = [
-    {
-        id: 'nic',
-        label: 'NIC 하드웨어',
-        sub: 'PHY · MAC · DMA 엔진',
-        color: '#1a1f2e',
-        activeColor: '#450a0a',
-        border: '#374151',
-        activeBorder: '#ef4444',
-    },
-    {
-        id: 'pcie',
-        label: 'PCIe / DMA',
-        sub: 'IRQ · 버스 마스터',
-        color: '#1a1f2e',
-        activeColor: '#78350f',
-        border: '#374151',
-        activeBorder: '#f59e0b',
-    },
-    {
-        id: 'ram',
-        label: 'RAM + 드라이버',
-        sub: 'RX 링 버퍼 · sk_buff',
-        color: '#1a1f2e',
-        activeColor: '#0c1a3a',
-        border: '#374151',
-        activeBorder: '#3b82f6',
-    },
-]
+function getDmaZones(isDark: boolean): DmaZoneDef[] {
+    return [
+        {
+            id: 'nic',
+            label: 'NIC 하드웨어',
+            sub: 'PHY · MAC · DMA 엔진',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#450a0a' : '#fee2e2',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#ef4444',
+        },
+        {
+            id: 'pcie',
+            label: 'PCIe / DMA',
+            sub: 'IRQ · 버스 마스터',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#78350f' : '#fef3c7',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#f59e0b',
+        },
+        {
+            id: 'ram',
+            label: 'RAM + 드라이버',
+            sub: 'RX 링 버퍼 · sk_buff',
+            color: isDark ? '#1a1f2e' : '#f3f4f6',
+            activeColor: isDark ? '#0c1a3a' : '#dbeafe',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#3b82f6',
+        },
+    ]
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main export
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function DMAViz({ step }: { step: number }) {
+    const { theme } = useTheme()
+    const isDark = theme === 'dark'
+    const dmaZones = getDmaZones(isDark)
     const current = dmaStepData[step]
 
     return (
@@ -136,7 +142,7 @@ export function DMAViz({ step }: { step: number }) {
                                     </div>
                                 )}
                             </div>
-                            {showArrow && <div className="text-yellow-400 text-2xl font-bold select-none">→</div>}
+                            {showArrow && <div className="text-yellow-600 dark:text-yellow-400 text-2xl font-bold select-none">→</div>}
                         </div>
                     )
                 })}

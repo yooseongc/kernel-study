@@ -2,6 +2,7 @@
 // 6.7  TX 경로 시각화 (AnimatedDiagram용 step 컴포넌트)
 // ─────────────────────────────────────────────────────────────────────────────
 import { AnimatedDiagram } from '../../../components/viz/AnimatedDiagram'
+import { useTheme } from '../../../hooks/useTheme'
 
 const txSteps = [
     {
@@ -43,38 +44,40 @@ interface TxZoneInfo {
     activeBorder: string
 }
 
-const txZones: TxZoneInfo[] = [
-    {
-        id: 'app',
-        label: '애플리케이션 / TCP-IP',
-        sublabel: 'write() → tcp_sendmsg() → ip_output()',
-        activeStep: [0, 1, 2],
-        color: '#0f1a2e',
-        activeColor: '#1e3a5f',
-        border: '#374151',
-        activeBorder: '#3b82f6',
-    },
-    {
-        id: 'driver',
-        label: '드라이버 / qdisc',
-        sublabel: 'dev_queue_xmit() → pfifo_fast',
-        activeStep: [3],
-        color: '#1a1a0e',
-        activeColor: '#451a03',
-        border: '#374151',
-        activeBorder: '#f59e0b',
-    },
-    {
-        id: 'nic',
-        label: 'NIC 하드웨어',
-        sublabel: 'DMA → 패킷 송출 → TX IRQ',
-        activeStep: [4],
-        color: '#1a0e0e',
-        activeColor: '#450a0a',
-        border: '#374151',
-        activeBorder: '#ef4444',
-    },
-]
+function getTxZones(isDark: boolean): TxZoneInfo[] {
+    return [
+        {
+            id: 'app',
+            label: '애플리케이션 / TCP-IP',
+            sublabel: 'write() → tcp_sendmsg() → ip_output()',
+            activeStep: [0, 1, 2],
+            color: isDark ? '#0f1a2e' : '#f3f4f6',
+            activeColor: isDark ? '#1e3a5f' : '#dbeafe',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#3b82f6',
+        },
+        {
+            id: 'driver',
+            label: '드라이버 / qdisc',
+            sublabel: 'dev_queue_xmit() → pfifo_fast',
+            activeStep: [3],
+            color: isDark ? '#1a1a0e' : '#f3f4f6',
+            activeColor: isDark ? '#451a03' : '#fef3c7',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#f59e0b',
+        },
+        {
+            id: 'nic',
+            label: 'NIC 하드웨어',
+            sublabel: 'DMA → 패킷 송출 → TX IRQ',
+            activeStep: [4],
+            color: isDark ? '#1a0e0e' : '#f3f4f6',
+            activeColor: isDark ? '#450a0a' : '#fee2e2',
+            border: isDark ? '#374151' : '#d1d5db',
+            activeBorder: '#ef4444',
+        },
+    ]
+}
 
 interface TxStepDetail {
     zone: TxZone
@@ -91,6 +94,9 @@ const txStepDetails: TxStepDetail[] = [
 ]
 
 function TxFlowStep({ step }: { step: number }) {
+    const { theme } = useTheme()
+    const isDark = theme === 'dark'
+    const txZones = getTxZones(isDark)
     const detail = txStepDetails[step]
 
     return (
@@ -122,24 +128,15 @@ function TxFlowStep({ step }: { step: number }) {
             </div>
 
             <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-                <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#1e3a5f', border: '1px solid #3b82f6', color: '#bfdbfe' }}
-                >
+                <span className="px-2 py-0.5 rounded font-mono bg-blue-100 dark:bg-blue-950 border border-blue-300 dark:border-blue-500 text-blue-700 dark:text-blue-200">
                     앱/TCP-IP
                 </span>
                 <span>→</span>
-                <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#451a03', border: '1px solid #f59e0b', color: '#fde68a' }}
-                >
+                <span className="px-2 py-0.5 rounded font-mono bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-500 text-amber-700 dark:text-amber-200">
                     드라이버/qdisc
                 </span>
                 <span>→</span>
-                <span
-                    className="px-2 py-0.5 rounded font-mono"
-                    style={{ background: '#450a0a', border: '1px solid #ef4444', color: '#fecaca' }}
-                >
+                <span className="px-2 py-0.5 rounded font-mono bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-500 text-red-700 dark:text-red-200">
                     NIC 하드웨어
                 </span>
             </div>
