@@ -15,6 +15,7 @@ import type { RingInfo } from '../../components/concepts/overview/RingDiagram'
 import { renderSwitchCostChart } from '../../components/concepts/overview/SwitchCostChart'
 import { renderSubsystemGraph } from '../../components/concepts/overview/SubsystemGraph'
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
+import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
 import { InfoTable } from '../../components/ui/InfoTable'
 import {
     syscallFlowChart,
@@ -250,50 +251,11 @@ export default function Topic01Overview() {
 
             {/* 섹션 5: 전체 계층 구조 (정적 카드 레이아웃) */}
             <Section id="s15" title="1.5  전체 계층 구조">
-                <div className="flex flex-col gap-0">
-                    {[
-                        {
-                            label: '유저 공간',
-                            sublabel: '앱 프로세스 · 시스템 라이브러리(glibc)',
-                            bgClass: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-700',
-                            textClass: 'text-blue-700 dark:text-blue-300',
-                            subTextClass: 'text-blue-500 dark:text-blue-400/70',
-                        },
-                        {
-                            label: '시스템 콜 인터페이스',
-                            sublabel: 'System Call Table',
-                            bgClass: 'bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-700',
-                            textClass: 'text-orange-700 dark:text-orange-300',
-                            subTextClass: 'text-orange-500 dark:text-orange-400/70',
-                        },
-                        {
-                            label: '커널 공간',
-                            sublabel: '파일시스템(ext4, VFS) | 메모리 관리(Buddy, SLUB) | 네트워크(TCP/IP) | 스케줄러(CFS) | IPC',
-                            bgClass: 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-700',
-                            textClass: 'text-purple-700 dark:text-purple-300',
-                            subTextClass: 'text-purple-500 dark:text-purple-400/70',
-                        },
-                        {
-                            label: '하드웨어',
-                            sublabel: 'CPU | RAM | NIC | Disk',
-                            bgClass: 'bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-700',
-                            textClass: 'text-green-700 dark:text-green-300',
-                            subTextClass: 'text-green-500 dark:text-green-400/70',
-                        },
-                    ].map((layer, idx, arr) => (
-                        <div key={layer.label} className="flex flex-col items-center">
-                            <div
-                                className={`w-full rounded-lg border px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 ${layer.bgClass}`}
-                            >
-                                <span className={`text-sm font-bold font-mono ${layer.textClass}`}>{layer.label}</span>
-                                <span className={`text-xs ${layer.subTextClass}`}>{layer.sublabel}</span>
-                            </div>
-                            {idx < arr.length - 1 && (
-                                <div className="text-gray-500 text-lg leading-none py-0.5 select-none">↓</div>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    드래그·휠로 확대/축소할 수 있습니다. 커널 공간(Ring 0)의 10개 서브시스템이 시스템 콜을 통해 유저
+                    프로그램에 서비스를 제공합니다.
+                </p>
+                <KernelArchDiagram />
             </Section>
 
             {/* 섹션 6: task_struct */}
