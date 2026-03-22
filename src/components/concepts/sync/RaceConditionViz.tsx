@@ -96,22 +96,26 @@ function ThreadBox({
     danger: boolean
 }) {
     const borderCls = danger
-        ? 'border-red-500 bg-red-900/20'
+        ? 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
         : active
-            ? 'border-blue-500 bg-blue-900/20'
-            : 'border-gray-700 bg-gray-800/40'
-    const textCls = danger ? 'text-red-400' : active ? 'text-blue-300' : 'text-gray-500'
+            ? 'border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+            : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40'
+    const textCls = danger
+        ? 'text-red-600 dark:text-red-400'
+        : active
+            ? 'text-blue-600 dark:text-blue-300'
+            : 'text-gray-600 dark:text-gray-500'
     return (
         <div className={`${colBase} ${borderCls} flex-1`}>
             <div className={`text-xs font-mono font-bold ${textCls}`}>{label}</div>
-            <div className="text-xs text-gray-400 font-mono">
+            <div className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                 reg ={' '}
-                <span className={regVal !== null ? 'text-yellow-300' : 'text-gray-600'}>
+                <span className={regVal !== null ? 'text-yellow-600 dark:text-yellow-300' : 'text-gray-400 dark:text-gray-600'}>
                     {regVal !== null ? regVal : '—'}
                 </span>
             </div>
             {active && (
-                <div className={`text-[10px] font-mono ${danger ? 'text-red-400' : 'text-green-400'}`}>
+                <div className={`text-[10px] font-mono ${danger ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                     {danger ? '▶ STORE (충돌!)' : '▶ 실행 중'}
                 </div>
             )}
@@ -139,19 +143,25 @@ export function RaceConditionViz({ step }: { step: number }) {
                 {/* Shared counter */}
                 <div
                     className={`${colBase} flex-1 items-center justify-center ${
-                        isDanger ? 'border-red-500 bg-red-900/30' : 'border-yellow-600/60 bg-yellow-900/10'
+                        isDanger
+                            ? 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/30'
+                            : 'border-yellow-400 dark:border-yellow-600/60 bg-yellow-50 dark:bg-yellow-900/10'
                     }`}
                 >
-                    <div className="text-xs font-mono text-yellow-400 font-bold text-center">shared counter</div>
+                    <div className="text-xs font-mono text-yellow-700 dark:text-yellow-400 font-bold text-center">
+                        shared counter
+                    </div>
                     <div
                         className={`text-2xl font-mono font-bold text-center ${
-                            isDanger ? 'text-red-400' : 'text-yellow-300'
+                            isDanger ? 'text-red-600 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-300'
                         }`}
                     >
                         {s.counter}
                     </div>
                     {isDanger && (
-                        <div className="text-[10px] font-mono text-red-400 text-center">기댓값: 2 ← 손실!</div>
+                        <div className="text-[10px] font-mono text-red-600 dark:text-red-400 text-center">
+                            기댓값: 2 ← 손실!
+                        </div>
                     )}
                 </div>
 
@@ -162,8 +172,8 @@ export function RaceConditionViz({ step }: { step: number }) {
             <div
                 className={`rounded-lg px-3 py-2 text-xs font-mono ${
                     isDanger
-                        ? 'bg-red-900/30 text-red-300 border border-red-700/50'
-                        : 'bg-gray-800/60 text-gray-400 border border-gray-700/50'
+                        ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700/50'
+                        : 'bg-gray-100 dark:bg-gray-800/60 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-700/50'
                 }`}
             >
                 {s.note}

@@ -291,7 +291,7 @@ export default function Topic05() {
                     <KernelRef path="include/linux/netdevice.h" sym="net_device" label="net_device" />
                 </div>
 
-                <div className="rounded-lg border border-amber-800/40 bg-amber-950/20 px-4 py-3 text-sm text-amber-200">
+                <div className="rounded-lg border border-amber-200 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
                     <span className="font-bold">핵심 포인트:</span> 레이어를 이동할 때마다{' '}
                     <code className="font-mono">data</code> 포인터를 앞으로 당기거나 뒤로 밀어 헤더를 노출/숨깁니다.
                     실제 메모리 복사는 일어나지 않습니다.

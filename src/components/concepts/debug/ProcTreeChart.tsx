@@ -63,12 +63,10 @@ function renderProcTree(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
-    const bg = c.bg
     const textColor = c.text
     const dimColor = c.textMuted
     const linkColor = c.link
 
-    svg.style('background', bg)
 
     const padX = 20
     const padY = 20

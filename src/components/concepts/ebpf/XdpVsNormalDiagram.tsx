@@ -15,12 +15,10 @@ function renderXdpVsNormal(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
-    const bg = c.bg
     const textColor = c.text
     const dimColor = c.textMuted
     const borderColor = c.border
 
-    svg.style('background', bg)
 
     const g = svg.append('g')
 

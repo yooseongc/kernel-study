@@ -18,11 +18,8 @@ function renderLockComparison(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
-    const bg = c.bg
     const textColor = c.text
     const dimColor = c.textMuted
-
-    svg.style('background', bg)
 
     const g = svg.append('g')
 
@@ -122,5 +119,9 @@ export function LockComparisonChart() {
         [isDark],
     )
 
-    return <D3Container renderFn={renderFn} deps={[isDark]} height={220} />
+    return (
+        <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+            <D3Container renderFn={renderFn} deps={[isDark]} height={220} />
+        </div>
+    )
 }

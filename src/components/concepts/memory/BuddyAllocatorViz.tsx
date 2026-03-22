@@ -106,14 +106,12 @@ function renderBuddyViz(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
-    const bg = c.bg
     const freeFill = c.bgCard
     const freeStroke = c.border
     const textFill = c.text
     const dimFill = c.textDim
     const headerFill = c.textMuted
 
-    svg.style('background', bg)
 
     const padL = 8,
         padT = 24,

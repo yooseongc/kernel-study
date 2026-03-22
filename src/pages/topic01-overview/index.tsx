@@ -8,6 +8,8 @@ import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { StatCard } from '../../components/ui/StatCard'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { renderRingDiagram, ringData } from '../../components/concepts/overview/RingDiagram'
 import type { RingInfo } from '../../components/concepts/overview/RingDiagram'
 import { renderSwitchCostChart } from '../../components/concepts/overview/SwitchCostChart'
@@ -284,55 +286,24 @@ export default function Topic01Overview() {
 
                 {/* 성능 수치 인포 카드 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {[
-                        {
-                            title: 'syscall 비용',
-                            value: '~100 ns',
-                            desc: 'Ring 전환 + 레지스터 저장/복원. 일반 함수 호출(~1 ns)보다 약 100배 비쌉니다. Meltdown/Spectre 패치 이후 더 증가했습니다.',
-                            color: 'amber',
-                        },
-                        {
-                            title: 'vDSO 최적화',
-                            value: '~5 ns',
-                            desc: 'gettimeofday, clock_gettime 등은 커널 진입 없이 매핑된 메모리에서 직접 실행됩니다. Ring 전환 비용이 없습니다.',
-                            color: 'green',
-                        },
-                        {
-                            title: 'io_uring',
-                            value: '배치 syscall',
-                            desc: '반복적인 Ring 전환 오버헤드를 공유 링 버퍼(submission/completion queue)로 최소화합니다.',
-                            color: 'purple',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`rounded-xl border p-4 space-y-1.5
-                ${card.color === 'amber' ? 'bg-amber-950/20 border-amber-800/50' : ''}
-                ${card.color === 'green' ? 'bg-green-950/20 border-green-800/50' : ''}
-                ${card.color === 'purple' ? 'bg-purple-950/20 border-purple-800/50' : ''}
-              `}
-                        >
-                            <div
-                                className={`text-xs font-semibold uppercase tracking-wide
-                  ${card.color === 'amber' ? 'text-amber-400' : ''}
-                  ${card.color === 'green' ? 'text-green-400' : ''}
-                  ${card.color === 'purple' ? 'text-purple-400' : ''}
-                `}
-                            >
-                                {card.title}
-                            </div>
-                            <div
-                                className={`text-lg font-bold font-mono
-                  ${card.color === 'amber' ? 'text-amber-300' : ''}
-                  ${card.color === 'green' ? 'text-green-300' : ''}
-                  ${card.color === 'purple' ? 'text-purple-300' : ''}
-                `}
-                            >
-                                {card.value}
-                            </div>
-                            <div className="text-xs text-gray-400 leading-relaxed">{card.desc}</div>
-                        </div>
-                    ))}
+                    <StatCard
+                        title="syscall 비용"
+                        value="~100 ns"
+                        color="amber"
+                        desc="Ring 전환 + 레지스터 저장/복원. 일반 함수 호출(~1 ns)보다 약 100배 비쌉니다. Meltdown/Spectre 패치 이후 더 증가했습니다."
+                    />
+                    <StatCard
+                        title="vDSO 최적화"
+                        value="~5 ns"
+                        color="green"
+                        desc="gettimeofday, clock_gettime 등은 커널 진입 없이 매핑된 메모리에서 직접 실행됩니다. Ring 전환 비용이 없습니다."
+                    />
+                    <StatCard
+                        title="io_uring"
+                        value="배치 syscall"
+                        color="purple"
+                        desc="반복적인 Ring 전환 오버헤드를 공유 링 버퍼(submission/completion queue)로 최소화합니다."
+                    />
                 </div>
             </Section>
 
@@ -390,36 +361,14 @@ export default function Topic01Overview() {
 
                 {/* syscall 진입 흐름 카드 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                    {[
-                        {
-                            title: '빠른 경로 (vDSO)',
-                            body: 'gettimeofday(), clock_gettime() 등 일부 syscall은 커널 진입 없이 유저 공간에서 직접 실행됩니다 (vDSO 매핑). Ring 전환이 없어 성능이 극대화됩니다.',
-                            color: 'green',
-                        },
-                        {
-                            title: '일반 경로',
-                            body: 'syscall 어셈블리 명령 → CPU 특권 레벨 전환(Ring3→Ring0) → entry_SYSCALL_64 → syscall 테이블 참조 → 핸들러 실행 → sysret → 유저 복귀',
-                            color: 'blue',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`rounded-xl border p-4 space-y-1.5 ${
-                                card.color === 'green'
-                                    ? 'bg-green-950/20 border-green-800/50'
-                                    : 'bg-blue-950/20 border-blue-800/50'
-                            }`}
-                        >
-                            <div
-                                className={`text-xs font-semibold uppercase tracking-wide ${
-                                    card.color === 'green' ? 'text-green-400' : 'text-blue-400'
-                                }`}
-                            >
-                                {card.title}
-                            </div>
-                            <div className="text-xs text-gray-400 leading-relaxed">{card.body}</div>
-                        </div>
-                    ))}
+                    <InfoBox color="green" title="빠른 경로 (vDSO)">
+                        gettimeofday(), clock_gettime() 등 일부 syscall은 커널 진입 없이 유저 공간에서 직접 실행됩니다
+                        (vDSO 매핑). Ring 전환이 없어 성능이 극대화됩니다.
+                    </InfoBox>
+                    <InfoBox color="blue" title="일반 경로">
+                        syscall 어셈블리 명령 → CPU 특권 레벨 전환(Ring3→Ring0) → entry_SYSCALL_64 → syscall 테이블 참조
+                        → 핸들러 실행 → sysret → 유저 복귀
+                    </InfoBox>
                 </div>
 
                 {/* fork() vs clone() vs vfork() 비교 */}

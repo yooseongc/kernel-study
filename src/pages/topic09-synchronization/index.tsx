@@ -113,8 +113,8 @@ export default function Topic08() {
 
                 <InfoTable headers={['항목', '값']} rows={spinlockRows} />
 
-                <div className="rounded-lg border border-orange-800/40 bg-orange-900/10 px-4 py-3 text-xs text-orange-200">
-                    <span className="font-bold text-orange-300">주의:</span> <T id="spinlock">spinlock</T>을 보유한
+                <div className="rounded-lg border border-orange-200 dark:border-orange-800/40 bg-orange-50 dark:bg-orange-900/10 px-4 py-3 text-xs text-orange-800 dark:text-orange-200">
+                    <span className="font-bold text-orange-700 dark:text-orange-300">주의:</span> <T id="spinlock">spinlock</T>을 보유한
                     상태에서 sleep하면 데드락이 발생합니다. 임계 구역이 긴 경우 <T id="mutex">Mutex</T>를 사용하세요.
                 </div>
             </Section>
@@ -301,8 +301,8 @@ export default function Topic08() {
 
                 <InfoTable headers={['함수', '동작']} rows={atomicRows} />
 
-                <div className="rounded-lg border border-cyan-800/40 bg-cyan-900/10 px-4 py-3 text-xs text-cyan-200">
-                    <span className="font-bold text-cyan-300">CAS 패턴:</span>{' '}
+                <div className="rounded-lg border border-cyan-200 dark:border-cyan-800/40 bg-cyan-50 dark:bg-cyan-900/10 px-4 py-3 text-xs text-cyan-800 dark:text-cyan-200">
+                    <span className="font-bold text-cyan-700 dark:text-cyan-300">CAS 패턴:</span>{' '}
                     <code className="font-mono">atomic_cmpxchg(&v, old, new)</code>은 락-프리 알고리즘의 핵심입니다.
                     현재 값이 old와 같을 때만 new로 교체하며, 반환값으로 성공 여부를 판단합니다.
                 </div>
@@ -376,8 +376,8 @@ export default function Topic08() {
 
                 <CodeBlock code={snippets.rcuCode} language="c" filename="rcu.c" />
 
-                <div className="rounded-lg border border-green-800/40 bg-green-900/10 px-4 py-3 text-xs text-green-200">
-                    <span className="font-bold text-green-300">사용 예:</span> 커널 내부의{' '}
+                <div className="rounded-lg border border-green-200 dark:border-green-800/40 bg-green-50 dark:bg-green-900/10 px-4 py-3 text-xs text-green-800 dark:text-green-200">
+                    <span className="font-bold text-green-700 dark:text-green-300">사용 예:</span> 커널 내부의{' '}
                     <code className="font-mono">task_list</code>, 라우팅 테이블, 네트워크 디바이스 목록은 모두
                     <T id="rcu">RCU</T>로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
                 </div>

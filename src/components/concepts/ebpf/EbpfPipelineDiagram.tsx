@@ -15,11 +15,9 @@ function renderEbpfPipeline(
     isDark: boolean,
 ) {
     const c2 = themeColors(isDark)
-    const bg = c2.bg
     const textColor = c2.text
     const dimColor = c2.textMuted
 
-    svg.style('background', bg)
 
     const g = svg.append('g')
 

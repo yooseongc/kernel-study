@@ -192,8 +192,8 @@ export default function Topic09() {
                     갱신합니다.
                 </Prose>
                 <CodeBlock code={snippets.rxRingCode} language="c" filename="rx_ring_init.c" />
-                <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 px-4 py-3 text-xs text-blue-200">
-                    <span className="font-bold text-blue-300">핵심:</span>{' '}
+                <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-900/20 px-4 py-3 text-xs text-blue-800 dark:text-blue-200">
+                    <span className="font-bold text-blue-700 dark:text-blue-300">핵심:</span>{' '}
                     <span className="font-mono">dma_map_single()</span>은 가상 주소를 PCIe 버스에서 접근 가능한 물리
                     주소로 변환합니다. IOMMU가 있는 환경에서는 IOMMU 매핑 테이블을 통해 DMA 격리(isolation)가
                     이루어집니다.

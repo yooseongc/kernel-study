@@ -99,9 +99,9 @@ export function RcuGracePeriodViz() {
 
                 {/* 업데이터 바: publish 구간 x=100~210 */}
                 <rect
-                    x="100"
+                    x="80"
                     y="59"
-                    width="110"
+                    width="130"
                     height="18"
                     rx="4"
                     fill={isDark ? 'rgba(59,130,246,0.35)' : 'rgba(59,130,246,0.25)'}
@@ -109,14 +109,14 @@ export function RcuGracePeriodViz() {
                     strokeWidth="1.5"
                 />
                 <text
-                    x="155"
+                    x="145"
                     y="72"
                     textAnchor="middle"
-                    fontSize="9"
+                    fontSize="8"
                     fill={isDark ? '#93c5fd' : '#1d4ed8'}
                     fontWeight="bold"
                 >
-                    publish (rcu_assign_pointer)
+                    publish (rcu_assign_ptr)
                 </text>
                 {/* publish 화살표 아래로 */}
                 <line x1="210" y1="77" x2="210" y2="95" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="3,2" />

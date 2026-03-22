@@ -37,12 +37,10 @@ function renderNetworkBottleneck(
     isDark: boolean,
 ) {
     const c2 = themeColors(isDark)
-    const bg = c2.bg
     const axisColor = c2.textDim
     const textColor = c2.text
     const dimColor = c2.textMuted
 
-    svg.style('background', bg)
 
     const padLeft = 110
     const padRight = 16

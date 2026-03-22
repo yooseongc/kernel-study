@@ -13,14 +13,12 @@ export function renderSlubViz(
     const c = themeColors(isDark)
     const textFill = c.text
     const dimFill = c.textMuted
-    const bg = c.bg
     const borderColor = c.border
     const freeFill = c.bgCard
     const allocFill = c.blueFill
     const allocStroke = c.blueStroke
     const cacheColor = isDark ? 'oklch(55% 0.20 295)' : 'oklch(42% 0.22 295)'
 
-    svg.style('background', bg)
 
     const padL = 12,
         padT = 10

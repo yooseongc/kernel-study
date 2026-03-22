@@ -74,8 +74,6 @@ function renderDriverTree(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
-    const bg = c.bg
-    svg.style('background', bg)
 
     const g = svg.append('g')
 

@@ -249,10 +249,10 @@ export default function Topic07() {
             {/* 8.2 XDP 모드 비교 */}
             <Section id="s82" title="8.2  XDP 모드 비교">
                 <InfoTable headers={['모드', '위치', '성능', '드라이버 요구']} rows={xdpModeRows} />
-                <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 px-4 py-3 text-xs text-blue-200">
-                    <span className="font-bold text-blue-300">권장:</span> 프로덕션에서는 Native XDP를 사용하세요.
+                <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-900/20 px-4 py-3 text-xs text-blue-800 dark:text-blue-200">
+                    <span className="font-bold text-blue-700 dark:text-blue-300">권장:</span> 프로덕션에서는 Native XDP를 사용하세요.
                     드라이버 지원 여부는{' '}
-                    <span className="font-mono text-blue-300">ip link set dev eth0 xdp obj prog.o</span>으로 확인할 수
+                    <span className="font-mono text-blue-700 dark:text-blue-300">ip link set dev eth0 xdp obj prog.o</span>으로 확인할 수
                     있습니다. 실패 시 Generic으로 자동 fallback 됩니다.
                 </div>
             </Section>
@@ -310,8 +310,8 @@ export default function Topic07() {
                     모든 가능한 실행 경로를 추적하며 안전하지 않은 접근을 거부합니다.
                 </Prose>
                 <InfoTable headers={['검사 항목', '설명']} rows={verifierRows} />
-                <div className="rounded-lg border border-yellow-800/40 bg-yellow-900/20 px-4 py-3 text-xs text-yellow-200">
-                    <span className="font-bold text-yellow-300">주의:</span> verifier 통과를 위해서는 모든 포인터 접근
+                <div className="rounded-lg border border-yellow-200 dark:border-yellow-800/40 bg-yellow-50 dark:bg-yellow-900/20 px-4 py-3 text-xs text-yellow-800 dark:text-yellow-200">
+                    <span className="font-bold text-yellow-700 dark:text-yellow-300">주의:</span> verifier 통과를 위해서는 모든 포인터 접근
                     전에 경계 검사를 수행해야 합니다. 컴파일러 최적화로 제거된 경계 검사를 verifier가 추적하지 못하는
                     경우 로드가 거부될 수 있습니다.
                 </div>
