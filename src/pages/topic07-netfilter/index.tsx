@@ -264,7 +264,7 @@ function renderNetfilterFlow(
 
     // PREROUTING
     drawHookNode(PREROUT_X + HW / 2, MID_Y, 'PREROUTING', [
-        TBL.conntrack, TBL.raw, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' },
+        TBL.raw, TBL.conntrack, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' },
     ], hookColors.PREROUTING)
 
     // Routing diamond 1 (after PREROUTING)
@@ -272,7 +272,7 @@ function renderNetfilterFlow(
 
     // INPUT (top path)
     drawHookNode(INPUT_X + HW / 2, TOP_Y, 'INPUT', [
-        TBL.mangle, TBL.filter, TBL.nat,
+        TBL.mangle, TBL.filter, { ...TBL.nat, label: 'nat (SNAT)' },
     ], hookColors.INPUT)
 
     // Process (top path)
@@ -280,7 +280,7 @@ function renderNetfilterFlow(
 
     // OUTPUT (top path)
     drawHookNode(OUTPUT_X + HW / 2, TOP_Y, 'OUTPUT', [
-        TBL.conntrack, TBL.raw, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' }, TBL.filter,
+        TBL.raw, TBL.conntrack, TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' }, TBL.filter,
     ], hookColors.OUTPUT)
 
     // FORWARD (bottom path)
@@ -646,14 +646,18 @@ export default function Topic06() {
                 />
 
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-2">
-                    <strong>처리 우선순위:</strong>{' '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">raw</code>
+                    <strong>처리 우선순위 (priority 값):</strong>{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">raw (-300)</code>
                     {' → '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mangle</code>
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">conntrack (-200)</code>
                     {' → '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">nat</code>
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mangle (-150)</code>
                     {' → '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">filter</code>
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">nat/DNAT (-100)</code>
+                    {' → '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">filter (0)</code>
+                    {' → '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">nat/SNAT (100)</code>
                     {' '}순으로 평가됩니다. 같은 체인에 여러 테이블이 등록되어 있으면 이 순서대로 실행됩니다.
                 </p>
             </Section>
