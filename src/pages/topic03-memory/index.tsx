@@ -237,7 +237,7 @@ export default function Topic03() {
                         <div>
                             <span className="text-blue-500">nginx</span> PID 1234: VA{' '}
                             <span className="text-amber-500">0x00400000</span> → PA{' '}
-                            <span className="text-blue-400">0x1A3F_0000</span> (nginx 바이너리 코드)
+                            <span className="text-blue-600 dark:text-blue-400">0x1A3F_0000</span> (nginx 바이너리 코드)
                         </div>
                         <div>
                             <span className="text-emerald-500">python</span> PID 5678: VA{' '}
@@ -490,9 +490,9 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.3 mm_struct & VMA */}
             <Section id="s333" title="3.3  mm_struct와 VMA">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    각 프로세스는 고유한 <code className="font-mono text-blue-400">mm_struct</code>를 가지며, 이
+                    각 프로세스는 고유한 <code className="font-mono text-blue-600 dark:text-blue-400">mm_struct</code>를 가지며, 이
                     구조체가 가상 주소 공간 전체를 관리합니다. 가상 주소 공간 내의 각 연속된 영역은{' '}
-                    <code className="font-mono text-blue-400">vm_area_struct(VMA)</code>로 표현됩니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">vm_area_struct(VMA)</code>로 표현됩니다.
                 </p>
                 <CodeBlock code={snippets.mmStructCode} language="c" filename="include/linux/mm_types.h" />
                 <CodeBlock code={snippets.vmaCode} language="c" filename="include/linux/mm_types.h" />
@@ -523,7 +523,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                                         i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
                                     }
                                 >
-                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-400">
+                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">
                                         {row.flag}
                                     </td>
                                     <td className="px-4 py-2 text-xs text-gray-700 dark:text-gray-300">{row.desc}</td>
@@ -541,7 +541,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     mmap() — 두 가지 매핑 방식
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono text-blue-400">mmap()</code>은 가상 주소 공간에 새로운{' '}
+                    <code className="font-mono text-blue-600 dark:text-blue-400">mmap()</code>은 가상 주소 공간에 새로운{' '}
                     <T id="vma">VMA</T>를 만드는 핵심 syscall입니다. 매핑 방식에 따라 <strong>익명 매핑</strong>과{' '}
                     <strong>파일 매핑</strong> 두 가지로 나뉩니다.
                 </p>
@@ -711,7 +711,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     <T id="buddy_allocator">Buddy Allocator</T>는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의
                     작은 객체를 자주 할당합니다.
                     <T id="slub">SLUB</T>은 특정 크기의 객체 전용 캐시(
-                    <code className="font-mono text-blue-400">kmem_cache</code>)를 미리 만들어 빠르게 재사용합니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">kmem_cache</code>)를 미리 만들어 빠르게 재사용합니다.
                 </p>
                 <D3Container renderFn={slubRenderFn} deps={[theme]} height={280} />
                 <div className="flex flex-wrap gap-4 text-xs">
@@ -759,7 +759,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                                         i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
                                     }
                                 >
-                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-400">
+                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">
                                         {row.file}
                                     </td>
                                     <td className="px-4 py-2 text-xs text-gray-600 dark:text-gray-400">{row.desc}</td>
@@ -788,7 +788,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     물리 메모리가 완전히 소진되면 커널 <T id="oom_killer">OOM Killer</T>가{' '}
-                    <code className="font-mono text-blue-400">oom_score</code> 기준으로 희생 프로세스를 선택해 강제
+                    <code className="font-mono text-blue-600 dark:text-blue-400">oom_score</code> 기준으로 희생 프로세스를 선택해 강제
                     종료합니다.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -817,7 +817,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             adj 보정
                         </div>
                         <div className={`text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                            <code className="font-mono text-blue-400">/proc/&lt;pid&gt;/oom_score_adj</code> (-1000 ~
+                            <code className="font-mono text-blue-600 dark:text-blue-400">/proc/&lt;pid&gt;/oom_score_adj</code> (-1000 ~
                             +1000), -1000이면 절대 종료 안 함
                         </div>
                     </div>
@@ -832,7 +832,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             최종 score
                         </div>
                         <div className={`text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                            <code className="font-mono text-blue-400">cat /proc/&lt;pid&gt;/oom_score</code> 로 확인
+                            <code className="font-mono text-blue-600 dark:text-blue-400">cat /proc/&lt;pid&gt;/oom_score</code> 로 확인
                         </div>
                     </div>
                 </div>
@@ -924,7 +924,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                                         i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
                                     }
                                 >
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 font-mono text-blue-600 dark:text-blue-400">
+                                    <td className="p-2 border border-gray-200 dark:border-gray-700 font-mono text-blue-600 dark:text-blue-600 dark:text-blue-400">
                                         {row.flag}
                                     </td>
                                     <td className="p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
@@ -947,7 +947,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             <Section id="s339" title="3.9  kswapd와 메모리 회수 — LRU 알고리즘">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     물리 메모리가 부족해지면 커널은 사용 빈도가 낮은 페이지를 회수(reclaim)합니다. 이 작업은{' '}
-                    <code className="font-mono text-blue-400">kswapd</code> 커널 스레드가 담당합니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">kswapd</code> 커널 스레드가 담당합니다.
                 </p>
                 {/* Watermark Visualization */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -955,39 +955,39 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         메모리 존 워터마크
                     </div>
                     <div className="flex gap-6 items-start">
-                        <div className="flex flex-col border border-gray-700 rounded-lg overflow-hidden w-32">
-                            <div className="bg-green-500/30 border-b border-green-500 p-2 text-xs text-center text-green-300">
+                        <div className="flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden w-32">
+                            <div className="bg-green-100 dark:bg-green-500/30 border-b border-green-400 dark:border-green-500 p-2 text-xs text-center text-green-800 dark:text-green-300">
                                 <span className="font-mono font-bold">high</span>
-                                <div className="text-[10px] text-green-400/70 mt-0.5">kswapd 슬립</div>
+                                <div className="text-[10px] text-green-600 dark:text-green-400/70 mt-0.5">kswapd 슬립</div>
                             </div>
-                            <div className="bg-yellow-500/30 border-b border-yellow-500 p-2 text-xs text-center text-yellow-300">
+                            <div className="bg-yellow-100 dark:bg-yellow-500/30 border-b border-yellow-400 dark:border-yellow-500 p-2 text-xs text-center text-yellow-800 dark:text-yellow-300">
                                 <span className="font-mono font-bold">low</span>
-                                <div className="text-[10px] text-yellow-400/70 mt-0.5">kswapd 활성화</div>
+                                <div className="text-[10px] text-yellow-600 dark:text-yellow-400/70 mt-0.5">kswapd 활성화</div>
                             </div>
-                            <div className="bg-red-500/30 p-2 text-xs text-center text-red-300">
+                            <div className="bg-red-100 dark:bg-red-500/30 p-2 text-xs text-center text-red-800 dark:text-red-300">
                                 <span className="font-mono font-bold">min</span>
-                                <div className="text-[10px] text-red-400/70 mt-0.5">direct reclaim</div>
+                                <div className="text-[10px] text-red-600 dark:text-red-400/70 mt-0.5">direct reclaim</div>
                             </div>
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2 flex-1">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 space-y-2 flex-1">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded bg-green-500/50 border border-green-500" />
+                                <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-500/50 border border-green-500" />
                                 <span>
-                                    <span className="text-green-400 font-mono">pages_high</span> 이상: 여유 상태, kswapd
+                                    <span className="text-green-700 dark:text-green-400 font-mono">pages_high</span> 이상: 여유 상태, kswapd
                                     대기
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded bg-yellow-500/50 border border-yellow-500" />
+                                <div className="w-3 h-3 rounded bg-yellow-200 dark:bg-yellow-500/50 border border-yellow-500" />
                                 <span>
-                                    <span className="text-yellow-400 font-mono">pages_low</span> 이하: kswapd 깨어나
+                                    <span className="text-yellow-700 dark:text-yellow-400 font-mono">pages_low</span> 이하: kswapd 깨어나
                                     회수 시작
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded bg-red-500/50 border border-red-500" />
+                                <div className="w-3 h-3 rounded bg-red-200 dark:bg-red-500/50 border border-red-500" />
                                 <span>
-                                    <span className="text-red-400 font-mono">pages_min</span> 이하: 프로세스가 직접 회수
+                                    <span className="text-red-700 dark:text-red-400 font-mono">pages_min</span> 이하: 프로세스가 직접 회수
                                     (지연 발생)
                                 </span>
                             </div>
@@ -1112,7 +1112,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                             <li>부팅 시 또는 sysctl로 미리 예약</li>
                             <li>
-                                애플리케이션이 <code className="font-mono text-blue-400">mmap(MAP_HUGETLB)</code> 명시적
+                                애플리케이션이 <code className="font-mono text-blue-600 dark:text-blue-400">mmap(MAP_HUGETLB)</code> 명시적
                                 사용
                             </li>
                             <li>예측 가능, 단편화 없음</li>
@@ -1127,7 +1127,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             <li>커널이 자동으로 4KB → 2MB 병합</li>
                             <li>애플리케이션 수정 불필요</li>
                             <li>
-                                <code className="font-mono text-blue-400">khugepaged</code> 데몬이 백그라운드 병합
+                                <code className="font-mono text-blue-600 dark:text-blue-400">khugepaged</code> 데몬이 백그라운드 병합
                             </li>
                             <li className="text-gray-500 dark:text-gray-500">
                                 가끔 병합/분리 오버헤드 발생 (지연 스파이크)
@@ -1170,7 +1170,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* ── 3.11  CoW — Copy-on-Write ── */}
             <Section id="s3311" title="3.11  CoW — Copy-on-Write: fork() 후 쓰기 최적화">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono text-blue-500 dark:text-blue-400">fork()</code> 호출 시 자식 프로세스의
+                    <code className="font-mono text-blue-500 dark:text-blue-600 dark:text-blue-400">fork()</code> 호출 시 자식 프로세스의
                     가상 주소 공간은 부모와 동일하지만, 물리 페이지는 즉시 복사하지 않고{' '}
                     <strong>읽기 전용(RO)으로 공유</strong>됩니다. 최초 쓰기 시 <T id="page_fault">Page Fault</T>가
                     발생하고, 커널이 페이지를 복사한 뒤 각자 독립 페이지를 보유합니다.
@@ -1257,12 +1257,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         <div className="flex flex-col items-center gap-2">
                             <div className="rounded-xl border-2 border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950 px-6 py-3 text-center">
                                 <div className="text-xs font-bold text-blue-700 dark:text-blue-300">CPU 0–15</div>
-                                <div className="text-xs text-blue-600 dark:text-blue-400">Socket 0</div>
+                                <div className="text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">Socket 0</div>
                             </div>
                             <div className="text-xs text-gray-400">↕ 로컬 ~80 ns</div>
                             <div className="rounded-xl border-2 border-blue-400 dark:border-blue-600 bg-blue-100 dark:bg-blue-900 px-6 py-3 text-center">
                                 <div className="text-xs font-bold text-blue-800 dark:text-blue-200">Memory Node 0</div>
-                                <div className="text-xs text-blue-600 dark:text-blue-400">64 GB</div>
+                                <div className="text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">64 GB</div>
                             </div>
                         </div>
                         <div className="flex flex-col items-center gap-1 px-4">

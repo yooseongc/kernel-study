@@ -79,7 +79,7 @@ type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'
 
 function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?: BadgeColor }) {
     const map: Record<BadgeColor, string> = {
-        blue: 'bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/50',
+        blue: 'bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/50',
         red: 'bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700/50',
         amber: 'bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700/50',
         green: 'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700/50',
@@ -98,7 +98,7 @@ const coalescingParams = [
         dir: 'RX',
         default: '50–100 μs',
         color: 'border-blue-700/60',
-        titleColor: 'text-blue-300',
+        titleColor: 'text-blue-700 dark:text-blue-300',
         desc: 'RX 인터럽트 합치기 시간(μs). 낮추면 레이턴시↓ 처리량↓, 높이면 레이턴시↑ 처리량↑',
     },
     {
@@ -106,7 +106,7 @@ const coalescingParams = [
         dir: 'RX',
         default: '0 (비활성)',
         color: 'border-cyan-700/60',
-        titleColor: 'text-cyan-300',
+        titleColor: 'text-cyan-700 dark:text-cyan-300',
         desc: 'N개 프레임이 쌓이면 인터럽트 발생. rx-usecs와 OR 조건으로 동작',
     },
     {
@@ -114,7 +114,7 @@ const coalescingParams = [
         dir: 'TX',
         default: '50 μs',
         color: 'border-amber-700/60',
-        titleColor: 'text-amber-300',
+        titleColor: 'text-amber-700 dark:text-amber-300',
         desc: 'TX 완료 인터럽트 합치기 시간. 송신 처리량 최적화에 사용',
     },
     {
@@ -122,7 +122,7 @@ const coalescingParams = [
         dir: 'TX',
         default: '0 (비활성)',
         color: 'border-orange-700/60',
-        titleColor: 'text-orange-300',
+        titleColor: 'text-orange-700 dark:text-orange-300',
         desc: 'TX 방향 프레임 수 기준 인터럽트. tx-usecs와 OR 조건',
     },
     {
@@ -130,7 +130,7 @@ const coalescingParams = [
         dir: 'RX',
         default: 'on (지원 시)',
         color: 'border-green-700/60',
-        titleColor: 'text-green-300',
+        titleColor: 'text-green-700 dark:text-green-300',
         desc: '드라이버가 트래픽 패턴을 분석해 coalescing 값을 자동 조정 (Intel ixgbe 등 지원)',
     },
 ]
@@ -459,7 +459,7 @@ export default function Topic04() {
                         {
                             title: 'hrtimer',
                             color: 'border-blue-700/60',
-                            titleColor: 'text-blue-300',
+                            titleColor: 'text-blue-700 dark:text-blue-300',
                             points: [
                                 '나노초 단위 고해상도',
                                 'HPET / TSC 하드웨어 기반',
@@ -470,7 +470,7 @@ export default function Topic04() {
                         {
                             title: 'Timer Wheel',
                             color: 'border-amber-700/60',
-                            titleColor: 'text-amber-300',
+                            titleColor: 'text-amber-700 dark:text-amber-300',
                             points: [
                                 '낮은 해상도 타이머 관리',
                                 '계층적 버킷 구조',
@@ -523,7 +523,7 @@ export default function Topic04() {
                     </div>
 
                     <div className="bg-gray-800 rounded-xl border border-blue-700/50 p-4">
-                        <div className="text-sm font-bold text-blue-300 mb-3">
+                        <div className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-3">
                             <T id="threaded_irq">Threaded IRQ</T> (현대)
                         </div>
                         <ul className="space-y-1">
@@ -552,7 +552,7 @@ export default function Topic04() {
             <Section id="s557" title="5.7  인터럽트 어피니티 — CPU 코어 배정">
                 <Prose>
                     특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
-                    <code className="font-mono text-blue-300 text-xs">/proc/irq/&lt;n&gt;/smp_affinity</code>로 어느 CPU
+                    <code className="font-mono text-blue-700 dark:text-blue-300 text-xs">/proc/irq/&lt;n&gt;/smp_affinity</code>로 어느 CPU
                     코어가 해당 <T id="irq">IRQ</T>를 처리할지 지정할 수 있습니다.
                 </Prose>
 
@@ -570,13 +570,13 @@ export default function Topic04() {
                         {
                             title: 'CPU 분산',
                             color: 'border-blue-700/60',
-                            titleColor: 'text-blue-300',
+                            titleColor: 'text-blue-700 dark:text-blue-300',
                             desc: 'IRQ를 여러 CPU에 나눠 처리. 대용량 트래픽 서버에서 병목을 줄이는 전략입니다.',
                         },
                         {
                             title: 'NUMA 인식',
                             color: 'border-amber-700/60',
-                            titleColor: 'text-amber-300',
+                            titleColor: 'text-amber-700 dark:text-amber-300',
                             desc: 'IRQ를 NIC와 같은 NUMA 노드 CPU에 배정해 PCIe 버스 지역성을 유지합니다.',
                         },
                     ].map((card) => (
@@ -653,19 +653,19 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         {
                             title: '산업용 제어',
                             color: 'border-red-700/60',
-                            titleColor: 'text-red-300',
+                            titleColor: 'text-red-700 dark:text-red-300',
                             desc: '로봇 팔, CNC 기계 — 1ms 이하 응답 보장, Xenomai/PREEMPT_RT',
                         },
                         {
                             title: '오디오 처리',
                             color: 'border-blue-700/60',
-                            titleColor: 'text-blue-300',
+                            titleColor: 'text-blue-700 dark:text-blue-300',
                             desc: '전문 DAW (JACK Audio) — 버퍼 언더런 없는 실시간 오디오 처리',
                         },
                         {
                             title: '자동차/항공',
                             color: 'border-amber-700/60',
-                            titleColor: 'text-amber-300',
+                            titleColor: 'text-amber-700 dark:text-amber-300',
                             desc: 'AUTOSAR Adaptive, 드론 비행 제어 — 결정론적 응답 시간 필수',
                         },
                     ].map((card) => (
@@ -700,19 +700,19 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     {[
                         {
                             step: '①',
-                            color: 'text-blue-400',
+                            color: 'text-blue-600 dark:text-blue-400',
                             border: 'border-blue-700/50',
                             text: '첫 패킷 도착 → 인터럽트 발생 → IRQ handler: 인터럽트 비활성화 + softirq 스케줄',
                         },
                         {
                             step: '②',
-                            color: 'text-cyan-400',
+                            color: 'text-cyan-600 dark:text-cyan-400',
                             border: 'border-cyan-700/50',
                             text: 'NET_RX_SOFTIRQ 실행 → napi_poll() → 최대 budget(기본 300)개 패킷을 폴링으로 처리',
                         },
                         {
                             step: '③',
-                            color: 'text-green-400',
+                            color: 'text-green-600 dark:text-green-400',
                             border: 'border-green-700/50',
                             text: 'budget 소진 또는 큐가 비면 → 인터럽트 재활성화 → 다음 패킷 대기',
                         },
@@ -795,7 +795,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         <span className="text-blue-400 text-sm font-bold mt-0.5 shrink-0">tip</span>
                         <p className="text-sm text-blue-200/80 leading-relaxed">
                             HFT(초고빈도 거래) 또는 실시간 게임 서버는{' '}
-                            <strong className="text-blue-300">rx-usecs 0, rx-frames 1</strong>로 인터럽트를 즉시
+                            <strong className="text-blue-700 dark:text-blue-300">rx-usecs 0, rx-frames 1</strong>로 인터럽트를 즉시
                             발생시켜 레이턴시를 최소화합니다. 반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로
                             설정해 CPU 사용률을 낮추고 처리량을 극대화합니다.
                         </p>
