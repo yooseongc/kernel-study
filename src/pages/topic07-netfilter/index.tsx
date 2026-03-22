@@ -19,7 +19,7 @@ function renderNetfilterFlow(
     _height: number,
 ) {
     const VW = 1100,
-        VH = 420
+        VH = 480
     svg.attr('viewBox', `0 0 ${VW} ${VH}`).attr('preserveAspectRatio', 'xMidYMid meet')
 
     const isDark = document.documentElement.classList.contains('dark')
@@ -64,14 +64,14 @@ function renderNetfilterFlow(
     const g = svg.append('g')
 
     // ── Layout constants ──────────────────────────────────────────────────────
-    const MID_Y = 190
-    const TOP_Y = 60
-    const BOT_Y = 320
+    const MID_Y = 220
+    const TOP_Y = 80
+    const BOT_Y = 370
     const NR = 6
 
     // Hook node dimensions (tall enough for table list)
     const HW = 130
-    const HH = 110
+    const HH = 130
     // Small box dimensions
     const SW = 90
     const SH = 36
@@ -496,7 +496,7 @@ export default function Topic06() {
                     POSTROUTING 경로를 거칩니다. 드래그·휠로 확대/축소할 수 있습니다.
                 </p>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 mb-6">
-                    <D3Container renderFn={renderFn} deps={[theme]} height={420} zoomable={true} />
+                    <D3Container renderFn={renderFn} deps={[theme]} height={480} zoomable={true} />
                 </div>
 
                 {/* 훅 상세 인터랙션 버튼 */}
