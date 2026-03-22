@@ -78,8 +78,7 @@ function renderEbpfPipeline(
         if (i < stages.length - 1) {
             const nextCX = padX + (i + 1) * stepX + stepX / 2
             const arrowId = `pa-${i}`
-            svg
-                .append('defs')
+            svg.append('defs')
                 .append('marker')
                 .attr('id', arrowId)
                 .attr('viewBox', '0 -4 8 8')
@@ -111,8 +110,7 @@ function renderEbpfPipeline(
     const failBoxH = 24
 
     const failArrowId = 'fail-arrow'
-    svg
-        .append('defs')
+    svg.append('defs')
         .append('marker')
         .attr('id', failArrowId)
         .attr('viewBox', '0 -4 8 8')
@@ -190,11 +188,7 @@ export function EbpfPipelineDiagram() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <D3Container
-                renderFn={renderFn}
-                deps={[isDark]}
-                height={160}
-            />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={160} />
         </div>
     )
 }

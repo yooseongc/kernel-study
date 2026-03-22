@@ -172,9 +172,7 @@ function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
 }
 
 function SubTitle({ children }: { children: React.ReactNode }) {
-    return (
-        <h3 className="text-base font-semibold text-gray-200 mb-3 mt-6">{children}</h3>
-    )
+    return <h3 className="text-base font-semibold text-gray-200 mb-3 mt-6">{children}</h3>
 }
 
 type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'
@@ -187,13 +185,7 @@ function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?
         green: 'bg-green-900/40 text-green-300 border-green-700/50',
         purple: 'bg-purple-900/40 text-purple-300 border-purple-700/50',
     }
-    return (
-        <span
-            className={`inline-block text-xs font-mono px-2 py-0.5 rounded border ${map[color]}`}
-        >
-            {children}
-        </span>
-    )
+    return <span className={`inline-block text-xs font-mono px-2 py-0.5 rounded border ${map[color]}`}>{children}</span>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -285,11 +277,7 @@ export default function Topic04() {
     const isDark = theme === 'dark'
 
     const renderDeferredWork = useCallback(
-        (
-            svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-            width: number,
-            height: number,
-        ) => {
+        (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, width: number, height: number) => {
             renderDeferredWorkFlow(svg, width, height, isDark)
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -299,12 +287,8 @@ export default function Topic04() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 05
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    인터럽트, 예외, Deferred Work
-                </h1>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 05</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">인터럽트, 예외, Deferred Work</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
                     Interrupts, Exceptions &amp; Deferred Work
                 </p>
@@ -323,12 +307,10 @@ export default function Topic04() {
             />
 
             <Section id="s551" title="5.1  인터럽트와 예외의 차이">
-
                 <Prose>
-                    <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등
-          외부 장치가 CPU에 보내는 비동기 신호입니다. 반면{' '}
-                    <strong className="text-gray-200">예외(Exception)</strong>는 CPU가 명령어를 실행하는
-          도중 내부에서 발생하는 동기적 이벤트입니다 (page fault, divide-by-zero 등).
+                    <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등 외부 장치가
+                    CPU에 보내는 비동기 신호입니다. 반면 <strong className="text-gray-200">예외(Exception)</strong>는
+                    CPU가 명령어를 실행하는 도중 내부에서 발생하는 동기적 이벤트입니다 (page fault, divide-by-zero 등).
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -342,12 +324,20 @@ export default function Topic04() {
                         </thead>
                         <tbody>
                             {(
-                [
-                    ['발생 원인', '외부 장치 (NIC, 키보드, 타이머)', 'CPU 내부 (page fault, divide-by-zero)'],
-                    ['동기성', '비동기 (언제든 발생)', '동기 (명령어 실행 중 발생)'],
-                    ['처리 후', '중단된 코드로 복귀', '복구 가능 / SIGSEGV 등'],
-                    ['예시', 'IRQ #9 (NIC), IRQ #0 (타이머)', '#PF (page fault), #GP (general protection)'],
-                ] as [string, string, string][]
+                                [
+                                    [
+                                        '발생 원인',
+                                        '외부 장치 (NIC, 키보드, 타이머)',
+                                        'CPU 내부 (page fault, divide-by-zero)',
+                                    ],
+                                    ['동기성', '비동기 (언제든 발생)', '동기 (명령어 실행 중 발생)'],
+                                    ['처리 후', '중단된 코드로 복귀', '복구 가능 / SIGSEGV 등'],
+                                    [
+                                        '예시',
+                                        'IRQ #9 (NIC), IRQ #0 (타이머)',
+                                        '#PF (page fault), #GP (general protection)',
+                                    ],
+                                ] as [string, string, string][]
                             ).map(([label, intCol, excCol]) => (
                                 <tr key={label}>
                                     <Td>
@@ -374,19 +364,15 @@ export default function Topic04() {
                         </thead>
                         <tbody>
                             {(
-                [
-                    ['Fault', '복구 가능 — 원인 해결 후 재실행', '오류 발생 명령어 재실행', '#PF, #GP'],
-                    ['Trap', '의도된 예외 (디버깅 등)', '다음 명령어로 복귀', '#BP (int3), #DB'],
-                    ['Abort', '복구 불가 — 시스템 종료', '복귀 불가', '#DF, MCE'],
-                ] as [string, string, string, string][]
+                                [
+                                    ['Fault', '복구 가능 — 원인 해결 후 재실행', '오류 발생 명령어 재실행', '#PF, #GP'],
+                                    ['Trap', '의도된 예외 (디버깅 등)', '다음 명령어로 복귀', '#BP (int3), #DB'],
+                                    ['Abort', '복구 불가 — 시스템 종료', '복귀 불가', '#DF, MCE'],
+                                ] as [string, string, string, string][]
                             ).map(([type, desc, ret, ex]) => (
                                 <tr key={type}>
                                     <Td>
-                                        <Badge
-                                            color={
-                                                type === 'Fault' ? 'amber' : type === 'Trap' ? 'blue' : 'red'
-                                            }
-                                        >
+                                        <Badge color={type === 'Fault' ? 'amber' : type === 'Trap' ? 'blue' : 'red'}>
                                             {type}
                                         </Badge>
                                     </Td>
@@ -402,8 +388,8 @@ export default function Topic04() {
 
             <Section id="s552" title="5.2  IRQ 처리 흐름">
                 <Prose>
-                    <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다.
-          ISR은 가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
+                    <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다. ISR은
+                    가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
                 </Prose>
                 <AnimatedDiagram
                     steps={irqSteps}
@@ -414,11 +400,10 @@ export default function Topic04() {
 
             <Section id="s553" title="5.3  Top Half / Bottom Half">
                 <Prose>
-          인터럽트 처리는 두 단계로 분리됩니다.{' '}
-                    <strong className="text-gray-200">Top Half</strong>는 <T id="irq">IRQ</T> 발생 직후 인터럽트가
-          비활성화된 상태에서 최소한의 작업(ACK, 데이터 복사)만 수행합니다.{' '}
-                    <strong className="text-gray-200">Bottom Half</strong>는 인터럽트를 재활성화한 뒤
-          나머지 무거운 처리(프로토콜 스택, 패킷 분류 등)를 수행합니다.
+                    인터럽트 처리는 두 단계로 분리됩니다. <strong className="text-gray-200">Top Half</strong>는{' '}
+                    <T id="irq">IRQ</T> 발생 직후 인터럽트가 비활성화된 상태에서 최소한의 작업(ACK, 데이터 복사)만
+                    수행합니다. <strong className="text-gray-200">Bottom Half</strong>는 인터럽트를 재활성화한 뒤 나머지
+                    무거운 처리(프로토콜 스택, 패킷 분류 등)를 수행합니다.
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -432,13 +417,13 @@ export default function Topic04() {
                         </thead>
                         <tbody>
                             {(
-                [
-                    ['실행 시점', 'IRQ 발생 즉시', '나중에 (인터럽트 활성화 상태)'],
-                    ['인터럽트 상태', '비활성화', '활성화'],
-                    ['실행 시간', '최소 (수 µs)', '상대적으로 길어도 됨'],
-                    ['컨텍스트', '인터럽트 컨텍스트 (sleep 불가)', '다양 (workqueue는 sleep 가능)'],
-                    ['목적', 'ACK, 데이터 복사', '프로토콜 처리, 네트워크 스택'],
-                ] as [string, string, string][]
+                                [
+                                    ['실행 시점', 'IRQ 발생 즉시', '나중에 (인터럽트 활성화 상태)'],
+                                    ['인터럽트 상태', '비활성화', '활성화'],
+                                    ['실행 시간', '최소 (수 µs)', '상대적으로 길어도 됨'],
+                                    ['컨텍스트', '인터럽트 컨텍스트 (sleep 불가)', '다양 (workqueue는 sleep 가능)'],
+                                    ['목적', 'ACK, 데이터 복사', '프로토콜 처리, 네트워크 스택'],
+                                ] as [string, string, string][]
                             ).map(([label, top, bot]) => (
                                 <tr key={label}>
                                     <Td>
@@ -461,10 +446,11 @@ export default function Topic04() {
 
             <Section id="s554" title="5.4  Softirq, Tasklet, Workqueue 비교">
                 <Prose>
-          Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
-                    <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로 구분됩니다. 네트워크 RX/TX처럼 성능이 중요한
-          경로는 <T id="softirq">Softirq</T>, 드라이버의 일반 지연 처리는 <T id="tasklet">Tasklet</T>, 파일시스템 등 sleep이 필요한
-          작업은 <T id="workqueue">Workqueue</T>를 사용합니다.
+                    Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
+                    <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로
+                    구분됩니다. 네트워크 RX/TX처럼 성능이 중요한 경로는 <T id="softirq">Softirq</T>, 드라이버의 일반
+                    지연 처리는 <T id="tasklet">Tasklet</T>, 파일시스템 등 sleep이 필요한 작업은{' '}
+                    <T id="workqueue">Workqueue</T>를 사용합니다.
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -479,42 +465,40 @@ export default function Topic04() {
                             </tr>
                         </thead>
                         <tbody>
-                            {(
-                                [
-                                    {
-                                        name: 'Softirq',
-                                        ctx: 'softirq',
-                                        sleep: '불가',
-                                        prio: '높음',
-                                        use: '네트워크 RX/TX, 타이머',
-                                        color: 'red' as BadgeColor,
-                                    },
-                                    {
-                                        name: 'Tasklet',
-                                        ctx: 'softirq (직렬화)',
-                                        sleep: '불가',
-                                        prio: '중간',
-                                        use: '드라이버 Bottom Half',
-                                        color: 'amber' as BadgeColor,
-                                    },
-                                    {
-                                        name: 'Workqueue (system)',
-                                        ctx: '프로세스',
-                                        sleep: '가능',
-                                        prio: '낮음',
-                                        use: '지연 작업, 파일시스템',
-                                        color: 'blue' as BadgeColor,
-                                    },
-                                    {
-                                        name: 'Workqueue (RT)',
-                                        ctx: 'RT 프로세스',
-                                        sleep: '가능',
-                                        prio: '높음',
-                                        use: '실시간 커널 스레드',
-                                        color: 'blue' as BadgeColor,
-                                    },
-                                ]
-                            ).map((r) => (
+                            {[
+                                {
+                                    name: 'Softirq',
+                                    ctx: 'softirq',
+                                    sleep: '불가',
+                                    prio: '높음',
+                                    use: '네트워크 RX/TX, 타이머',
+                                    color: 'red' as BadgeColor,
+                                },
+                                {
+                                    name: 'Tasklet',
+                                    ctx: 'softirq (직렬화)',
+                                    sleep: '불가',
+                                    prio: '중간',
+                                    use: '드라이버 Bottom Half',
+                                    color: 'amber' as BadgeColor,
+                                },
+                                {
+                                    name: 'Workqueue (system)',
+                                    ctx: '프로세스',
+                                    sleep: '가능',
+                                    prio: '낮음',
+                                    use: '지연 작업, 파일시스템',
+                                    color: 'blue' as BadgeColor,
+                                },
+                                {
+                                    name: 'Workqueue (RT)',
+                                    ctx: 'RT 프로세스',
+                                    sleep: '가능',
+                                    prio: '높음',
+                                    use: '실시간 커널 스레드',
+                                    color: 'blue' as BadgeColor,
+                                },
+                            ].map((r) => (
                                 <tr key={r.name}>
                                     <Td>
                                         <Badge color={r.color}>{r.name}</Badge>
@@ -549,18 +533,18 @@ export default function Topic04() {
                         </thead>
                         <tbody>
                             {(
-                [
-                    [0, 'HI_SOFTIRQ', '가장 높은 우선순위, tasklet_hi'],
-                    [1, 'TIMER_SOFTIRQ', '타이머 만료 처리'],
-                    [2, 'NET_TX_SOFTIRQ', '네트워크 패킷 송신'],
-                    [3, 'NET_RX_SOFTIRQ', '네트워크 패킷 수신 (NAPI)'],
-                    [4, 'BLOCK_SOFTIRQ', '블록 I/O 완료'],
-                    [5, 'IRQ_POLL_SOFTIRQ', 'I/O 폴링'],
-                    [6, 'TASKLET_SOFTIRQ', '일반 tasklet'],
-                    [7, 'SCHED_SOFTIRQ', '스케줄러 (load balancing)'],
-                    [8, 'HRTIMER_SOFTIRQ', '고해상도 타이머 (deprecated)'],
-                    [9, 'RCU_SOFTIRQ', 'RCU 콜백 처리'],
-                ] as [number, string, string][]
+                                [
+                                    [0, 'HI_SOFTIRQ', '가장 높은 우선순위, tasklet_hi'],
+                                    [1, 'TIMER_SOFTIRQ', '타이머 만료 처리'],
+                                    [2, 'NET_TX_SOFTIRQ', '네트워크 패킷 송신'],
+                                    [3, 'NET_RX_SOFTIRQ', '네트워크 패킷 수신 (NAPI)'],
+                                    [4, 'BLOCK_SOFTIRQ', '블록 I/O 완료'],
+                                    [5, 'IRQ_POLL_SOFTIRQ', 'I/O 폴링'],
+                                    [6, 'TASKLET_SOFTIRQ', '일반 tasklet'],
+                                    [7, 'SCHED_SOFTIRQ', '스케줄러 (load balancing)'],
+                                    [8, 'HRTIMER_SOFTIRQ', '고해상도 타이머 (deprecated)'],
+                                    [9, 'RCU_SOFTIRQ', 'RCU 콜백 처리'],
+                                ] as [number, string, string][]
                             ).map(([num, name, desc]) => (
                                 <tr key={num}>
                                     <Td>
@@ -579,54 +563,48 @@ export default function Topic04() {
             </Section>
 
             <Section id="s555" title="5.5  타이머와 비동기 처리">
-
                 <Prose>
-          리눅스 커널은 두 가지 타이머 시스템을 제공합니다. jiffies 기반의 저해상도 타이머와
-          HPET/TSC를 사용하는 고해상도 hrtimer입니다.
+                    리눅스 커널은 두 가지 타이머 시스템을 제공합니다. jiffies 기반의 저해상도 타이머와 HPET/TSC를
+                    사용하는 고해상도 hrtimer입니다.
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {(
-                        [
-                            {
-                                title: 'jiffies',
-                                color: 'border-gray-600',
-                                titleColor: 'text-gray-300',
-                                points: [
-                                    '부팅 이후 틱(tick) 횟수',
-                                    'CONFIG_HZ=250 → 4ms 해상도',
-                                    'CONFIG_HZ=1000 → 1ms 해상도',
-                                    '낮은 해상도 타이머에 사용',
-                                ],
-                            },
-                            {
-                                title: 'hrtimer',
-                                color: 'border-blue-700/60',
-                                titleColor: 'text-blue-300',
-                                points: [
-                                    '나노초 단위 고해상도',
-                                    'HPET / TSC 하드웨어 기반',
-                                    'ktime_t 타입 사용',
-                                    'sleep, nanosleep 내부 사용',
-                                ],
-                            },
-                            {
-                                title: 'Timer Wheel',
-                                color: 'border-amber-700/60',
-                                titleColor: 'text-amber-300',
-                                points: [
-                                    '낮은 해상도 타이머 관리',
-                                    '계층적 버킷 구조',
-                                    'O(1) 삽입/삭제',
-                                    'jiffies 기반 만료 관리',
-                                ],
-                            },
-                        ]
-                    ).map((card) => (
-                        <div
-                            key={card.title}
-                            className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}
-                        >
+                    {[
+                        {
+                            title: 'jiffies',
+                            color: 'border-gray-600',
+                            titleColor: 'text-gray-300',
+                            points: [
+                                '부팅 이후 틱(tick) 횟수',
+                                'CONFIG_HZ=250 → 4ms 해상도',
+                                'CONFIG_HZ=1000 → 1ms 해상도',
+                                '낮은 해상도 타이머에 사용',
+                            ],
+                        },
+                        {
+                            title: 'hrtimer',
+                            color: 'border-blue-700/60',
+                            titleColor: 'text-blue-300',
+                            points: [
+                                '나노초 단위 고해상도',
+                                'HPET / TSC 하드웨어 기반',
+                                'ktime_t 타입 사용',
+                                'sleep, nanosleep 내부 사용',
+                            ],
+                        },
+                        {
+                            title: 'Timer Wheel',
+                            color: 'border-amber-700/60',
+                            titleColor: 'text-amber-300',
+                            points: [
+                                '낮은 해상도 타이머 관리',
+                                '계층적 버킷 구조',
+                                'O(1) 삽입/삭제',
+                                'jiffies 기반 만료 관리',
+                            ],
+                        },
+                    ].map((card) => (
+                        <div key={card.title} className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}>
                             <div className={`font-bold text-sm mb-3 ${card.titleColor}`}>{card.title}</div>
                             <ul className="space-y-1">
                                 {card.points.map((p) => (
@@ -640,20 +618,15 @@ export default function Topic04() {
                     ))}
                 </div>
 
-                <CodeBlock
-                    code={hrtimerCode}
-                    language="c"
-                    filename="kernel/hrtimer_example.c"
-                />
+                <CodeBlock code={hrtimerCode} language="c" filename="kernel/hrtimer_example.c" />
             </Section>
 
             <Section id="s556" title="5.6  Threaded IRQ — 인터럽트의 스레드화">
-
                 <Prose>
-          전통적인 Bottom Half(<T id="softirq">Softirq</T>/<T id="tasklet">Tasklet</T>)는 인터럽트 컨텍스트에서 실행되어 슬립이
-          불가합니다. Linux 2.6.30부터 도입된{' '}
-                    <strong className="text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널
-          스레드로 실행해 슬립 가능하고 우선순위를 조정할 수 있습니다.
+                    전통적인 Bottom Half(<T id="softirq">Softirq</T>/<T id="tasklet">Tasklet</T>)는 인터럽트
+                    컨텍스트에서 실행되어 슬립이 불가합니다. Linux 2.6.30부터 도입된{' '}
+                    <strong className="text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널 스레드로 실행해 슬립
+                    가능하고 우선순위를 조정할 수 있습니다.
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-6">
@@ -675,7 +648,9 @@ export default function Topic04() {
                     </div>
 
                     <div className="bg-gray-800 rounded-xl border border-blue-700/50 p-4">
-                        <div className="text-sm font-bold text-blue-300 mb-3"><T id="threaded_irq">Threaded IRQ</T> (현대)</div>
+                        <div className="text-sm font-bold text-blue-300 mb-3">
+                            <T id="threaded_irq">Threaded IRQ</T> (현대)
+                        </div>
                         <ul className="space-y-1">
                             {[
                                 '하드웨어 인터럽트 → 빠른 top-half 확인',
@@ -693,33 +668,20 @@ export default function Topic04() {
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={threadedIrqCode}
-                    language="c"
-                    filename="drivers/my_driver.c"
-                />
+                <CodeBlock code={threadedIrqCode} language="c" filename="drivers/my_driver.c" />
 
                 <SubTitle>Threaded IRQ 스레드 확인</SubTitle>
-                <CodeBlock
-                    code={threadedIrqCheckCode}
-                    language="bash"
-                    filename="# 실전 확인"
-                />
+                <CodeBlock code={threadedIrqCheckCode} language="bash" filename="# 실전 확인" />
             </Section>
 
             <Section id="s557" title="5.7  인터럽트 어피니티 — CPU 코어 배정">
-
                 <Prose>
-          특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
-                    <code className="font-mono text-blue-300 text-xs">/proc/irq/&lt;n&gt;/smp_affinity</code>로
-          어느 CPU 코어가 해당 <T id="irq">IRQ</T>를 처리할지 지정할 수 있습니다.
+                    특정 NIC의 인터럽트를 항상 같은 CPU가 처리하면 캐시 효율이 높아집니다.{' '}
+                    <code className="font-mono text-blue-300 text-xs">/proc/irq/&lt;n&gt;/smp_affinity</code>로 어느 CPU
+                    코어가 해당 <T id="irq">IRQ</T>를 처리할지 지정할 수 있습니다.
                 </Prose>
 
-                <CodeBlock
-                    code={irqAffinityCode}
-                    language="bash"
-                    filename="# IRQ 어피니티 설정"
-                />
+                <CodeBlock code={irqAffinityCode} language="bash" filename="# IRQ 어피니티 설정" />
 
                 <SubTitle>어피니티 전략</SubTitle>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -743,10 +705,7 @@ export default function Topic04() {
                             desc: 'IRQ를 NIC와 같은 NUMA 노드 CPU에 배정해 PCIe 버스 지역성을 유지합니다.',
                         },
                     ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}
-                        >
+                        <div key={card.title} className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}>
                             <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
                             <p className="text-xs text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
@@ -755,13 +714,11 @@ export default function Topic04() {
             </Section>
 
             <Section id="s558" title="5.8  PREEMPT_RT — 실시간 리눅스 커널">
-
                 <Prose>
-          표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 스핀락을 보유한 채
-          선점 불가 구간이 존재합니다.{' '}
-                    <strong className="text-gray-200">PREEMPT_RT 패치</strong>는 이런 구간을 최소화해
-          최악 지연(worst-case latency)을 수십 마이크로초 이내로 줄입니다. 산업용 로봇,
-          오디오 처리, 자동차 제어 시스템에서 사용됩니다.
+                    표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 스핀락을 보유한 채 선점 불가 구간이
+                    존재합니다. <strong className="text-gray-200">PREEMPT_RT 패치</strong>는 이런 구간을 최소화해 최악
+                    지연(worst-case latency)을 수십 마이크로초 이내로 줄입니다. 산업용 로봇, 오디오 처리, 자동차 제어
+                    시스템에서 사용됩니다.
                 </Prose>
 
                 <SubTitle>핵심 변경사항</SubTitle>
@@ -776,13 +733,13 @@ export default function Topic04() {
                         </thead>
                         <tbody>
                             {(
-                [
-                    ['spinlock', '선점 불가 바쁜 대기', 'rt_mutex 기반 (슬립 가능)'],
-                    ['인터럽트 핸들러', '하드 IRQ 컨텍스트', 'Threaded IRQ (kthread)'],
-                    ['softirq', '인터럽트 컨텍스트', 'ksoftirqd 스레드로 분리'],
-                    ['타이머', '인터럽트 컨텍스트', 'hrtimer 스레드화'],
-                    ['최악 지연', '수ms~수십ms', '수십μs 이하'],
-                ] as [string, string, string][]
+                                [
+                                    ['spinlock', '선점 불가 바쁜 대기', 'rt_mutex 기반 (슬립 가능)'],
+                                    ['인터럽트 핸들러', '하드 IRQ 컨텍스트', 'Threaded IRQ (kthread)'],
+                                    ['softirq', '인터럽트 컨텍스트', 'ksoftirqd 스레드로 분리'],
+                                    ['타이머', '인터럽트 컨텍스트', 'hrtimer 스레드화'],
+                                    ['최악 지연', '수ms~수십ms', '수십μs 이하'],
+                                ] as [string, string, string][]
                             ).map(([feat, normal, rt]) => (
                                 <tr key={feat}>
                                     <Td>
@@ -837,10 +794,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                             desc: 'AUTOSAR Adaptive, 드론 비행 제어 — 결정론적 응답 시간 필수',
                         },
                     ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`bg-gray-800 rounded-xl border ${card.color} p-4`}
-                        >
+                        <div key={card.title} className={`bg-gray-800 rounded-xl border ${card.color} p-4`}>
                             <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
                             <p className="text-xs text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
@@ -851,21 +805,19 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     <div className="flex items-start gap-3">
                         <span className="text-amber-400 text-sm font-bold mt-0.5">!</span>
                         <p className="text-sm text-amber-200/80 leading-relaxed">
-              PREEMPT_RT는 평균 처리량(throughput)을 희생하고 최악 지연을 줄입니다.
-              일반 서버에서는 표준 커널이 더 높은 처리량을 제공합니다.
+                            PREEMPT_RT는 평균 처리량(throughput)을 희생하고 최악 지연을 줄입니다. 일반 서버에서는 표준
+                            커널이 더 높은 처리량을 제공합니다.
                         </p>
                     </div>
                 </div>
             </Section>
 
             <Section id="s559" title="5.9  IRQ Coalescing — 인터럽트 합치기와 NAPI 폴링">
-
                 <Prose>
-          고속 NIC에서 패킷이 초당 수백만 건 수신되면 패킷마다 인터럽트를 발생시킬 경우
-          CPU가 인터럽트 처리에만 매몰되는{' '}
-                    <strong className="text-gray-200">interrupt storm</strong>이 발생합니다.
-          IRQ coalescing은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만
-          인터럽트를 발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
+                    고속 NIC에서 패킷이 초당 수백만 건 수신되면 패킷마다 인터럽트를 발생시킬 경우 CPU가 인터럽트
+                    처리에만 매몰되는 <strong className="text-gray-200">interrupt storm</strong>이 발생합니다. IRQ
+                    coalescing은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만 인터럽트를
+                    발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
                 </Prose>
 
                 <SubTitle>NAPI 폴링 모드 동작 흐름</SubTitle>
@@ -903,13 +855,12 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                 <SubTitle>Coalescing 파라미터</SubTitle>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {coalescingParams.map((p) => (
-                        <div
-                            key={p.name}
-                            className={`rounded-xl border ${p.color} bg-gray-900/50 p-4`}
-                        >
+                        <div key={p.name} className={`rounded-xl border ${p.color} bg-gray-900/50 p-4`}>
                             <div className="flex items-center gap-2 mb-1">
                                 <span className={`font-mono font-bold text-sm ${p.titleColor}`}>{p.name}</span>
-                                <span className="text-xs text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">{p.dir}</span>
+                                <span className="text-xs text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">
+                                    {p.dir}
+                                </span>
                             </div>
                             <div className="text-xs text-gray-500 mb-2">기본값: {p.default}</div>
                             <p className="text-xs text-gray-400 leading-relaxed">{p.desc}</p>
@@ -921,10 +872,12 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                 <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 mb-6">
                     <div className="flex items-center gap-6 mb-4 text-xs text-gray-400">
                         <span className="flex items-center gap-1.5">
-                            <span className="inline-block w-3 h-3 rounded-sm bg-blue-500/70"></span>처리량 (높을수록 좋음)
+                            <span className="inline-block w-3 h-3 rounded-sm bg-blue-500/70"></span>처리량 (높을수록
+                            좋음)
                         </span>
                         <span className="flex items-center gap-1.5">
-                            <span className="inline-block w-3 h-3 rounded-sm bg-red-500/70"></span>레이턴시 (낮을수록 좋음)
+                            <span className="inline-block w-3 h-3 rounded-sm bg-red-500/70"></span>레이턴시 (낮을수록
+                            좋음)
                         </span>
                     </div>
                     <div className="space-y-3">
@@ -951,7 +904,8 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         ))}
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                        * 처리량과 레이턴시는 상대 수치(%). coalescing 시간이 길수록 처리량은 증가하나 레이턴시도 함께 증가합니다.
+                        * 처리량과 레이턴시는 상대 수치(%). coalescing 시간이 길수록 처리량은 증가하나 레이턴시도 함께
+                        증가합니다.
                     </p>
                 </div>
 
@@ -966,14 +920,12 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         <span className="text-blue-400 text-sm font-bold mt-0.5 shrink-0">tip</span>
                         <p className="text-sm text-blue-200/80 leading-relaxed">
                             HFT(초고빈도 거래) 또는 실시간 게임 서버는{' '}
-                            <strong className="text-blue-300">rx-usecs 0, rx-frames 1</strong>로
-                            인터럽트를 즉시 발생시켜 레이턴시를 최소화합니다.
-                            반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로 설정해
-                            CPU 사용률을 낮추고 처리량을 극대화합니다.
+                            <strong className="text-blue-300">rx-usecs 0, rx-frames 1</strong>로 인터럽트를 즉시
+                            발생시켜 레이턴시를 최소화합니다. 반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로
+                            설정해 CPU 사용률을 낮추고 처리량을 극대화합니다.
                         </p>
                     </div>
                 </div>
-
             </Section>
 
             <TopicNavigation topicId="05-interrupts" />

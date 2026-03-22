@@ -5,30 +5,37 @@ import { D3Container } from '../../viz/D3Container'
 
 // ── CFS 트리 데이터 ──────────────────────────────────────────────────────────
 interface CfsNode {
-  name: string
-  vruntime: number
-  nice: number
-  color: 'red' | 'black'
-  children?: CfsNode[]
+    name: string
+    vruntime: number
+    nice: number
+    color: 'red' | 'black'
+    children?: CfsNode[]
 }
 
 const initialTree: CfsNode = {
-    name: 'nginx', vruntime: 20, nice: 0, color: 'black',
+    name: 'nginx',
+    vruntime: 20,
+    nice: 0,
+    color: 'black',
     children: [
         {
-            name: 'bash', vruntime: 12, nice: 0, color: 'red',
-            children: [
-                { name: 'init', vruntime: 8, nice: -5, color: 'black' },
-            ]
+            name: 'bash',
+            vruntime: 12,
+            nice: 0,
+            color: 'red',
+            children: [{ name: 'init', vruntime: 8, nice: -5, color: 'black' }],
         },
         {
-            name: 'python', vruntime: 35, nice: 5, color: 'black',
+            name: 'python',
+            vruntime: 35,
+            nice: 5,
+            color: 'black',
             children: [
                 { name: 'sshd', vruntime: 28, nice: 0, color: 'red' },
                 { name: 'cron', vruntime: 48, nice: 10, color: 'red' },
-            ]
-        }
-    ]
+            ],
+        },
+    ],
 }
 
 // Find leftmost node (min vruntime)
@@ -71,11 +78,11 @@ function insertNode(tree: CfsNode, newNode: CfsNode): CfsNode {
 }
 
 interface SelectedNodeInfo {
-  name: string
-  vruntime: number
-  nice: number
-  color: 'red' | 'black'
-  isNext: boolean
+    name: string
+    vruntime: number
+    nice: number
+    color: 'red' | 'black'
+    isNext: boolean
 }
 
 function renderCFSTree(
@@ -83,7 +90,7 @@ function renderCFSTree(
     width: number,
     height: number,
     treeData: CfsNode,
-    onNodeClick: (info: SelectedNodeInfo) => void
+    onNodeClick: (info: SelectedNodeInfo) => void,
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
@@ -95,15 +102,16 @@ function renderCFSTree(
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`)
 
-    const root = d3.hierarchy<CfsNode>(treeData, d => d.children)
+    const root = d3.hierarchy<CfsNode>(treeData, (d) => d.children)
     const treeLayout = d3.tree<CfsNode>().size([innerW, innerH])
     treeLayout(root)
 
     const leftmostName = findLeftmost(treeData).name
 
-    const linkGen = d3.linkVertical<d3.HierarchyPointLink<CfsNode>, d3.HierarchyPointNode<CfsNode>>()
-        .x(d => d.x)
-        .y(d => d.y)
+    const linkGen = d3
+        .linkVertical<d3.HierarchyPointLink<CfsNode>, d3.HierarchyPointNode<CfsNode>>()
+        .x((d) => d.x)
+        .y((d) => d.y)
 
     g.selectAll('path.link')
         .data(root.links())
@@ -112,13 +120,14 @@ function renderCFSTree(
         .attr('fill', 'none')
         .attr('stroke', c.textDim)
         .attr('stroke-width', 1.5)
-        .attr('d', d => linkGen(d as d3.HierarchyPointLink<CfsNode>) ?? '')
+        .attr('d', (d) => linkGen(d as d3.HierarchyPointLink<CfsNode>) ?? '')
 
-    const nodeG = g.selectAll<SVGGElement, d3.HierarchyPointNode<CfsNode>>('g.node')
+    const nodeG = g
+        .selectAll<SVGGElement, d3.HierarchyPointNode<CfsNode>>('g.node')
         .data(root.descendants())
         .join('g')
         .attr('class', 'node')
-        .attr('transform', d => `translate(${d.x},${d.y})`)
+        .attr('transform', (d) => `translate(${d.x},${d.y})`)
         .attr('cursor', 'pointer')
         .on('click', (_event, d) => {
             onNodeClick({
@@ -132,36 +141,40 @@ function renderCFSTree(
 
     const nodeR = 22
 
-    nodeG.append('circle')
+    nodeG
+        .append('circle')
         .attr('r', nodeR)
-        .attr('fill', d => d.data.color === 'red' ? c.redFill : c.bgCard)
-        .attr('stroke', d => {
+        .attr('fill', (d) => (d.data.color === 'red' ? c.redFill : c.bgCard))
+        .attr('stroke', (d) => {
             if (d.data.name === leftmostName) return c.blueStroke
             return d.data.color === 'red' ? c.redStroke : c.border
         })
-        .attr('stroke-width', d => d.data.name === leftmostName ? 2.5 : 1.5)
+        .attr('stroke-width', (d) => (d.data.name === leftmostName ? 2.5 : 1.5))
 
-    nodeG.append('text')
+    nodeG
+        .append('text')
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .attr('y', -3)
-        .attr('fill', d => d.data.color === 'red' ? c.redText : c.text)
+        .attr('fill', (d) => (d.data.color === 'red' ? c.redText : c.text))
         .attr('font-size', '10px')
         .attr('font-family', 'monospace')
         .attr('pointer-events', 'none')
-        .text(d => d.data.name)
+        .text((d) => d.data.name)
 
-    nodeG.append('text')
+    nodeG
+        .append('text')
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .attr('y', 8)
-        .attr('fill', d => d.data.color === 'red' ? c.redStroke : c.textMuted)
+        .attr('fill', (d) => (d.data.color === 'red' ? c.redStroke : c.textMuted))
         .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .attr('pointer-events', 'none')
-        .text(d => `${d.data.vruntime}ms`)
+        .text((d) => `${d.data.vruntime}ms`)
 
-    nodeG.filter(d => d.data.name === leftmostName)
+    nodeG
+        .filter((d) => d.data.name === leftmostName)
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('y', -nodeR - 8)
@@ -205,7 +218,7 @@ export function CfsTreeViz() {
 
         const newTree = insertNode(afterRemove, newNode)
         setCfsTree(newTree)
-        setSimCount(c => c + 1)
+        setSimCount((c) => c + 1)
         setSelectedNode(null)
     }, [cfsTree, simCount])
 
@@ -213,7 +226,7 @@ export function CfsTreeViz() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderCFSTree(svg, w, h, cfsTree, handleNodeClick)
         },
-        [cfsTree, handleNodeClick]
+        [cfsTree, handleNodeClick],
     )
 
     return (
@@ -221,7 +234,9 @@ export function CfsTreeViz() {
             {/* CFS 트리 */}
             <div className="md:col-span-2 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
                 <div className="px-4 py-2.5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">CFS 런큐 — Red-Black 트리 (vruntime 기준 BST)</span>
+                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        CFS 런큐 — Red-Black 트리 (vruntime 기준 BST)
+                    </span>
                     <button
                         onClick={handleSimulate}
                         className="text-xs px-3 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-mono transition-colors"
@@ -229,12 +244,7 @@ export function CfsTreeViz() {
                         ▶ 스케줄링 시뮬레이션
                     </button>
                 </div>
-                <D3Container
-                    renderFn={renderCFSWithState}
-                    deps={[cfsTree]}
-                    height={300}
-                    zoomable
-                />
+                <D3Container renderFn={renderCFSWithState} deps={[cfsTree]} height={300} zoomable />
             </div>
 
             {/* 노드 정보 패널 */}
@@ -256,8 +266,13 @@ export function CfsTreeViz() {
                                 {selectedNode.name.slice(0, 2)}
                             </span>
                             <div>
-                                <div className="font-bold text-gray-900 dark:text-gray-100 font-mono">{selectedNode.name}</div>
-                                <div className="text-xs" style={{ color: selectedNode.color === 'red' ? '#ef4444' : '#9ca3af' }}>
+                                <div className="font-bold text-gray-900 dark:text-gray-100 font-mono">
+                                    {selectedNode.name}
+                                </div>
+                                <div
+                                    className="text-xs"
+                                    style={{ color: selectedNode.color === 'red' ? '#ef4444' : '#9ca3af' }}
+                                >
                                     {selectedNode.color === 'red' ? 'RED node' : 'BLACK node'}
                                 </div>
                             </div>
@@ -270,7 +285,9 @@ export function CfsTreeViz() {
                         <div className="space-y-1.5 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400">vruntime</span>
-                                <span className="font-mono text-gray-900 dark:text-gray-100">{selectedNode.vruntime}ms</span>
+                                <span className="font-mono text-gray-900 dark:text-gray-100">
+                                    {selectedNode.vruntime}ms
+                                </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500 dark:text-gray-400">nice</span>
@@ -279,8 +296,8 @@ export function CfsTreeViz() {
                         </div>
                         {selectedNode.isNext && (
                             <div className="rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-2.5 text-xs text-blue-700 dark:text-blue-300">
-                                이 프로세스가 RB 트리에서 가장 왼쪽(최소 vruntime) 노드입니다.
-                                다음 타임슬라이스에 CPU를 할당받습니다.
+                                이 프로세스가 RB 트리에서 가장 왼쪽(최소 vruntime) 노드입니다. 다음 타임슬라이스에 CPU를
+                                할당받습니다.
                             </div>
                         )}
                         {!selectedNode.isNext && (
@@ -291,7 +308,9 @@ export function CfsTreeViz() {
                     </div>
                 ) : (
                     <div className="text-sm text-gray-400 dark:text-gray-600 text-center py-8">
-                        노드를 클릭하면<br />정보가 표시됩니다
+                        노드를 클릭하면
+                        <br />
+                        정보가 표시됩니다
                     </div>
                 )}
             </div>

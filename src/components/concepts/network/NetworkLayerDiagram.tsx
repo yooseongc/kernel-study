@@ -8,12 +8,12 @@ import { D3Container } from '../../../components/viz/D3Container'
 // 6.1  네트워크 레이어 다이어그램 (D3)
 // ─────────────────────────────────────────────────────────────────────────────
 interface LayerInfo {
-  label: string
-  fn: string
-  fill: string
-  stroke: string
-  textColor: string
-  fnColor: string
+    label: string
+    fn: string
+    fill: string
+    stroke: string
+    textColor: string
+    fnColor: string
 }
 
 function getNetworkLayers(isDark: boolean): LayerInfo[] {
@@ -81,7 +81,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
 function renderNetworkLayers(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
     width: number,
-    height: number
+    height: number,
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
@@ -102,8 +102,7 @@ function renderNetworkLayers(
     const arrowTop = padTop + 12
     const arrowBottom = padTop + totalH - 12
 
-    svg
-        .append('defs')
+    svg.append('defs')
         .append('marker')
         .attr('id', 'arrow-up')
         .attr('markerWidth', 10)
@@ -117,8 +116,7 @@ function renderNetworkLayers(
         .attr('stroke', c.textMuted)
         .attr('stroke-width', 1.5)
 
-    svg
-        .append('line')
+    svg.append('line')
         .attr('x1', arrowX)
         .attr('y1', arrowBottom)
         .attr('x2', arrowX)
@@ -127,8 +125,7 @@ function renderNetworkLayers(
         .attr('stroke-width', 2)
         .attr('marker-end', 'url(#arrow-up)')
 
-    svg
-        .append('text')
+    svg.append('text')
         .attr('x', arrowX)
         .attr('y', arrowBottom + 14)
         .attr('text-anchor', 'middle')
@@ -136,8 +133,7 @@ function renderNetworkLayers(
         .attr('font-size', 11)
         .text('패킷')
 
-    svg
-        .append('text')
+    svg.append('text')
         .attr('x', arrowX)
         .attr('y', arrowTop - 4)
         .attr('text-anchor', 'middle')
@@ -191,7 +187,7 @@ export function NetworkLayerDiagram() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, width: number, height: number) => {
             renderNetworkLayers(svg, width, height)
         },
-        [theme] // eslint-disable-line react-hooks/exhaustive-deps
+        [theme], // eslint-disable-line react-hooks/exhaustive-deps
     )
 
     return (

@@ -20,19 +20,19 @@ export function TableOfContents({ scrollRef, collapsed = false }: TableOfContent
     // 현재 페이지의 h2/h3 수집
     useEffect(() => {
         const collect = () => {
-            const headings = Array.from(
-                document.querySelectorAll<HTMLHeadingElement>('main h2, main h3')
-            )
+            const headings = Array.from(document.querySelectorAll<HTMLHeadingElement>('main h2, main h3'))
             headings.forEach((el, i) => {
                 if (!el.id) {
                     el.id = `toc-${i}-${el.textContent?.slice(0, 20).replace(/\s+/g, '-').toLowerCase() ?? i}`
                 }
             })
-            setItems(headings.map(el => ({
-                id: el.id,
-                text: el.textContent?.trim() ?? '',
-                level: el.tagName === 'H2' ? 2 : 3,
-            })))
+            setItems(
+                headings.map((el) => ({
+                    id: el.id,
+                    text: el.textContent?.trim() ?? '',
+                    level: el.tagName === 'H2' ? 2 : 3,
+                })),
+            )
         }
 
         const mo = new MutationObserver(collect)
@@ -50,15 +50,13 @@ export function TableOfContents({ scrollRef, collapsed = false }: TableOfContent
 
         observerRef.current = new IntersectionObserver(
             (entries) => {
-                const visible = entries.filter(e => e.isIntersecting)
+                const visible = entries.filter((e) => e.isIntersecting)
                 if (visible.length > 0) {
-                    const top = visible.sort(
-                        (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
-                    )[0]
+                    const top = visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
                     setActiveId(top.target.id)
                 }
             },
-            { root, rootMargin: '-10% 0px -70% 0px', threshold: 0 }
+            { root, rootMargin: '-10% 0px -70% 0px', threshold: 0 },
         )
 
         items.forEach(({ id }) => {
@@ -74,7 +72,8 @@ export function TableOfContents({ scrollRef, collapsed = false }: TableOfContent
         if (!el) return
         const container = scrollRef.current
         if (container) {
-            const offset = el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 80
+            const offset =
+                el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 80
             container.scrollTo({ top: offset, behavior: 'smooth' })
         }
     }
@@ -90,7 +89,7 @@ export function TableOfContents({ scrollRef, collapsed = false }: TableOfContent
                     이 페이지
                 </div>
                 <ul className="space-y-0.5">
-                    {items.map(item => (
+                    {items.map((item) => (
                         <li key={item.id}>
                             <button
                                 onClick={() => scrollTo(item.id)}

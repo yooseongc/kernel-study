@@ -3,9 +3,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface CodeBlockProps {
-  code: string
-  language?: string
-  filename?: string
+    code: string
+    language?: string
+    filename?: string
 }
 
 export function CodeBlock({ code, language = 'c', filename }: CodeBlockProps) {
@@ -26,9 +26,7 @@ export function CodeBlock({ code, language = 'c', filename }: CodeBlockProps) {
                     <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
                     <span className="w-3 h-3 rounded-full bg-green-500/70" />
                 </div>
-                {filename && (
-                    <span className="text-xs text-gray-400 font-mono ml-2">{filename}</span>
-                )}
+                {filename && <span className="text-xs text-gray-400 font-mono ml-2">{filename}</span>}
                 <button
                     onClick={handleCopy}
                     className="ml-auto text-xs text-gray-400 hover:text-gray-200 transition-colors px-2 py-0.5 rounded hover:bg-gray-700"

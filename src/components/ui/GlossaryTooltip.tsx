@@ -12,36 +12,41 @@ import { glossary, type GlossaryTerm } from '../../data/glossary'
 
 // ── 카테고리 한국어 레이블 ──────────────────────────────────────────────────
 const CATEGORY_LABEL: Record<GlossaryTerm['category'], string> = {
-    process:   '프로세스',
-    memory:    '메모리',
-    network:   '네트워크',
+    process: '프로세스',
+    memory: '메모리',
+    network: '네트워크',
     interrupt: '인터럽트',
-    sync:      '동기화',
-    driver:    '드라이버',
-    debug:     '디버깅',
-    general:   '일반',
-    fs:        '파일시스템',
-    security:  '보안',
-    virt:      '가상화',
+    sync: '동기화',
+    driver: '드라이버',
+    debug: '디버깅',
+    general: '일반',
+    fs: '파일시스템',
+    security: '보안',
+    virt: '가상화',
 }
 
 // ── 카테고리별 뱃지 색 ─────────────────────────────────────────────────────
 const CATEGORY_COLOR: Record<GlossaryTerm['category'], string> = {
-    process:   'text-blue-600   dark:text-blue-400   bg-blue-50   dark:bg-blue-950/50   border-blue-200   dark:border-blue-800',
-    memory:    'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-800',
-    network:   'text-green-600  dark:text-green-400  bg-green-50  dark:bg-green-950/50  border-green-200  dark:border-green-800',
-    interrupt: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800',
-    sync:      'text-red-600    dark:text-red-400    bg-red-50    dark:bg-red-950/50    border-red-200    dark:border-red-800',
-    driver:    'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/50 border-yellow-200 dark:border-yellow-800',
-    debug:     'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
-    general:   'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
-    fs:        'text-teal-600   dark:text-teal-400   bg-teal-50   dark:bg-teal-950/50   border-teal-200   dark:border-teal-800',
-    security:  'text-rose-600   dark:text-rose-400   bg-rose-50   dark:bg-rose-950/50   border-rose-200   dark:border-rose-800',
-    virt:      'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800',
+    process:
+        'text-blue-600   dark:text-blue-400   bg-blue-50   dark:bg-blue-950/50   border-blue-200   dark:border-blue-800',
+    memory: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-800',
+    network:
+        'text-green-600  dark:text-green-400  bg-green-50  dark:bg-green-950/50  border-green-200  dark:border-green-800',
+    interrupt:
+        'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800',
+    sync: 'text-red-600    dark:text-red-400    bg-red-50    dark:bg-red-950/50    border-red-200    dark:border-red-800',
+    driver: 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/50 border-yellow-200 dark:border-yellow-800',
+    debug: 'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
+    general:
+        'text-gray-600   dark:text-gray-400   bg-gray-50   dark:bg-gray-800      border-gray-200   dark:border-gray-700',
+    fs: 'text-teal-600   dark:text-teal-400   bg-teal-50   dark:bg-teal-950/50   border-teal-200   dark:border-teal-800',
+    security:
+        'text-rose-600   dark:text-rose-400   bg-rose-50   dark:bg-rose-950/50   border-rose-200   dark:border-rose-800',
+    virt: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800',
 }
 
 // ── glossary를 id → entry 맵으로 변환 (모듈 초기화 시 1회) ─────────────────
-const glossaryMap = new Map(glossary.map(g => [g.id, g]))
+const glossaryMap = new Map(glossary.map((g) => [g.id, g]))
 
 // ── Props ──────────────────────────────────────────────────────────────────
 interface Props {
@@ -59,18 +64,18 @@ interface TooltipPos {
 }
 
 const TOOLTIP_WIDTH = 320
-const TOOLTIP_GAP   = 6   // 트리거와의 간격(px)
-const SCREEN_MARGIN = 12  // 화면 가장자리 여백(px)
+const TOOLTIP_GAP = 6 // 트리거와의 간격(px)
+const SCREEN_MARGIN = 12 // 화면 가장자리 여백(px)
 
 // ── 컴포넌트 ───────────────────────────────────────────────────────────────
 export function T({ id, children }: Props) {
     const entry = glossaryMap.get(id)
 
-    const [open, setOpen]     = useState(false)
-    const [pos, setPos]       = useState<TooltipPos>({ top: 0, left: 0, flipY: false })
-    const triggerRef          = useRef<HTMLSpanElement>(null)
-    const tooltipRef          = useRef<HTMLDivElement>(null)
-    const closeTimer          = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const [open, setOpen] = useState(false)
+    const [pos, setPos] = useState<TooltipPos>({ top: 0, left: 0, flipY: false })
+    const triggerRef = useRef<HTMLSpanElement>(null)
+    const tooltipRef = useRef<HTMLDivElement>(null)
+    const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // ── 위치 계산 ──────────────────────────────────────────────────────────
     const calcPos = useCallback(() => {
@@ -111,10 +116,7 @@ export function T({ id, children }: Props) {
     useEffect(() => {
         if (!open) return
         const onMouseDown = (e: MouseEvent) => {
-            if (
-                triggerRef.current?.contains(e.target as Node) ||
-                tooltipRef.current?.contains(e.target as Node)
-            ) return
+            if (triggerRef.current?.contains(e.target as Node) || tooltipRef.current?.contains(e.target as Node)) return
             setOpen(false)
         }
         document.addEventListener('mousedown', onMouseDown)
@@ -124,13 +126,20 @@ export function T({ id, children }: Props) {
     // ── Escape 로 닫기 ─────────────────────────────────────────────────────
     useEffect(() => {
         if (!open) return
-        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setOpen(false)
+        }
         document.addEventListener('keydown', onKey)
         return () => document.removeEventListener('keydown', onKey)
     }, [open])
 
     // ── 언마운트 시 타이머 정리 ───────────────────────────────────────────
-    useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current) }, [])
+    useEffect(
+        () => () => {
+            if (closeTimer.current) clearTimeout(closeTimer.current)
+        },
+        [],
+    )
 
     // ── glossary에 없는 id → 폴백 (그냥 children 렌더) ───────────────────
     if (!entry) {
@@ -138,56 +147,58 @@ export function T({ id, children }: Props) {
     }
 
     // ── 툴팁 카드 (portal → document.body) ───────────────────────────────
-    const tooltipCard = open ? createPortal(
-        <div
-            ref={tooltipRef}
-            role="tooltip"
-            id={`glossary-tip-${id}`}
-            style={{
-                position: 'fixed',
-                top:      pos.top,
-                left:     pos.left,
-                width:    TOOLTIP_WIDTH,
-                zIndex:   9999,
-                transformOrigin: pos.flipY ? 'bottom left' : 'top left',
-            }}
-            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl p-4 animate-in fade-in slide-in-from-top-1 duration-150"
-            onMouseEnter={cancelClose}
-            onMouseLeave={scheduleClose}
-        >
-            {/* 헤더: 용어 + 카테고리 뱃지 */}
-            <div className="flex items-start justify-between gap-2 mb-2">
-                <span className="font-mono font-semibold text-sm text-gray-900 dark:text-gray-100 leading-snug">
-                    {entry.term}
-                    {entry.aliases && entry.aliases.length > 0 && (
-                        <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500 text-xs">
-                            ({entry.aliases[0]})
-                        </span>
-                    )}
-                </span>
-                <span className={`text-xs border rounded-full px-2 py-0.5 shrink-0 font-medium ${CATEGORY_COLOR[entry.category]}`}>
-                    {CATEGORY_LABEL[entry.category]}
-                </span>
-            </div>
+    const tooltipCard = open
+        ? createPortal(
+            <div
+                ref={tooltipRef}
+                role="tooltip"
+                id={`glossary-tip-${id}`}
+                style={{
+                    position: 'fixed',
+                    top: pos.top,
+                    left: pos.left,
+                    width: TOOLTIP_WIDTH,
+                    zIndex: 9999,
+                    transformOrigin: pos.flipY ? 'bottom left' : 'top left',
+                }}
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl p-4 animate-in fade-in slide-in-from-top-1 duration-150"
+                onMouseEnter={cancelClose}
+                onMouseLeave={scheduleClose}
+            >
+                {/* 헤더: 용어 + 카테고리 뱃지 */}
+                <div className="flex items-start justify-between gap-2 mb-2">
+                    <span className="font-mono font-semibold text-sm text-gray-900 dark:text-gray-100 leading-snug">
+                        {entry.term}
+                        {entry.aliases && entry.aliases.length > 0 && (
+                            <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500 text-xs">
+                                  ({entry.aliases[0]})
+                            </span>
+                        )}
+                    </span>
+                    <span
+                        className={`text-xs border rounded-full px-2 py-0.5 shrink-0 font-medium ${CATEGORY_COLOR[entry.category]}`}
+                    >
+                        {CATEGORY_LABEL[entry.category]}
+                    </span>
+                </div>
 
-            {/* 정의 */}
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                {entry.definition}
-            </p>
+                {/* 정의 */}
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{entry.definition}</p>
 
-            {/* 용어사전 링크 */}
-            <div className="mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
-                <Link
-                    to={`/glossary#${entry.id}`}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                    onClick={() => setOpen(false)}
-                >
-                    용어사전에서 보기 →
-                </Link>
-            </div>
-        </div>,
-        document.body,
-    ) : null
+                {/* 용어사전 링크 */}
+                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                    <Link
+                        to={`/glossary#${entry.id}`}
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                        onClick={() => setOpen(false)}
+                    >
+                          용어사전에서 보기 →
+                    </Link>
+                </div>
+            </div>,
+            document.body,
+        )
+        : null
 
     return (
         <>

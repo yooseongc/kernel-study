@@ -22,7 +22,8 @@ export function renderSlubViz(
 
     svg.style('background', bg)
 
-    const padL = 12, padT = 10
+    const padL = 12,
+        padT = 10
 
     // Split SVG: left 52% for slab visualization, right for kmalloc table
     const slabSectionW = Math.floor(width * 0.52)
@@ -34,23 +35,31 @@ export function renderSlubViz(
     const cacheW = Math.min(220, slabSectionW * 0.8)
     const cacheH = 44
     g.append('rect')
-        .attr('x', padL).attr('y', padT)
-        .attr('width', cacheW).attr('height', cacheH)
+        .attr('x', padL)
+        .attr('y', padT)
+        .attr('width', cacheW)
+        .attr('height', cacheH)
         .attr('rx', 6)
         .attr('fill', c.purpleFill)
-        .attr('stroke', cacheColor).attr('stroke-width', 1.5)
+        .attr('stroke', cacheColor)
+        .attr('stroke-width', 1.5)
 
     g.append('text')
-        .attr('x', padL + cacheW / 2).attr('y', padT + 16)
+        .attr('x', padL + cacheW / 2)
+        .attr('y', padT + 16)
         .attr('text-anchor', 'middle')
-        .attr('fill', cacheColor).attr('font-size', '11px')
-        .attr('font-family', 'monospace').attr('font-weight', 'bold')
+        .attr('fill', cacheColor)
+        .attr('font-size', '11px')
+        .attr('font-family', 'monospace')
+        .attr('font-weight', 'bold')
         .text('kmem_cache')
 
     g.append('text')
-        .attr('x', padL + cacheW / 2).attr('y', padT + 32)
+        .attr('x', padL + cacheW / 2)
+        .attr('y', padT + 32)
         .attr('text-anchor', 'middle')
-        .attr('fill', dimFill).attr('font-size', '9px')
+        .attr('fill', dimFill)
+        .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .text('task_struct  size=9536B  align=64')
 
@@ -63,7 +72,8 @@ export function renderSlubViz(
     const slabAreaW = slabSectionW - padL
     const slabW = slabAreaW / 3 - 8
     const slabStartY = padT + cacheH + 16
-    const objCols = 3, objRows = 2
+    const objCols = 3,
+        objRows = 2
     const objW = (slabW - 16) / objCols
     const objH = 22
 
@@ -73,18 +83,23 @@ export function renderSlubViz(
 
         // Slab container
         g.append('rect')
-            .attr('x', sx).attr('y', sy)
+            .attr('x', sx)
+            .attr('y', sy)
             .attr('width', slabW)
             .attr('height', objRows * (objH + 4) + 32)
             .attr('rx', 6)
             .attr('fill', c.bg)
-            .attr('stroke', borderColor).attr('stroke-width', 1)
+            .attr('stroke', borderColor)
+            .attr('stroke-width', 1)
 
         g.append('text')
-            .attr('x', sx + slabW / 2).attr('y', sy + 14)
+            .attr('x', sx + slabW / 2)
+            .attr('y', sy + 14)
             .attr('text-anchor', 'middle')
             .attr('fill', slab.label === 'active' ? c.greenStroke : slab.label === 'partial' ? c.amberStroke : dimFill)
-            .attr('font-size', '9px').attr('font-family', 'monospace').attr('font-weight', 'bold')
+            .attr('font-size', '9px')
+            .attr('font-family', 'monospace')
+            .attr('font-weight', 'bold')
             .text(slab.label)
 
         // Objects
@@ -96,8 +111,10 @@ export function renderSlubViz(
             const oy = sy + 20 + row * (objH + 4)
 
             g.append('rect')
-                .attr('x', ox).attr('y', oy)
-                .attr('width', objW).attr('height', objH)
+                .attr('x', ox)
+                .attr('y', oy)
+                .attr('width', objW)
+                .attr('height', objH)
                 .attr('rx', 3)
                 .attr('fill', allocated ? allocFill : freeFill)
                 .attr('stroke', allocated ? allocStroke : borderColor)
@@ -110,11 +127,16 @@ export function renderSlubViz(
 
         // Free list chain arrows
         for (let i = 0; i < freeChain.length - 1; i++) {
-            const p1 = freeChain[i], p2 = freeChain[i + 1]
+            const p1 = freeChain[i],
+                p2 = freeChain[i + 1]
             g.append('line')
-                .attr('x1', p1.x).attr('y1', p1.y)
-                .attr('x2', p2.x).attr('y2', p2.y)
-                .attr('stroke', dimFill).attr('stroke-width', 1).attr('stroke-dasharray', '2,2')
+                .attr('x1', p1.x)
+                .attr('y1', p1.y)
+                .attr('x2', p2.x)
+                .attr('y2', p2.y)
+                .attr('stroke', dimFill)
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '2,2')
         }
     })
 
@@ -125,16 +147,21 @@ export function renderSlubViz(
     const rowH = 16
 
     g.append('text')
-        .attr('x', tableX).attr('y', tableY + 12)
-        .attr('fill', textFill).attr('font-size', '10px')
-        .attr('font-family', 'monospace').attr('font-weight', 'bold')
+        .attr('x', tableX)
+        .attr('y', tableY + 12)
+        .attr('fill', textFill)
+        .attr('font-size', '10px')
+        .attr('font-family', 'monospace')
+        .attr('font-weight', 'bold')
         .text('kmalloc size classes')
 
     sizes.forEach((sz, i) => {
         const ry = tableY + 24 + i * rowH
         g.append('text')
-            .attr('x', tableX + 10).attr('y', ry + 10)
-            .attr('fill', dimFill).attr('font-size', '9px')
+            .attr('x', tableX + 10)
+            .attr('y', ry + 10)
+            .attr('fill', dimFill)
+            .attr('font-size', '9px')
             .attr('font-family', 'monospace')
             .text(`kmalloc-${sz}   (${sz}B)`)
     })

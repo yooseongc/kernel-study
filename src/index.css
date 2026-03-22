@@ -1,39 +1,60 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
-*, *::before, *::after { box-sizing: border-box; }
-html, body, #root { height: 100%; margin: 0; padding: 0; }
+@theme {
+    --font-sans: 'Pretendard Variable', Pretendard, system-ui, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'Cascadia Code', monospace;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
+    font-family: 'Pretendard Variable', Pretendard, system-ui, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+code,
+kbd,
+pre,
+.font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'Cascadia Code', monospace;
 }
 
 /* ── Custom scrollbar ──────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(75% 0 0 / 0.35);
-  border-radius: 9999px;
+    background: oklch(75% 0 0 / 0.35);
+    border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(60% 0 0 / 0.55);
+    background: oklch(60% 0 0 / 0.55);
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: oklch(40% 0 0 / 0.5);
+    background: oklch(40% 0 0 / 0.5);
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: oklch(55% 0 0 / 0.7);
+    background: oklch(55% 0 0 / 0.7);
 }
 /* Firefox */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: oklch(75% 0 0 / 0.35) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: oklch(75% 0 0 / 0.35) transparent;
 }
 .dark * {
-  scrollbar-color: oklch(40% 0 0 / 0.5) transparent;
+    scrollbar-color: oklch(40% 0 0 / 0.5) transparent;
 }

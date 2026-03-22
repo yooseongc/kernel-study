@@ -2,13 +2,13 @@ import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 
 interface WebGLCanvasProps {
-  setupFn: (ctx: {
-    scene: THREE.Scene
-    camera: THREE.PerspectiveCamera
-    renderer: THREE.WebGLRenderer
-    canvas: HTMLCanvasElement
-  }) => (() => void) | void
-  className?: string
+    setupFn: (ctx: {
+        scene: THREE.Scene
+        camera: THREE.PerspectiveCamera
+        renderer: THREE.WebGLRenderer
+        canvas: HTMLCanvasElement
+    }) => (() => void) | void
+    className?: string
 }
 
 export function WebGLCanvas({ setupFn, className = '' }: WebGLCanvasProps) {

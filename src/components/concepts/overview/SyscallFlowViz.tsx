@@ -1,24 +1,20 @@
 interface ZoneProps {
-  title: string
-  subtitle: string
-  active: boolean
-  activeClass: string
-  activeTitleClass: string
-  children: React.ReactNode
+    title: string
+    subtitle: string
+    active: boolean
+    activeClass: string
+    activeTitleClass: string
+    children: React.ReactNode
 }
 
 function SyscallZone({ title, subtitle, active, activeClass, activeTitleClass, children }: ZoneProps) {
     return (
         <div
             className={`rounded-lg p-3 transition-all duration-300 ${
-                active
-                    ? activeClass
-                    : 'bg-gray-800 border border-gray-700 opacity-50'
+                active ? activeClass : 'bg-gray-800 border border-gray-700 opacity-50'
             }`}
         >
-            <div className={`text-xs font-mono mb-2 ${active ? activeTitleClass : 'text-gray-400'}`}>
-                {title}
-            </div>
+            <div className={`text-xs font-mono mb-2 ${active ? activeTitleClass : 'text-gray-400'}`}>{title}</div>
             <div className="text-xs text-gray-500 mb-2">{subtitle}</div>
             {children}
         </div>
@@ -42,11 +38,15 @@ export function SyscallFlowViz({ step }: { step: number }) {
                 activeTitleClass="text-xs font-mono text-blue-300"
             >
                 <div className="space-y-1.5">
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 0 ? 'bg-blue-700/60 text-blue-100 ring-1 ring-blue-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            App: write(fd, buf, n)
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 0 ? 'bg-blue-700/60 text-blue-100 ring-1 ring-blue-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        App: write(fd, buf, n)
                     </div>
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 1 ? 'bg-blue-700/60 text-blue-100 ring-1 ring-blue-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            glibc: mov $1, %rax
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 1 ? 'bg-blue-700/60 text-blue-100 ring-1 ring-blue-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        glibc: mov $1, %rax
                     </div>
                 </div>
             </SyscallZone>
@@ -55,15 +55,11 @@ export function SyscallFlowViz({ step }: { step: number }) {
             <div className="flex md:flex-col items-center justify-center gap-1 px-1">
                 <div
                     className={`text-xs font-mono text-center transition-all duration-300 px-2 py-1 rounded ${
-                        activeZone === 1
-                            ? 'text-orange-300 bg-orange-900/40 border border-orange-500'
-                            : 'text-gray-600'
+                        activeZone === 1 ? 'text-orange-300 bg-orange-900/40 border border-orange-500' : 'text-gray-600'
                     }`}
                 >
                     <div>{step <= 2 ? '↓' : '↑'}</div>
-                    <div className="text-[10px] leading-tight">
-                        {step <= 2 ? 'syscall' : 'sysretq'}
-                    </div>
+                    <div className="text-[10px] leading-tight">{step <= 2 ? 'syscall' : 'sysretq'}</div>
                 </div>
             </div>
 
@@ -76,14 +72,20 @@ export function SyscallFlowViz({ step }: { step: number }) {
                 activeTitleClass="text-xs font-mono text-purple-300"
             >
                 <div className="space-y-1.5">
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 3 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            entry_SYSCALL_64
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 3 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        entry_SYSCALL_64
                     </div>
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 4 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            sys_call_table[rax]
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 4 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        sys_call_table[rax]
                     </div>
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            __x64_sys_write()
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-purple-700/60 text-purple-100 ring-1 ring-purple-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        __x64_sys_write()
                     </div>
                 </div>
             </SyscallZone>
@@ -97,11 +99,15 @@ export function SyscallFlowViz({ step }: { step: number }) {
                 activeTitleClass="text-xs font-mono text-green-300"
             >
                 <div className="space-y-1.5">
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-green-700/60 text-green-100 ring-1 ring-green-400' : 'bg-gray-700/60 text-gray-300'}`}>
-            vfs_write()
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-green-700/60 text-green-100 ring-1 ring-green-400' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        vfs_write()
                     </div>
-                    <div className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-green-700/40 text-green-200' : 'bg-gray-700/60 text-gray-300'}`}>
-            file→f_op→write()
+                    <div
+                        className={`text-xs font-mono px-2 py-1 rounded transition-all duration-300 ${step === 5 ? 'bg-green-700/40 text-green-200' : 'bg-gray-700/60 text-gray-300'}`}
+                    >
+                        file→f_op→write()
                     </div>
                 </div>
             </SyscallZone>

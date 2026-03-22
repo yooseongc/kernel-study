@@ -12,10 +12,10 @@ import { D3Container } from '../../viz/D3Container'
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface BottleneckItem {
-  label: string
-  priority: number
-  color: string
-  cmd: string
+    label: string
+    priority: number
+    color: string
+    cmd: string
 }
 
 const bottleneckData: BottleneckItem[] = [
@@ -69,7 +69,6 @@ function renderNetworkBottleneck(
         .attr('y2', padTop + innerH)
         .attr('stroke', axisColor)
         .attr('stroke-width', 1)
-
     ;[0, 25, 50, 75, 100].forEach((tick) => {
         const x = xScale(tick)
         g.append('line')

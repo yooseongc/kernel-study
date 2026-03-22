@@ -234,15 +234,9 @@ export default function Topic12() {
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 12
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Linux 보안 모델
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    Linux Security Model
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 12</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Linux 보안 모델</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Linux Security Model</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     DAC, Capabilities, LSM, AppArmor, SELinux, Namespace 격리, 컨테이너 보안
                 </p>
@@ -260,8 +254,8 @@ export default function Topic12() {
             {/* 12.1 Linux 보안 모델 개요 */}
             <Section id="s121" title="12.1  Linux 보안 모델 개요">
                 <Prose>
-          Linux의 보안은 전통적인 DAC(임의 접근 제어)를 기반으로, <T id="lsm">LSM</T>(Linux Security Module)
-          프레임워크가 MAC(강제 접근 제어)를 추가합니다.
+                    Linux의 보안은 전통적인 DAC(임의 접근 제어)를 기반으로, <T id="lsm">LSM</T>(Linux Security Module)
+                    프레임워크가 MAC(강제 접근 제어)를 추가합니다.
                 </Prose>
 
                 {/* 보안 계층 시각화 */}
@@ -325,10 +319,7 @@ export default function Topic12() {
                                 {layer.label}
                             </div>
                         ) : (
-                            <div
-                                key={i}
-                                className={`rounded-lg border px-4 py-3 ${layer.bg} ${layer.border}`}
-                            >
+                            <div key={i} className={`rounded-lg border px-4 py-3 ${layer.bg} ${layer.border}`}>
                                 <span className="font-bold" style={{ color: layer.color }}>
                                     {layer.label}
                                 </span>
@@ -370,12 +361,8 @@ export default function Topic12() {
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-                                {card.subtitle}
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">{card.subtitle}</div>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -384,31 +371,21 @@ export default function Topic12() {
             {/* 12.2 Linux Capabilities */}
             <Section id="s122" title="12.2  Linux Capabilities">
                 <Prose>
-          전통적으로 root(uid=0)는 모든 권한을 가졌습니다. <T id="capability">Capability</T>는 이를 37개 단위로 분리해
-          최소 권한 원칙을 적용합니다.
+                    전통적으로 root(uid=0)는 모든 권한을 가졌습니다. <T id="capability">Capability</T>는 이를 37개
+                    단위로 분리해 최소 권한 원칙을 적용합니다.
                 </Prose>
-                <InfoTable
-                    headers={['Capability', '권한', '예시']}
-                    rows={capabilityRows}
-                />
-                <CodeBlock
-                    code={capabilitiesCode}
-                    language="bash"
-                    filename="# Capabilities 실전"
-                />
+                <InfoTable headers={['Capability', '권한', '예시']} rows={capabilityRows} />
+                <CodeBlock code={capabilitiesCode} language="bash" filename="# Capabilities 실전" />
             </Section>
 
             {/* 12.3 LSM 프레임워크 */}
             <Section id="s123" title="12.3  LSM 프레임워크">
                 <Prose>
-                    <T id="lsm">LSM</T>(Linux Security Module)은 커널 보안 결정 지점에 훅을 제공합니다. <T id="selinux">SELinux</T>, <T id="apparmor">AppArmor</T>,
-          Smack 등이 이 프레임워크 위에 구현됩니다.
+                    <T id="lsm">LSM</T>(Linux Security Module)은 커널 보안 결정 지점에 훅을 제공합니다.{' '}
+                    <T id="selinux">SELinux</T>, <T id="apparmor">AppArmor</T>, Smack 등이 이 프레임워크 위에
+                    구현됩니다.
                 </Prose>
-                <CodeBlock
-                    code={lsmHooksCode}
-                    language="c"
-                    filename="include/linux/lsm_hooks.h 개념"
-                />
+                <CodeBlock code={lsmHooksCode} language="c" filename="include/linux/lsm_hooks.h 개념" />
 
                 {/* LSM 훅 흐름 카드 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -437,9 +414,7 @@ export default function Topic12() {
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -449,33 +424,24 @@ export default function Topic12() {
             <Section id="s124" title="12.4  AppArmor — 경로 기반 MAC">
                 <Prose>
                     <T id="apparmor">AppArmor</T>는 프로그램별로 접근 가능한 파일/네트워크를 프로파일로 정의합니다.
-          Ubuntu/Debian의 기본 <T id="lsm">LSM</T>입니다.
+                    Ubuntu/Debian의 기본 <T id="lsm">LSM</T>입니다.
                 </Prose>
                 <CodeBlock
                     code={apparmorProfileCode}
                     language="bash"
                     filename="/etc/apparmor.d/usr.sbin.nginx — 프로파일 예시"
                 />
-                <CodeBlock
-                    code={apparmorMgmtCode}
-                    language="bash"
-                    filename="# AppArmor 관리"
-                />
+                <CodeBlock code={apparmorMgmtCode} language="bash" filename="# AppArmor 관리" />
             </Section>
 
             {/* 12.5 SELinux */}
             <Section id="s125" title="12.5  SELinux — 레이블 기반 MAC">
                 <Prose>
                     <T id="selinux">SELinux</T>는 모든 파일, 프로세스, 소켓에{' '}
-                    <strong className="text-gray-800 dark:text-gray-200">보안 레이블(context)</strong>을
-          부여하고, 정책 데이터베이스로 레이블 간 접근을 제어합니다. RHEL/CentOS/Fedora의 기본
-          LSM입니다.
+                    <strong className="text-gray-800 dark:text-gray-200">보안 레이블(context)</strong>을 부여하고, 정책
+                    데이터베이스로 레이블 간 접근을 제어합니다. RHEL/CentOS/Fedora의 기본 LSM입니다.
                 </Prose>
-                <CodeBlock
-                    code={selinuxCode}
-                    language="bash"
-                    filename="# SELinux 실전"
-                />
+                <CodeBlock code={selinuxCode} language="bash" filename="# SELinux 실전" />
 
                 {/* SELinux vs AppArmor 비교 카드 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -518,7 +484,7 @@ export default function Topic12() {
                                         className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-2"
                                     >
                                         <span style={{ color: card.color }} className="mt-0.5 shrink-0">
-                      ▸
+                                            ▸
                                         </span>
                                         <span>{item}</span>
                                     </li>
@@ -532,22 +498,32 @@ export default function Topic12() {
             {/* 12.6 Namespace와 보안 모델 */}
             <Section id="s126" title="12.6  Namespace — 컨테이너 격리의 기반">
                 <Prose>
-          Linux <T id="linux_namespace">namespace</T>는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
-          Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, <T id="capability">Capabilities</T>·<T id="lsm">LSM</T>과 결합해
-          컨테이너 보안을 구성합니다.
+                    Linux <T id="linux_namespace">namespace</T>는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
+                    Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, <T id="capability">Capabilities</T>·
+                    <T id="lsm">LSM</T>과 결합해 컨테이너 보안을 구성합니다.
                 </Prose>
 
                 {/* 7가지 namespace 카드 */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                        { name: 'user', desc: 'UID/GID 매핑, capabilities 범위', color: '#8b5cf6', flag: 'CLONE_NEWUSER' },
+                        {
+                            name: 'user',
+                            desc: 'UID/GID 매핑, capabilities 범위',
+                            color: '#8b5cf6',
+                            flag: 'CLONE_NEWUSER',
+                        },
                         { name: 'mnt', desc: '마운트 포인트 독립 뷰', color: '#3b82f6', flag: 'CLONE_NEWNS' },
                         { name: 'pid', desc: 'PID 1부터 독립 번호 부여', color: '#10b981', flag: 'CLONE_NEWPID' },
                         { name: 'net', desc: '독립 네트워크 스택·인터페이스', color: '#f59e0b', flag: 'CLONE_NEWNET' },
                         { name: 'ipc', desc: '세마포어·공유 메모리 격리', color: '#ef4444', flag: 'CLONE_NEWIPC' },
                         { name: 'uts', desc: 'hostname·domainname 격리', color: '#06b6d4', flag: 'CLONE_NEWUTS' },
                         { name: 'cgroup', desc: 'cgroup 루트 격리', color: '#84cc16', flag: 'CLONE_NEWCGROUP' },
-                        { name: 'time', desc: '단조 시계 오프셋 (Linux 5.6+)', color: '#f97316', flag: 'CLONE_NEWTIME' },
+                        {
+                            name: 'time',
+                            desc: '단조 시계 오프셋 (Linux 5.6+)',
+                            color: '#f97316',
+                            flag: 'CLONE_NEWTIME',
+                        },
                     ].map((ns) => (
                         <div
                             key={ns.name}
@@ -560,62 +536,46 @@ export default function Topic12() {
                                     {ns.name}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                                {ns.desc}
-                            </p>
-                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">
-                                {ns.flag}
-                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{ns.desc}</p>
+                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">{ns.flag}</div>
                         </div>
                     ))}
                 </div>
 
-                <CodeBlock
-                    code={namespaceOverviewCode}
-                    language="bash"
-                    filename="# Namespace 확인 및 unshare"
-                />
+                <CodeBlock code={namespaceOverviewCode} language="bash" filename="# Namespace 확인 및 unshare" />
 
                 {/* user namespace — 비특권 컨테이너 */}
                 <div className="rounded-xl border border-purple-200 dark:border-purple-800/50 bg-purple-50/50 dark:bg-purple-950/20 p-4 space-y-3">
                     <div className="text-sm font-semibold text-purple-700 dark:text-purple-300 font-mono">
-            user namespace — 비특권 컨테이너의 핵심
+                        user namespace — 비특권 컨테이너의 핵심
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-            컨테이너 내부 uid 0(root)를 호스트의 일반 uid(예: 1000)에 매핑합니다.
-            컨테이너 안에서 root처럼 동작하지만, 호스트 커널에서는 권한이 없습니다.
-            이 덕분에 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">rootless Docker</code>,{' '}
+                        컨테이너 내부 uid 0(root)를 호스트의 일반 uid(예: 1000)에 매핑합니다. 컨테이너 안에서 root처럼
+                        동작하지만, 호스트 커널에서는 권한이 없습니다. 이 덕분에{' '}
+                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">rootless Docker</code>,{' '}
                         <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">Podman</code> 등이 동작합니다.
                     </p>
-                    <CodeBlock
-                        code={userNsCode}
-                        language="bash"
-                        filename="# user namespace — UID 매핑"
-                    />
+                    <CodeBlock code={userNsCode} language="bash" filename="# user namespace — UID 매핑" />
                 </div>
 
                 {/* mount namespace */}
                 <div className="rounded-xl border border-blue-200 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-950/20 p-4 space-y-3">
                     <div className="text-sm font-semibold text-blue-700 dark:text-blue-300 font-mono">
-            mount namespace — pivot_root와 컨테이너 rootfs
+                        mount namespace — pivot_root와 컨테이너 rootfs
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-            각 컨테이너는 독립된 마운트 namespace를 갖습니다. Docker는 컨테이너 시작 시
-            overlay2 레이어를 마운트한 뒤 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">pivot_root</code>로
-            루트 파일시스템을 교체합니다. 호스트의 파일시스템은 보이지 않습니다.
+                        각 컨테이너는 독립된 마운트 namespace를 갖습니다. Docker는 컨테이너 시작 시 overlay2 레이어를
+                        마운트한 뒤 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">pivot_root</code>로 루트
+                        파일시스템을 교체합니다. 호스트의 파일시스템은 보이지 않습니다.
                     </p>
-                    <CodeBlock
-                        code={mountNsCode}
-                        language="bash"
-                        filename="# mount namespace — pivot_root 절차"
-                    />
+                    <CodeBlock code={mountNsCode} language="bash" filename="# mount namespace — pivot_root 절차" />
                 </div>
 
                 {/* 보안 레이어 요약 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-              컨테이너 보안 레이어 (중첩 적용)
+                            컨테이너 보안 레이어 (중첩 적용)
                         </span>
                     </div>
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -651,14 +611,22 @@ export default function Topic12() {
                                 color: '#8b5cf6',
                             },
                         ].map((row) => (
-                            <div key={row.layer} className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                                <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: row.color }} />
+                            <div
+                                key={row.layer}
+                                className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
+                            >
+                                <div
+                                    className="w-2 h-2 rounded-full shrink-0 mt-1"
+                                    style={{ backgroundColor: row.color }}
+                                />
                                 <div className="min-w-0 flex-1">
                                     <div className="text-xs font-mono font-bold" style={{ color: row.color }}>
                                         {row.layer}
                                     </div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{row.role}</div>
-                                    <div className="text-xs text-gray-400 dark:text-gray-600 font-mono mt-0.5">{row.example}</div>
+                                    <div className="text-xs text-gray-400 dark:text-gray-600 font-mono mt-0.5">
+                                        {row.example}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -671,8 +639,8 @@ export default function Topic12() {
                 <Prose>
                     PID namespace는 리눅스 네임스페이스 중 하나로, 각 namespace 내에서 PID를{' '}
                     <strong className="text-gray-800 dark:text-gray-200">독립적으로 번호 매기는</strong> 메커니즘입니다.
-                    Docker 컨테이너에서 PID 1이 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">init</code>처럼
-                    보이지만, 호스트에서는 완전히 다른 PID를 가집니다.
+                    Docker 컨테이너에서 PID 1이 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">init</code>
+                    처럼 보이지만, 호스트에서는 완전히 다른 PID를 가집니다.
                 </Prose>
 
                 {/* PID 매핑 시각화 */}
@@ -695,7 +663,9 @@ export default function Topic12() {
                                     key={p.pid}
                                     className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/40 rounded px-2 py-1"
                                 >
-                                    <span className="text-blue-600 dark:text-blue-400 font-bold shrink-0">{p.pid}:</span>
+                                    <span className="text-blue-600 dark:text-blue-400 font-bold shrink-0">
+                                        {p.pid}:
+                                    </span>
                                     <span className="text-gray-700 dark:text-gray-300">{p.name}</span>
                                 </div>
                             ))}
@@ -723,7 +693,9 @@ export default function Topic12() {
                                     key={p.pid}
                                     className="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/40 rounded px-2 py-1"
                                 >
-                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">{p.pid}:</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">
+                                        {p.pid}:
+                                    </span>
                                     <span className="text-gray-700 dark:text-gray-300">{p.name}</span>
                                 </div>
                             ))}
@@ -745,7 +717,9 @@ export default function Topic12() {
                                     key={p.pid}
                                     className="flex items-center gap-2 bg-violet-100 dark:bg-violet-900/40 rounded px-2 py-1"
                                 >
-                                    <span className="text-violet-600 dark:text-violet-400 font-bold shrink-0">{p.pid}:</span>
+                                    <span className="text-violet-600 dark:text-violet-400 font-bold shrink-0">
+                                        {p.pid}:
+                                    </span>
                                     <span className="text-gray-700 dark:text-gray-300">{p.name}</span>
                                 </div>
                             ))}
@@ -788,8 +762,13 @@ export default function Topic12() {
                                 </div>
                                 <ul className="space-y-1">
                                     {card.items.map((item, i) => (
-                                        <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-2">
-                                            <span style={{ color: card.color }} className="mt-0.5 shrink-0">▸</span>
+                                        <li
+                                            key={i}
+                                            className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-2"
+                                        >
+                                            <span style={{ color: card.color }} className="mt-0.5 shrink-0">
+                                                ▸
+                                            </span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
@@ -829,10 +808,18 @@ export default function Topic12() {
                                 color: '#f59e0b',
                             },
                         ].map((row) => (
-                            <div key={row.api} className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                                <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: row.color }} />
+                            <div
+                                key={row.api}
+                                className="px-4 py-3 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
+                            >
+                                <div
+                                    className="w-2 h-2 rounded-full shrink-0 mt-1"
+                                    style={{ backgroundColor: row.color }}
+                                />
                                 <div className="min-w-0 flex-1">
-                                    <div className="text-xs font-mono font-bold" style={{ color: row.color }}>{row.api}</div>
+                                    <div className="text-xs font-mono font-bold" style={{ color: row.color }}>
+                                        {row.api}
+                                    </div>
                                     <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{row.desc}</div>
                                 </div>
                             </div>
@@ -846,21 +833,50 @@ export default function Topic12() {
                         중첩 Namespace (Docker-in-Docker)
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        컨테이너 안의 컨테이너(DinD)는 PID namespace를 3단계 이상으로 중첩할 수 있습니다.
-                        각 레벨에서 독립적인 PID 번호가 부여되며,{' '}
-                        <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">NSpid</code> 필드에
-                        계층별 PID가 순서대로 기록됩니다.
+                        컨테이너 안의 컨테이너(DinD)는 PID namespace를 3단계 이상으로 중첩할 수 있습니다. 각 레벨에서
+                        독립적인 PID 번호가 부여되며,{' '}
+                        <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">NSpid</code> 필드에 계층별 PID가
+                        순서대로 기록됩니다.
                     </p>
                     <div className="font-mono text-xs flex flex-col items-center gap-1 pt-1">
                         {[
-                            { label: '호스트 PID 5000', color: '#3b82f6', bg: 'bg-blue-100 dark:bg-blue-900/40', border: 'border-blue-300 dark:border-blue-700' },
-                            { label: '↓', color: '#6b7280', bg: 'bg-transparent', border: 'border-transparent', arrow: true },
-                            { label: '컨테이너1 PID 10', color: '#10b981', bg: 'bg-emerald-100 dark:bg-emerald-900/40', border: 'border-emerald-300 dark:border-emerald-700' },
-                            { label: '↓', color: '#6b7280', bg: 'bg-transparent', border: 'border-transparent', arrow: true },
-                            { label: '컨테이너2 PID 1  (DinD)', color: '#8b5cf6', bg: 'bg-violet-100 dark:bg-violet-900/40', border: 'border-violet-300 dark:border-violet-700' },
+                            {
+                                label: '호스트 PID 5000',
+                                color: '#3b82f6',
+                                bg: 'bg-blue-100 dark:bg-blue-900/40',
+                                border: 'border-blue-300 dark:border-blue-700',
+                            },
+                            {
+                                label: '↓',
+                                color: '#6b7280',
+                                bg: 'bg-transparent',
+                                border: 'border-transparent',
+                                arrow: true,
+                            },
+                            {
+                                label: '컨테이너1 PID 10',
+                                color: '#10b981',
+                                bg: 'bg-emerald-100 dark:bg-emerald-900/40',
+                                border: 'border-emerald-300 dark:border-emerald-700',
+                            },
+                            {
+                                label: '↓',
+                                color: '#6b7280',
+                                bg: 'bg-transparent',
+                                border: 'border-transparent',
+                                arrow: true,
+                            },
+                            {
+                                label: '컨테이너2 PID 1  (DinD)',
+                                color: '#8b5cf6',
+                                bg: 'bg-violet-100 dark:bg-violet-900/40',
+                                border: 'border-violet-300 dark:border-violet-700',
+                            },
                         ].map((row, i) =>
                             row.arrow ? (
-                                <div key={i} className="text-gray-400 dark:text-gray-600">↓</div>
+                                <div key={i} className="text-gray-400 dark:text-gray-600">
+                                    ↓
+                                </div>
                             ) : (
                                 <div
                                     key={i}
@@ -869,25 +885,15 @@ export default function Topic12() {
                                 >
                                     {row.label}
                                 </div>
-                            )
+                            ),
                         )}
-                        <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                            NSpid: 5000  10  1
-                        </div>
+                        <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">NSpid: 5000 10 1</div>
                     </div>
                 </div>
 
                 {/* 코드 블록 */}
-                <CodeBlock
-                    code={pidNsBashCode}
-                    language="bash"
-                    filename="# PID Namespace 실전"
-                />
-                <CodeBlock
-                    code={pidNsCloneCode}
-                    language="c"
-                    filename="clone() — 새 PID namespace 생성"
-                />
+                <CodeBlock code={pidNsBashCode} language="bash" filename="# PID Namespace 실전" />
+                <CodeBlock code={pidNsCloneCode} language="c" filename="clone() — 새 PID namespace 생성" />
             </Section>
 
             <TopicNavigation topicId="12-security" />

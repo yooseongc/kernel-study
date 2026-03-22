@@ -7,13 +7,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface RaceState {
-  counter: number
-  regA: number | null
-  regB: number | null
-  activeA: boolean
-  activeB: boolean
-  highlight: 'none' | 'a' | 'b' | 'danger'
-  note: string
+    counter: number
+    regA: number | null
+    regB: number | null
+    activeA: boolean
+    activeB: boolean
+    highlight: 'none' | 'a' | 'b' | 'danger'
+    note: string
 }
 
 const raceStates: RaceState[] = [
@@ -105,7 +105,7 @@ function ThreadBox({
         <div className={`${colBase} ${borderCls} flex-1`}>
             <div className={`text-xs font-mono font-bold ${textCls}`}>{label}</div>
             <div className="text-xs text-gray-400 font-mono">
-          reg ={' '}
+                reg ={' '}
                 <span className={regVal !== null ? 'text-yellow-300' : 'text-gray-600'}>
                     {regVal !== null ? regVal : '—'}
                 </span>
@@ -134,24 +134,15 @@ export function RaceConditionViz({ step }: { step: number }) {
         <div className="flex flex-col gap-3 p-2">
             <div className="flex gap-3 items-stretch">
                 {/* Thread A */}
-                <ThreadBox
-                    label="Thread A"
-                    regVal={s.regA}
-                    active={activeA}
-                    danger={false}
-                />
+                <ThreadBox label="Thread A" regVal={s.regA} active={activeA} danger={false} />
 
                 {/* Shared counter */}
                 <div
                     className={`${colBase} flex-1 items-center justify-center ${
-                        isDanger
-                            ? 'border-red-500 bg-red-900/30'
-                            : 'border-yellow-600/60 bg-yellow-900/10'
+                        isDanger ? 'border-red-500 bg-red-900/30' : 'border-yellow-600/60 bg-yellow-900/10'
                     }`}
                 >
-                    <div className="text-xs font-mono text-yellow-400 font-bold text-center">
-            shared counter
-                    </div>
+                    <div className="text-xs font-mono text-yellow-400 font-bold text-center">shared counter</div>
                     <div
                         className={`text-2xl font-mono font-bold text-center ${
                             isDanger ? 'text-red-400' : 'text-yellow-300'
@@ -160,19 +151,12 @@ export function RaceConditionViz({ step }: { step: number }) {
                         {s.counter}
                     </div>
                     {isDanger && (
-                        <div className="text-[10px] font-mono text-red-400 text-center">
-              기댓값: 2 ← 손실!
-                        </div>
+                        <div className="text-[10px] font-mono text-red-400 text-center">기댓값: 2 ← 손실!</div>
                     )}
                 </div>
 
                 {/* Thread B */}
-                <ThreadBox
-                    label="Thread B"
-                    regVal={s.regB}
-                    active={activeB}
-                    danger={isDanger}
-                />
+                <ThreadBox label="Thread B" regVal={s.regB} active={activeB} danger={isDanger} />
             </div>
 
             <div

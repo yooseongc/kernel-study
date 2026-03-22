@@ -32,9 +32,9 @@ export const dmaSteps = [
 type DmaZone = 'nic' | 'pcie' | 'ram'
 
 interface DmaStepData {
-  active: DmaZone[]
-  arrow?: { from: DmaZone; to: DmaZone }
-  note: string
+    active: DmaZone[]
+    arrow?: { from: DmaZone; to: DmaZone }
+    note: string
 }
 
 const dmaStepData: DmaStepData[] = [
@@ -60,13 +60,13 @@ const dmaStepData: DmaStepData[] = [
 ]
 
 interface DmaZoneDef {
-  id: DmaZone
-  label: string
-  sub: string
-  color: string
-  activeColor: string
-  border: string
-  activeBorder: string
+    id: DmaZone
+    label: string
+    sub: string
+    color: string
+    activeColor: string
+    border: string
+    activeBorder: string
 }
 
 const dmaZones: DmaZoneDef[] = [
@@ -112,9 +112,9 @@ export function DMAViz({ step }: { step: number }) {
                 {dmaZones.map((z, zi) => {
                     const isActive = current.active.includes(z.id)
                     const showArrow =
-            current.arrow?.from === z.id &&
-            dmaZones[zi + 1] !== undefined &&
-            current.arrow.to === dmaZones[zi + 1].id
+                        current.arrow?.from === z.id &&
+                        dmaZones[zi + 1] !== undefined &&
+                        current.arrow.to === dmaZones[zi + 1].id
                     return (
                         <div key={z.id} className="flex items-center gap-3 flex-1">
                             <div
@@ -132,13 +132,11 @@ export function DMAViz({ step }: { step: number }) {
                                         className="text-[9px] mt-1 font-mono px-2 py-0.5 rounded"
                                         style={{ background: z.activeBorder + '33', color: z.activeBorder }}
                                     >
-                    활성
+                                        활성
                                     </div>
                                 )}
                             </div>
-                            {showArrow && (
-                                <div className="text-yellow-400 text-2xl font-bold select-none">→</div>
-                            )}
+                            {showArrow && <div className="text-yellow-400 text-2xl font-bold select-none">→</div>}
                         </div>
                     )
                 })}

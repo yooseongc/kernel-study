@@ -190,11 +190,11 @@ bpftrace -e 'tracepoint:syscalls:sys_exit_read /args->ret > 0/ { @[comm] = hist(
 // 8.9  실무 활용 카드
 // ─────────────────────────────────────────────────────────────────────────────
 interface UseCaseCard {
-  title: string
-  subtitle: string
-  description: string
-  accentColor: string
-  tags: string[]
+    title: string
+    subtitle: string
+    description: string
+    accentColor: string
+    tags: string[]
 }
 
 const useCases: UseCaseCard[] = [
@@ -202,7 +202,7 @@ const useCases: UseCaseCard[] = [
         title: 'Cilium / eBPF CNI',
         subtitle: 'Kubernetes 네트워크 정책',
         description:
-      'Kubernetes 네트워크 정책을 eBPF로 구현합니다. iptables 규칙 수만 개를 대체하여 O(1) 패킷 처리 성능과 수평 확장성을 제공합니다.',
+            'Kubernetes 네트워크 정책을 eBPF로 구현합니다. iptables 규칙 수만 개를 대체하여 O(1) 패킷 처리 성능과 수평 확장성을 제공합니다.',
         accentColor: '#06b6d4',
         tags: ['eBPF', 'CNI', 'k8s', 'iptables 대체'],
     },
@@ -210,7 +210,7 @@ const useCases: UseCaseCard[] = [
         title: 'Katran (Facebook)',
         subtitle: 'L4 로드밸런서',
         description:
-      'XDP로 구현한 L4 로드밸런서로 10Mpps 이상의 처리량을 달성합니다. 기존 IPVS 대비 CPU 사용량이 크게 낮고 DSR(Direct Server Return) 지원합니다.',
+            'XDP로 구현한 L4 로드밸런서로 10Mpps 이상의 처리량을 달성합니다. 기존 IPVS 대비 CPU 사용량이 크게 낮고 DSR(Direct Server Return) 지원합니다.',
         accentColor: '#f59e0b',
         tags: ['XDP', 'L4 LB', 'DSR', '10Mpps'],
     },
@@ -218,7 +218,7 @@ const useCases: UseCaseCard[] = [
         title: 'Falco / Tracee',
         subtitle: '컨테이너 보안 감사',
         description:
-      'eBPF kprobe와 tracepoint로 시스템 콜을 실시간 감시합니다. 컨테이너 내부의 이상 동작(exec, file open, network)을 탐지하고 경고를 생성합니다.',
+            'eBPF kprobe와 tracepoint로 시스템 콜을 실시간 감시합니다. 컨테이너 내부의 이상 동작(exec, file open, network)을 탐지하고 경고를 생성합니다.',
         accentColor: '#ef4444',
         tags: ['kprobe', 'tracepoint', 'seccomp', 'syscall 감사'],
     },
@@ -400,12 +400,8 @@ export default function Topic07() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 08
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    XDP, eBPF, 고성능 패킷 처리
-                </h1>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 08</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">XDP, eBPF, 고성능 패킷 처리</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
                     XDP, eBPF &amp; High-Performance Packet Processing
                 </p>
@@ -426,9 +422,10 @@ export default function Topic07() {
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
                 <Prose>
-                    <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 — <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는
-          고성능 경로입니다. 기존 커널 네트워크 스택 대비 10~100배 빠릅니다. 패킷이 DMA 버퍼에서
-          곧바로 <T id="ebpf">eBPF</T> 프로그램으로 넘어가기 때문에 메모리 할당 및 복사 오버헤드가 없습니다.
+                    <T id="xdp">XDP</T>(eXpress Data Path)는 드라이버가 패킷을 수신하는 즉시 —{' '}
+                    <T id="sk_buff">sk_buff</T> 할당 전에 — 처리하는 고성능 경로입니다. 기존 커널 네트워크 스택 대비
+                    10~100배 빠릅니다. 패킷이 DMA 버퍼에서 곧바로 <T id="ebpf">eBPF</T> 프로그램으로 넘어가기 때문에
+                    메모리 할당 및 복사 오버헤드가 없습니다.
                     <div className="mt-2 flex flex-wrap gap-2">
                         <KernelRef path="include/linux/bpf.h" sym="bpf_prog" label="bpf_prog" />
                         <KernelRef path="include/uapi/linux/bpf.h" sym="xdp_md" label="xdp_md" />
@@ -437,10 +434,34 @@ export default function Topic07() {
                 <XdpVsNormalDiagram />
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                        { action: 'XDP_DROP', desc: '패킷 즉시 폐기 (DDoS 방어)', color: 'text-red-400', bg: 'bg-red-900/20 dark:bg-red-900/20', border: 'border-red-800/50' },
-                        { action: 'XDP_PASS', desc: '일반 네트워크 스택으로 전달', color: 'text-green-400', bg: 'bg-green-900/20 dark:bg-green-900/20', border: 'border-green-800/50' },
-                        { action: 'XDP_TX', desc: '수신 NIC로 즉시 반송', color: 'text-purple-400', bg: 'bg-purple-900/20 dark:bg-purple-900/20', border: 'border-purple-800/50' },
-                        { action: 'XDP_REDIRECT', desc: '다른 NIC나 CPU로 전달', color: 'text-cyan-400', bg: 'bg-cyan-900/20 dark:bg-cyan-900/20', border: 'border-cyan-800/50' },
+                        {
+                            action: 'XDP_DROP',
+                            desc: '패킷 즉시 폐기 (DDoS 방어)',
+                            color: 'text-red-400',
+                            bg: 'bg-red-900/20 dark:bg-red-900/20',
+                            border: 'border-red-800/50',
+                        },
+                        {
+                            action: 'XDP_PASS',
+                            desc: '일반 네트워크 스택으로 전달',
+                            color: 'text-green-400',
+                            bg: 'bg-green-900/20 dark:bg-green-900/20',
+                            border: 'border-green-800/50',
+                        },
+                        {
+                            action: 'XDP_TX',
+                            desc: '수신 NIC로 즉시 반송',
+                            color: 'text-purple-400',
+                            bg: 'bg-purple-900/20 dark:bg-purple-900/20',
+                            border: 'border-purple-800/50',
+                        },
+                        {
+                            action: 'XDP_REDIRECT',
+                            desc: '다른 NIC나 CPU로 전달',
+                            color: 'text-cyan-400',
+                            bg: 'bg-cyan-900/20 dark:bg-cyan-900/20',
+                            border: 'border-cyan-800/50',
+                        },
                     ].map((item) => (
                         <div key={item.action} className={`rounded-lg border ${item.border} ${item.bg} px-3 py-3`}>
                             <div className={`font-mono text-xs font-bold mb-1 ${item.color}`}>{item.action}</div>
@@ -452,32 +473,41 @@ export default function Topic07() {
 
             {/* 8.2 XDP 모드 비교 */}
             <Section id="s82" title="8.2  XDP 모드 비교">
-                <InfoTable
-                    headers={['모드', '위치', '성능', '드라이버 요구']}
-                    rows={xdpModeRows}
-                />
+                <InfoTable headers={['모드', '위치', '성능', '드라이버 요구']} rows={xdpModeRows} />
                 <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 px-4 py-3 text-xs text-blue-200">
                     <span className="font-bold text-blue-300">권장:</span> 프로덕션에서는 Native XDP를 사용하세요.
-          드라이버 지원 여부는{' '}
-                    <span className="font-mono text-blue-300">ip link set dev eth0 xdp obj prog.o</span>으로
-          확인할 수 있습니다. 실패 시 Generic으로 자동 fallback 됩니다.
+                    드라이버 지원 여부는{' '}
+                    <span className="font-mono text-blue-300">ip link set dev eth0 xdp obj prog.o</span>으로 확인할 수
+                    있습니다. 실패 시 Generic으로 자동 fallback 됩니다.
                 </div>
             </Section>
 
             {/* 8.3 eBPF 실행 모델 */}
             <Section id="s83" title="8.3  eBPF 실행 모델">
                 <Prose>
-                    <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를 실행하는
-          범용 VM입니다. <T id="xdp">XDP</T>뿐만 아니라 <T id="kprobe">kprobe</T>, tracepoint, cgroup, perf 등 다양한 지점에서
-          동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
+                    <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를
+                    실행하는 범용 VM입니다. <T id="xdp">XDP</T>뿐만 아니라 <T id="kprobe">kprobe</T>, tracepoint,
+                    cgroup, perf 등 다양한 지점에서 동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
                 </Prose>
                 <EbpfPipelineDiagram />
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                     {[
-                        { step: 'eBPF C 코드', detail: 'restricted C — 포인터 연산 제한, 전역 함수 금지', color: '#3b82f6' },
+                        {
+                            step: 'eBPF C 코드',
+                            detail: 'restricted C — 포인터 연산 제한, 전역 함수 금지',
+                            color: '#3b82f6',
+                        },
                         { step: 'clang/llvm', detail: 'target bpf — ELF 오브젝트로 컴파일', color: '#8b5cf6' },
-                        { step: 'eBPF 바이트코드', detail: '64bit RISC ISA, 11개 레지스터, 512B 스택', color: '#06b6d4' },
-                        { step: 'verifier', detail: '정적 분석으로 안전성 보장 — 통과 못 하면 로드 거부', color: '#f59e0b' },
+                        {
+                            step: 'eBPF 바이트코드',
+                            detail: '64bit RISC ISA, 11개 레지스터, 512B 스택',
+                            color: '#06b6d4',
+                        },
+                        {
+                            step: 'verifier',
+                            detail: '정적 분석으로 안전성 보장 — 통과 못 하면 로드 거부',
+                            color: '#f59e0b',
+                        },
                         { step: 'JIT 컴파일', detail: 'x86-64 / ARM64 네이티브 코드로 변환', color: '#10b981' },
                         { step: '커널 실행', detail: 'hook 지점에서 패킷/이벤트마다 호출됨', color: '#22c55e' },
                     ].map((item) => (
@@ -501,39 +531,33 @@ export default function Topic07() {
             {/* 8.4 eBPF verifier */}
             <Section id="s84" title="8.4  eBPF verifier">
                 <Prose>
-          verifier는 <T id="ebpf">eBPF</T> 프로그램이 커널을 크래시시킬 수 없음을 정적 분석으로 보장합니다. 모든
-          가능한 실행 경로를 추적하며 안전하지 않은 접근을 거부합니다.
+                    verifier는 <T id="ebpf">eBPF</T> 프로그램이 커널을 크래시시킬 수 없음을 정적 분석으로 보장합니다.
+                    모든 가능한 실행 경로를 추적하며 안전하지 않은 접근을 거부합니다.
                 </Prose>
-                <InfoTable
-                    headers={['검사 항목', '설명']}
-                    rows={verifierRows}
-                />
+                <InfoTable headers={['검사 항목', '설명']} rows={verifierRows} />
                 <div className="rounded-lg border border-yellow-800/40 bg-yellow-900/20 px-4 py-3 text-xs text-yellow-200">
-                    <span className="font-bold text-yellow-300">주의:</span> verifier 통과를 위해서는 모든 포인터
-          접근 전에 경계 검사를 수행해야 합니다. 컴파일러 최적화로 제거된 경계 검사를 verifier가
-          추적하지 못하는 경우 로드가 거부될 수 있습니다.
+                    <span className="font-bold text-yellow-300">주의:</span> verifier 통과를 위해서는 모든 포인터 접근
+                    전에 경계 검사를 수행해야 합니다. 컴파일러 최적화로 제거된 경계 검사를 verifier가 추적하지 못하는
+                    경우 로드가 거부될 수 있습니다.
                 </div>
             </Section>
 
             {/* 8.5 eBPF 맵 */}
             <Section id="s85" title="8.5  eBPF 맵 (Maps)">
                 <Prose>
-                    <T id="ebpf">eBPF</T> 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value 저장소입니다.
-          커널과 사용자 공간 모두에서 읽고 쓸 수 있으며 fd를 통해 접근합니다.
+                    <T id="ebpf">eBPF</T> 프로그램과 사용자 공간, 또는 프로그램 간 데이터 공유를 위한 key-value
+                    저장소입니다. 커널과 사용자 공간 모두에서 읽고 쓸 수 있으며 fd를 통해 접근합니다.
                 </Prose>
-                <InfoTable
-                    headers={['타입', '구조', '용도']}
-                    rows={mapRows}
-                />
+                <InfoTable headers={['타입', '구조', '용도']} rows={mapRows} />
                 <CodeBlock code={xdpDdosCode} language="c" filename="xdp_ddos.c" />
             </Section>
 
             {/* 8.6 BTF와 CO-RE */}
             <Section id="s86" title="8.6  BTF와 CO-RE — 이식 가능한 eBPF">
                 <Prose>
-          전통적인 eBPF 프로그램은 커널 헤더에 의존해 컴파일해야 했습니다. 커널 버전이 다르면
-          구조체 오프셋이 달라져 재컴파일이 필요했습니다. BTF(BPF Type Format)와 CO-RE(Compile
-          Once – Run Everywhere)가 이 문제를 해결합니다.
+                    전통적인 eBPF 프로그램은 커널 헤더에 의존해 컴파일해야 했습니다. 커널 버전이 다르면 구조체 오프셋이
+                    달라져 재컴파일이 필요했습니다. BTF(BPF Type Format)와 CO-RE(Compile Once – Run Everywhere)가 이
+                    문제를 해결합니다.
                 </Prose>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     {[
@@ -579,7 +603,9 @@ export default function Topic07() {
                             <ul className="space-y-1">
                                 {card.items.map((item, i) => (
                                     <li key={i} className="text-gray-600 dark:text-gray-400 leading-snug flex gap-1.5">
-                                        <span style={{ color: card.color }} className="shrink-0">·</span>
+                                        <span style={{ color: card.color }} className="shrink-0">
+                                            ·
+                                        </span>
                                         <span>{item}</span>
                                     </li>
                                 ))}
@@ -635,8 +661,8 @@ export default function Topic07() {
                 </div>
                 <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
                     <span className="font-bold text-gray-700 dark:text-gray-300">선택 기준:</span> 단순 DDoS
-          방어·로드밸런싱은 XDP, Netfilter 연동이 필요하거나 egress 처리가 필요한 복잡한 정책은 TC BPF를
-          사용합니다. 두 가지를 함께 사용하는 것도 가능합니다.
+                    방어·로드밸런싱은 XDP, Netfilter 연동이 필요하거나 egress 처리가 필요한 복잡한 정책은 TC BPF를
+                    사용합니다. 두 가지를 함께 사용하는 것도 가능합니다.
                 </div>
             </Section>
 
@@ -649,10 +675,7 @@ export default function Topic07() {
                             className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3 hover:shadow-lg transition-shadow"
                         >
                             <div>
-                                <div
-                                    className="text-xs font-mono font-bold mb-0.5"
-                                    style={{ color: card.accentColor }}
-                                >
+                                <div className="text-xs font-mono font-bold mb-0.5" style={{ color: card.accentColor }}>
                                     {card.title}
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 text-xs">{card.subtitle}</div>
@@ -683,13 +706,10 @@ export default function Topic07() {
             {/* 8.9 bcc Tools */}
             <Section id="s89" title="8.9  bcc Tools — 즉시 사용 가능한 eBPF 도구">
                 <Prose>
-          BCC(BPF Compiler Collection)는 <T id="ebpf">eBPF</T> 기반 관찰 도구 모음입니다. 커널 컴파일 없이
-          실시간으로 시스템 내부를 관찰합니다.
+                    BCC(BPF Compiler Collection)는 <T id="ebpf">eBPF</T> 기반 관찰 도구 모음입니다. 커널 컴파일 없이
+                    실시간으로 시스템 내부를 관찰합니다.
                 </Prose>
-                <InfoTable
-                    headers={['도구', '기능', '사용 예시']}
-                    rows={bccToolRows}
-                />
+                <InfoTable headers={['도구', '기능', '사용 예시']} rows={bccToolRows} />
                 <CodeBlock code={bccToolsCode} language="bash" filename="# bcc tools 실전 사용" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     {[
@@ -728,7 +748,9 @@ export default function Topic07() {
                             <ul className="space-y-1">
                                 {card.items.map((item, i) => (
                                     <li key={i} className="text-gray-600 dark:text-gray-400 leading-snug flex gap-1.5">
-                                        <span style={{ color: card.color }} className="shrink-0">·</span>
+                                        <span style={{ color: card.color }} className="shrink-0">
+                                            ·
+                                        </span>
                                         <span>{item}</span>
                                     </li>
                                 ))}
@@ -741,8 +763,8 @@ export default function Topic07() {
             {/* 8.10 AF_XDP */}
             <Section id="s810" title="8.10  AF_XDP — 유저공간 패킷 처리">
                 <Prose>
-          AF_XDP는 <T id="xdp">XDP</T>가 받은 패킷을 커널 네트워크 스택을 완전히 우회하고 유저공간에서 직접 처리하는
-          소켓 타입입니다. DPDK에 근접한 성능을 표준 커널 인터페이스로 달성합니다.
+                    AF_XDP는 <T id="xdp">XDP</T>가 받은 패킷을 커널 네트워크 스택을 완전히 우회하고 유저공간에서 직접
+                    처리하는 소켓 타입입니다. DPDK에 근접한 성능을 표준 커널 인터페이스로 달성합니다.
                 </Prose>
 
                 {/* XDP_REDIRECT → AF_XDP 흐름 */}
@@ -818,7 +840,9 @@ export default function Topic07() {
                             <ul className="space-y-1">
                                 {card.items.map((item, i) => (
                                     <li key={i} className="text-gray-600 dark:text-gray-400 leading-snug flex gap-1.5">
-                                        <span style={{ color: card.color }} className="shrink-0">·</span>
+                                        <span style={{ color: card.color }} className="shrink-0">
+                                            ·
+                                        </span>
                                         <span>{item}</span>
                                     </li>
                                 ))}
@@ -835,7 +859,7 @@ export default function Topic07() {
                         {
                             title: '고성능 로드밸런서',
                             color: '#06b6d4',
-                            desc: "Cloudflare의 Unimog — AF_XDP로 L4 로드밸런싱, DPDK 불필요",
+                            desc: 'Cloudflare의 Unimog — AF_XDP로 L4 로드밸런싱, DPDK 불필요',
                         },
                         {
                             title: '패킷 캡처',
@@ -868,9 +892,9 @@ export default function Topic07() {
             {/* 8.11 seccomp-BPF */}
             <Section id="s811" title="8.11  seccomp-BPF — 시스템 콜 필터링">
                 <Prose>
-          seccomp(Secure Computing)은 프로세스가 사용할 수 있는 시스템 콜을 제한하는 Linux 보안
-          기능입니다. seccomp-BPF는 BPF 프로그램으로 허용/거부 규칙을 정밀하게 표현합니다.
-          Docker, Chrome, systemd의 보안 기반입니다.
+                    seccomp(Secure Computing)은 프로세스가 사용할 수 있는 시스템 콜을 제한하는 Linux 보안 기능입니다.
+                    seccomp-BPF는 BPF 프로그램으로 허용/거부 규칙을 정밀하게 표현합니다. Docker, Chrome, systemd의 보안
+                    기반입니다.
                 </Prose>
 
                 {/* 동작 원리 */}
@@ -883,8 +907,16 @@ export default function Topic07() {
                 >
                     {[
                         { text: '프로세스가 syscall 호출', indent: 0, color: isDark ? '#e2e8f0' : '#1e293b' },
-                        { text: '→ 커널이 seccomp BPF 프로그램 실행', indent: 1, color: isDark ? '#94a3b8' : '#475569' },
-                        { text: '→ 프로그램이 syscall 번호와 인자 검사', indent: 1, color: isDark ? '#94a3b8' : '#475569' },
+                        {
+                            text: '→ 커널이 seccomp BPF 프로그램 실행',
+                            indent: 1,
+                            color: isDark ? '#94a3b8' : '#475569',
+                        },
+                        {
+                            text: '→ 프로그램이 syscall 번호와 인자 검사',
+                            indent: 1,
+                            color: isDark ? '#94a3b8' : '#475569',
+                        },
                         { text: '→ ALLOW: 정상 실행', indent: 2, color: '#22c55e' },
                         { text: '→ KILL:  프로세스 즉시 종료 (SIGSYS)', indent: 2, color: '#ef4444' },
                         { text: '→ ERRNO: 에러 반환 (실제 실행 안 함)', indent: 2, color: '#f59e0b' },
@@ -938,10 +970,9 @@ export default function Topic07() {
             {/* 8.12 bpftrace */}
             <Section id="s812" title="8.12  bpftrace — 커널 추적 원라이너">
                 <Prose>
-                    bpftrace는 DTrace에서 영감을 받은 고수준 커널 추적 언어입니다.{' '}
-                    <T id="ebpf">eBPF</T> 프로그램을 자동으로 생성해 kprobe, uprobe, tracepoint, USDT를
-                    단 한 줄 명령으로 탐색할 수 있습니다. <code>bpftool</code>, <code>bcc</code>와 함께
-                    현대 리눅스 관측성(observability)의 핵심 도구입니다.
+                    bpftrace는 DTrace에서 영감을 받은 고수준 커널 추적 언어입니다. <T id="ebpf">eBPF</T> 프로그램을
+                    자동으로 생성해 kprobe, uprobe, tracepoint, USDT를 단 한 줄 명령으로 탐색할 수 있습니다.{' '}
+                    <code>bpftool</code>, <code>bcc</code>와 함께 현대 리눅스 관측성(observability)의 핵심 도구입니다.
                 </Prose>
 
                 {/* 프로브 유형 카드 */}
@@ -973,7 +1004,10 @@ export default function Topic07() {
                         <span>설명</span>
                     </div>
                     {bpftraceSyntaxCards.map((row) => (
-                        <div key={row.label} className="grid grid-cols-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <div
+                            key={row.label}
+                            className="grid grid-cols-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                        >
                             <code className="text-blue-600 dark:text-blue-400">{row.label}</code>
                             <span className="text-gray-600 dark:text-gray-400">{row.desc}</span>
                         </div>
@@ -981,10 +1015,7 @@ export default function Topic07() {
                 </div>
 
                 {/* bcc / bpftool 비교 */}
-                <InfoTable
-                    headers={['도구', '특징']}
-                    rows={bpftraceVsBccRows}
-                />
+                <InfoTable headers={['도구', '특징']} rows={bpftraceVsBccRows} />
             </Section>
 
             <TopicNavigation topicId="08-xdp-ebpf" />

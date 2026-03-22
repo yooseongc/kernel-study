@@ -41,7 +41,7 @@ function renderLockComparison(
     const chartW = width - padX * 2
     const chartH = height - padTop - padBottom
 
-    const barW = Math.min((chartW / data.length) - 10, 52)
+    const barW = Math.min(chartW / data.length - 10, 52)
     const stepX = chartW / data.length
 
     const maxVal = 100

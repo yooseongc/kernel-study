@@ -442,15 +442,9 @@ export default function Topic09() {
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 10
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    디바이스 드라이버와 커널 모듈
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    Device Drivers & Kernel Modules
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 10</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">디바이스 드라이버와 커널 모듈</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Device Drivers & Kernel Modules</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     커널 모듈, 문자/블록/네트워크 드라이버, NIC+DMA, PCI/PCIe 드라이버, platform driver
                 </p>
@@ -468,29 +462,37 @@ export default function Topic09() {
             {/* 10.1 커널 모듈 */}
             <Section id="s101" title="10.1  커널 모듈">
                 <Prose>
-          커널 모듈은 실행 중인 커널에 동적으로 로드/언로드 가능한 코드입니다. 재부팅 없이
-          드라이버를 추가하거나 제거할 수 있으며, <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> / <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code> 매크로로
-          로드·언로드 시 실행할 함수를 등록합니다.
+                    커널 모듈은 실행 중인 커널에 동적으로 로드/언로드 가능한 코드입니다. 재부팅 없이 드라이버를
+                    추가하거나 제거할 수 있으며,{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> /{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code>{' '}
+                    매크로로 로드·언로드 시 실행할 함수를 등록합니다.
                 </Prose>
                 <CodeBlock code={helloModuleCode} language="c" filename="hello.c" />
-                <InfoTable
-                    headers={['명령어', '동작']}
-                    rows={moduleCommandRows}
-                />
+                <InfoTable headers={['명령어', '동작']} rows={moduleCommandRows} />
             </Section>
 
             {/* 10.2 디바이스 드라이버 종류 */}
             <Section id="s102" title="10.2  디바이스 드라이버 종류">
-                <InfoTable
-                    headers={['종류', '예시', '인터페이스', '특징']}
-                    rows={driverTypeRows}
-                />
+                <InfoTable headers={['종류', '예시', '인터페이스', '특징']} rows={driverTypeRows} />
                 <DriverTreeChart />
                 <div className="grid grid-cols-3 gap-3 text-xs">
                     {[
-                        { label: '문자 디바이스', desc: '순차적 I/O. /dev/ttyS0, /dev/random 등. open/read/write/ioctl 인터페이스.', color: '#f59e0b' },
-                        { label: '블록 디바이스', desc: '랜덤 접근 + 커널 버퍼 캐시. /dev/sda, /dev/nvme0. 블록 단위 I/O.', color: '#3b82f6' },
-                        { label: '네트워크 디바이스', desc: '/dev 파일 없음. net_device 구조체로 등록. 소켓 계층과 연결.', color: '#22c55e' },
+                        {
+                            label: '문자 디바이스',
+                            desc: '순차적 I/O. /dev/ttyS0, /dev/random 등. open/read/write/ioctl 인터페이스.',
+                            color: '#f59e0b',
+                        },
+                        {
+                            label: '블록 디바이스',
+                            desc: '랜덤 접근 + 커널 버퍼 캐시. /dev/sda, /dev/nvme0. 블록 단위 I/O.',
+                            color: '#3b82f6',
+                        },
+                        {
+                            label: '네트워크 디바이스',
+                            desc: '/dev 파일 없음. net_device 구조체로 등록. 소켓 계층과 연결.',
+                            color: '#22c55e',
+                        },
                     ].map((item) => (
                         <div
                             key={item.label}
@@ -510,7 +512,7 @@ export default function Topic09() {
 
                 {/* 문자 디바이스 등록 흐름 */}
                 <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-2">
-          문자 디바이스 등록 흐름
+                    문자 디바이스 등록 흐름
                 </h3>
                 <CodeBlock code={cdevRegisterCode} language="c" filename="drivers/char/my_char.c" />
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -557,9 +559,9 @@ export default function Topic09() {
             {/* 10.3 NIC 드라이버와 DMA */}
             <Section id="s103" title="10.3  NIC 드라이버와 DMA">
                 <Prose>
-          고성능 NIC는 CPU를 거치지 않고 <T id="dma">DMA</T>(Direct Memory Access)로 직접 메모리에 패킷을 씁니다.
-          드라이버가 사전에 RX 링 버퍼의 <T id="dma">DMA</T> 주소를 NIC에 알려주면, NIC는 패킷 수신 시 해당
-          주소로 데이터를 전송하고 <T id="irq">IRQ</T>를 발생시킵니다.
+                    고성능 NIC는 CPU를 거치지 않고 <T id="dma">DMA</T>(Direct Memory Access)로 직접 메모리에 패킷을
+                    씁니다. 드라이버가 사전에 RX 링 버퍼의 <T id="dma">DMA</T> 주소를 NIC에 알려주면, NIC는 패킷 수신 시
+                    해당 주소로 데이터를 전송하고 <T id="irq">IRQ</T>를 발생시킵니다.
                 </Prose>
                 <AnimatedDiagram
                     steps={dmaSteps}
@@ -571,38 +573,39 @@ export default function Topic09() {
             {/* 10.4 DMA 링 버퍼 */}
             <Section id="s104" title="10.4  DMA 링 버퍼">
                 <Prose>
-          NIC 드라이버는 RX/TX 링 버퍼를 준비하고 NIC에 <T id="dma">DMA</T> 주소를 알려줍니다. 각 서술자(descriptor)에는
-          물리 주소와 길이, 상태 플래그가 있으며, NIC는 수신 완료 시 status 필드를 갱신합니다.
+                    NIC 드라이버는 RX/TX 링 버퍼를 준비하고 NIC에 <T id="dma">DMA</T> 주소를 알려줍니다. 각
+                    서술자(descriptor)에는 물리 주소와 길이, 상태 플래그가 있으며, NIC는 수신 완료 시 status 필드를
+                    갱신합니다.
                 </Prose>
                 <CodeBlock code={rxRingCode} language="c" filename="rx_ring_init.c" />
                 <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 px-4 py-3 text-xs text-blue-200">
                     <span className="font-bold text-blue-300">핵심:</span>{' '}
-                    <span className="font-mono">dma_map_single()</span>은 가상 주소를 PCIe 버스에서
-          접근 가능한 물리 주소로 변환합니다. IOMMU가 있는 환경에서는 IOMMU 매핑 테이블을 통해
-          DMA 격리(isolation)가 이루어집니다.
+                    <span className="font-mono">dma_map_single()</span>은 가상 주소를 PCIe 버스에서 접근 가능한 물리
+                    주소로 변환합니다. IOMMU가 있는 환경에서는 IOMMU 매핑 테이블을 통해 DMA 격리(isolation)가
+                    이루어집니다.
                 </div>
             </Section>
 
             {/* 10.5 드라이버와 커널 서브시스템 연결 */}
             <Section id="s105" title="10.5  드라이버와 커널 서브시스템 연결">
                 <Prose>
-          드라이버는 커널의 다양한 프레임워크에 콜백을 등록하는 방식으로 동작합니다.
-          네트워크 드라이버는 <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">net_device_ops</code> 구조체에 함수 포인터를 채워
-          커널에 등록하며, 커널은 필요한 시점에 해당 콜백을 호출합니다.
+                    드라이버는 커널의 다양한 프레임워크에 콜백을 등록하는 방식으로 동작합니다. 네트워크 드라이버는{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">net_device_ops</code>{' '}
+                    구조체에 함수 포인터를 채워 커널에 등록하며, 커널은 필요한 시점에 해당 콜백을 호출합니다.
                 </Prose>
-                <InfoTable
-                    headers={['콜백', '호출 시점', '동작']}
-                    rows={netdevOpsRows}
-                />
+                <InfoTable headers={['콜백', '호출 시점', '동작']} rows={netdevOpsRows} />
                 <CodeBlock code={netdevOpsCode} language="c" filename="my_driver.c" />
             </Section>
 
             {/* 10.6 모듈 파라미터와 sysfs */}
             <Section id="s106" title="10.6  모듈 파라미터와 sysfs">
                 <Prose>
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_param()</code> 매크로로
-          로드 시 파라미터를 받을 수 있고, 권한(0644)에 따라 런타임에
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">/sys/module/&lt;name&gt;/parameters/</code>를 통해 동적으로 변경할 수도 있습니다.
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_param()</code>{' '}
+                    매크로로 로드 시 파라미터를 받을 수 있고, 권한(0644)에 따라 런타임에
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                        /sys/module/&lt;name&gt;/parameters/
+                    </code>
+                    를 통해 동적으로 변경할 수도 있습니다.
                 </Prose>
                 <CodeBlock code={moduleParamCode} language="c" filename="module_param.c" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -658,10 +661,11 @@ export default function Topic09() {
                 <Prose>
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">read()</code>/
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">write()</code>로
-          처리하기 어려운 디바이스 제어 명령은{' '}
+                    처리하기 어려운 디바이스 제어 명령은{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">ioctl()</code>로,
-          대용량 데이터 공유는{' '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mmap()</code>으로 처리합니다.
+                    대용량 데이터 공유는{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mmap()</code>으로
+                    처리합니다.
                 </Prose>
                 <CodeBlock code={ioctlCode} language="c" filename="drivers/my_driver_ioctl.c" />
                 <CodeBlock code={mmapCode} language="c" filename="mmap으로 디바이스 메모리 직접 접근" />
@@ -701,7 +705,10 @@ export default function Topic09() {
                             </div>
                             <ul className="space-y-1">
                                 {item.items.map((text) => (
-                                    <li key={text} className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                                    <li
+                                        key={text}
+                                        className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5"
+                                    >
                                         <span style={{ color: item.color }}>·</span>
                                         {text}
                                     </li>
@@ -758,12 +765,12 @@ export default function Topic09() {
             {/* 10.9 PCI/PCIe 드라이버 모델 */}
             <Section id="s109" title="10.9  PCI/PCIe 드라이버 모델">
                 <Prose>
-          서버의 NIC, NVMe SSD, GPU는 모두 <T id="pci">PCIe</T> 버스로 연결됩니다.{' '}
+                    서버의 NIC, NVMe SSD, GPU는 모두 <T id="pci">PCIe</T> 버스로 연결됩니다.{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">pci_driver</code>는
-          커널이 PCIe 디바이스를 감지하면 자동으로 드라이버를 매칭하고{' '}
+                    커널이 PCIe 디바이스를 감지하면 자동으로 드라이버를 매칭하고{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">probe()</code>를
-          호출하는 표준 프레임워크입니다. platform_driver와 구조는 같지만 Device Tree 대신
-          Vendor/Device ID로 매칭합니다.
+                    호출하는 표준 프레임워크입니다. platform_driver와 구조는 같지만 Device Tree 대신 Vendor/Device ID로
+                    매칭합니다.
                 </Prose>
                 <div className="grid grid-cols-3 gap-3 text-xs">
                     {[
@@ -798,16 +805,8 @@ export default function Topic09() {
                         </div>
                     ))}
                 </div>
-                <CodeBlock
-                    code={pciDriverCode}
-                    language="c"
-                    filename="drivers/net/my_nic.c — PCI 드라이버"
-                />
-                <CodeBlock
-                    code={pciCommandsCode}
-                    language="bash"
-                    filename="# PCIe 디바이스 확인 명령"
-                />
+                <CodeBlock code={pciDriverCode} language="c" filename="drivers/net/my_nic.c — PCI 드라이버" />
+                <CodeBlock code={pciCommandsCode} language="bash" filename="# PCIe 디바이스 확인 명령" />
                 <div className="grid grid-cols-2 gap-3 text-xs">
                     {[
                         {
@@ -842,7 +841,10 @@ export default function Topic09() {
                             </div>
                             <ul className="space-y-1">
                                 {item.items.map((text) => (
-                                    <li key={text} className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                                    <li
+                                        key={text}
+                                        className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5"
+                                    >
                                         <span style={{ color: item.color }}>·</span>
                                         {text}
                                     </li>
@@ -856,18 +858,22 @@ export default function Topic09() {
             {/* 10.10 캐릭터 디바이스 전체 생명주기 */}
             <Section id="s110" title="10.10  캐릭터 디바이스 전체 생명주기 — module_init에서 module_exit까지">
                 <Prose>
-          캐릭터 디바이스 드라이버는 가장 단순한 리눅스 드라이버 형태입니다.
-          터미널, 시리얼, 커스텀 하드웨어처럼 바이트 스트림으로 읽고 쓰는 장치를 관리하며,{' '}
+                    캐릭터 디바이스 드라이버는 가장 단순한 리눅스 드라이버 형태입니다. 터미널, 시리얼, 커스텀
+                    하드웨어처럼 바이트 스트림으로 읽고 쓰는 장치를 관리하며,{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> →{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">cdev_init</code> →{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">device_create</code> →{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">file_operations</code>{' '}
-          등록 → 유저 open/read/write/ioctl → <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code> 전체 흐름을 한 번에 이해할 수 있습니다.
+                    등록 → 유저 open/read/write/ioctl →{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code>{' '}
+                    전체 흐름을 한 번에 이해할 수 있습니다.
                 </Prose>
 
                 {/* 생명주기 다이어그램 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-5 text-xs font-mono space-y-3">
-                    <div className="text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-2">생명주기 플로우</div>
+                    <div className="text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-2">
+                        생명주기 플로우
+                    </div>
 
                     {/* module_init 블록 */}
                     <div className="rounded-lg border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 space-y-1.5">
@@ -892,7 +898,11 @@ export default function Topic09() {
                         {[
                             { call: 'open("/dev/mydev", O_RDWR)', handler: '.open()', desc: '드라이버 open 핸들러' },
                             { call: 'read(fd, buf, n)', handler: '.read()', desc: '드라이버 read 핸들러' },
-                            { call: 'ioctl(fd, CMD, arg)', handler: '.unlocked_ioctl()', desc: '드라이버 ioctl 핸들러' },
+                            {
+                                call: 'ioctl(fd, CMD, arg)',
+                                handler: '.unlocked_ioctl()',
+                                desc: '드라이버 ioctl 핸들러',
+                            },
                             { call: 'close(fd)', handler: '.release()', desc: '드라이버 release 핸들러' },
                         ].map((step) => (
                             <div key={step.call} className="pl-4 space-y-0.5">
@@ -923,16 +933,8 @@ export default function Topic09() {
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={chardevDriverCode}
-                    language="c"
-                    filename="mydev.c — 최소 캐릭터 디바이스 드라이버"
-                />
-                <CodeBlock
-                    code={chardevCommandsCode}
-                    language="bash"
-                    filename="# 빌드 · 로드 · 테스트 · 제거"
-                />
+                <CodeBlock code={chardevDriverCode} language="c" filename="mydev.c — 최소 캐릭터 디바이스 드라이버" />
+                <CodeBlock code={chardevCommandsCode} language="bash" filename="# 빌드 · 로드 · 테스트 · 제거" />
 
                 {/* copy_to_user / copy_from_user 핵심 설명 */}
                 <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
@@ -969,7 +971,10 @@ export default function Topic09() {
                             </div>
                             <ul className="space-y-1">
                                 {item.items.map((text) => (
-                                    <li key={text} className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                                    <li
+                                        key={text}
+                                        className="text-gray-500 dark:text-gray-400 flex items-start gap-1.5"
+                                    >
                                         <span style={{ color: item.color }}>·</span>
                                         {text}
                                     </li>

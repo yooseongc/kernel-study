@@ -11,11 +11,11 @@ const TOTAL_PAGES = 32
 const MAX_ORDER = 5
 
 interface BuddyState {
-  pages: (number | null)[]
-  freeList: number[][]
-  nextId: number
-  log: string[]
-  allocations: { id: number; pfn: number; order: number }[]
+    pages: (number | null)[]
+    freeList: number[][]
+    nextId: number
+    log: string[]
+    allocations: { id: number; pfn: number; order: number }[]
 }
 
 function initBuddy(): BuddyState {
@@ -33,13 +33,16 @@ function initBuddy(): BuddyState {
 function buddyAlloc(state: BuddyState, order: number): BuddyState {
     let availOrder = -1
     for (let o = order; o <= MAX_ORDER; o++) {
-        if (state.freeList[o].length > 0) { availOrder = o; break }
+        if (state.freeList[o].length > 0) {
+            availOrder = o
+            break
+        }
     }
     if (availOrder === -1) {
         return { ...state, log: [`할당 실패: order-${order} (OOM)`, ...state.log] }
     }
 
-    const newFL = state.freeList.map(l => [...l])
+    const newFL = state.freeList.map((l) => [...l])
     const pfn = newFL[availOrder].shift()!
 
     for (let o = availOrder; o > order; o--) {
@@ -63,13 +66,13 @@ function buddyAlloc(state: BuddyState, order: number): BuddyState {
 }
 
 function buddyFree(state: BuddyState, allocId: number): BuddyState {
-    const alloc = state.allocations.find(a => a.id === allocId)
+    const alloc = state.allocations.find((a) => a.id === allocId)
     if (!alloc) return state
 
     const newPages = [...state.pages]
     for (let i = alloc.pfn; i < alloc.pfn + (1 << alloc.order); i++) newPages[i] = null
 
-    const newFL = state.freeList.map(l => [...l])
+    const newFL = state.freeList.map((l) => [...l])
     let pfn = alloc.pfn
     let ord = alloc.order
 
@@ -89,14 +92,11 @@ function buddyFree(state: BuddyState, allocId: number): BuddyState {
         freeList: newFL,
         nextId: state.nextId,
         log: [`free(order=${alloc.order}, PFN ${alloc.pfn}) → order-${ord}로 합병`, ...state.log].slice(0, 8),
-        allocations: state.allocations.filter(a => a.id !== allocId),
+        allocations: state.allocations.filter((a) => a.id !== allocId),
     }
 }
 
-const ALLOC_COLORS = [
-    '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
-    '#8b5cf6', '#06b6d4', '#ec4899',
-]
+const ALLOC_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899']
 
 function renderBuddyViz(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -115,7 +115,9 @@ function renderBuddyViz(
 
     svg.style('background', bg)
 
-    const padL = 8, padT = 24, padB = 60
+    const padL = 8,
+        padT = 24,
+        padB = 60
     const gridH = height - padT - padB
     const cellW = Math.max(8, (width - padL * 2) / TOTAL_PAGES)
     const cellH = Math.min(36, gridH)
@@ -245,11 +247,11 @@ export function BuddyAllocatorViz() {
         [buddyState, theme],
     )
 
-    const handleAlloc = (order: number) => setBuddyState(s => buddyAlloc(s, order))
+    const handleAlloc = (order: number) => setBuddyState((s) => buddyAlloc(s, order))
     const handleFree = () => {
         if (buddyState.allocations.length === 0) return
         const last = buddyState.allocations[buddyState.allocations.length - 1]
-        setBuddyState(s => buddyFree(s, last.id))
+        setBuddyState((s) => buddyFree(s, last.id))
     }
 
     return (
@@ -257,13 +259,13 @@ export function BuddyAllocatorViz() {
             {/* Controls */}
             <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-xs text-gray-400 font-mono">할당:</span>
-                {([0, 1, 2, 3, 4] as const).map(order => (
+                {([0, 1, 2, 3, 4] as const).map((order) => (
                     <button
                         key={order}
                         onClick={() => handleAlloc(order)}
                         className="px-3 py-1.5 rounded bg-blue-700 hover:bg-blue-600 text-white text-xs font-mono transition"
                     >
-                        {1 << order}p ({(4 * (1 << order))}KB)
+                        {1 << order}p ({4 * (1 << order)}KB)
                     </button>
                 ))}
                 <button
@@ -271,21 +273,17 @@ export function BuddyAllocatorViz() {
                     disabled={buddyState.allocations.length === 0}
                     className="px-3 py-1.5 rounded bg-amber-700 hover:bg-amber-600 text-white text-xs font-mono transition disabled:opacity-40"
                 >
-          마지막 해제
+                    마지막 해제
                 </button>
                 <button
                     onClick={() => setBuddyState(initBuddy())}
                     className="px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-mono transition"
                 >
-          초기화
+                    초기화
                 </button>
             </div>
 
-            <D3Container
-                renderFn={renderFn}
-                deps={[buddyState, theme]}
-                height={200}
-            />
+            <D3Container renderFn={renderFn} deps={[buddyState, theme]} height={200} />
 
             {/* Log */}
             <div className="rounded-lg border border-gray-700 bg-gray-900 p-3">

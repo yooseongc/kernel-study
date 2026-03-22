@@ -5,10 +5,10 @@ import { themeColors } from '../../../lib/colors'
 import { D3Container } from '../../viz/D3Container'
 
 interface CgroupNode {
-  name: string
-  type: 'root' | 'system' | 'user' | 'custom' | 'service' | 'process'
-  detail?: string
-  children?: CgroupNode[]
+    name: string
+    type: 'root' | 'system' | 'user' | 'custom' | 'service' | 'process'
+    detail?: string
+    children?: CgroupNode[]
 }
 
 const cgroupTreeData: CgroupNode = {
@@ -50,36 +50,37 @@ const cgroupTreeData: CgroupNode = {
     ],
 }
 
-function renderCgroupTree(
-    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-    width: number,
-    height: number
-) {
+function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, width: number, height: number) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
     const textFill = c.text
-    const dimFill  = c.textMuted
+    const dimFill = c.textMuted
     const linkColor = c.link
 
     type ColorPair = { fill: string; stroke: string; text: string }
     const colorMap: Record<string, ColorPair> = {
-        root:    { fill: c.blueFill,   stroke: c.blueStroke,   text: c.blueText },
-        system:  { fill: c.bgCard,     stroke: c.textDim,      text: c.textMuted },
-        user:    { fill: c.greenFill,  stroke: c.greenStroke,  text: c.greenText },
-        custom:  { fill: c.amberFill,  stroke: c.amberStroke,  text: c.amberText },
-        service: { fill: c.bg,         stroke: c.textDim,      text: c.textMuted },
-        process: { fill: c.cyanFill,   stroke: c.cyanStroke,   text: c.cyanText },
+        root: { fill: c.blueFill, stroke: c.blueStroke, text: c.blueText },
+        system: { fill: c.bgCard, stroke: c.textDim, text: c.textMuted },
+        user: { fill: c.greenFill, stroke: c.greenStroke, text: c.greenText },
+        custom: { fill: c.amberFill, stroke: c.amberStroke, text: c.amberText },
+        service: { fill: c.bg, stroke: c.textDim, text: c.textMuted },
+        process: { fill: c.cyanFill, stroke: c.cyanStroke, text: c.cyanText },
     }
 
-    const NW = 104, NH = 34, NR = 6
+    const NW = 104,
+        NH = 34,
+        NR = 6
     const padX = NW / 2 + 8
     const padY = NH / 2 + 8
-    const innerW = width  - padX * 2
+    const innerW = width - padX * 2
     const innerH = height - padY * 2
 
-    const root = d3.hierarchy<CgroupNode>(cgroupTreeData, d => d.children)
+    const root = d3.hierarchy<CgroupNode>(cgroupTreeData, (d) => d.children)
     d3.tree<CgroupNode>().size([innerH, innerW])(root)
-    root.each(d => { (d as d3.HierarchyPointNode<CgroupNode>).y += padX; (d as d3.HierarchyPointNode<CgroupNode>).x += padY })
+    root.each((d) => {
+        ;(d as d3.HierarchyPointNode<CgroupNode>).y += padX
+        ;(d as d3.HierarchyPointNode<CgroupNode>).x += padY
+    })
 
     const g = svg.append('g')
 
@@ -89,40 +90,54 @@ function renderCgroupTree(
         .attr('fill', 'none')
         .attr('stroke', linkColor)
         .attr('stroke-width', 1)
-        .attr('d', d => {
-            const sx = d.source.y + NW / 2, sy = d.source.x
-            const tx = d.target.y - NW / 2, ty = d.target.x
+        .attr('d', (d) => {
+            const sx = d.source.y + NW / 2,
+                sy = d.source.x
+            const tx = d.target.y - NW / 2,
+                ty = d.target.x
             const mx = (sx + tx) / 2
             return `M ${sx},${sy} C ${mx},${sy} ${mx},${ty} ${tx},${ty}`
         })
 
-    const nodeG = g.selectAll<SVGGElement, d3.HierarchyPointNode<CgroupNode>>('g.node')
+    const nodeG = g
+        .selectAll<SVGGElement, d3.HierarchyPointNode<CgroupNode>>('g.node')
         .data(root.descendants())
         .join('g')
         .attr('class', 'node')
-        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('transform', (d) => `translate(${d.y},${d.x})`)
 
-    nodeG.append('rect')
-        .attr('x', -NW / 2).attr('y', -NH / 2)
-        .attr('width', NW).attr('height', NH).attr('rx', NR)
-        .attr('fill', d => colorMap[d.data.type]?.fill ?? colorMap.service.fill)
-        .attr('stroke', d => colorMap[d.data.type]?.stroke ?? colorMap.service.stroke)
+    nodeG
+        .append('rect')
+        .attr('x', -NW / 2)
+        .attr('y', -NH / 2)
+        .attr('width', NW)
+        .attr('height', NH)
+        .attr('rx', NR)
+        .attr('fill', (d) => colorMap[d.data.type]?.fill ?? colorMap.service.fill)
+        .attr('stroke', (d) => colorMap[d.data.type]?.stroke ?? colorMap.service.stroke)
         .attr('stroke-width', 1.5)
 
-    nodeG.append('text')
-        .attr('y', d => d.data.detail ? -5 : 0)
-        .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
-        .attr('fill', d => colorMap[d.data.type]?.text ?? textFill)
-        .attr('font-size', '10px').attr('font-family', 'monospace').attr('font-weight', 'bold')
-        .text(d => d.data.name)
+    nodeG
+        .append('text')
+        .attr('y', (d) => (d.data.detail ? -5 : 0))
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
+        .attr('fill', (d) => colorMap[d.data.type]?.text ?? textFill)
+        .attr('font-size', '10px')
+        .attr('font-family', 'monospace')
+        .attr('font-weight', 'bold')
+        .text((d) => d.data.name)
 
-    nodeG.filter(d => !!d.data.detail)
+    nodeG
+        .filter((d) => !!d.data.detail)
         .append('text')
         .attr('y', 8)
-        .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
         .attr('fill', dimFill)
-        .attr('font-size', '8px').attr('font-family', 'sans-serif')
-        .text(d => d.data.detail ?? '')
+        .attr('font-size', '8px')
+        .attr('font-family', 'sans-serif')
+        .text((d) => d.data.detail ?? '')
 }
 
 export function CgroupTreeViz() {
@@ -132,13 +147,15 @@ export function CgroupTreeViz() {
         (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
             renderCgroupTree(svg, w, h)
         },
-        [theme] // eslint-disable-line react-hooks/exhaustive-deps
+        [theme], // eslint-disable-line react-hooks/exhaustive-deps
     )
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
             <div className="px-4 py-2.5 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">cgroup v2 계층 구조 — /sys/fs/cgroup/</span>
+                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                    cgroup v2 계층 구조 — /sys/fs/cgroup/
+                </span>
             </div>
             <D3Container renderFn={renderFn} height={300} deps={[theme]} zoomable />
         </div>

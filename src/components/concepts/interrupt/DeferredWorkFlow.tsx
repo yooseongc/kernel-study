@@ -2,12 +2,12 @@ import * as d3 from 'd3'
 import { themeColors } from '../../../lib/colors'
 
 interface DeferredStage {
-  title: string
-  sub: string
-  items: string[]
-  fill: string
-  stroke: string
-  titleColor: string
+    title: string
+    sub: string
+    items: string[]
+    fill: string
+    stroke: string
+    titleColor: string
 }
 
 function buildDeferredStages(isDark: boolean): DeferredStage[] {
@@ -61,8 +61,7 @@ export function renderDeferredWorkFlow(
     const stages = buildDeferredStages(isDark)
 
     const defs = svg.append('defs')
-    defs
-        .append('marker')
+    defs.append('marker')
         .attr('id', 'dw-arrow')
         .attr('viewBox', '0 0 10 10')
         .attr('refX', 9)
@@ -77,8 +76,7 @@ export function renderDeferredWorkFlow(
     stages.forEach((s, i) => {
         const x = PAD + i * (boxW + GAP)
 
-        svg
-            .append('rect')
+        svg.append('rect')
             .attr('x', x)
             .attr('y', boxY)
             .attr('width', boxW)
@@ -88,8 +86,7 @@ export function renderDeferredWorkFlow(
             .attr('stroke', s.stroke)
             .attr('stroke-width', 1.5)
 
-        svg
-            .append('text')
+        svg.append('text')
             .attr('x', x + boxW / 2)
             .attr('y', boxY + 22)
             .attr('text-anchor', 'middle')
@@ -99,8 +96,7 @@ export function renderDeferredWorkFlow(
             .attr('font-family', 'sans-serif')
             .text(s.title)
 
-        svg
-            .append('text')
+        svg.append('text')
             .attr('x', x + boxW / 2)
             .attr('y', boxY + 38)
             .attr('text-anchor', 'middle')
@@ -109,8 +105,7 @@ export function renderDeferredWorkFlow(
             .attr('font-family', 'monospace')
             .text(s.sub)
 
-        svg
-            .append('line')
+        svg.append('line')
             .attr('x1', x + 12)
             .attr('x2', x + boxW - 12)
             .attr('y1', boxY + 47)
@@ -120,8 +115,7 @@ export function renderDeferredWorkFlow(
             .attr('opacity', 0.5)
 
         s.items.forEach((item, ii) => {
-            svg
-                .append('text')
+            svg.append('text')
                 .attr('x', x + 14)
                 .attr('y', boxY + 64 + ii * 19)
                 .attr('fill', textFill)
@@ -135,8 +129,7 @@ export function renderDeferredWorkFlow(
             const ax2 = x + boxW + GAP - 4
             const ay = boxY + boxH / 2
 
-            svg
-                .append('line')
+            svg.append('line')
                 .attr('x1', ax1)
                 .attr('y1', ay)
                 .attr('x2', ax2)
@@ -145,8 +138,7 @@ export function renderDeferredWorkFlow(
                 .attr('stroke-width', 1.5)
                 .attr('marker-end', 'url(#dw-arrow)')
 
-            svg
-                .append('text')
+            svg.append('text')
                 .attr('x', (ax1 + ax2) / 2)
                 .attr('y', ay - 8)
                 .attr('text-anchor', 'middle')

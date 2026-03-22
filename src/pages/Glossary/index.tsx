@@ -45,14 +45,14 @@ export default function Glossary() {
 
     const sorted = [...glossary].sort((a, b) => a.term.localeCompare(b.term, 'ko'))
 
-    const filtered = sorted.filter(term => {
+    const filtered = sorted.filter((term) => {
         const matchesCategory = activeCategory === null || term.category === activeCategory
         if (!matchesCategory) return false
         if (!searchQuery.trim()) return true
         const q = searchQuery.toLowerCase()
         return (
             term.term.toLowerCase().includes(q) ||
-            (term.aliases ?? []).some(a => a.toLowerCase().includes(q)) ||
+            (term.aliases ?? []).some((a) => a.toLowerCase().includes(q)) ||
             term.definition.toLowerCase().includes(q)
         )
     })
@@ -67,12 +67,22 @@ export default function Glossary() {
 
             {/* 검색 */}
             <div className="relative mb-4">
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                 </svg>
                 <input
                     value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="용어명 또는 정의 검색..."
                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none focus:border-blue-400 dark:focus:border-blue-600 transition-colors"
                 />
@@ -98,8 +108,8 @@ export default function Glossary() {
                 >
                     전체 ({glossary.length})
                 </button>
-                {allCategories.map(cat => {
-                    const count = glossary.filter(t => t.category === cat).length
+                {allCategories.map((cat) => {
+                    const count = glossary.filter((t) => t.category === cat).length
                     if (count === 0) return null
                     return (
                         <button
@@ -119,13 +129,11 @@ export default function Glossary() {
 
             {/* 결과 수 */}
             {(searchQuery || activeCategory) && (
-                <p className="text-xs text-gray-400 dark:text-gray-600 mb-4">
-                    {filtered.length}개 용어
-                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-600 mb-4">{filtered.length}개 용어</p>
             )}
 
             <div className="space-y-3">
-                {filtered.map(term => (
+                {filtered.map((term) => (
                     <div
                         key={term.id}
                         id={term.id}
@@ -133,14 +141,18 @@ export default function Glossary() {
                     >
                         <div className="flex items-start justify-between gap-3 mb-2">
                             <div>
-                                <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{term.term}</span>
+                                <span className="font-mono font-bold text-gray-900 dark:text-gray-100">
+                                    {term.term}
+                                </span>
                                 {term.aliases && term.aliases.length > 0 && (
                                     <span className="ml-2 text-sm text-gray-400 dark:text-gray-500">
                                         ({term.aliases.join(', ')})
                                     </span>
                                 )}
                             </div>
-                            <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${categoryColor[term.category]}`}>
+                            <span
+                                className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${categoryColor[term.category]}`}
+                            >
                                 {categoryLabel[term.category]}
                             </span>
                         </div>
@@ -156,9 +168,7 @@ export default function Glossary() {
                     </div>
                 ))}
                 {filtered.length === 0 && (
-                    <div className="text-center py-12 text-sm text-gray-400">
-                        검색 결과가 없습니다
-                    </div>
+                    <div className="text-center py-12 text-sm text-gray-400">검색 결과가 없습니다</div>
                 )}
             </div>
         </div>

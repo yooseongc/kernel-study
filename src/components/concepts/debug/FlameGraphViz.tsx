@@ -141,9 +141,7 @@ export function FlameGraphViz() {
                         <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                             {card.title}
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                            {card.desc}
-                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                     </div>
                 ))}
             </div>

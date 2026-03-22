@@ -2,14 +2,14 @@
 // 3.1  가상 주소 공간 (JSX div 기반)
 // ─────────────────────────────────────────────────────────────────────────────
 interface AddrRow {
-  label: string
-  sublabel?: string
-  addrTop?: string
-  addrBottom?: string
-  heightPct: number
-  bg: string
-  textColor: string
-  striped?: boolean
+    label: string
+    sublabel?: string
+    addrTop?: string
+    addrBottom?: string
+    heightPct: number
+    bg: string
+    textColor: string
+    striped?: boolean
 }
 
 const addrRows: AddrRow[] = [
@@ -109,7 +109,7 @@ export function VirtualAddressViz() {
                                 className="absolute inset-0 opacity-20"
                                 style={{
                                     backgroundImage:
-                    'repeating-linear-gradient(-45deg, #9ca3af 0, #9ca3af 1px, transparent 0, transparent 50%)',
+                                        'repeating-linear-gradient(-45deg, #9ca3af 0, #9ca3af 1px, transparent 0, transparent 50%)',
                                     backgroundSize: '8px 8px',
                                 }}
                             />
@@ -155,10 +155,7 @@ export function VirtualAddressViz() {
                 <div
                     className="absolute left-0 flex items-center gap-1"
                     style={{
-                        top:
-              addrRows
-                  .slice(0, addrRows.length - 1)
-                  .reduce((s, r) => s + r.heightPct * 3.2, 0),
+                        top: addrRows.slice(0, addrRows.length - 1).reduce((s, r) => s + r.heightPct * 3.2, 0),
                     }}
                 >
                     <div className="w-3 h-px bg-gray-600" />
@@ -173,9 +170,48 @@ export function VirtualAddressViz() {
 // 3.1  프로세스별 가상 주소 공간 격리 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 const processes3_1 = [
-    { name: 'nginx',  pid: 1234, accent: { border: 'border-blue-600 dark:border-blue-700',   bg: 'bg-blue-950/40',   head: 'bg-blue-900/50',   dot: 'bg-blue-400',   text: 'text-blue-300',   cr3: 'text-blue-400',   physBg: 'bg-blue-900/60',   physText: 'text-blue-300'   } },
-    { name: 'python', pid: 5678, accent: { border: 'border-emerald-600 dark:border-emerald-700', bg: 'bg-emerald-950/40', head: 'bg-emerald-900/50', dot: 'bg-emerald-400', text: 'text-emerald-300', cr3: 'text-emerald-400', physBg: 'bg-emerald-900/60', physText: 'text-emerald-300' } },
-    { name: 'bash',   pid: 9012, accent: { border: 'border-amber-600 dark:border-amber-700',  bg: 'bg-amber-950/40',  head: 'bg-amber-900/50',  dot: 'bg-amber-400',  text: 'text-amber-300',  cr3: 'text-amber-400',  physBg: 'bg-amber-900/60',  physText: 'text-amber-300'  } },
+    {
+        name: 'nginx',
+        pid: 1234,
+        accent: {
+            border: 'border-blue-600 dark:border-blue-700',
+            bg: 'bg-blue-950/40',
+            head: 'bg-blue-900/50',
+            dot: 'bg-blue-400',
+            text: 'text-blue-300',
+            cr3: 'text-blue-400',
+            physBg: 'bg-blue-900/60',
+            physText: 'text-blue-300',
+        },
+    },
+    {
+        name: 'python',
+        pid: 5678,
+        accent: {
+            border: 'border-emerald-600 dark:border-emerald-700',
+            bg: 'bg-emerald-950/40',
+            head: 'bg-emerald-900/50',
+            dot: 'bg-emerald-400',
+            text: 'text-emerald-300',
+            cr3: 'text-emerald-400',
+            physBg: 'bg-emerald-900/60',
+            physText: 'text-emerald-300',
+        },
+    },
+    {
+        name: 'bash',
+        pid: 9012,
+        accent: {
+            border: 'border-amber-600 dark:border-amber-700',
+            bg: 'bg-amber-950/40',
+            head: 'bg-amber-900/50',
+            dot: 'bg-amber-400',
+            text: 'text-amber-300',
+            cr3: 'text-amber-400',
+            physBg: 'bg-amber-900/60',
+            physText: 'text-amber-300',
+        },
+    },
 ]
 
 export function MultiProcessVAViz() {
@@ -183,10 +219,15 @@ export function MultiProcessVAViz() {
         <div className="space-y-2">
             {/* 3 process columns */}
             <div className="grid grid-cols-3 gap-2">
-                {processes3_1.map(p => (
-                    <div key={p.pid} className={`rounded-xl border ${p.accent.border} ${p.accent.bg} overflow-hidden text-[11px] font-mono`}>
+                {processes3_1.map((p) => (
+                    <div
+                        key={p.pid}
+                        className={`rounded-xl border ${p.accent.border} ${p.accent.bg} overflow-hidden text-[11px] font-mono`}
+                    >
                         {/* Process header */}
-                        <div className={`${p.accent.head} px-2.5 py-2 border-b ${p.accent.border} flex items-center gap-1.5`}>
+                        <div
+                            className={`${p.accent.head} px-2.5 py-2 border-b ${p.accent.border} flex items-center gap-1.5`}
+                        >
                             <div className={`w-2 h-2 rounded-full ${p.accent.dot} shrink-0`} />
                             <span className={`font-bold ${p.accent.text}`}>{p.name}</span>
                             <span className="text-gray-500 text-[10px] ml-auto">PID {p.pid}</span>
@@ -219,7 +260,7 @@ export function MultiProcessVAViz() {
 
             {/* Arrow row */}
             <div className="grid grid-cols-3 gap-2 text-center text-gray-500 text-xs">
-                {processes3_1.map(p => (
+                {processes3_1.map((p) => (
                     <div key={p.pid} className="flex flex-col items-center gap-0.5">
                         <span className="text-[10px]">독립된 페이지 테이블</span>
                         <span>↓</span>
@@ -231,16 +272,25 @@ export function MultiProcessVAViz() {
             <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-3 space-y-2">
                 <div className="text-[11px] text-gray-400 font-mono font-semibold">물리 메모리 — 단 하나</div>
                 <div className="flex rounded-lg overflow-hidden h-9 text-[10px] font-mono border border-gray-700">
-                    <div className="w-16 shrink-0 bg-violet-900/70 flex items-center justify-center text-violet-300 border-r border-violet-800">커널</div>
-                    {processes3_1.map(p => (
-                        <div key={p.pid} className={`flex-1 ${p.accent.physBg} flex items-center justify-center ${p.accent.physText} border-r border-gray-700 last:border-r-0`}>
+                    <div className="w-16 shrink-0 bg-violet-900/70 flex items-center justify-center text-violet-300 border-r border-violet-800">
+                        커널
+                    </div>
+                    {processes3_1.map((p) => (
+                        <div
+                            key={p.pid}
+                            className={`flex-1 ${p.accent.physBg} flex items-center justify-center ${p.accent.physText} border-r border-gray-700 last:border-r-0`}
+                        >
                             {p.name}
                         </div>
                     ))}
                 </div>
                 <div className="flex gap-6 text-[10px] text-gray-500">
-                    <span>↑ 커널 공간: 세 프로세스 <strong className="text-gray-300">모두 같은</strong> 물리 주소 공유</span>
-                    <span>↑ 유저 공간: 프로세스마다 <strong className="text-gray-300">서로 다른</strong> 물리 페이지</span>
+                    <span>
+                        ↑ 커널 공간: 세 프로세스 <strong className="text-gray-300">모두 같은</strong> 물리 주소 공유
+                    </span>
+                    <span>
+                        ↑ 유저 공간: 프로세스마다 <strong className="text-gray-300">서로 다른</strong> 물리 페이지
+                    </span>
                 </div>
             </div>
         </div>
@@ -254,11 +304,61 @@ export function VABitBreakdown() {
     const toBin = (n: number, bits: number) => n.toString(2).padStart(bits, '0')
 
     const fields = [
-        { name: 'PGD', range: '[47:39]', bits: 9,  dec: 0xFF,  hex: '0xFF',  bg: 'bg-purple-100 dark:bg-purple-900/40', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-200', label: '1번째 레벨 인덱스' },
-        { name: 'PUD', range: '[38:30]', bits: 9,  dec: 0x1FF, hex: '0x1FF', bg: 'bg-blue-100 dark:bg-blue-900/40',   border: 'border-blue-400 dark:border-blue-600',   text: 'text-blue-700 dark:text-blue-200',   label: '2번째 레벨 인덱스' },
-        { name: 'PMD', range: '[29:21]', bits: 9,  dec: 0xF5,  hex: '0xF5',  bg: 'bg-emerald-100 dark:bg-emerald-900/40', border: 'border-emerald-400 dark:border-emerald-600', text: 'text-emerald-700 dark:text-emerald-200', label: '3번째 레벨 인덱스' },
-        { name: 'PTE', range: '[20:12]', bits: 9,  dec: 0xDB,  hex: '0xDB',  bg: 'bg-amber-100 dark:bg-amber-900/40', border: 'border-amber-400 dark:border-amber-600', text: 'text-amber-700 dark:text-amber-200',   label: '4번째 레벨 인덱스' },
-        { name: 'Offset', range: '[11:0]', bits: 12, dec: 0xEEF, hex: '0xEEF', bg: 'bg-red-100 dark:bg-red-900/40', border: 'border-red-400 dark:border-red-600', text: 'text-red-700 dark:text-red-200', label: '페이지 내 오프셋' },
+        {
+            name: 'PGD',
+            range: '[47:39]',
+            bits: 9,
+            dec: 0xff,
+            hex: '0xFF',
+            bg: 'bg-purple-100 dark:bg-purple-900/40',
+            border: 'border-purple-400 dark:border-purple-600',
+            text: 'text-purple-700 dark:text-purple-200',
+            label: '1번째 레벨 인덱스',
+        },
+        {
+            name: 'PUD',
+            range: '[38:30]',
+            bits: 9,
+            dec: 0x1ff,
+            hex: '0x1FF',
+            bg: 'bg-blue-100 dark:bg-blue-900/40',
+            border: 'border-blue-400 dark:border-blue-600',
+            text: 'text-blue-700 dark:text-blue-200',
+            label: '2번째 레벨 인덱스',
+        },
+        {
+            name: 'PMD',
+            range: '[29:21]',
+            bits: 9,
+            dec: 0xf5,
+            hex: '0xF5',
+            bg: 'bg-emerald-100 dark:bg-emerald-900/40',
+            border: 'border-emerald-400 dark:border-emerald-600',
+            text: 'text-emerald-700 dark:text-emerald-200',
+            label: '3번째 레벨 인덱스',
+        },
+        {
+            name: 'PTE',
+            range: '[20:12]',
+            bits: 9,
+            dec: 0xdb,
+            hex: '0xDB',
+            bg: 'bg-amber-100 dark:bg-amber-900/40',
+            border: 'border-amber-400 dark:border-amber-600',
+            text: 'text-amber-700 dark:text-amber-200',
+            label: '4번째 레벨 인덱스',
+        },
+        {
+            name: 'Offset',
+            range: '[11:0]',
+            bits: 12,
+            dec: 0xeef,
+            hex: '0xEEF',
+            bg: 'bg-red-100 dark:bg-red-900/40',
+            border: 'border-red-400 dark:border-red-600',
+            text: 'text-red-700 dark:text-red-200',
+            label: '페이지 내 오프셋',
+        },
     ]
 
     return (
@@ -272,14 +372,20 @@ export function VABitBreakdown() {
 
             {/* 필드별 비트 블록 */}
             <div className="flex gap-1 flex-wrap">
-                {fields.map(f => {
+                {fields.map((f) => {
                     const binStr = toBin(f.dec, f.bits)
                     return (
-                        <div key={f.name} className={`rounded-lg border ${f.bg} ${f.border} flex flex-col items-center py-2 px-1`}>
+                        <div
+                            key={f.name}
+                            className={`rounded-lg border ${f.bg} ${f.border} flex flex-col items-center py-2 px-1`}
+                        >
                             {/* 비트 열 */}
                             <div className="flex gap-px mb-1">
                                 {binStr.split('').map((bit, i) => (
-                                    <span key={i} className={`w-[18px] h-6 flex items-center justify-center text-xs font-bold font-mono rounded ${f.text} bg-white/50 dark:bg-black/20`}>
+                                    <span
+                                        key={i}
+                                        className={`w-[18px] h-6 flex items-center justify-center text-xs font-bold font-mono rounded ${f.text} bg-white/50 dark:bg-black/20`}
+                                    >
                                         {bit}
                                     </span>
                                 ))}
@@ -295,7 +401,7 @@ export function VABitBreakdown() {
 
             {/* 의미 설명 */}
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-1 text-[10px] font-mono">
-                {fields.map(f => (
+                {fields.map((f) => (
                     <div key={f.name} className={`rounded px-2 py-1 ${f.bg} ${f.text} text-center`}>
                         {f.label}
                     </div>
@@ -304,11 +410,23 @@ export function VABitBreakdown() {
 
             {/* 계산 흐름 요약 */}
             <div className="rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2 font-mono text-[11px] text-gray-600 dark:text-gray-400 space-y-0.5">
-                <div>CR3 → PGD[<span className="text-purple-600 dark:text-purple-300">0xFF</span>] → PUD 기준 주소</div>
-                <div className="pl-2">→ PUD[<span className="text-blue-600 dark:text-blue-300">0x1FF</span>] → PMD 기준 주소</div>
-                <div className="pl-4">→ PMD[<span className="text-emerald-600 dark:text-emerald-300">0xF5</span>] → PTE 기준 주소</div>
-                <div className="pl-6">→ PTE[<span className="text-amber-600 dark:text-amber-300">0xDB</span>] → <strong className="text-gray-800 dark:text-gray-200">PFN</strong> (물리 페이지 번호)</div>
-                <div className="pl-8">→ <strong className="text-gray-800 dark:text-gray-200">PA</strong> = PFN × 4096 + <span className="text-red-600 dark:text-red-300">0xEEF</span></div>
+                <div>
+                    CR3 → PGD[<span className="text-purple-600 dark:text-purple-300">0xFF</span>] → PUD 기준 주소
+                </div>
+                <div className="pl-2">
+                    → PUD[<span className="text-blue-600 dark:text-blue-300">0x1FF</span>] → PMD 기준 주소
+                </div>
+                <div className="pl-4">
+                    → PMD[<span className="text-emerald-600 dark:text-emerald-300">0xF5</span>] → PTE 기준 주소
+                </div>
+                <div className="pl-6">
+                    → PTE[<span className="text-amber-600 dark:text-amber-300">0xDB</span>] →{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">PFN</strong> (물리 페이지 번호)
+                </div>
+                <div className="pl-8">
+                    → <strong className="text-gray-800 dark:text-gray-200">PA</strong> = PFN × 4096 +{' '}
+                    <span className="text-red-600 dark:text-red-300">0xEEF</span>
+                </div>
             </div>
         </div>
     )

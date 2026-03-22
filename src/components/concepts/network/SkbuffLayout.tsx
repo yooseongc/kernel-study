@@ -2,13 +2,13 @@
 // 6.3  sk_buff 구조 레이아웃 시각화 (JSX)
 // ─────────────────────────────────────────────────────────────────────────────
 interface SkbRow {
-  label: string
-  sublabel: string
-  size: string
-  color: string
-  textColor: string
-  pointer?: string
-  pointerColor?: string
+    label: string
+    sublabel: string
+    size: string
+    color: string
+    textColor: string
+    pointer?: string
+    pointerColor?: string
 }
 
 const skbRows: SkbRow[] = [
@@ -102,7 +102,7 @@ export function SkbuffLayout() {
                         ))}
                 </div>
                 <div className="mt-4 rounded-lg border border-blue-800/40 bg-blue-950/30 p-2 text-[10px] text-blue-300">
-          데이터 이동 시 포인터만 변경. 복사 없음!
+                    데이터 이동 시 포인터만 변경. 복사 없음!
                 </div>
             </div>
         </div>

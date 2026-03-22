@@ -12,10 +12,10 @@ import { D3Container } from '../../viz/D3Container'
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface DriverNode {
-  name: string
-  sub?: string
-  kind?: 'root' | 'char' | 'block' | 'net'
-  children?: DriverNode[]
+    name: string
+    sub?: string
+    kind?: 'root' | 'char' | 'block' | 'net'
+    children?: DriverNode[]
 }
 
 const driverTreeData: DriverNode = {
@@ -55,11 +55,11 @@ function kindColors(kind: DriverNode['kind'], isDark: boolean) {
         case 'char':
             return { fill: c.amberFill, stroke: c.amberStroke, text: c.amberText }
         case 'block':
-            return { fill: c.blueFill,  stroke: c.blueStroke,  text: c.blueText }
+            return { fill: c.blueFill, stroke: c.blueStroke, text: c.blueText }
         case 'net':
             return { fill: c.greenFill, stroke: c.greenStroke, text: c.greenText }
         default:
-            return { fill: c.bgCard,    stroke: c.textDim,     text: c.text }
+            return { fill: c.bgCard, stroke: c.textDim, text: c.text }
     }
 }
 
@@ -106,10 +106,7 @@ function renderDriverTree(
         const mx = (sx + nodeW / 2 + tx - nodeW / 2) / 2
 
         g.append('path')
-            .attr(
-                'd',
-                `M${sx + nodeW / 2},${sy} C${mx},${sy} ${mx},${ty} ${tx - nodeW / 2},${ty}`,
-            )
+            .attr('d', `M${sx + nodeW / 2},${sy} C${mx},${sy} ${mx},${ty} ${tx - nodeW / 2},${ty}`)
             .attr('fill', 'none')
             .attr('stroke', linkColor)
             .attr('stroke-width', 1.5)
@@ -173,12 +170,7 @@ export function DriverTreeChart() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700">
-            <D3Container
-                renderFn={renderFn}
-                deps={[isDark]}
-                height={260}
-                zoomable={true}
-            />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={260} zoomable={true} />
         </div>
     )
 }

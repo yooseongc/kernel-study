@@ -274,15 +274,9 @@ export default function Topic08() {
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 09
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    동기화와 멀티코어 환경
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    Synchronization & Multi-core
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 09</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">동기화와 멀티코어 환경</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Synchronization & Multi-core</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     Race Condition, Spinlock, Mutex, RWLock, Atomic, RCU, Wait Queue, Completion, seqlock, 메모리 배리어
                 </p>
@@ -300,10 +294,10 @@ export default function Topic08() {
             {/* 9.1 Race Condition */}
             <Section id="s91" title="9.1  Race Condition">
                 <Prose>
-          두 스레드가 공유 자원에 동시 접근할 때 실행 순서에 따라 결과가 달라지는 문제입니다.
-          단순해 보이는 <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">counter++</code>도
-          LOAD → ADD → STORE 3단계 명령어로 이뤄지기 때문에 중간에 컨텍스트 스위치가 발생하면
-          데이터가 손실될 수 있습니다.
+                    두 스레드가 공유 자원에 동시 접근할 때 실행 순서에 따라 결과가 달라지는 문제입니다. 단순해 보이는{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">counter++</code>도
+                    LOAD → ADD → STORE 3단계 명령어로 이뤄지기 때문에 중간에 컨텍스트 스위치가 발생하면 데이터가 손실될
+                    수 있습니다.
                 </Prose>
 
                 <AnimatedDiagram
@@ -318,8 +312,8 @@ export default function Topic08() {
             {/* 9.2 Spinlock */}
             <Section id="s92" title="9.2  Spinlock">
                 <Prose>
-          짧은 임계 구역에 사용합니다. 락을 얻을 때까지 CPU를 소모하며 바쁜 대기(busy-wait)를
-          수행합니다. sleep 불가 컨텍스트(인터럽트 핸들러)에서도 사용할 수 있습니다.
+                    짧은 임계 구역에 사용합니다. 락을 얻을 때까지 CPU를 소모하며 바쁜 대기(busy-wait)를 수행합니다.
+                    sleep 불가 컨텍스트(인터럽트 핸들러)에서도 사용할 수 있습니다.
                     <div className="mt-2 flex flex-wrap gap-2">
                         <KernelRef path="include/linux/spinlock_types.h" sym="spinlock_t" label="spinlock_t" />
                         <KernelRef path="include/linux/rcupdate.h" sym="rcu_head" label="rcu_head" />
@@ -331,16 +325,16 @@ export default function Topic08() {
                 <InfoTable headers={['항목', '값']} rows={spinlockRows} />
 
                 <div className="rounded-lg border border-orange-800/40 bg-orange-900/10 px-4 py-3 text-xs text-orange-200">
-                    <span className="font-bold text-orange-300">주의:</span> <T id="spinlock">spinlock</T>을 보유한 상태에서
-          sleep하면 데드락이 발생합니다. 임계 구역이 긴 경우 <T id="mutex">Mutex</T>를 사용하세요.
+                    <span className="font-bold text-orange-300">주의:</span> <T id="spinlock">spinlock</T>을 보유한
+                    상태에서 sleep하면 데드락이 발생합니다. 임계 구역이 긴 경우 <T id="mutex">Mutex</T>를 사용하세요.
                 </div>
             </Section>
 
             {/* 9.3 Mutex */}
             <Section id="s93" title="9.3  Mutex">
                 <Prose>
-          긴 임계 구역에 사용합니다. 락 대기 중 sleep하므로 CPU 낭비가 없습니다. 프로세스
-          컨텍스트에서만 사용 가능하며, 인터럽트 핸들러에서는 <T id="spinlock">Spinlock</T>과 달리 사용할 수 없습니다.
+                    긴 임계 구역에 사용합니다. 락 대기 중 sleep하므로 CPU 낭비가 없습니다. 프로세스 컨텍스트에서만 사용
+                    가능하며, 인터럽트 핸들러에서는 <T id="spinlock">Spinlock</T>과 달리 사용할 수 없습니다.
                 </Prose>
 
                 <CodeBlock code={mutexCode} language="c" filename="mutex.c" />
@@ -378,7 +372,7 @@ export default function Topic08() {
                             </div>
                             {card.items.map((item, i) => (
                                 <div key={i} className="text-gray-500 dark:text-gray-400 leading-snug">
-                  • {item}
+                                    • {item}
                                 </div>
                             ))}
                         </div>
@@ -389,8 +383,8 @@ export default function Topic08() {
             {/* 9.4 RWLock */}
             <Section id="s94" title="9.4  RWLock (Reader-Writer Lock)">
                 <Prose>
-          읽기는 동시에, 쓰기는 단독으로 수행합니다. 읽기가 많고 쓰기가 드문 자료구조에 적합합니다.
-          다수의 reader가 공존할 수 있어 읽기 경쟁이 심한 경우 <T id="mutex">Mutex</T>보다 효율적입니다.
+                    읽기는 동시에, 쓰기는 단독으로 수행합니다. 읽기가 많고 쓰기가 드문 자료구조에 적합합니다. 다수의
+                    reader가 공존할 수 있어 읽기 경쟁이 심한 경우 <T id="mutex">Mutex</T>보다 효율적입니다.
                 </Prose>
 
                 <InfoTable headers={['동작', '허용']} rows={rwlockRows} />
@@ -401,13 +395,13 @@ export default function Topic08() {
             {/* Lock comparison chart */}
             <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 font-mono">
-          락 종류별 상대적 오버헤드 비교
+                    락 종류별 상대적 오버헤드 비교
                 </h3>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700">
                     <LockComparisonChart />
                 </div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-          RCU-R은 실질적으로 오버헤드가 거의 없습니다 (선점 비활성화만 수행).
+                    RCU-R은 실질적으로 오버헤드가 거의 없습니다 (선점 비활성화만 수행).
                 </p>
             </div>
 
@@ -415,8 +409,8 @@ export default function Topic08() {
             <Section id="s95" title="9.5  seqlock — 읽기 무잠금 동기화">
                 <Prose>
                     <T id="seqlock">seqlock</T>은 읽기 쪽이 잠금 없이 시퀀스 카운터를 확인하는 방식입니다. 쓰기가 드물고
-          읽기가 매우 빈번한 경우(커널 timekeeping, jiffies 업데이트)에 최적입니다. 읽기 중
-          쓰기가 발생했으면 카운터가 달라지므로 재시도합니다.
+                    읽기가 매우 빈번한 경우(커널 timekeeping, jiffies 업데이트)에 최적입니다. 읽기 중 쓰기가 발생했으면
+                    카운터가 달라지므로 재시도합니다.
                 </Prose>
 
                 <CodeBlock code={seqlockCode} language="c" filename="include/linux/seqlock.h 사용 예" />
@@ -435,12 +429,7 @@ export default function Topic08() {
                         },
                         {
                             label: 'RWLock',
-                            items: [
-                                '읽기도 잠금 취득',
-                                '쓰기 중 읽기 → 블록',
-                                '읽기 항상 성공',
-                                '일반적 목적',
-                            ],
+                            items: ['읽기도 잠금 취득', '쓰기 중 읽기 → 블록', '읽기 항상 성공', '일반적 목적'],
                             color: '#22c55e',
                         },
                     ].map((card) => (
@@ -457,7 +446,7 @@ export default function Topic08() {
                             </div>
                             {card.items.map((item, i) => (
                                 <div key={i} className="text-gray-500 dark:text-gray-400 leading-snug">
-                  • {item}
+                                    • {item}
                                 </div>
                             ))}
                         </div>
@@ -468,8 +457,8 @@ export default function Topic08() {
             {/* 9.6 rwsem */}
             <Section id="s96" title="9.6  rwsem — 슬립 가능한 읽기-쓰기 잠금">
                 <Prose>
-          rwsem은 RWLock과 달리 경쟁 시 슬립합니다. 인터럽트 컨텍스트 밖(프로세스 컨텍스트)에서
-          사용하며, VFS inode lock 등 커널 내부에서 광범위하게 사용됩니다.
+                    rwsem은 RWLock과 달리 경쟁 시 슬립합니다. 인터럽트 컨텍스트 밖(프로세스 컨텍스트)에서 사용하며, VFS
+                    inode lock 등 커널 내부에서 광범위하게 사용됩니다.
                 </Prose>
 
                 <CodeBlock code={rwsemCode} language="c" filename="rwsem.c" />
@@ -478,12 +467,7 @@ export default function Topic08() {
                     {[
                         {
                             label: 'RWLock (rwlock_t)',
-                            items: [
-                                '스핀 (바쁜 대기)',
-                                '인터럽트 컨텍스트 사용 가능',
-                                '슬립 불가',
-                                '짧은 임계구역',
-                            ],
+                            items: ['스핀 (바쁜 대기)', '인터럽트 컨텍스트 사용 가능', '슬립 불가', '짧은 임계구역'],
                             color: '#f97316',
                         },
                         {
@@ -510,7 +494,7 @@ export default function Topic08() {
                             </div>
                             {card.items.map((item, i) => (
                                 <div key={i} className="text-gray-500 dark:text-gray-400 leading-snug">
-                  • {item}
+                                    • {item}
                                 </div>
                             ))}
                         </div>
@@ -521,31 +505,28 @@ export default function Topic08() {
             {/* 9.7 Atomic Operations */}
             <Section id="s97" title="9.7  Atomic Operations">
                 <Prose>
-          하드웨어 수준의 <T id="atomic">atomic</T> 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를 통해
-          버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
-          적합합니다.
+                    하드웨어 수준의 <T id="atomic">atomic</T> 연산으로 락 없이도 안전합니다. x86에서는 LOCK prefix를
+                    통해 버스를 잠그고 단일 명령어로 읽기-수정-쓰기를 수행합니다. 단순 카운터나 플래그에 사용하기
+                    적합합니다.
                 </Prose>
 
                 <InfoTable headers={['함수', '동작']} rows={atomicRows} />
 
                 <div className="rounded-lg border border-cyan-800/40 bg-cyan-900/10 px-4 py-3 text-xs text-cyan-200">
                     <span className="font-bold text-cyan-300">CAS 패턴:</span>{' '}
-                    <code className="font-mono">atomic_cmpxchg(&v, old, new)</code>은 락-프리 알고리즘의
-          핵심입니다. 현재 값이 old와 같을 때만 new로 교체하며, 반환값으로 성공 여부를 판단합니다.
+                    <code className="font-mono">atomic_cmpxchg(&v, old, new)</code>은 락-프리 알고리즘의 핵심입니다.
+                    현재 값이 old와 같을 때만 new로 교체하며, 반환값으로 성공 여부를 판단합니다.
                 </div>
             </Section>
 
             {/* 9.8 메모리 배리어 */}
             <Section id="s98" title="9.8  메모리 배리어 — CPU 재순서화 제어">
                 <Prose>
-          현대 CPU는 성능을 위해 메모리 읽기/쓰기 순서를 재배치합니다. 멀티코어 환경에서 이
-          재배치가 동기화 버그를 일으킬 수 있어 <strong>메모리 배리어</strong>로 순서를 강제합니다.
+                    현대 CPU는 성능을 위해 메모리 읽기/쓰기 순서를 재배치합니다. 멀티코어 환경에서 이 재배치가 동기화
+                    버그를 일으킬 수 있어 <strong>메모리 배리어</strong>로 순서를 강제합니다.
                 </Prose>
 
-                <InfoTable
-                    headers={['배리어', '함수', '설명']}
-                    rows={membarrierRows}
-                />
+                <InfoTable headers={['배리어', '함수', '설명']} rows={membarrierRows} />
 
                 <CodeBlock code={membarrierCode} language="c" filename="메모리 배리어 사용 예" />
             </Section>
@@ -553,8 +534,8 @@ export default function Topic08() {
             {/* 9.9 RCU */}
             <Section id="s99" title="9.9  RCU (Read-Copy-Update)">
                 <Prose>
-          읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화
-          메커니즘입니다. <T id="rcu">RCU</T> 읽기 측은 lock이 전혀 없습니다.
+                    읽기가 극도로 많은 자료구조(라우팅 테이블, 프로세스 목록 등)를 위한 락-프리 동기화 메커니즘입니다.{' '}
+                    <T id="rcu">RCU</T> 읽기 측은 lock이 전혀 없습니다.
                 </Prose>
 
                 {/* RCU 3단계 카드 */}
@@ -599,9 +580,7 @@ export default function Topic08() {
                             >
                                 {card.api}
                             </code>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -618,8 +597,8 @@ export default function Topic08() {
             {/* 9.10 멀티코어 환경에서 네트워크 성능 */}
             <Section id="s910" title="9.10  멀티코어 환경에서 네트워크 성능">
                 <Prose>
-          여러 CPU가 동시에 패킷을 처리할 때 동기화 비용이 병목이 됩니다. 다음 기법들로 락 경합을
-          최소화합니다.
+                    여러 CPU가 동시에 패킷을 처리할 때 동기화 비용이 병목이 됩니다. 다음 기법들로 락 경합을
+                    최소화합니다.
                 </Prose>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -651,10 +630,7 @@ export default function Topic08() {
                             className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3 hover:shadow-lg transition-shadow"
                         >
                             <div>
-                                <div
-                                    className="text-xs font-mono font-bold mb-0.5"
-                                    style={{ color: card.color }}
-                                >
+                                <div className="text-xs font-mono font-bold mb-0.5" style={{ color: card.color }}>
                                     {card.title}
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 text-xs">{card.subtitle}</div>
@@ -683,9 +659,9 @@ export default function Topic08() {
             {/* 9.11 futex */}
             <Section id="s911" title="9.11  futex — 유저공간 잠금의 커널 기반">
                 <Prose>
-          pthread_mutex, C++ std::mutex 등 유저공간 잠금의 대부분은 내부적으로{' '}
-                    <strong>futex(Fast Userspace Mutex)</strong>를 사용합니다. 경쟁이 없을 때는 커널 진입
-          없이 원자적 연산만으로 잠금을 획득해 성능을 최적화합니다.
+                    pthread_mutex, C++ std::mutex 등 유저공간 잠금의 대부분은 내부적으로{' '}
+                    <strong>futex(Fast Userspace Mutex)</strong>를 사용합니다. 경쟁이 없을 때는 커널 진입 없이 원자적
+                    연산만으로 잠금을 획득해 성능을 최적화합니다.
                 </Prose>
 
                 <CodeBlock code={futexCode} language="c" filename="futex 동작 원리" />
@@ -719,9 +695,7 @@ export default function Topic08() {
                             <div className="font-mono text-xs font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -730,8 +704,8 @@ export default function Topic08() {
             {/* 9.12 Wait Queue */}
             <Section id="s912" title="9.12  Wait Queue — 블로킹 I/O의 핵심">
                 <Prose>
-                    <T id="wait_queue">Wait Queue</T>는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는 기본
-          메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
+                    <T id="wait_queue">Wait Queue</T>는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는
+                    기본 메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
                     <T id="wait_queue">wait queue</T> 위에 구현됩니다.
                 </Prose>
 
@@ -781,7 +755,10 @@ export default function Topic08() {
                             </div>
                             <div className="space-y-1">
                                 {card.lines.map((line, i) => (
-                                    <div key={i} className="text-gray-500 dark:text-gray-400 text-xs font-mono leading-snug">
+                                    <div
+                                        key={i}
+                                        className="text-gray-500 dark:text-gray-400 text-xs font-mono leading-snug"
+                                    >
                                         {line}
                                     </div>
                                 ))}
@@ -838,7 +815,14 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
                         { cells: ['wait_event(wq, cond)', '불가', '없음', '반드시 깨어나야 할 때'] },
                         { cells: ['wait_event_interruptible(wq, cond)', '가능', '없음', '대부분의 드라이버'] },
                         { cells: ['wait_event_timeout(wq, cond, timeout)', '불가', '있음', '하드웨어 폴링'] },
-                        { cells: ['wait_event_interruptible_timeout(wq, cond, t)', '가능', '있음', '소켓 타임아웃 등'] },
+                        {
+                            cells: [
+                                'wait_event_interruptible_timeout(wq, cond, t)',
+                                '가능',
+                                '있음',
+                                '소켓 타임아웃 등',
+                            ],
+                        },
                     ]}
                 />
             </Section>
@@ -846,9 +830,10 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
             {/* 9.13 Completion */}
             <Section id="s913" title="9.13  Completion — 일회성 완료 신호">
                 <Prose>
-          Wait Queue가 "반복적인 조건 대기"라면, <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">Completion</code>은
-          "딱 한 번의 완료 신호"에 최적화된 간단한 인터페이스입니다. 드라이버 초기화, 스레드 종료
-          대기, DMA 완료 신호에 주로 사용됩니다.
+                    Wait Queue가 "반복적인 조건 대기"라면,{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">Completion</code>은
+                    "딱 한 번의 완료 신호"에 최적화된 간단한 인터페이스입니다. 드라이버 초기화, 스레드 종료 대기, DMA
+                    완료 신호에 주로 사용됩니다.
                 </Prose>
 
                 <CodeBlock
@@ -907,22 +892,12 @@ void cleanup(void) {
                     {[
                         {
                             label: 'Wait Queue',
-                            items: [
-                                '조건 기반 반복 대기',
-                                '다수 대기자',
-                                '복잡한 조건 표현식',
-                                '소켓/파일 I/O',
-                            ],
+                            items: ['조건 기반 반복 대기', '다수 대기자', '복잡한 조건 표현식', '소켓/파일 I/O'],
                             color: '#3b82f6',
                         },
                         {
                             label: 'Completion',
-                            items: [
-                                '일회성 완료 신호',
-                                '단순 "완료 여부"',
-                                '초기화/종료 동기화',
-                                'DMA 완료',
-                            ],
+                            items: ['일회성 완료 신호', '단순 "완료 여부"', '초기화/종료 동기화', 'DMA 완료'],
                             color: '#10b981',
                         },
                     ].map((card) => (
@@ -939,7 +914,7 @@ void cleanup(void) {
                             </div>
                             {card.items.map((item, i) => (
                                 <div key={i} className="text-gray-500 dark:text-gray-400 leading-snug">
-                  • {item}
+                                    • {item}
                                 </div>
                             ))}
                         </div>
@@ -950,9 +925,9 @@ void cleanup(void) {
             {/* 9.14 RCU Grace Period */}
             <Section id="s914" title="9.14  RCU Grace Period — 독자 완전 탈출 후 메모리 해제">
                 <Prose>
-                    <T id="rcu">RCU</T> 업데이터는 새 버전 포인터로 교체(publish) 후, 기존 데이터를 즉시 해제할 수 없습니다.{' '}
-                    <strong>이미 구버전을 읽고 있는 독자(reader)</strong>가 있을 수 있기 때문입니다.{' '}
-          Grace Period는 "모든 현재 독자가 임계 구역을 벗어날 때까지 기다리는 시간"입니다.
+                    <T id="rcu">RCU</T> 업데이터는 새 버전 포인터로 교체(publish) 후, 기존 데이터를 즉시 해제할 수
+                    없습니다. <strong>이미 구버전을 읽고 있는 독자(reader)</strong>가 있을 수 있기 때문입니다. Grace
+                    Period는 "모든 현재 독자가 임계 구역을 벗어날 때까지 기다리는 시간"입니다.
                 </Prose>
 
                 {/* Grace Period 타임라인 SVG */}
@@ -993,23 +968,23 @@ void cleanup(void) {
                             <code className="font-mono font-bold text-xs" style={{ color: card.color }}>
                                 {card.term}
                             </code>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* rcu_read_lock/unlock 의미 */}
                 <div className="rounded-lg border border-cyan-800/40 bg-cyan-900/10 px-4 py-3 space-y-1.5 text-xs">
-                    <div className="font-bold text-cyan-300 dark:text-cyan-300 text-cyan-700">rcu_read_lock / rcu_read_unlock</div>
-                    <div className="text-gray-500 dark:text-gray-400">
-                        <code className="font-mono text-cyan-600 dark:text-cyan-400">rcu_read_lock()</code>
-                        {' '}→ 선점 비활성화 (TREE_RCU) 또는 카운터 증가. 실제 락 획득 없음.
+                    <div className="font-bold text-cyan-300 dark:text-cyan-300 text-cyan-700">
+                        rcu_read_lock / rcu_read_unlock
                     </div>
                     <div className="text-gray-500 dark:text-gray-400">
-                        <code className="font-mono text-cyan-600 dark:text-cyan-400">rcu_read_unlock()</code>
-                        {' '}→ 선점 재활성화 → <strong className="text-gray-700 dark:text-gray-300">quiescent state 도달</strong>.
+                        <code className="font-mono text-cyan-600 dark:text-cyan-400">rcu_read_lock()</code> → 선점
+                        비활성화 (TREE_RCU) 또는 카운터 증가. 실제 락 획득 없음.
+                    </div>
+                    <div className="text-gray-500 dark:text-gray-400">
+                        <code className="font-mono text-cyan-600 dark:text-cyan-400">rcu_read_unlock()</code> → 선점
+                        재활성화 → <strong className="text-gray-700 dark:text-gray-300">quiescent state 도달</strong>.
                     </div>
                     <div className="text-gray-500 dark:text-gray-400 pt-1">
                         Grace Period는 "모든 CPU가 최소 한 번 선점을 허용"할 때 종료됩니다.

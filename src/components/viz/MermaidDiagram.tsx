@@ -3,8 +3,8 @@ import mermaid from 'mermaid'
 import { useTheme } from '../../hooks/useTheme'
 
 interface MermaidDiagramProps {
-  chart: string
-  className?: string
+    chart: string
+    className?: string
 }
 
 let globalId = 0
@@ -34,14 +34,15 @@ export function MermaidDiagram({ chart, className = '' }: MermaidDiagramProps) {
                     ref.current.innerHTML = svg
                 }
             })
-            .catch(e => setError(String(e)))
+            .catch((e) => setError(String(e)))
     }, [chart, theme])
 
-    if (error) return (
-        <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4 text-red-600 dark:text-red-300 text-sm font-mono">
-      Mermaid error: {error}
-        </div>
-    )
+    if (error)
+        return (
+            <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4 text-red-600 dark:text-red-300 text-sm font-mono">
+                Mermaid error: {error}
+            </div>
+        )
 
     return <div ref={ref} className={`flex justify-center overflow-x-auto ${className}`} />
 }

@@ -7,46 +7,45 @@ const flowSteps = [
     {
         label: 'L2: Ethernet 수신',
         description:
-      'eth_type_trans()로 프로토콜 판별. ARP면 arp_rcv(), IP면 ip_rcv()로 전달합니다. sk_buff의 mac_header가 설정됩니다.',
+            'eth_type_trans()로 프로토콜 판별. ARP면 arp_rcv(), IP면 ip_rcv()로 전달합니다. sk_buff의 mac_header가 설정됩니다.',
     },
     {
         label: 'L3: IP 수신 (ip_rcv)',
         description:
-      'checksum 검증, TTL 감소, 목적지가 자신이면 상위 레이어로 전달. 아니면 라우팅 결정으로 이동합니다.',
+            'checksum 검증, TTL 감소, 목적지가 자신이면 상위 레이어로 전달. 아니면 라우팅 결정으로 이동합니다.',
     },
     {
         label: 'L3: 라우팅 결정 (ip_route_input)',
         description:
-      'FIB(Forwarding Information Base)를 조회하여 FORWARD(포워딩) 또는 LOCAL_IN(로컬 수신)을 결정합니다.',
+            'FIB(Forwarding Information Base)를 조회하여 FORWARD(포워딩) 또는 LOCAL_IN(로컬 수신)을 결정합니다.',
     },
     {
         label: 'L4: TCP/UDP 디멀티플렉싱',
-        description:
-      '목적지 포트 번호로 소켓을 탐색합니다. TCP는 tcp_v4_rcv(), UDP는 udp_rcv()가 처리합니다.',
+        description: '목적지 포트 번호로 소켓을 탐색합니다. TCP는 tcp_v4_rcv(), UDP는 udp_rcv()가 처리합니다.',
     },
     {
         label: '소켓 수신 버퍼',
         description:
-      'sk_buff를 소켓의 receive queue에 추가합니다 (sk->sk_receive_queue). 소켓이 준비되면 대기 중인 프로세스를 깨웁니다.',
+            'sk_buff를 소켓의 receive queue에 추가합니다 (sk->sk_receive_queue). 소켓이 준비되면 대기 중인 프로세스를 깨웁니다.',
     },
     {
         label: '유저 공간 전달',
         description:
-      '프로세스가 recv() 시스템 콜을 호출하면 커널이 receive queue에서 데이터를 사용자 버퍼로 복사합니다 (copy_to_user).',
+            '프로세스가 recv() 시스템 콜을 호출하면 커널이 receive queue에서 데이터를 사용자 버퍼로 복사합니다 (copy_to_user).',
     },
 ]
 
 type FlowZone = 'nic' | 'kernel' | 'socket'
 
 interface FlowZoneInfo {
-  id: FlowZone
-  label: string
-  sublabel: string
-  activeStep: number[]
-  color: string
-  activeColor: string
-  border: string
-  activeBorder: string
+    id: FlowZone
+    label: string
+    sublabel: string
+    activeStep: number[]
+    color: string
+    activeColor: string
+    border: string
+    activeBorder: string
 }
 
 const flowZones: FlowZoneInfo[] = [
@@ -83,9 +82,9 @@ const flowZones: FlowZoneInfo[] = [
 ]
 
 interface FlowStepDetail {
-  zone: FlowZone
-  fn: string
-  desc: string
+    zone: FlowZone
+    fn: string
+    desc: string
 }
 
 const flowStepDetails: FlowStepDetail[] = [
@@ -134,21 +133,21 @@ function NetworkFlowStep({ step }: { step: number }) {
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#451a03', border: '1px solid #f59e0b', color: '#fde68a' }}
                 >
-          NIC/드라이버
+                    NIC/드라이버
                 </span>
                 <span>→</span>
                 <span
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#1e1b4b', border: '1px solid #6366f1', color: '#c7d2fe' }}
                 >
-          커널 스택
+                    커널 스택
                 </span>
                 <span>→</span>
                 <span
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#14532d', border: '1px solid #22c55e', color: '#bbf7d0' }}
                 >
-          소켓/프로세스
+                    소켓/프로세스
                 </span>
             </div>
         </div>

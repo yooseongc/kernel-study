@@ -5,7 +5,7 @@ interface Props {
 }
 
 export function TopicNavigation({ topicId }: Props) {
-    const idx = kernelTopics.findIndex(t => t.id === topicId)
+    const idx = kernelTopics.findIndex((t) => t.id === topicId)
     const prev = idx > 0 ? kernelTopics[idx - 1] : null
     const next = idx >= 0 && idx < kernelTopics.length - 1 ? kernelTopics[idx + 1] : null
 
@@ -22,7 +22,9 @@ export function TopicNavigation({ topicId }: Props) {
                             ← {String(prev.number).padStart(2, '0')} · {prev.title}
                         </a>
                     </>
-                ) : <div />}
+                ) : (
+                    <div />
+                )}
             </div>
             <div className="text-right">
                 {next ? (
@@ -35,7 +37,9 @@ export function TopicNavigation({ topicId }: Props) {
                             {String(next.number).padStart(2, '0')} · {next.title} →
                         </a>
                     </>
-                ) : <div />}
+                ) : (
+                    <div />
+                )}
             </div>
         </nav>
     )

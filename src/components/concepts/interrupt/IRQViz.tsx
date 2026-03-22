@@ -1,9 +1,9 @@
 type IRQZone = 'device' | 'cpu' | 'memory'
 
 interface IRQStepData {
-  active: IRQZone[]
-  arrow?: { from: IRQZone; to: IRQZone }
-  note: string
+    active: IRQZone[]
+    arrow?: { from: IRQZone; to: IRQZone }
+    note: string
 }
 
 const irqStepData: IRQStepData[] = [
@@ -31,13 +31,13 @@ const irqStepData: IRQStepData[] = [
 ]
 
 interface ZoneDef {
-  id: IRQZone
-  label: string
-  sub: string
-  color: string
-  activeColor: string
-  border: string
-  activeBorder: string
+    id: IRQZone
+    label: string
+    sub: string
+    color: string
+    activeColor: string
+    border: string
+    activeBorder: string
 }
 
 const irqZones: ZoneDef[] = [
@@ -79,9 +79,9 @@ export function IRQViz({ step }: { step: number }) {
                 {irqZones.map((z, zi) => {
                     const isActive = current.active.includes(z.id)
                     const showArrow =
-            current.arrow?.from === z.id &&
-            irqZones[zi + 1] !== undefined &&
-            current.arrow.to === irqZones[zi + 1].id
+                        current.arrow?.from === z.id &&
+                        irqZones[zi + 1] !== undefined &&
+                        current.arrow.to === irqZones[zi + 1].id
                     return (
                         <div key={z.id} className="flex items-center gap-3 flex-1">
                             <div
@@ -99,13 +99,11 @@ export function IRQViz({ step }: { step: number }) {
                                         className="text-[9px] mt-1 font-mono px-2 py-0.5 rounded"
                                         style={{ background: z.activeBorder + '33', color: z.activeBorder }}
                                     >
-                    활성
+                                        활성
                                     </div>
                                 )}
                             </div>
-                            {showArrow && (
-                                <div className="text-gray-400 text-2xl font-bold select-none">→</div>
-                            )}
+                            {showArrow && <div className="text-gray-400 text-2xl font-bold select-none">→</div>}
                         </div>
                     )
                 })}

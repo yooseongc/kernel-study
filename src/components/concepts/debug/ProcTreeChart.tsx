@@ -12,9 +12,9 @@ import { D3Container } from '../../viz/D3Container'
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface TreeNodeData {
-  name: string
-  color?: string
-  children?: TreeNodeData[]
+    name: string
+    color?: string
+    children?: TreeNodeData[]
 }
 
 const procTreeData: TreeNodeData = {
@@ -98,7 +98,8 @@ function renderProcTree(
         .attr('stroke', linkColor)
         .attr('stroke-width', 1.2)
 
-    const nodes = g.selectAll('g.node')
+    const nodes = g
+        .selectAll('g.node')
         .data(root.descendants())
         .enter()
         .append('g')
@@ -145,12 +146,7 @@ export function ProcTreeChart() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <D3Container
-                renderFn={renderFn}
-                deps={[isDark]}
-                height={280}
-                zoomable={true}
-            />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={280} zoomable={true} />
         </div>
     )
 }

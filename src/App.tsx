@@ -4,21 +4,21 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { AppLayout } from './components/layout/AppLayout'
 import Home from './pages/Home'
 
-const Topic01  = lazy(() => import('./pages/topic01-overview'))
-const Topic02  = lazy(() => import('./pages/topic02-scheduler'))
-const Topic03  = lazy(() => import('./pages/topic03-memory'))
-const Topic04  = lazy(() => import('./pages/topic04-filesystem'))
-const Topic05  = lazy(() => import('./pages/topic05-interrupts'))
-const Topic06  = lazy(() => import('./pages/topic06-network-stack'))
-const Topic07  = lazy(() => import('./pages/topic07-netfilter'))
-const Topic08  = lazy(() => import('./pages/topic08-xdp-ebpf'))
-const Topic09  = lazy(() => import('./pages/topic09-synchronization'))
-const Topic10  = lazy(() => import('./pages/topic10-drivers'))
-const Topic11  = lazy(() => import('./pages/topic11-debugging'))
-const Topic12  = lazy(() => import('./pages/topic12-security'))
-const Topic13  = lazy(() => import('./pages/topic13-kvm'))
+const Topic01 = lazy(() => import('./pages/topic01-overview'))
+const Topic02 = lazy(() => import('./pages/topic02-scheduler'))
+const Topic03 = lazy(() => import('./pages/topic03-memory'))
+const Topic04 = lazy(() => import('./pages/topic04-filesystem'))
+const Topic05 = lazy(() => import('./pages/topic05-interrupts'))
+const Topic06 = lazy(() => import('./pages/topic06-network-stack'))
+const Topic07 = lazy(() => import('./pages/topic07-netfilter'))
+const Topic08 = lazy(() => import('./pages/topic08-xdp-ebpf'))
+const Topic09 = lazy(() => import('./pages/topic09-synchronization'))
+const Topic10 = lazy(() => import('./pages/topic10-drivers'))
+const Topic11 = lazy(() => import('./pages/topic11-debugging'))
+const Topic12 = lazy(() => import('./pages/topic12-security'))
+const Topic13 = lazy(() => import('./pages/topic13-kvm'))
 const Glossary = lazy(() => import('./pages/Glossary'))
-const Graph    = lazy(() => import('./pages/Graph'))
+const Graph = lazy(() => import('./pages/Graph'))
 
 function PageFallback() {
     return (
@@ -40,22 +40,28 @@ export default function App() {
                     <Route element={<AppLayout />}>
                         <Route index element={<Home />} />
                         {/* Suspense는 Routes 직계 자식이 될 수 없으므로 중간 레이아웃 Route로 감쌈 */}
-                        <Route element={<Suspense fallback={<PageFallback />}><Outlet /></Suspense>}>
-                            <Route path="topic/01-overview"        element={<Topic01  />} />
-                            <Route path="topic/02-scheduler"       element={<Topic02  />} />
-                            <Route path="topic/03-memory"          element={<Topic03  />} />
-                            <Route path="topic/04-filesystem"      element={<Topic04  />} />
-                            <Route path="topic/05-interrupts"      element={<Topic05  />} />
-                            <Route path="topic/06-network-stack"   element={<Topic06  />} />
-                            <Route path="topic/07-netfilter"       element={<Topic07  />} />
-                            <Route path="topic/08-xdp-ebpf"        element={<Topic08  />} />
-                            <Route path="topic/09-synchronization" element={<Topic09  />} />
-                            <Route path="topic/10-drivers"         element={<Topic10  />} />
-                            <Route path="topic/11-debugging"       element={<Topic11  />} />
-                            <Route path="topic/12-security"        element={<Topic12  />} />
-                            <Route path="topic/13-kvm"             element={<Topic13  />} />
-                            <Route path="glossary"                 element={<Glossary />} />
-                            <Route path="graph"                    element={<Graph    />} />
+                        <Route
+                            element={
+                                <Suspense fallback={<PageFallback />}>
+                                    <Outlet />
+                                </Suspense>
+                            }
+                        >
+                            <Route path="topic/01-overview" element={<Topic01 />} />
+                            <Route path="topic/02-scheduler" element={<Topic02 />} />
+                            <Route path="topic/03-memory" element={<Topic03 />} />
+                            <Route path="topic/04-filesystem" element={<Topic04 />} />
+                            <Route path="topic/05-interrupts" element={<Topic05 />} />
+                            <Route path="topic/06-network-stack" element={<Topic06 />} />
+                            <Route path="topic/07-netfilter" element={<Topic07 />} />
+                            <Route path="topic/08-xdp-ebpf" element={<Topic08 />} />
+                            <Route path="topic/09-synchronization" element={<Topic09 />} />
+                            <Route path="topic/10-drivers" element={<Topic10 />} />
+                            <Route path="topic/11-debugging" element={<Topic11 />} />
+                            <Route path="topic/12-security" element={<Topic12 />} />
+                            <Route path="topic/13-kvm" element={<Topic13 />} />
+                            <Route path="glossary" element={<Glossary />} />
+                            <Route path="graph" element={<Graph />} />
                         </Route>
                     </Route>
                 </Routes>

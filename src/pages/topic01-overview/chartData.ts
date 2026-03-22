@@ -74,7 +74,8 @@ export const syscallAnimSteps = [
     },
     {
         label: 'glibc wrapper — syscall 번호 설정',
-        description: 'glibc wrapper가 시스템 콜 번호(SYS_write = 1)를 rax 레지스터에 저장하고 syscall 명령을 실행합니다.',
+        description:
+            'glibc wrapper가 시스템 콜 번호(SYS_write = 1)를 rax 레지스터에 저장하고 syscall 명령을 실행합니다.',
     },
     {
         label: 'CPU Ring 전환 (Ring 3 → Ring 0)',
@@ -154,20 +155,20 @@ cat /proc/$$/syscall
 # 7 0x1 0x7ffd1234 0x100 ...  ← syscall 번호, 인자들`
 
 export const syscallTableRows = [
-    { name: 'open()',       nr: 2,   role: '파일 열기 → fd 반환',                   concepts: 'VFS, dentry, inode' },
-    { name: 'read()',       nr: 0,   role: 'fd에서 데이터 읽기',                    concepts: '페이지 캐시, copy_to_user' },
-    { name: 'write()',      nr: 1,   role: 'fd에 데이터 쓰기',                      concepts: 'dirty page, write-back' },
-    { name: 'fork()',       nr: 57,  role: '자식 프로세스 생성',                    concepts: 'CoW, task_struct 복제' },
-    { name: 'execve()',     nr: 59,  role: '새 프로그램 로드·실행',                  concepts: 'ELF, 메모리 맵 교체' },
-    { name: 'mmap()',       nr: 9,   role: '가상 메모리 영역 매핑',                  concepts: 'VMA, 파일 매핑, 익명 매핑' },
-    { name: 'socket()',     nr: 41,  role: '소켓 fd 생성',                          concepts: '프로토콜 패밀리, sk_buff' },
-    { name: 'epoll_wait()', nr: 232, role: 'I/O 이벤트 다중 대기',                  concepts: '이벤트 루프, 레벨/엣지 트리거' },
-    { name: 'clone()',      nr: 56,  role: '스레드/프로세스 생성 (플래그 제어)',      concepts: 'CLONE_VM, CLONE_NEWPID' },
-    { name: 'ioctl()',      nr: 16,  role: '디바이스 제어 명령',                    concepts: '캐릭터 디바이스, 드라이버 인터페이스' },
+    { name: 'open()', nr: 2, role: '파일 열기 → fd 반환', concepts: 'VFS, dentry, inode' },
+    { name: 'read()', nr: 0, role: 'fd에서 데이터 읽기', concepts: '페이지 캐시, copy_to_user' },
+    { name: 'write()', nr: 1, role: 'fd에 데이터 쓰기', concepts: 'dirty page, write-back' },
+    { name: 'fork()', nr: 57, role: '자식 프로세스 생성', concepts: 'CoW, task_struct 복제' },
+    { name: 'execve()', nr: 59, role: '새 프로그램 로드·실행', concepts: 'ELF, 메모리 맵 교체' },
+    { name: 'mmap()', nr: 9, role: '가상 메모리 영역 매핑', concepts: 'VMA, 파일 매핑, 익명 매핑' },
+    { name: 'socket()', nr: 41, role: '소켓 fd 생성', concepts: '프로토콜 패밀리, sk_buff' },
+    { name: 'epoll_wait()', nr: 232, role: 'I/O 이벤트 다중 대기', concepts: '이벤트 루프, 레벨/엣지 트리거' },
+    { name: 'clone()', nr: 56, role: '스레드/프로세스 생성 (플래그 제어)', concepts: 'CLONE_VM, CLONE_NEWPID' },
+    { name: 'ioctl()', nr: 16, role: '디바이스 제어 명령', concepts: '캐릭터 디바이스, 드라이버 인터페이스' },
 ]
 
 export const forkCompareRows = [
-    { fn: 'fork()',   posix: 'O', memory: 'CoW (독립)',              usage: '자식 프로세스 생성' },
-    { fn: 'vfork()',  posix: 'O', memory: '완전 공유 (exec 전까지)', usage: '구식, execve 직전에만 사용' },
-    { fn: 'clone()',  posix: 'X (리눅스)', memory: '플래그로 선택',  usage: '스레드(CLONE_VM), 컨테이너(CLONE_NEWPID)' },
+    { fn: 'fork()', posix: 'O', memory: 'CoW (독립)', usage: '자식 프로세스 생성' },
+    { fn: 'vfork()', posix: 'O', memory: '완전 공유 (exec 전까지)', usage: '구식, execve 직전에만 사용' },
+    { fn: 'clone()', posix: 'X (리눅스)', memory: '플래그로 선택', usage: '스레드(CLONE_VM), 컨테이너(CLONE_NEWPID)' },
 ]

@@ -1,13 +1,13 @@
 export interface KernelTopic {
-  id: string
-  number: number
-  title: string
-  subtitle: string
-  description: string
-  route: string
-  vizType: 'D3' | 'Three.js' | 'Mixed'
-  tags: string[]
-  status: 'complete' | 'in_progress' | 'draft'
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
-  prerequisites: string[]
+    id: string
+    number: number
+    title: string
+    subtitle: string
+    description: string
+    route: string
+    vizType: 'D3' | 'Three.js' | 'Mixed'
+    tags: string[]
+    status: 'complete' | 'in_progress' | 'draft'
+    difficulty: 'beginner' | 'intermediate' | 'advanced'
+    prerequisites: string[]
 }

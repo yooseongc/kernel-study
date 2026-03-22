@@ -6,7 +6,7 @@ type D3Selection = d3.Selection<SVGSVGElement, unknown, null, undefined>
 
 export function useD3(
     renderFn: (svg: D3Selection) => void,
-    deps: React.DependencyList = []
+    deps: React.DependencyList = [],
 ): RefObject<SVGSVGElement | null> {
     const ref = useRef<SVGSVGElement>(null)
 
@@ -15,7 +15,7 @@ export function useD3(
             const svg = d3.select(ref.current)
             renderFn(svg)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps)
 
     return ref

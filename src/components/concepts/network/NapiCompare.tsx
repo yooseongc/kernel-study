@@ -2,8 +2,8 @@
 // 6.2  NAPI 동작 흐름 비교 (JSX)
 // ─────────────────────────────────────────────────────────────────────────────
 interface NapiStep {
-  text: string
-  highlight?: boolean
+    text: string
+    highlight?: boolean
 }
 
 const interruptSteps: NapiStep[] = [
@@ -37,9 +37,7 @@ export function NapiCompare() {
                         <div
                             key={i}
                             className={`flex items-center gap-2 text-xs font-mono px-2 py-1 rounded ${
-                                s.highlight
-                                    ? 'bg-red-900/60 text-red-300 border border-red-700/50'
-                                    : 'text-gray-400'
+                                s.highlight ? 'bg-red-900/60 text-red-300 border border-red-700/50' : 'text-gray-400'
                             }`}
                         >
                             <span className="text-gray-600 w-4 text-right">{i + 1}.</span>
@@ -48,7 +46,7 @@ export function NapiCompare() {
                     ))}
                 </div>
                 <div className="mt-3 text-[11px] text-red-400/80 border-t border-red-800/40 pt-2">
-          고속 트래픽 시 CPU가 인터럽트 처리에만 소모됨
+                    고속 트래픽 시 CPU가 인터럽트 처리에만 소모됨
                 </div>
             </div>
 
@@ -71,7 +69,7 @@ export function NapiCompare() {
                     ))}
                 </div>
                 <div className="mt-3 text-[11px] text-green-400/80 border-t border-green-800/40 pt-2">
-          budget 단위 일괄 처리 → CPU 효율 극대화
+                    budget 단위 일괄 처리 → CPU 효율 극대화
                 </div>
             </div>
         </div>

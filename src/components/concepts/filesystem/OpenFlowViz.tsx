@@ -46,10 +46,10 @@ export function OpenFlowViz({ step }: { step: number }) {
     ]
 
     const colorMap: Record<string, { active: string; title: string; dot: string }> = {
-        blue:   { active: 'bg-blue-900/40 border-blue-500',   title: 'text-blue-300',   dot: 'bg-blue-400' },
+        blue: { active: 'bg-blue-900/40 border-blue-500', title: 'text-blue-300', dot: 'bg-blue-400' },
         orange: { active: 'bg-orange-900/40 border-orange-500', title: 'text-orange-300', dot: 'bg-orange-400' },
         purple: { active: 'bg-purple-900/40 border-purple-500', title: 'text-purple-300', dot: 'bg-purple-400' },
-        green:  { active: 'bg-green-900/40 border-green-500',  title: 'text-green-300',  dot: 'bg-green-400' },
+        green: { active: 'bg-green-900/40 border-green-500', title: 'text-green-300', dot: 'bg-green-400' },
     }
 
     return (

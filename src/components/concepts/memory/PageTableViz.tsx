@@ -9,10 +9,10 @@
 //   PTE [20:12] = (addr >> 12) & 0x1FF = 0x0DB (219)
 //   Off [11:0]  =  addr        & 0xFFF = 0xEEF (3823)
 const vaFields = [
-    { label: 'PGD', bits: '47:39', value: '0x0FF', dec: 255,  color: '#8b5cf6', darkColor: '#7c3aed' },
-    { label: 'PUD', bits: '38:30', value: '0x1FF', dec: 511,  color: '#3b82f6', darkColor: '#2563eb' },
-    { label: 'PMD', bits: '29:21', value: '0x0F5', dec: 245,  color: '#10b981', darkColor: '#059669' },
-    { label: 'PTE', bits: '20:12', value: '0x0DB', dec: 219,  color: '#f59e0b', darkColor: '#d97706' },
+    { label: 'PGD', bits: '47:39', value: '0x0FF', dec: 255, color: '#8b5cf6', darkColor: '#7c3aed' },
+    { label: 'PUD', bits: '38:30', value: '0x1FF', dec: 511, color: '#3b82f6', darkColor: '#2563eb' },
+    { label: 'PMD', bits: '29:21', value: '0x0F5', dec: 245, color: '#10b981', darkColor: '#059669' },
+    { label: 'PTE', bits: '20:12', value: '0x0DB', dec: 219, color: '#f59e0b', darkColor: '#d97706' },
     { label: 'Offset', bits: '11:0', value: '0xEEF', dec: 3823, color: '#ef4444', darkColor: '#dc2626' },
 ]
 
@@ -44,10 +44,16 @@ export function PageTableWalkViz({ step }: { step: number }) {
                                 }}
                             >
                                 <span className="text-[10px] text-gray-400 font-mono">[{f.bits}]</span>
-                                <span className="text-sm font-bold font-mono" style={{ color: isActive ? f.color : '#6b7280' }}>
+                                <span
+                                    className="text-sm font-bold font-mono"
+                                    style={{ color: isActive ? f.color : '#6b7280' }}
+                                >
                                     {f.value}
                                 </span>
-                                <span className="text-[10px] font-semibold" style={{ color: isActive ? f.color : '#6b7280' }}>
+                                <span
+                                    className="text-[10px] font-semibold"
+                                    style={{ color: isActive ? f.color : '#6b7280' }}
+                                >
                                     {f.label}
                                 </span>
                             </div>
@@ -112,8 +118,8 @@ export function PageTableWalkViz({ step }: { step: number }) {
 
             {/* TLB tip */}
             <div className="rounded-lg border border-yellow-800/50 bg-yellow-900/20 px-4 py-2 text-xs text-yellow-200">
-                <span className="font-bold">TLB 팁:</span> TLB(Translation Lookaside Buffer)가 이 4번의 메모리 접근을 캐싱합니다.
-        TLB miss 시 하드웨어가 page table walk를 수행합니다.
+                <span className="font-bold">TLB 팁:</span> TLB(Translation Lookaside Buffer)가 이 4번의 메모리 접근을
+                캐싱합니다. TLB miss 시 하드웨어가 page table walk를 수행합니다.
             </div>
         </div>
     )

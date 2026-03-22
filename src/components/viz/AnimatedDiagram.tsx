@@ -2,14 +2,14 @@ import { useEffect } from 'react'
 import { useAnimationStep } from '../../hooks/useAnimationStep'
 
 interface Step {
-  label: string
-  description: string
+    label: string
+    description: string
 }
 
 interface AnimatedDiagramProps {
-  steps: Step[]
-  renderStep: (step: number) => React.ReactNode
-  autoPlayInterval?: number
+    steps: Step[]
+    renderStep: (step: number) => React.ReactNode
+    autoPlayInterval?: number
 }
 
 export function AnimatedDiagram({ steps, renderStep, autoPlayInterval = 2000 }: AnimatedDiagramProps) {
@@ -27,13 +27,13 @@ export function AnimatedDiagram({ steps, renderStep, autoPlayInterval = 2000 }: 
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="rounded-xl border border-gray-700 bg-gray-900 p-4 min-h-48">
-                {renderStep(step)}
-            </div>
+            <div className="rounded-xl border border-gray-700 bg-gray-900 p-4 min-h-48">{renderStep(step)}</div>
 
             <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm text-gray-400">
-                    <span className="font-mono">Step {step + 1} / {steps.length}</span>
+                    <span className="font-mono">
+                        Step {step + 1} / {steps.length}
+                    </span>
                     <span className="font-semibold text-blue-400">{steps[step].label}</span>
                 </div>
                 <p className="text-sm text-gray-300">{steps[step].description}</p>
@@ -45,14 +45,14 @@ export function AnimatedDiagram({ steps, renderStep, autoPlayInterval = 2000 }: 
                     disabled={isFirst && !playing}
                     className="px-3 py-1.5 rounded bg-gray-700 text-gray-200 text-sm hover:bg-gray-600 disabled:opacity-40 transition"
                 >
-          ↩ Reset
+                    ↩ Reset
                 </button>
                 <button
                     onClick={prev}
                     disabled={isFirst}
                     className="px-3 py-1.5 rounded bg-gray-700 text-gray-200 text-sm hover:bg-gray-600 disabled:opacity-40 transition"
                 >
-          ← Prev
+                    ← Prev
                 </button>
                 <button
                     onClick={togglePlay}
@@ -65,7 +65,7 @@ export function AnimatedDiagram({ steps, renderStep, autoPlayInterval = 2000 }: 
                     disabled={isLast}
                     className="px-3 py-1.5 rounded bg-gray-700 text-gray-200 text-sm hover:bg-gray-600 disabled:opacity-40 transition"
                 >
-          Next →
+                    Next →
                 </button>
             </div>
         </div>

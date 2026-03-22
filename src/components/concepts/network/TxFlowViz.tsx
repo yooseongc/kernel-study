@@ -6,42 +6,41 @@ import { AnimatedDiagram } from '../../../components/viz/AnimatedDiagram'
 const txSteps = [
     {
         label: 'Step 0: write(fd, buf, len)',
-        description:
-      '애플리케이션이 시스템 콜을 호출합니다. 유저 공간 데이터가 커널로 진입하는 시작점입니다.',
+        description: '애플리케이션이 시스템 콜을 호출합니다. 유저 공간 데이터가 커널로 진입하는 시작점입니다.',
     },
     {
         label: 'Step 1: tcp_sendmsg()',
         description:
-      'TCP 레이어에서 sk_buff를 할당하고 MSS(Maximum Segment Size) 단위로 데이터를 분할합니다. TCP 헤더와 체크섬을 계산합니다.',
+            'TCP 레이어에서 sk_buff를 할당하고 MSS(Maximum Segment Size) 단위로 데이터를 분할합니다. TCP 헤더와 체크섬을 계산합니다.',
     },
     {
         label: 'Step 2: ip_queue_xmit() → ip_output()',
         description:
-      '라우팅 테이블(FIB)을 조회하여 출력 인터페이스를 결정합니다. IP 헤더(TTL, 프로토콜 등)를 sk_buff 앞에 추가합니다.',
+            '라우팅 테이블(FIB)을 조회하여 출력 인터페이스를 결정합니다. IP 헤더(TTL, 프로토콜 등)를 sk_buff 앞에 추가합니다.',
     },
     {
         label: 'Step 3: dev_queue_xmit() → qdisc',
         description:
-      '드라이버 큐(qdisc)에 sk_buff를 넣습니다. pfifo_fast나 HTB 같은 qdisc가 전송 순서와 속도를 제어합니다.',
+            '드라이버 큐(qdisc)에 sk_buff를 넣습니다. pfifo_fast나 HTB 같은 qdisc가 전송 순서와 속도를 제어합니다.',
     },
     {
         label: 'Step 4: NIC 전송 완료',
         description:
-      'NIC가 DMA로 sk_buff 데이터를 읽어 실제 패킷을 송출합니다. 전송 완료 후 TX 인터럽트가 발생하고 dev_kfree_skb()로 메모리를 해제합니다.',
+            'NIC가 DMA로 sk_buff 데이터를 읽어 실제 패킷을 송출합니다. 전송 완료 후 TX 인터럽트가 발생하고 dev_kfree_skb()로 메모리를 해제합니다.',
     },
 ]
 
 type TxZone = 'app' | 'driver' | 'nic'
 
 interface TxZoneInfo {
-  id: TxZone
-  label: string
-  sublabel: string
-  activeStep: number[]
-  color: string
-  activeColor: string
-  border: string
-  activeBorder: string
+    id: TxZone
+    label: string
+    sublabel: string
+    activeStep: number[]
+    color: string
+    activeColor: string
+    border: string
+    activeBorder: string
 }
 
 const txZones: TxZoneInfo[] = [
@@ -78,9 +77,9 @@ const txZones: TxZoneInfo[] = [
 ]
 
 interface TxStepDetail {
-  zone: TxZone
-  fn: string
-  desc: string
+    zone: TxZone
+    fn: string
+    desc: string
 }
 
 const txStepDetails: TxStepDetail[] = [
@@ -127,21 +126,21 @@ function TxFlowStep({ step }: { step: number }) {
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#1e3a5f', border: '1px solid #3b82f6', color: '#bfdbfe' }}
                 >
-          앱/TCP-IP
+                    앱/TCP-IP
                 </span>
                 <span>→</span>
                 <span
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#451a03', border: '1px solid #f59e0b', color: '#fde68a' }}
                 >
-          드라이버/qdisc
+                    드라이버/qdisc
                 </span>
                 <span>→</span>
                 <span
                     className="px-2 py-0.5 rounded font-mono"
                     style={{ background: '#450a0a', border: '1px solid #ef4444', color: '#fecaca' }}
                 >
-          NIC 하드웨어
+                    NIC 하드웨어
                 </span>
             </div>
         </div>
@@ -149,11 +148,5 @@ function TxFlowStep({ step }: { step: number }) {
 }
 
 export function TxFlowViz() {
-    return (
-        <AnimatedDiagram
-            steps={txSteps}
-            renderStep={(step) => <TxFlowStep step={step} />}
-            autoPlayInterval={2500}
-        />
-    )
+    return <AnimatedDiagram steps={txSteps} renderStep={(step) => <TxFlowStep step={step} />} autoPlayInterval={2500} />
 }

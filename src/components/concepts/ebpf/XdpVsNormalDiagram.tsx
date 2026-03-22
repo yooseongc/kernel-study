@@ -107,8 +107,7 @@ function renderXdpVsNormal(
 
     function arrow(x1: number, y1: number, x2: number, y2: number, color: string) {
         const markerId = `arrow-${Math.random().toString(36).slice(2)}`
-        svg
-            .append('defs')
+        svg.append('defs')
             .append('marker')
             .attr('id', markerId)
             .attr('viewBox', '0 -4 8 8')
@@ -256,12 +255,7 @@ export function XdpVsNormalDiagram() {
 
     return (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <D3Container
-                renderFn={renderFn}
-                deps={[isDark]}
-                height={260}
-                zoomable={true}
-            />
+            <D3Container renderFn={renderFn} deps={[isDark]} height={260} zoomable={true} />
         </div>
     )
 }

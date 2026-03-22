@@ -355,17 +355,12 @@ export default function Topic10() {
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 11
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    성능 분석과 디버깅
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    Performance Analysis & Debugging
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 11</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">성능 분석과 디버깅</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Performance Analysis & Debugging</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>, <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅
+                    dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>,{' '}
+                    <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅
                 </p>
             </header>
 
@@ -382,15 +377,15 @@ export default function Topic10() {
             <Section id="s111" title="11.1  /proc와 /sys 활용">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">/proc</code>와{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">/sys</code>는 커널이
-          제공하는 가상 파일시스템입니다. 런타임 커널 상태를 파일 인터페이스로 노출하여 사용자
-          공간에서 커널 내부 정보를 읽거나 파라미터를 조정할 수 있습니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">/sys</code>는 커널이 제공하는 가상
+                    파일시스템입니다. 런타임 커널 상태를 파일 인터페이스로 노출하여 사용자 공간에서 커널 내부 정보를
+                    읽거나 파라미터를 조정할 수 있습니다.
                 </Prose>
                 <ProcTreeChart />
                 <InfoTable headers={['명령어', '설명']} rows={procCmdRows} />
                 <div className="space-y-3">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 font-mono">
-            /proc/net/ — 네트워크 상태 파일
+                        /proc/net/ — 네트워크 상태 파일
                     </h3>
                     <CodeBlock code={procNetCode} language="bash" filename="# /proc/net/ 실전 활용" />
                 </div>
@@ -399,10 +394,9 @@ export default function Topic10() {
             {/* 11.2 dmesg와 커널 로그 */}
             <Section id="s112" title="11.2  dmesg와 커널 로그">
                 <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">printk()</code>로 출력된
-          커널 메시지는 ring buffer에 저장됩니다.{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">dmesg</code> 명령으로
-          버퍼를 읽을 수 있으며 로그 레벨로 필터링할 수 있습니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">printk()</code>로 출력된 커널 메시지는
+                    ring buffer에 저장됩니다. <code className="font-mono text-blue-600 dark:text-blue-400">dmesg</code>{' '}
+                    명령으로 버퍼를 읽을 수 있으며 로그 레벨로 필터링할 수 있습니다.
                 </Prose>
                 <CodeBlock code={dmesgCode} language="bash" filename="dmesg 명령어" />
                 <InfoTable headers={['레벨', '매크로', '용도']} rows={printkRows} />
@@ -411,9 +405,8 @@ export default function Topic10() {
             {/* 11.3 Oops / Panic 읽는 법 */}
             <Section id="s113" title="11.3  Oops / Panic 읽는 법">
                 <Prose>
-          커널 버그 발생 시 Oops 메시지가 출력됩니다. NULL 포인터 역참조, 스택 오버플로우 등
-          심각한 오류는 시스템 Panic으로 이어질 수 있습니다. Oops 메시지를 읽는 능력이 커널
-          디버깅의 핵심입니다.
+                    커널 버그 발생 시 Oops 메시지가 출력됩니다. NULL 포인터 역참조, 스택 오버플로우 등 심각한 오류는
+                    시스템 Panic으로 이어질 수 있습니다. Oops 메시지를 읽는 능력이 커널 디버깅의 핵심입니다.
                 </Prose>
                 <CodeBlock code={oopsExample} language="bash" filename="Oops 예시 출력" />
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -439,15 +432,10 @@ export default function Topic10() {
                             className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
                             style={{ borderColor: card.color + '55' }}
                         >
-                            <div
-                                className="text-xs font-mono font-bold"
-                                style={{ color: card.color }}
-                            >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -456,8 +444,8 @@ export default function Topic10() {
             {/* 11.4 kdump / crash */}
             <Section id="s114" title="11.4  kdump / crash — 프로덕션 크래시 사후 분석">
                 <Prose>
-          서버가 Kernel Panic으로 재부팅된 후, kdump가 저장한 메모리 덤프(vmcore)를 crash
-          유틸리티로 분석합니다. 라이브 디버깅 없이 사후 분석 가능합니다.
+                    서버가 Kernel Panic으로 재부팅된 후, kdump가 저장한 메모리 덤프(vmcore)를 crash 유틸리티로
+                    분석합니다. 라이브 디버깅 없이 사후 분석 가능합니다.
                 </Prose>
                 <CodeBlock code={kdumpSetupCode} language="bash" filename="# kdump 설정" />
                 <CodeBlock code={crashAnalysisCode} language="bash" filename="# crash 유틸리티로 vmcore 분석" />
@@ -484,15 +472,10 @@ export default function Topic10() {
                             className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
                             style={{ borderColor: card.color + '55' }}
                         >
-                            <div
-                                className="text-xs font-mono font-bold"
-                                style={{ color: card.color }}
-                            >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -501,9 +484,9 @@ export default function Topic10() {
             {/* 11.5 perf 기초 */}
             <Section id="s115" title="11.5  perf 기초">
                 <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">perf</code>는 커널 내장
-          프로파일링 도구입니다. CPU 성능 카운터, 소프트웨어 이벤트, 트레이스포인트를 지원하며
-          FlameGraph와 함께 사용하면 핫스팟을 직관적으로 파악할 수 있습니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">perf</code>는 커널 내장 프로파일링
+                    도구입니다. CPU 성능 카운터, 소프트웨어 이벤트, 트레이스포인트를 지원하며 FlameGraph와 함께 사용하면
+                    핫스팟을 직관적으로 파악할 수 있습니다.
                 </Prose>
                 <CodeBlock code={perfCode} language="bash" filename="perf 명령어" />
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -521,10 +504,7 @@ export default function Topic10() {
                                 border: `1px solid ${item.color}44`,
                             }}
                         >
-                            <div
-                                className="font-mono text-xs font-bold mb-1"
-                                style={{ color: item.color }}
-                            >
+                            <div className="font-mono text-xs font-bold mb-1" style={{ color: item.color }}>
                                 {item.cmd}
                             </div>
                             <div className="text-gray-500 dark:text-gray-400 text-xs">{item.desc}</div>
@@ -537,40 +517,34 @@ export default function Topic10() {
             <Section id="s116" title="11.6  ftrace">
                 <Prose>
                     <T id="ftrace">ftrace</T>는 커널 함수 호출 추적 도구입니다.{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">
-            /sys/kernel/debug/tracing/
-                    </code>{' '}
-          인터페이스를 통해 제어하며 특정 함수, PID, 이벤트를 타겟팅하여 정밀하게 추적할 수
-          있습니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">/sys/kernel/debug/tracing/</code>{' '}
+                    인터페이스를 통해 제어하며 특정 함수, PID, 이벤트를 타겟팅하여 정밀하게 추적할 수 있습니다.
                 </Prose>
                 <CodeBlock code={ftraceCode} language="bash" filename="ftrace 설정" />
                 <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 dark:bg-blue-950/30 px-4 py-3 text-xs text-blue-700 dark:text-blue-300">
                     <span className="font-bold text-blue-600 dark:text-blue-400">팁:</span>{' '}
-                    <code className="font-mono">function_graph</code> tracer를 사용하면 함수 호출 트리와
-          실행 시간을 함께 볼 수 있습니다. 네트워크 병목 분석 시{' '}
-                    <code className="font-mono">tcp_*</code> 필터와 조합하면 매우 효과적입니다.
+                    <code className="font-mono">function_graph</code> tracer를 사용하면 함수 호출 트리와 실행 시간을
+                    함께 볼 수 있습니다. 네트워크 병목 분석 시 <code className="font-mono">tcp_*</code> 필터와 조합하면
+                    매우 효과적입니다.
                 </div>
             </Section>
 
             {/* 11.7 네트워크 병목 분석 */}
             <Section id="s117" title="11.7  네트워크 병목 분석">
                 <Prose>
-          네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다.
-          체크 우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
+                    네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다. 체크
+                    우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
                 </Prose>
                 <NetworkBottleneckChart />
-                <InfoTable
-                    headers={['위치', '확인 방법', '조치']}
-                    rows={bottleneckTableRows}
-                />
+                <InfoTable headers={['위치', '확인 방법', '조치']} rows={bottleneckTableRows} />
             </Section>
 
             {/* 11.8 sar */}
             <Section id="s118" title="11.8  sar를 이용한 시스템 모니터링">
                 <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">sar</code>(System Activity
-          Reporter)는 CPU, 메모리, 네트워크, 디스크 통계를 시계열로 수집합니다. cron으로 자동
-          수집하면 문제 발생 시점의 시스템 상태를 사후 분석할 수 있습니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">sar</code>(System Activity Reporter)는
+                    CPU, 메모리, 네트워크, 디스크 통계를 시계열로 수집합니다. cron으로 자동 수집하면 문제 발생 시점의
+                    시스템 상태를 사후 분석할 수 있습니다.
                 </Prose>
                 <CodeBlock code={sarCode} language="bash" filename="sar 명령어" />
             </Section>
@@ -578,8 +552,8 @@ export default function Topic10() {
             {/* 11.9 컨테이너 환경 디버깅 */}
             <Section id="s119" title="11.9  컨테이너 환경 디버깅">
                 <Prose>
-          컨테이너(Docker/K8s)는 cgroup과 namespace로 격리됩니다. OOM, 성능 저하 문제의 원인이
-          컨테이너 내부인지 호스트인지 구분하는 방법입니다.
+                    컨테이너(Docker/K8s)는 cgroup과 namespace로 격리됩니다. OOM, 성능 저하 문제의 원인이 컨테이너
+                    내부인지 호스트인지 구분하는 방법입니다.
                 </Prose>
                 <CodeBlock code={containerCgroupCode} language="bash" filename="# 컨테이너 cgroup 디버깅" />
                 <CodeBlock code={containerNamespaceCode} language="bash" filename="# namespace 디버깅" />
@@ -606,15 +580,10 @@ export default function Topic10() {
                             className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
                             style={{ borderColor: card.color + '55' }}
                         >
-                            <div
-                                className="text-xs font-mono font-bold"
-                                style={{ color: card.color }}
-                            >
+                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -623,15 +592,15 @@ export default function Topic10() {
             {/* 11.10 lockdep */}
             <Section id="s1110" title="11.10  lockdep — 잠금 순서 검증기">
                 <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>은 커널에
-          내장된 동적 분석 도구로, 프로그램 실행 중 잠금 획득 순서를 추적하고{' '}
-                    <strong className="text-gray-800 dark:text-gray-200">데드락 가능성</strong>을 런타임에
-          감지합니다. <T id="lockdep">lockdep</T>은 실제 데드락이 발생하기 전에 경고합니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>은 커널에 내장된 동적
+                    분석 도구로, 프로그램 실행 중 잠금 획득 순서를 추적하고{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">데드락 가능성</strong>을 런타임에 감지합니다.{' '}
+                    <T id="lockdep">lockdep</T>은 실제 데드락이 발생하기 전에 경고합니다.
                 </Prose>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="rounded-xl border border-red-200 dark:border-red-800/50 bg-white dark:bg-gray-900 p-4 space-y-2">
                         <div className="text-xs font-mono font-bold text-red-500 dark:text-red-400">
-              데드락 발생 상황
+                            데드락 발생 상황
                         </div>
                         <pre className="text-xs font-mono text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre">{`CPU 0:            CPU 1:
 lock(A)           lock(B)
@@ -640,7 +609,7 @@ lock(B) ← 대기   lock(A) ← 대기
                     </div>
                     <div className="rounded-xl border border-green-200 dark:border-green-800/50 bg-white dark:bg-gray-900 p-4 space-y-2">
                         <div className="text-xs font-mono font-bold text-green-600 dark:text-green-400">
-              lockdep 감지
+                            lockdep 감지
                         </div>
                         <pre className="text-xs font-mono text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre">{`lockdep가 잠금 순서 그래프 유지:
   A → B (CPU 0이 A 보유 중 B 획득)
@@ -677,9 +646,7 @@ lock(B) ← 대기   lock(A) ← 대기
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -688,11 +655,13 @@ lock(B) ← 대기   lock(A) ← 대기
             {/* 11.11 KASAN */}
             <Section id="s1111" title="11.11  KASAN — 메모리 버그 탐지기">
                 <Prose>
-                    <strong className="text-gray-800 dark:text-gray-200"><T id="kasan">KASAN</T> (Kernel Address Sanitizer)</strong>은
-          커널의 메모리 안전성 버그를 런타임에 탐지합니다.{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">
+                        <T id="kasan">KASAN</T> (Kernel Address Sanitizer)
+                    </strong>
+                    은 커널의 메모리 안전성 버그를 런타임에 탐지합니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">use-after-free</code>,{' '}
-                    <code className="font-mono text-blue-600 dark:text-blue-400">out-of-bounds</code> 접근
-          같은 버그는 재현이 어렵고 보안 취약점으로 이어집니다. <T id="kasan">KASAN</T>은 이를 즉시 잡아냅니다.
+                    <code className="font-mono text-blue-600 dark:text-blue-400">out-of-bounds</code> 접근 같은 버그는
+                    재현이 어렵고 보안 취약점으로 이어집니다. <T id="kasan">KASAN</T>은 이를 즉시 잡아냅니다.
                 </Prose>
                 <InfoTable
                     headers={['버그 유형', '설명', '위험성']}
@@ -731,9 +700,7 @@ lock(B) ← 대기   lock(A) ← 대기
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -742,9 +709,9 @@ lock(B) ← 대기   lock(A) ← 대기
             {/* 11.12 Flame Graph */}
             <Section id="s1112" title="11.12  Flame Graph — CPU 병목 시각화">
                 <Prose>
-                    <strong className="text-gray-800 dark:text-gray-200">Flame Graph</strong>는
-                    Brendan Gregg가 개발한 <strong>CPU 시간 사용 시각화</strong> 기법입니다.
-                    함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록 CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">Flame Graph</strong>는 Brendan Gregg가 개발한{' '}
+                    <strong>CPU 시간 사용 시각화</strong> 기법입니다. 함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록
+                    CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">perf record</code> →{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">perf script</code> →{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">FlameGraph</code> 스크립트
@@ -758,10 +725,7 @@ lock(B) ← 대기   lock(A) ← 대기
 
                 {/* on-CPU vs off-CPU table */}
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">on-CPU vs off-CPU</p>
-                <InfoTable
-                    headers={['유형', '측정 대상', '도구']}
-                    rows={cpuTypeRows}
-                />
+                <InfoTable headers={['유형', '측정 대상', '도구']} rows={cpuTypeRows} />
             </Section>
 
             <TopicNavigation topicId="11-debugging" />

@@ -185,18 +185,11 @@ cat /sys/kernel/debug/kvm/*/mmu_cache_miss`
 export default function Topic13Kvm() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 13
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    KVM / 가상화
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    KVM, Virtualization & virtio
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 13</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">KVM / 가상화</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">KVM, Virtualization & virtio</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     KVM 구조, VMCS/VMCB, VMENTRY/VMEXIT, EPT, virtio, 클라우드 인프라
                 </p>
@@ -214,9 +207,12 @@ export default function Topic13Kvm() {
             {/* 13.1 KVM 개요 */}
             <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">
                 <Prose>
-                    <T id="kvm">KVM</T>은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1 하이퍼바이저입니다.
-                    유저 공간의 QEMU가 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-blue-600 dark:text-blue-300 text-xs">/dev/kvm</code> ioctl API를
-                    통해 VM·vCPU를 생성·제어합니다.
+                    <T id="kvm">KVM</T>은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1
+                    하이퍼바이저입니다. 유저 공간의 QEMU가{' '}
+                    <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-blue-600 dark:text-blue-300 text-xs">
+                        /dev/kvm
+                    </code>{' '}
+                    ioctl API를 통해 VM·vCPU를 생성·제어합니다.
                 </Prose>
 
                 {/* 하이퍼바이저 타입 비교 */}
@@ -249,12 +245,8 @@ export default function Topic13Kvm() {
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.type}
                             </div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-                                {card.examples}
-                            </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">{card.examples}</div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -267,8 +259,16 @@ export default function Topic13Kvm() {
                     <div className="space-y-2">
                         {[
                             { label: '게스트 VM (Guest OS + 유저 앱)', color: '#3b82f6', layer: '게스트 공간' },
-                            { label: 'QEMU — 디바이스 에뮬레이션 (디스크, NIC, VGA …)', color: '#8b5cf6', layer: '호스트 유저' },
-                            { label: 'KVM 모듈 (kvm.ko / kvm_intel.ko) — VMENTRY/VMEXIT 관리', color: '#10b981', layer: '커널' },
+                            {
+                                label: 'QEMU — 디바이스 에뮬레이션 (디스크, NIC, VGA …)',
+                                color: '#8b5cf6',
+                                layer: '호스트 유저',
+                            },
+                            {
+                                label: 'KVM 모듈 (kvm.ko / kvm_intel.ko) — VMENTRY/VMEXIT 관리',
+                                color: '#10b981',
+                                layer: '커널',
+                            },
                             { label: 'Intel VT-x / AMD-V 하드웨어 지원', color: '#f59e0b', layer: '하드웨어' },
                         ].map((row, i) => (
                             <div key={i} className="flex items-center gap-3">
@@ -290,18 +290,18 @@ export default function Topic13Kvm() {
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={kvmOverviewCode}
-                    language="c"
-                    filename="/* KVM API — /dev/kvm ioctl 흐름 */"
-                />
+                <CodeBlock code={kvmOverviewCode} language="c" filename="/* KVM API — /dev/kvm ioctl 흐름 */" />
             </Section>
 
             {/* 13.2 VMCS / VMCB */}
             <Section id="s1312" title="13.2  VMCS / VMCB — VMENTRY · VMEXIT 제어">
                 <Prose>
-                    Intel VT-x는 <strong className="text-gray-800 dark:text-gray-200"><T id="vmcs">VMCS</T></strong>(Virtual Machine Control Structure),
-                    AMD-V는 <strong className="text-gray-800 dark:text-gray-200">VMCB</strong>(VM Control Block)를 사용합니다.
+                    Intel VT-x는{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">
+                        <T id="vmcs">VMCS</T>
+                    </strong>
+                    (Virtual Machine Control Structure), AMD-V는{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">VMCB</strong>(VM Control Block)를 사용합니다.
                     이 자료 구조가 게스트·호스트 CPU 상태와 VM 실행 정책을 모두 관리합니다.
                 </Prose>
 
@@ -320,26 +320,22 @@ export default function Topic13Kvm() {
                             <div key={i} className="flex-1 flex flex-col items-center gap-1">
                                 <div
                                     className="w-full rounded-lg px-3 py-2.5 text-center text-xs font-mono font-bold"
-                                    style={{ backgroundColor: s.color + '20', color: s.color, border: `1px solid ${s.color}44` }}
+                                    style={{
+                                        backgroundColor: s.color + '20',
+                                        color: s.color,
+                                        border: `1px solid ${s.color}44`,
+                                    }}
                                 >
                                     {s.step}
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                                    {s.desc}
-                                </p>
-                                {i < 3 && (
-                                    <div className="text-gray-400 text-xs hidden sm:block">→</div>
-                                )}
+                                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">{s.desc}</p>
+                                {i < 3 && <div className="text-gray-400 text-xs hidden sm:block">→</div>}
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={vmcsCode}
-                    language="c"
-                    filename="/* VMCS 구조 — Intel VT-x */"
-                />
+                <CodeBlock code={vmcsCode} language="c" filename="/* VMCS 구조 — Intel VT-x */" />
 
                 {/* VMEXIT 원인 테이블 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
@@ -350,7 +346,11 @@ export default function Topic13Kvm() {
                     </div>
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                         {[
-                            { reason: 'EXTERNAL_INTERRUPT', desc: '호스트 하드웨어 인터럽트 (타이머, NIC IRQ)', overhead: '낮음' },
+                            {
+                                reason: 'EXTERNAL_INTERRUPT',
+                                desc: '호스트 하드웨어 인터럽트 (타이머, NIC IRQ)',
+                                overhead: '낮음',
+                            },
                             { reason: 'EPT_VIOLATION', desc: '게스트 물리 주소가 EPT에 미매핑', overhead: '중간' },
                             { reason: 'CPUID', desc: '게스트가 CPUID 명령 실행', overhead: '낮음' },
                             { reason: 'HLT', desc: 'vCPU 유휴 상태 진입', overhead: '낮음' },
@@ -362,13 +362,16 @@ export default function Topic13Kvm() {
                                 <code className="text-xs font-mono text-blue-600 dark:text-blue-400 w-48 shrink-0">
                                     {row.reason}
                                 </code>
-                                <span className="text-xs text-gray-600 dark:text-gray-400 flex-1">
-                                    {row.desc}
-                                </span>
-                                <span className={`text-xs font-mono shrink-0 ${
-                                    row.overhead === '높음' ? 'text-red-500' :
-                                        row.overhead === '중간' ? 'text-yellow-500' : 'text-green-500'
-                                }`}>
+                                <span className="text-xs text-gray-600 dark:text-gray-400 flex-1">{row.desc}</span>
+                                <span
+                                    className={`text-xs font-mono shrink-0 ${
+                                        row.overhead === '높음'
+                                            ? 'text-red-500'
+                                            : row.overhead === '중간'
+                                                ? 'text-yellow-500'
+                                                : 'text-green-500'
+                                    }`}
+                                >
                                     {row.overhead}
                                 </span>
                             </div>
@@ -380,8 +383,10 @@ export default function Topic13Kvm() {
             {/* 13.3 EPT */}
             <Section id="s1313" title="13.3  EPT — 중첩 페이지 테이블">
                 <Prose>
-                    <T id="ept">EPT</T>(Extended Page Tables)는 <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong> 변환을
-                    하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 <T id="vmexit">VMEXIT</T> 횟수를 크게 줄입니다.
+                    <T id="ept">EPT</T>(Extended Page Tables)는{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong>{' '}
+                    변환을 하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 <T id="vmexit">VMEXIT</T>{' '}
+                    횟수를 크게 줄입니다.
                 </Prose>
 
                 {/* 주소 변환 2단계 다이어그램 */}
@@ -398,7 +403,11 @@ export default function Topic13Kvm() {
                             { label: '호스트 PA', color: '#10b981' },
                             { label: '(물리 DRAM)', color: '#6b7280', small: true },
                         ].map((item, i) => (
-                            <span key={i} style={{ color: item.color }} className={item.small ? 'text-gray-400 dark:text-gray-600' : ''}>
+                            <span
+                                key={i}
+                                style={{ color: item.color }}
+                                className={item.small ? 'text-gray-400 dark:text-gray-600' : ''}
+                            >
                                 {item.label}
                             </span>
                         ))}
@@ -440,8 +449,13 @@ export default function Topic13Kvm() {
                                 </div>
                                 <ul className="space-y-1">
                                     {card.points.map((p, i) => (
-                                        <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
-                                            <span style={{ color: card.color }} className="shrink-0">▸</span>
+                                        <li
+                                            key={i}
+                                            className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5"
+                                        >
+                                            <span style={{ color: card.color }} className="shrink-0">
+                                                ▸
+                                            </span>
                                             <span>{p}</span>
                                         </li>
                                     ))}
@@ -451,31 +465,61 @@ export default function Topic13Kvm() {
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={eptCode}
-                    language="c"
-                    filename="/* EPT — 중첩 페이지 테이블 구조 */"
-                />
+                <CodeBlock code={eptCode} language="c" filename="/* EPT — 중첩 페이지 테이블 구조 */" />
             </Section>
 
             {/* 13.4 virtio */}
             <Section id="s1314" title="13.4  virtio — 반가상화 I/O">
                 <Prose>
                     순수 에뮬레이션(예: e1000 NIC 에뮬레이션)은 게스트 드라이버가 하드웨어 레지스터를 읽고 쓸 때마다
-                    <T id="vmexit">VMEXIT</T>가 발생합니다. <strong className="text-gray-800 dark:text-gray-200"><T id="virtio">virtio</T></strong>는
-                    게스트-호스트 간 공유 메모리 링 버퍼(<code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">virtqueue</code>)로
-                    I/O를 전달해 VMEXIT를 최소화합니다.
+                    <T id="vmexit">VMEXIT</T>가 발생합니다.{' '}
+                    <strong className="text-gray-800 dark:text-gray-200">
+                        <T id="virtio">virtio</T>
+                    </strong>
+                    는 게스트-호스트 간 공유 메모리 링 버퍼(
+                    <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">virtqueue</code>)로 I/O를 전달해
+                    VMEXIT를 최소화합니다.
                 </Prose>
 
                 {/* virtio 디바이스 종류 */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {[
-                        { name: 'virtio-net', desc: '가상 NIC — 네트워크 I/O', color: '#3b82f6', pci: 'virtio-net-pci' },
-                        { name: 'virtio-blk', desc: '가상 블록 디바이스 — 디스크', color: '#10b981', pci: 'virtio-blk-pci' },
-                        { name: 'virtio-scsi', desc: 'SCSI 호스트 어댑터 에뮬레이션', color: '#8b5cf6', pci: 'virtio-scsi-pci' },
-                        { name: 'virtio-balloon', desc: '동적 메모리 조절 (balloon driver)', color: '#f59e0b', pci: 'virtio-balloon-pci' },
-                        { name: 'virtio-fs', desc: 'DAX 기반 호스트 파일시스템 공유', color: '#ef4444', pci: 'vhost-user-fs' },
-                        { name: 'virtio-rng', desc: '하드웨어 엔트로피 소스 공유', color: '#06b6d4', pci: 'virtio-rng-pci' },
+                        {
+                            name: 'virtio-net',
+                            desc: '가상 NIC — 네트워크 I/O',
+                            color: '#3b82f6',
+                            pci: 'virtio-net-pci',
+                        },
+                        {
+                            name: 'virtio-blk',
+                            desc: '가상 블록 디바이스 — 디스크',
+                            color: '#10b981',
+                            pci: 'virtio-blk-pci',
+                        },
+                        {
+                            name: 'virtio-scsi',
+                            desc: 'SCSI 호스트 어댑터 에뮬레이션',
+                            color: '#8b5cf6',
+                            pci: 'virtio-scsi-pci',
+                        },
+                        {
+                            name: 'virtio-balloon',
+                            desc: '동적 메모리 조절 (balloon driver)',
+                            color: '#f59e0b',
+                            pci: 'virtio-balloon-pci',
+                        },
+                        {
+                            name: 'virtio-fs',
+                            desc: 'DAX 기반 호스트 파일시스템 공유',
+                            color: '#ef4444',
+                            pci: 'vhost-user-fs',
+                        },
+                        {
+                            name: 'virtio-rng',
+                            desc: '하드웨어 엔트로피 소스 공유',
+                            color: '#06b6d4',
+                            pci: 'virtio-rng-pci',
+                        },
                     ].map((d) => (
                         <div
                             key={d.name}
@@ -485,12 +529,8 @@ export default function Topic13Kvm() {
                             <div className="text-xs font-mono font-bold" style={{ color: d.color }}>
                                 {d.name}
                             </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                                {d.desc}
-                            </p>
-                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">
-                                {d.pci}
-                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">{d.desc}</p>
+                            <div className="text-xs font-mono text-gray-400 dark:text-gray-600">{d.pci}</div>
                         </div>
                     ))}
                 </div>
@@ -502,30 +542,23 @@ export default function Topic13Kvm() {
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         일반 virtio-net은 QEMU 프로세스가 virtqueue를 폴링합니다.
-                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded mx-1">vhost-net</code>은
-                        커널 스레드가 직접 virtqueue를 처리해 QEMU 컨텍스트 스위칭을 제거합니다.
-                        KVM 네트워크 성능의 핵심 최적화 기법입니다.
+                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded mx-1">vhost-net</code>은 커널
+                        스레드가 직접 virtqueue를 처리해 QEMU 컨텍스트 스위칭을 제거합니다. KVM 네트워크 성능의 핵심
+                        최적화 기법입니다.
                     </p>
                 </div>
 
-                <CodeBlock
-                    code={virtioCode}
-                    language="c"
-                    filename="/* virtio — virtqueue 구조 & 패킷 전송 흐름 */"
-                />
+                <CodeBlock code={virtioCode} language="c" filename="/* virtio — virtqueue 구조 & 패킷 전송 흐름 */" />
             </Section>
 
             {/* 13.5 KVM 관리 실전 */}
             <Section id="s1315" title="13.5  KVM 관리 실전">
                 <Prose>
-                    QEMU, libvirt(virsh), 그리고 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">perf kvm</code>으로
+                    QEMU, libvirt(virsh), 그리고{' '}
+                    <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">perf kvm</code>으로
                     <T id="kvm">KVM</T> 환경을 생성·관리·분석하는 실전 명령어입니다.
                 </Prose>
-                <CodeBlock
-                    code={kvmMgmtCode}
-                    language="bash"
-                    filename="# KVM 실전 관리 및 성능 분석"
-                />
+                <CodeBlock code={kvmMgmtCode} language="bash" filename="# KVM 실전 관리 및 성능 분석" />
 
                 {/* 클라우드 연관성 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 space-y-3">
@@ -537,22 +570,38 @@ export default function Topic13Kvm() {
                             {
                                 title: 'AWS EC2 (Nitro 이전)',
                                 color: '#f59e0b',
-                                items: ['KVM + QEMU 기반', 'Xen에서 KVM으로 전환 (2017~)', 'virtio-net, virtio-blk 사용'],
+                                items: [
+                                    'KVM + QEMU 기반',
+                                    'Xen에서 KVM으로 전환 (2017~)',
+                                    'virtio-net, virtio-blk 사용',
+                                ],
                             },
                             {
                                 title: 'AWS EC2 (Nitro)',
                                 color: '#10b981',
-                                items: ['KVM + Nitro 전용 하이퍼바이저', 'PCIe SR-IOV로 NIC/EBS 직접 접근', 'QEMU 완전 제거 → 오버헤드 최소화'],
+                                items: [
+                                    'KVM + Nitro 전용 하이퍼바이저',
+                                    'PCIe SR-IOV로 NIC/EBS 직접 접근',
+                                    'QEMU 완전 제거 → 오버헤드 최소화',
+                                ],
                             },
                             {
                                 title: 'Google Cloud (GCE)',
                                 color: '#3b82f6',
-                                items: ['KVM 기반 커스텀 하이퍼바이저', 'Live Migration 지원 (서비스 중단 없는 이동)', 'gVNIC(virtio 발전형) 사용'],
+                                items: [
+                                    'KVM 기반 커스텀 하이퍼바이저',
+                                    'Live Migration 지원 (서비스 중단 없는 이동)',
+                                    'gVNIC(virtio 발전형) 사용',
+                                ],
                             },
                             {
                                 title: 'OpenStack / Proxmox',
                                 color: '#8b5cf6',
-                                items: ['KVM + QEMU + libvirt 오픈소스 스택', '온프레미스 프라이빗 클라우드', 'vCPU 오버커밋, 라이브 마이그레이션 지원'],
+                                items: [
+                                    'KVM + QEMU + libvirt 오픈소스 스택',
+                                    '온프레미스 프라이빗 클라우드',
+                                    'vCPU 오버커밋, 라이브 마이그레이션 지원',
+                                ],
                             },
                         ].map((card) => (
                             <div
@@ -565,8 +614,13 @@ export default function Topic13Kvm() {
                                 </div>
                                 <ul className="space-y-1">
                                     {card.items.map((item, i) => (
-                                        <li key={i} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
-                                            <span style={{ color: card.color }} className="shrink-0">▸</span>
+                                        <li
+                                            key={i}
+                                            className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1.5"
+                                        >
+                                            <span style={{ color: card.color }} className="shrink-0">
+                                                ▸
+                                            </span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
@@ -581,9 +635,10 @@ export default function Topic13Kvm() {
             <Section id="s1316" title="13.6  vhost — 커널 내 virtio 백엔드">
                 <Prose>
                     기본 <T id="virtio">virtio</T>는 I/O 요청을 QEMU 유저 공간 백엔드가 처리합니다.
-                    <strong className="text-gray-800 dark:text-gray-200"> vhost</strong>는 커널 내부에서 virtio 큐를 직접 처리해
-                    <strong className="text-gray-800 dark:text-gray-200"> 컨텍스트 스위치 없이</strong> 패킷/I/O를 처리합니다.
-                    vhost-net(네트워크)과 vhost-blk(블록 I/O)이 대표적입니다.
+                    <strong className="text-gray-800 dark:text-gray-200"> vhost</strong>는 커널 내부에서 virtio 큐를
+                    직접 처리해
+                    <strong className="text-gray-800 dark:text-gray-200"> 컨텍스트 스위치 없이</strong> 패킷/I/O를
+                    처리합니다. vhost-net(네트워크)과 vhost-blk(블록 I/O)이 대표적입니다.
                 </Prose>
 
                 {/* 처리 경로 비교 다이어그램 */}
@@ -604,11 +659,15 @@ export default function Topic13Kvm() {
                                 <div
                                     key={i}
                                     className="text-xs font-mono px-3 py-1.5 rounded-lg"
-                                    style={row.label.startsWith('↓') ? { color: row.color } : {
-                                        backgroundColor: '#f9731618',
-                                        border: '1px solid #f9731644',
-                                        color: row.color,
-                                    }}
+                                    style={
+                                        row.label.startsWith('↓')
+                                            ? { color: row.color }
+                                            : {
+                                                backgroundColor: '#f9731618',
+                                                border: '1px solid #f9731644',
+                                                color: row.color,
+                                            }
+                                    }
                                 >
                                     {row.label}
                                 </div>
@@ -635,11 +694,15 @@ export default function Topic13Kvm() {
                                 <div
                                     key={i}
                                     className="text-xs font-mono px-3 py-1.5 rounded-lg"
-                                    style={row.label.startsWith('↓') ? { color: row.color } : {
-                                        backgroundColor: row.color === '#10b981' ? '#10b98118' : '#3b82f618',
-                                        border: `1px solid ${row.color === '#10b981' ? '#10b98144' : '#3b82f644'}`,
-                                        color: row.color,
-                                    }}
+                                    style={
+                                        row.label.startsWith('↓')
+                                            ? { color: row.color }
+                                            : {
+                                                backgroundColor: row.color === '#10b981' ? '#10b98118' : '#3b82f618',
+                                                border: `1px solid ${row.color === '#10b981' ? '#10b98144' : '#3b82f644'}`,
+                                                color: row.color,
+                                            }
+                                    }
                                 >
                                     {row.label}
                                 </div>
@@ -659,14 +722,30 @@ export default function Topic13Kvm() {
                     <div className="space-y-2">
                         {[
                             { step: '1', desc: 'vhost_net 커널 모듈이 /dev/vhost-net 생성', color: '#3b82f6' },
-                            { step: '2', desc: 'QEMU가 /dev/vhost-net을 열고 ioctl로 virtqueue 등록', color: '#8b5cf6' },
-                            { step: '3', desc: '이후 게스트 TX 요청은 QEMU 개입 없이 vhost_worker 스레드가 직접 TAP 소켓으로 전달', color: '#10b981' },
-                            { step: '★', desc: '성능: QEMU 경유 대비 레이턴시 30–50% 감소, 처리량 최대 2배', color: '#f59e0b' },
+                            {
+                                step: '2',
+                                desc: 'QEMU가 /dev/vhost-net을 열고 ioctl로 virtqueue 등록',
+                                color: '#8b5cf6',
+                            },
+                            {
+                                step: '3',
+                                desc: '이후 게스트 TX 요청은 QEMU 개입 없이 vhost_worker 스레드가 직접 TAP 소켓으로 전달',
+                                color: '#10b981',
+                            },
+                            {
+                                step: '★',
+                                desc: '성능: QEMU 경유 대비 레이턴시 30–50% 감소, 처리량 최대 2배',
+                                color: '#f59e0b',
+                            },
                         ].map((row) => (
                             <div key={row.step} className="flex items-start gap-3">
                                 <div
                                     className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0"
-                                    style={{ backgroundColor: row.color + '20', color: row.color, border: `1px solid ${row.color}44` }}
+                                    style={{
+                                        backgroundColor: row.color + '20',
+                                        color: row.color,
+                                        border: `1px solid ${row.color}44`,
+                                    }}
                                 >
                                     {row.step}
                                 </div>
@@ -709,7 +788,10 @@ export default function Topic13Kvm() {
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-gray-800">
                                     {['방식', '처리 위치', '레이턴시', '설정 복잡도'].map((h) => (
-                                        <th key={h} className="px-4 py-2.5 text-left font-semibold text-gray-500 dark:text-gray-400">
+                                        <th
+                                            key={h}
+                                            className="px-4 py-2.5 text-left font-semibold text-gray-500 dark:text-gray-400"
+                                        >
                                             {h}
                                         </th>
                                     ))}
@@ -717,16 +799,48 @@ export default function Topic13Kvm() {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                 {[
-                                    { method: 'virtio (에뮬레이션)', location: 'QEMU 유저공간', latency: '높음', complexity: '낮음', latencyColor: 'text-red-500', complexityColor: 'text-green-500' },
-                                    { method: 'vhost-net', location: '커널 스레드', latency: '중간', complexity: '낮음', latencyColor: 'text-yellow-500', complexityColor: 'text-green-500' },
-                                    { method: 'vhost-user (DPDK)', location: '유저 공간 (PMD)', latency: '낮음', complexity: '높음', latencyColor: 'text-green-500', complexityColor: 'text-red-500' },
-                                    { method: 'SR-IOV', location: '하드웨어 직접', latency: '최저', complexity: '매우 높음', latencyColor: 'text-blue-500', complexityColor: 'text-red-600' },
+                                    {
+                                        method: 'virtio (에뮬레이션)',
+                                        location: 'QEMU 유저공간',
+                                        latency: '높음',
+                                        complexity: '낮음',
+                                        latencyColor: 'text-red-500',
+                                        complexityColor: 'text-green-500',
+                                    },
+                                    {
+                                        method: 'vhost-net',
+                                        location: '커널 스레드',
+                                        latency: '중간',
+                                        complexity: '낮음',
+                                        latencyColor: 'text-yellow-500',
+                                        complexityColor: 'text-green-500',
+                                    },
+                                    {
+                                        method: 'vhost-user (DPDK)',
+                                        location: '유저 공간 (PMD)',
+                                        latency: '낮음',
+                                        complexity: '높음',
+                                        latencyColor: 'text-green-500',
+                                        complexityColor: 'text-red-500',
+                                    },
+                                    {
+                                        method: 'SR-IOV',
+                                        location: '하드웨어 직접',
+                                        latency: '최저',
+                                        complexity: '매우 높음',
+                                        latencyColor: 'text-blue-500',
+                                        complexityColor: 'text-red-600',
+                                    },
                                 ].map((row) => (
                                     <tr key={row.method}>
-                                        <td className="px-4 py-2.5 font-mono text-gray-700 dark:text-gray-300">{row.method}</td>
+                                        <td className="px-4 py-2.5 font-mono text-gray-700 dark:text-gray-300">
+                                            {row.method}
+                                        </td>
                                         <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.location}</td>
                                         <td className={`px-4 py-2.5 font-mono ${row.latencyColor}`}>{row.latency}</td>
-                                        <td className={`px-4 py-2.5 font-mono ${row.complexityColor}`}>{row.complexity}</td>
+                                        <td className={`px-4 py-2.5 font-mono ${row.complexityColor}`}>
+                                            {row.complexity}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -734,23 +848,19 @@ export default function Topic13Kvm() {
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={vhostCode}
-                    language="bash"
-                    filename="# vhost-net / vhost-user / SR-IOV 실전 명령"
-                />
+                <CodeBlock code={vhostCode} language="bash" filename="# vhost-net / vhost-user / SR-IOV 실전 명령" />
             </Section>
 
             <TopicNavigation topicId="13-kvm" />
 
             {/* 완료 카드 */}
             <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    KVM / 가상화 학습 완료
-                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">KVM / 가상화 학습 완료</div>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
-                    <T id="kvm">KVM</T>의 VMENTRY/<T id="vmexit">VMEXIT</T> 사이클, <T id="vmcs">VMCS</T>를 통한 제어, <T id="ept">EPT</T>로 주소 변환 효율화,
-                    <T id="virtio">virtio</T> 공유 메모리 I/O까지 — 클라우드 인프라를 떠받치는 가상화 레이어를 살펴봤습니다.
+                    <T id="kvm">KVM</T>의 VMENTRY/<T id="vmexit">VMEXIT</T> 사이클, <T id="vmcs">VMCS</T>를 통한 제어,{' '}
+                    <T id="ept">EPT</T>로 주소 변환 효율화,
+                    <T id="virtio">virtio</T> 공유 메모리 I/O까지 — 클라우드 인프라를 떠받치는 가상화 레이어를
+                    살펴봤습니다.
                 </p>
                 <a
                     href="#/"

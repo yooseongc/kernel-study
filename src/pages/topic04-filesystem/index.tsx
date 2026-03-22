@@ -186,32 +186,32 @@ const openFlowSteps = [
     {
         label: 'open() syscall 진입',
         description:
-      '유저 공간에서 open("/etc/passwd", O_RDONLY)를 호출합니다. glibc가 syscall 명령을 통해 커널로 진입합니다.',
+            '유저 공간에서 open("/etc/passwd", O_RDONLY)를 호출합니다. glibc가 syscall 명령을 통해 커널로 진입합니다.',
     },
     {
         label: 'do_sys_open() → 경로 탐색 (namei)',
         description:
-      'do_sys_open()이 호출되어 파일 경로를 분석합니다. link_path_walk()가 "/etc" → "passwd" 순으로 dentry를 탐색합니다.',
+            'do_sys_open()이 호출되어 파일 경로를 분석합니다. link_path_walk()가 "/etc" → "passwd" 순으로 dentry를 탐색합니다.',
     },
     {
         label: 'dentry cache 조회 → inode 로드',
         description:
-      'dentry cache(dcache)를 먼저 조회합니다. cache miss가 발생하면 ext4에서 inode를 디스크로부터 읽어 캐시에 채웁니다.',
+            'dentry cache(dcache)를 먼저 조회합니다. cache miss가 발생하면 ext4에서 inode를 디스크로부터 읽어 캐시에 채웁니다.',
     },
     {
         label: 'struct file 생성 → fd 반환',
         description:
-      'dentry_open()이 struct file을 생성하고, fd_install()이 fd→file 매핑을 프로세스의 파일 테이블에 등록합니다. fd가 유저에게 반환됩니다.',
+            'dentry_open()이 struct file을 생성하고, fd_install()이 fd→file 매핑을 프로세스의 파일 테이블에 등록합니다. fd가 유저에게 반환됩니다.',
     },
     {
         label: 'read(fd, buf, n) → file->f_op->read()',
         description:
-      'read() syscall은 fd로 struct file을 찾고, file->f_op->read_iter() 즉 ext4_file_read_iter()를 호출합니다.',
+            'read() syscall은 fd로 struct file을 찾고, file->f_op->read_iter() 즉 ext4_file_read_iter()를 호출합니다.',
     },
     {
         label: '페이지 캐시 조회 → 디스크 I/O → 유저 복사',
         description:
-      'generic_file_read_iter()가 페이지 캐시를 조회합니다. cache hit이면 즉시 반환, miss이면 submit_bio()로 디스크 I/O를 발생시키고 캐시를 채운 후 유저 버퍼에 복사합니다.',
+            'generic_file_read_iter()가 페이지 캐시를 조회합니다. cache hit이면 즉시 반환, miss이면 submit_bio()로 디스크 I/O를 발생시키고 캐시를 채운 후 유저 버퍼에 복사합니다.',
     },
 ]
 
@@ -225,17 +225,12 @@ export default function Topic11Filesystem() {
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
             <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">
-                    Topic 04
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    VFS와 파일시스템
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                    VFS &amp; Filesystem
-                </p>
+                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 04</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VFS와 파일시스템</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">VFS &amp; Filesystem</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    <T id="vfs">VFS</T> 계층, open() 흐름, <T id="page_cache">페이지 캐시</T>, ext4 저널링, 블록 I/O 경로
+                    <T id="vfs">VFS</T> 계층, open() 흐름, <T id="page_cache">페이지 캐시</T>, ext4 저널링, 블록 I/O
+                    경로
                 </p>
             </header>
 
@@ -253,24 +248,24 @@ export default function Topic11Filesystem() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <T id="vfs">VFS</T>는 커널의 파일시스템 추상화 계층입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            open()
+                        open()
                     </code>
-          ,{' '}
+                    ,{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            read()
+                        read()
                     </code>
-          ,{' '}
+                    ,{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            write()
+                        write()
                     </code>{' '}
-          같은 POSIX syscall을 받아서 실제 파일시스템(ext4, XFS, tmpfs, NFS 등)으로 전달합니다.
-          유저는 어떤 파일시스템을 쓰는지 몰라도 됩니다.
+                    같은 POSIX syscall을 받아서 실제 파일시스템(ext4, XFS, tmpfs, NFS 등)으로 전달합니다. 유저는 어떤
+                    파일시스템을 쓰는지 몰라도 됩니다.
                 </p>
 
                 {/* VFS 레이어 다이어그램 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                     <div className="text-xs font-mono text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
-            VFS 계층 구조
+                        VFS 계층 구조
                     </div>
                     <VfsLayerDiagram />
                 </div>
@@ -279,7 +274,7 @@ export default function Topic11Filesystem() {
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-              VFS 핵심 구조체
+                            VFS 핵심 구조체
                         </span>
                     </div>
                     <div className="overflow-x-auto">
@@ -287,13 +282,13 @@ export default function Topic11Filesystem() {
                             <thead>
                                 <tr className="border-b border-gray-200 dark:border-gray-700">
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    구조체
+                                        구조체
                                     </th>
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    역할
+                                        역할
                                     </th>
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    수명
+                                        수명
                                     </th>
                                 </tr>
                             </thead>
@@ -320,14 +315,21 @@ export default function Topic11Filesystem() {
                                         lifetime: 'open()~close()',
                                     },
                                 ].map((row) => (
-                                    <tr key={row.name} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr
+                                        key={row.name}
+                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                    >
                                         <td className="px-4 py-3">
                                             <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
                                                 {row.name}
                                             </code>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">{row.role}</td>
-                                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-mono">{row.lifetime}</td>
+                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">
+                                            {row.role}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-mono">
+                                            {row.lifetime}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -355,7 +357,9 @@ export default function Topic11Filesystem() {
                             <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 font-mono uppercase tracking-wide">
                                 struct dentry
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 italic">← 경로 이름 캐시 (dcache)</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 italic">
+                                ← 경로 이름 캐시 (dcache)
+                            </div>
                             <pre className="font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{`d_name:   "foo.txt"
 d_inode:  →→→→→→→→ (inode)
 d_parent: (상위 dir)`}</pre>
@@ -401,16 +405,15 @@ f_flags: O_RDONLY`}</pre>
             {/* 4.2 open() 흐름 */}
             <Section id="s442" title="4.2  open() 흐름 — VFS에서 ext4까지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          유저가{' '}
+                    유저가{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            open("/etc/passwd", O_RDONLY)
+                        open("/etc/passwd", O_RDONLY)
                     </code>
-          를 호출하면 커널은 경로를 탐색하고, struct file을 생성하여 fd를 반환합니다.
-          이후{' '}
+                    를 호출하면 커널은 경로를 탐색하고, struct file을 생성하여 fd를 반환합니다. 이후{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            read()
+                        read()
                     </code>
-          는 <T id="page_cache">페이지 캐시</T>를 확인하고 필요하면 디스크 I/O를 일으킵니다.
+                    는 <T id="page_cache">페이지 캐시</T>를 확인하고 필요하면 디스크 I/O를 일으킵니다.
                 </p>
 
                 <AnimatedDiagram
@@ -419,26 +422,21 @@ f_flags: O_RDONLY`}</pre>
                     autoPlayInterval={2200}
                 />
 
-                <CodeBlock
-                    code={openFlowCode}
-                    language="c"
-                    filename="fs/open.c + fs/ext4/file.c"
-                />
+                <CodeBlock code={openFlowCode} language="c" filename="fs/open.c + fs/ext4/file.c" />
             </Section>
 
             {/* 4.3 페이지 캐시 */}
             <Section id="s443" title="4.3  페이지 캐시 — 디스크 I/O 최소화">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          커널은 디스크에서 읽은 데이터를 <strong className="text-gray-900 dark:text-gray-100"><T id="page_cache">페이지 캐시</T>(Page Cache)</strong>에 보관합니다.
-          같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다.
-          write()된 데이터는 먼저 캐시에 기록되고(dirty 상태), 백그라운드에서 디스크에 씁니다.
+                    커널은 디스크에서 읽은 데이터를{' '}
+                    <strong className="text-gray-900 dark:text-gray-100">
+                        <T id="page_cache">페이지 캐시</T>(Page Cache)
+                    </strong>
+                    에 보관합니다. 같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다. write()된 데이터는 먼저
+                    캐시에 기록되고(dirty 상태), 백그라운드에서 디스크에 씁니다.
                 </p>
 
-                <CodeBlock
-                    code={pageCacheCode}
-                    language="bash"
-                    filename="# 페이지 캐시 확인"
-                />
+                <CodeBlock code={pageCacheCode} language="bash" filename="# 페이지 캐시 확인" />
 
                 {/* dirty 페이지 설명 카드 3개 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -462,16 +460,16 @@ f_flags: O_RDONLY`}</pre>
                         <div
                             key={card.title}
                             className={`rounded-xl border p-4 space-y-1.5
-                ${card.color === 'red'    ? 'bg-red-950/20 border-red-800/50' : ''}
+                ${card.color === 'red' ? 'bg-red-950/20 border-red-800/50' : ''}
                 ${card.color === 'yellow' ? 'bg-yellow-950/20 border-yellow-800/50' : ''}
-                ${card.color === 'green'  ? 'bg-green-950/20 border-green-800/50' : ''}
+                ${card.color === 'green' ? 'bg-green-950/20 border-green-800/50' : ''}
               `}
                         >
                             <div
                                 className={`text-xs font-semibold uppercase tracking-wide font-mono
-                  ${card.color === 'red'    ? 'text-red-400' : ''}
+                  ${card.color === 'red' ? 'text-red-400' : ''}
                   ${card.color === 'yellow' ? 'text-yellow-400' : ''}
-                  ${card.color === 'green'  ? 'text-green-400' : ''}
+                  ${card.color === 'green' ? 'text-green-400' : ''}
                 `}
                             >
                                 {card.title}
@@ -490,14 +488,31 @@ f_flags: O_RDONLY`}</pre>
                     {/* 수직 흐름 다이어그램 */}
                     <div className="flex flex-col items-center gap-0.5">
                         {[
-                            { label: 'write(fd, buf, n)', color: 'bg-blue-100 dark:bg-blue-950/40 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300' },
-                            { label: '페이지 캐시 내 페이지를 dirty 표시', color: 'bg-yellow-100 dark:bg-yellow-950/40 border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300' },
-                            { label: '주기적: pdflush / kworker (writeback_control)\n또는 sync / fsync 즉시 트리거', color: 'bg-orange-100 dark:bg-orange-950/40 border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-300' },
-                            { label: 'ext4_writepages() → submit_bio()', color: 'bg-purple-100 dark:bg-purple-950/40 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300' },
-                            { label: '블록 레이어 → 디스크', color: 'bg-green-100 dark:bg-green-950/40 border-green-300 dark:border-green-700 text-green-700 dark:text-green-300' },
+                            {
+                                label: 'write(fd, buf, n)',
+                                color: 'bg-blue-100 dark:bg-blue-950/40 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300',
+                            },
+                            {
+                                label: '페이지 캐시 내 페이지를 dirty 표시',
+                                color: 'bg-yellow-100 dark:bg-yellow-950/40 border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300',
+                            },
+                            {
+                                label: '주기적: pdflush / kworker (writeback_control)\n또는 sync / fsync 즉시 트리거',
+                                color: 'bg-orange-100 dark:bg-orange-950/40 border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-300',
+                            },
+                            {
+                                label: 'ext4_writepages() → submit_bio()',
+                                color: 'bg-purple-100 dark:bg-purple-950/40 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300',
+                            },
+                            {
+                                label: '블록 레이어 → 디스크',
+                                color: 'bg-green-100 dark:bg-green-950/40 border-green-300 dark:border-green-700 text-green-700 dark:text-green-300',
+                            },
                         ].map((step, i, arr) => (
                             <div key={i} className="flex flex-col items-center w-full max-w-sm">
-                                <div className={`w-full text-center font-mono text-xs border rounded px-3 py-1.5 whitespace-pre-line ${step.color}`}>
+                                <div
+                                    className={`w-full text-center font-mono text-xs border rounded px-3 py-1.5 whitespace-pre-line ${step.color}`}
+                                >
                                     {step.label}
                                 </div>
                                 {i < arr.length - 1 && (
@@ -512,21 +527,50 @@ f_flags: O_RDONLY`}</pre>
                         <table className="w-full text-xs">
                             <thead>
                                 <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">방법</th>
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">동작</th>
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">보장 수준</th>
+                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                                        방법
+                                    </th>
+                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                                        동작
+                                    </th>
+                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                                        보장 수준
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                 {[
-                                    { method: 'write()', action: '페이지 캐시에만 쓰고 즉시 반환', guarantee: '캐시 일관성만' },
-                                    { method: 'sync()', action: '전체 dirty 페이지 플러시 (블록까지)', guarantee: '파일시스템 전체' },
-                                    { method: 'fsync(fd)', action: '특정 파일의 데이터+메타데이터 플러시', guarantee: '파일 단위 내구성' },
-                                    { method: 'fdatasync(fd)', action: '데이터만 플러시 (메타데이터 제외)', guarantee: '데이터 내구성만' },
-                                    { method: 'O_SYNC', action: 'write() 시마다 즉시 플러시', guarantee: '매 쓰기 내구성' },
+                                    {
+                                        method: 'write()',
+                                        action: '페이지 캐시에만 쓰고 즉시 반환',
+                                        guarantee: '캐시 일관성만',
+                                    },
+                                    {
+                                        method: 'sync()',
+                                        action: '전체 dirty 페이지 플러시 (블록까지)',
+                                        guarantee: '파일시스템 전체',
+                                    },
+                                    {
+                                        method: 'fsync(fd)',
+                                        action: '특정 파일의 데이터+메타데이터 플러시',
+                                        guarantee: '파일 단위 내구성',
+                                    },
+                                    {
+                                        method: 'fdatasync(fd)',
+                                        action: '데이터만 플러시 (메타데이터 제외)',
+                                        guarantee: '데이터 내구성만',
+                                    },
+                                    {
+                                        method: 'O_SYNC',
+                                        action: 'write() 시마다 즉시 플러시',
+                                        guarantee: '매 쓰기 내구성',
+                                    },
                                     { method: 'O_DSYNC', action: '데이터만 즉시 플러시', guarantee: '데이터만' },
                                 ].map((row) => (
-                                    <tr key={row.method} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr
+                                        key={row.method}
+                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                    >
                                         <td className="px-3 py-2">
                                             <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-mono">
                                                 {row.method}
@@ -546,33 +590,31 @@ f_flags: O_RDONLY`}</pre>
                             /proc/sys/vm/dirty_expire_centisecs
                         </code>
                         <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            기본값 <strong className="text-gray-800 dark:text-gray-200">3000 (= 30초)</strong>.
-                            dirty 페이지가 이 시간을 초과하면 백그라운드 writeback이 강제 시작됩니다.
-                            DB처럼 내구성이 중요한 앱은 <code className="font-mono text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">fsync()</code>를 명시적으로 호출해야 합니다.
+                            기본값 <strong className="text-gray-800 dark:text-gray-200">3000 (= 30초)</strong>. dirty
+                            페이지가 이 시간을 초과하면 백그라운드 writeback이 강제 시작됩니다. DB처럼 내구성이 중요한
+                            앱은{' '}
+                            <code className="font-mono text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">fsync()</code>
+                            를 명시적으로 호출해야 합니다.
                         </p>
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={writebackCode}
-                    language="bash"
-                    filename="# write-back 모니터링"
-                />
+                <CodeBlock code={writebackCode} language="bash" filename="# write-back 모니터링" />
             </Section>
 
             {/* 4.4 ext4 저널링 */}
             <Section id="s444" title="4.4  ext4 — 널리 쓰이는 저널링 파일시스템">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          ext4는 Linux의 기본 파일시스템입니다.
-                    <strong className="text-gray-900 dark:text-gray-100"> 저널(journal)</strong>로 크래시 후에도 파일시스템 일관성을 보장합니다.
-          저널링 모드에 따라 성능과 안전성이 달라집니다.
+                    ext4는 Linux의 기본 파일시스템입니다.
+                    <strong className="text-gray-900 dark:text-gray-100"> 저널(journal)</strong>로 크래시 후에도
+                    파일시스템 일관성을 보장합니다. 저널링 모드에 따라 성능과 안전성이 달라집니다.
                 </p>
 
                 {/* 저널링 모드 테이블 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-              ext4 저널링 모드
+                            ext4 저널링 모드
                         </span>
                     </div>
                     <div className="overflow-x-auto">
@@ -580,16 +622,16 @@ f_flags: O_RDONLY`}</pre>
                             <thead>
                                 <tr className="border-b border-gray-200 dark:border-gray-700">
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    모드
+                                        모드
                                     </th>
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    저널 내용
+                                        저널 내용
                                     </th>
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    성능
+                                        성능
                                     </th>
                                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    안전성
+                                        안전성
                                     </th>
                                 </tr>
                             </thead>
@@ -620,15 +662,24 @@ f_flags: O_RDONLY`}</pre>
                                         safetyColor: 'text-green-600 dark:text-green-400',
                                     },
                                 ].map((row) => (
-                                    <tr key={row.mode} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr
+                                        key={row.mode}
+                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                    >
                                         <td className="px-4 py-3">
                                             <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
                                                 {row.mode}
                                             </code>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">{row.journal}</td>
-                                        <td className={`px-4 py-3 text-xs font-semibold ${row.perfColor}`}>{row.perf}</td>
-                                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">{row.safety}</td>
+                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">
+                                            {row.journal}
+                                        </td>
+                                        <td className={`px-4 py-3 text-xs font-semibold ${row.perfColor}`}>
+                                            {row.perf}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">
+                                            {row.safety}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -636,30 +687,28 @@ f_flags: O_RDONLY`}</pre>
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={ext4Code}
-                    language="bash"
-                    filename="# ext4 실전 명령어"
-                />
+                <CodeBlock code={ext4Code} language="bash" filename="# ext4 실전 명령어" />
             </Section>
 
             {/* 4.5 블록 I/O 경로 */}
             <Section id="s445" title="4.5  블록 I/O 경로 — bio에서 드라이버까지">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-          파일시스템이 데이터를 읽고 쓸 때 최종적으로는{' '}
+                    파일시스템이 데이터를 읽고 쓸 때 최종적으로는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
-            submit_bio()
+                        submit_bio()
                     </code>
-          를 호출해 블록 레이어로 I/O를 전달합니다.
-          블록 레이어는 <strong className="text-gray-900 dark:text-gray-100"><T id="bio">bio</T></strong> →{' '}
-                    <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
+                    를 호출해 블록 레이어로 I/O를 전달합니다. 블록 레이어는{' '}
+                    <strong className="text-gray-900 dark:text-gray-100">
+                        <T id="bio">bio</T>
+                    </strong>{' '}
+                    → <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
                     <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.
                 </p>
 
                 {/* 블록 I/O 계층 다이어그램 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                     <div className="text-xs font-mono text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
-            블록 I/O 계층 구조
+                        블록 I/O 계층 구조
                     </div>
                     <div className="space-y-1.5">
                         {[
@@ -676,10 +725,7 @@ f_flags: O_RDONLY`}</pre>
                                 className="flex items-center gap-2 text-xs font-mono"
                                 style={{ paddingLeft: `${row.indent * 20}px` }}
                             >
-                                <div
-                                    className="w-2 h-2 rounded-full shrink-0"
-                                    style={{ backgroundColor: row.color }}
-                                />
+                                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: row.color }} />
                                 <span className="text-gray-700 dark:text-gray-300">{row.label}</span>
                             </div>
                         ))}
@@ -724,9 +770,7 @@ f_flags: O_RDONLY`}</pre>
                                     {card.badge}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                                {card.desc}
-                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -736,19 +780,15 @@ f_flags: O_RDONLY`}</pre>
                     language="c"
                     filename="include/linux/blk_types.h — bio 구조체 & submit 흐름"
                 />
-                <CodeBlock
-                    code={blockSchedCode}
-                    language="bash"
-                    filename="# 블록 I/O 스케줄러 실전"
-                />
+                <CodeBlock code={blockSchedCode} language="bash" filename="# 블록 I/O 스케줄러 실전" />
             </Section>
 
             {/* 4.6 대표 파일시스템 비교 */}
             <Section id="s446" title="4.6  대표 파일시스템 비교 — ext4 · XFS · Btrfs · overlayfs">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <T id="vfs">VFS</T> 추상화 덕분에 리눅스는 같은 시스템에서 여러 파일시스템을 동시에 마운트할 수 있습니다.
-                    디스크 기반(ext4, XFS, Btrfs), 메모리 기반(tmpfs), 커널 정보 노출용 가상 FS(procfs, sysfs),
-                    컨테이너 레이어링(overlayfs), 원격 파일(NFS)이 대표적입니다.
+                    <T id="vfs">VFS</T> 추상화 덕분에 리눅스는 같은 시스템에서 여러 파일시스템을 동시에 마운트할 수
+                    있습니다. 디스크 기반(ext4, XFS, Btrfs), 메모리 기반(tmpfs), 커널 정보 노출용 가상 FS(procfs,
+                    sysfs), 컨테이너 레이어링(overlayfs), 원격 파일(NFS)이 대표적입니다.
                 </p>
 
                 {/* 비교 표 */}
@@ -756,27 +796,89 @@ f_flags: O_RDONLY`}</pre>
                     <table className="w-full text-xs text-left">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">파일시스템</th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
+                                    파일시스템
+                                </th>
                                 <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">유형</th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">핵심 특징</th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">주요 용도</th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
+                                    핵심 특징
+                                </th>
+                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
+                                    주요 용도
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {[
-                                { name: 'ext4', type: '디스크', tc: '#3b82f6', feat: 'extent 기반 할당, 메타데이터 저널링, 최대 1EB 볼륨', use: '범용 리눅스 부트 디스크, 데스크탑' },
-                                { name: 'XFS', type: '디스크', tc: '#3b82f6', feat: 'B+트리 extent 맵, 병렬 I/O, 최대 8EB 볼륨, RHEL 기본 FS', use: '대용량 파일, DB, NAS, 미디어 서버' },
-                                { name: 'Btrfs', type: '디스크·CoW', tc: '#8b5cf6', feat: 'Copy-on-Write, 체크섬, 스냅샷, RAID, 서브볼륨', use: 'Fedora/openSUSE 시스템, 백업, 스냅샷' },
-                                { name: 'tmpfs', type: '메모리', tc: '#10b981', feat: 'RAM+swap 사용, 재부팅 시 소멸, 크기 동적 조정', use: '/tmp, /run, /dev/shm, 빌드 캐시' },
-                                { name: 'procfs', type: '가상', tc: '#f59e0b', feat: '커널 프로세스 정보를 파일 트리로 노출, 쓰기로 파라미터 제어', use: '/proc/PID/, /proc/sys/, /proc/net/' },
-                                { name: 'sysfs', type: '가상', tc: '#f59e0b', feat: '디바이스 드라이버 모델(kobject) 노출, 드라이버 속성 읽기/쓰기', use: '/sys/block/, /sys/bus/, /sys/class/' },
-                                { name: 'overlayfs', type: '유니온', tc: '#ef4444', feat: 'lower(RO)+upper(RW)→merged 뷰, copy-up, whiteout 삭제', use: 'Docker/containerd 이미지 레이어' },
-                                { name: 'NFS', type: '네트워크', tc: '#06b6d4', feat: 'NFSv4 Kerberos 인증, 원격 파일을 로컬처럼 마운트, rsize/wsize 튜닝', use: 'HPC 클러스터, 기업 NAS, K8s PV' },
+                                {
+                                    name: 'ext4',
+                                    type: '디스크',
+                                    tc: '#3b82f6',
+                                    feat: 'extent 기반 할당, 메타데이터 저널링, 최대 1EB 볼륨',
+                                    use: '범용 리눅스 부트 디스크, 데스크탑',
+                                },
+                                {
+                                    name: 'XFS',
+                                    type: '디스크',
+                                    tc: '#3b82f6',
+                                    feat: 'B+트리 extent 맵, 병렬 I/O, 최대 8EB 볼륨, RHEL 기본 FS',
+                                    use: '대용량 파일, DB, NAS, 미디어 서버',
+                                },
+                                {
+                                    name: 'Btrfs',
+                                    type: '디스크·CoW',
+                                    tc: '#8b5cf6',
+                                    feat: 'Copy-on-Write, 체크섬, 스냅샷, RAID, 서브볼륨',
+                                    use: 'Fedora/openSUSE 시스템, 백업, 스냅샷',
+                                },
+                                {
+                                    name: 'tmpfs',
+                                    type: '메모리',
+                                    tc: '#10b981',
+                                    feat: 'RAM+swap 사용, 재부팅 시 소멸, 크기 동적 조정',
+                                    use: '/tmp, /run, /dev/shm, 빌드 캐시',
+                                },
+                                {
+                                    name: 'procfs',
+                                    type: '가상',
+                                    tc: '#f59e0b',
+                                    feat: '커널 프로세스 정보를 파일 트리로 노출, 쓰기로 파라미터 제어',
+                                    use: '/proc/PID/, /proc/sys/, /proc/net/',
+                                },
+                                {
+                                    name: 'sysfs',
+                                    type: '가상',
+                                    tc: '#f59e0b',
+                                    feat: '디바이스 드라이버 모델(kobject) 노출, 드라이버 속성 읽기/쓰기',
+                                    use: '/sys/block/, /sys/bus/, /sys/class/',
+                                },
+                                {
+                                    name: 'overlayfs',
+                                    type: '유니온',
+                                    tc: '#ef4444',
+                                    feat: 'lower(RO)+upper(RW)→merged 뷰, copy-up, whiteout 삭제',
+                                    use: 'Docker/containerd 이미지 레이어',
+                                },
+                                {
+                                    name: 'NFS',
+                                    type: '네트워크',
+                                    tc: '#06b6d4',
+                                    feat: 'NFSv4 Kerberos 인증, 원격 파일을 로컬처럼 마운트, rsize/wsize 튜닝',
+                                    use: 'HPC 클러스터, 기업 NAS, K8s PV',
+                                },
                             ].map((row) => (
-                                <tr key={row.name} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                    <td className="px-4 py-2.5 font-mono font-bold text-gray-900 dark:text-gray-100">{row.name}</td>
+                                <tr
+                                    key={row.name}
+                                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                >
+                                    <td className="px-4 py-2.5 font-mono font-bold text-gray-900 dark:text-gray-100">
+                                        {row.name}
+                                    </td>
                                     <td className="px-4 py-2.5">
-                                        <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: row.tc + '22', color: row.tc }}>
+                                        <span
+                                            className="px-1.5 py-0.5 rounded text-xs font-medium"
+                                            style={{ backgroundColor: row.tc + '22', color: row.tc }}
+                                        >
                                             {row.type}
                                         </span>
                                     </td>
@@ -795,35 +897,69 @@ f_flags: O_RDONLY`}</pre>
                             title: '디스크 기반 FS',
                             color: '#3b82f6',
                             items: [
-                                { name: 'ext4', desc: '리눅스 표준. journal 모드로 메타데이터 보호(ordered가 기본). extent 트리로 연속 블록을 하나의 레코드로 표현해 단편화를 줄임. e2fsck로 무결성 검사.' },
-                                { name: 'XFS', desc: 'SGI가 개발, RHEL/Rocky 기본 FS. Allocation Group을 병렬로 처리해 멀티코어 I/O에 강함. delayed allocation으로 불필요한 블록 예약을 방지.' },
-                                { name: 'Btrfs', desc: 'CoW로 모든 쓰기를 새 위치에 기록 → 스냅샷이 O(1). 셀프 힐링 체크섬으로 비트 부패 감지. 온라인 리밸런스·리사이즈 지원.' },
+                                {
+                                    name: 'ext4',
+                                    desc: '리눅스 표준. journal 모드로 메타데이터 보호(ordered가 기본). extent 트리로 연속 블록을 하나의 레코드로 표현해 단편화를 줄임. e2fsck로 무결성 검사.',
+                                },
+                                {
+                                    name: 'XFS',
+                                    desc: 'SGI가 개발, RHEL/Rocky 기본 FS. Allocation Group을 병렬로 처리해 멀티코어 I/O에 강함. delayed allocation으로 불필요한 블록 예약을 방지.',
+                                },
+                                {
+                                    name: 'Btrfs',
+                                    desc: 'CoW로 모든 쓰기를 새 위치에 기록 → 스냅샷이 O(1). 셀프 힐링 체크섬으로 비트 부패 감지. 온라인 리밸런스·리사이즈 지원.',
+                                },
                             ],
                         },
                         {
                             title: '메모리·가상 FS',
                             color: '#10b981',
                             items: [
-                                { name: 'tmpfs', desc: 'RAM과 swap을 backing store로 사용. size= 옵션으로 상한 지정. /run(부팅 런타임), /dev/shm(POSIX 공유 메모리)에 기본 마운트됨.' },
-                                { name: 'procfs', desc: '커널이 요청 시 파일 내용을 동적으로 생성. /proc/net/tcp로 소켓 상태 조회, /proc/sys/net/ipv4/로 네트워크 파라미터를 런타임에 제어.' },
-                                { name: 'sysfs', desc: 'kobject 트리를 파일 경로로 노출. /sys/block/sda/queue/scheduler에 쓰면 I/O 스케줄러 변경. udev가 sysfs를 폴링해 /dev 노드를 생성.' },
+                                {
+                                    name: 'tmpfs',
+                                    desc: 'RAM과 swap을 backing store로 사용. size= 옵션으로 상한 지정. /run(부팅 런타임), /dev/shm(POSIX 공유 메모리)에 기본 마운트됨.',
+                                },
+                                {
+                                    name: 'procfs',
+                                    desc: '커널이 요청 시 파일 내용을 동적으로 생성. /proc/net/tcp로 소켓 상태 조회, /proc/sys/net/ipv4/로 네트워크 파라미터를 런타임에 제어.',
+                                },
+                                {
+                                    name: 'sysfs',
+                                    desc: 'kobject 트리를 파일 경로로 노출. /sys/block/sda/queue/scheduler에 쓰면 I/O 스케줄러 변경. udev가 sysfs를 폴링해 /dev 노드를 생성.',
+                                },
                             ],
                         },
                         {
                             title: '유니온·네트워크 FS',
                             color: '#ef4444',
                             items: [
-                                { name: 'overlayfs', desc: 'lower dir(이미지, RO)와 upper dir(컨테이너 쓰기, RW)를 병합해 merged 뷰 제공. 최초 쓰기 시 lower → upper로 copy-up. 파일 삭제는 whiteout 파일로 마킹.' },
-                                { name: 'NFS', desc: 'RPC/XDR 기반 원격 마운트. NFSv4.1에서 병렬 NFS(pNFS) 지원. rsize/wsize를 1MB로 늘리면 처리량 극대화. /proc/net/rpc/nfsd로 서버 통계 확인.' },
+                                {
+                                    name: 'overlayfs',
+                                    desc: 'lower dir(이미지, RO)와 upper dir(컨테이너 쓰기, RW)를 병합해 merged 뷰 제공. 최초 쓰기 시 lower → upper로 copy-up. 파일 삭제는 whiteout 파일로 마킹.',
+                                },
+                                {
+                                    name: 'NFS',
+                                    desc: 'RPC/XDR 기반 원격 마운트. NFSv4.1에서 병렬 NFS(pNFS) 지원. rsize/wsize를 1MB로 늘리면 처리량 극대화. /proc/net/rpc/nfsd로 서버 통계 확인.',
+                                },
                             ],
                         },
                     ].map((cat) => (
-                        <div key={cat.title} className="rounded-xl border p-4 space-y-3 bg-white dark:bg-gray-900" style={{ borderColor: cat.color + '55' }}>
-                            <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: cat.color }}>{cat.title}</div>
+                        <div
+                            key={cat.title}
+                            className="rounded-xl border p-4 space-y-3 bg-white dark:bg-gray-900"
+                            style={{ borderColor: cat.color + '55' }}
+                        >
+                            <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: cat.color }}>
+                                {cat.title}
+                            </div>
                             {cat.items.map((item) => (
                                 <div key={item.name} className="space-y-1">
-                                    <div className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100">{item.name}</div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                                    <div className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100">
+                                        {item.name}
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        {item.desc}
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -837,11 +973,20 @@ f_flags: O_RDONLY`}</pre>
                     </div>
                     <div className="rounded-lg border border-purple-300 dark:border-purple-700 bg-purple-50 dark:bg-purple-900/20 p-3">
                         <div className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 mb-2">
-                            Merged View  (컨테이너가 보는 파일 트리)
+                            Merged View (컨테이너가 보는 파일 트리)
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            {['/etc/hosts ✎', '/app/config.json ✎', '/usr/bin/python3', '/lib/libc.so', '/app/code.py'].map((f) => (
-                                <span key={f} className="text-xs font-mono bg-purple-100 dark:bg-purple-800/40 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded">
+                            {[
+                                '/etc/hosts ✎',
+                                '/app/config.json ✎',
+                                '/usr/bin/python3',
+                                '/lib/libc.so',
+                                '/app/code.py',
+                            ].map((f) => (
+                                <span
+                                    key={f}
+                                    className="text-xs font-mono bg-purple-100 dark:bg-purple-800/40 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded"
+                                >
                                     {f}
                                 </span>
                             ))}
@@ -855,28 +1000,28 @@ f_flags: O_RDONLY`}</pre>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-3">
                             <div className="text-xs font-mono font-bold text-red-600 dark:text-red-400 mb-1.5">
-                                Upper Dir  (컨테이너 쓰기층, RW)
+                                Upper Dir (컨테이너 쓰기층, RW)
                             </div>
                             {['/etc/hosts', '/app/config.json'].map((f) => (
-                                <div key={f} className="text-xs font-mono text-red-600 dark:text-red-400">{f}</div>
+                                <div key={f} className="text-xs font-mono text-red-600 dark:text-red-400">
+                                    {f}
+                                </div>
                             ))}
                         </div>
                         <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-3">
                             <div className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 mb-1.5">
-                                Lower Dir  (이미지 레이어, RO)
+                                Lower Dir (이미지 레이어, RO)
                             </div>
                             {['/usr/bin/python3', '/lib/libc.so', '/app/code.py'].map((f) => (
-                                <div key={f} className="text-xs font-mono text-blue-600 dark:text-blue-400">{f}</div>
+                                <div key={f} className="text-xs font-mono text-blue-600 dark:text-blue-400">
+                                    {f}
+                                </div>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                <CodeBlock
-                    code={fsOverviewCode}
-                    language="bash"
-                    filename="# 파일시스템 탐색 실전 명령어"
-                />
+                <CodeBlock code={fsOverviewCode} language="bash" filename="# 파일시스템 탐색 실전 명령어" />
             </Section>
 
             <TopicNavigation topicId="04-filesystem" />

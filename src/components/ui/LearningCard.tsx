@@ -3,14 +3,12 @@ import { kernelTopics } from '../../data/kernelTopics'
 
 interface LearningCardProps {
     topicId: string
-    items: string[]   // "이 토픽에서 배우는 것" 3줄 bullet
+    items: string[] // "이 토픽에서 배우는 것" 3줄 bullet
 }
 
 export function LearningCard({ topicId, items }: LearningCardProps) {
-    const topic = kernelTopics.find(t => t.id === topicId)
-    const prereqs = topic?.prerequisites
-        .map(id => kernelTopics.find(t => t.id === id))
-        .filter(Boolean) ?? []
+    const topic = kernelTopics.find((t) => t.id === topicId)
+    const prereqs = topic?.prerequisites.map((id) => kernelTopics.find((t) => t.id === id)).filter(Boolean) ?? []
 
     return (
         <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20 p-5 space-y-4">
@@ -36,15 +34,18 @@ export function LearningCard({ topicId, items }: LearningCardProps) {
                         선수 지식
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {prereqs.map(t => t && (
-                            <Link
-                                key={t.id}
-                                to={t.route}
-                                className="text-xs px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
-                            >
-                                Topic {String(t.number).padStart(2, '0')} · {t.title}
-                            </Link>
-                        ))}
+                        {prereqs.map(
+                            (t) =>
+                                t && (
+                                    <Link
+                                        key={t.id}
+                                        to={t.route}
+                                        className="text-xs px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+                                    >
+                                        Topic {String(t.number).padStart(2, '0')} · {t.title}
+                                    </Link>
+                                ),
+                        )}
                     </div>
                 </div>
             )}
