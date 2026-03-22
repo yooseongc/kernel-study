@@ -352,8 +352,8 @@ export default function Topic02Scheduler() {
                 </div>
             </Section>
 
-            {/* 2.4 CFS 스케줄러 */}
-            <Section id="s241" title="2.4  CFS 스케줄러 — vruntime과 Red-Black 트리">
+            {/* 2.5 CFS 스케줄러 */}
+            <Section id="s25_cfs" title="2.5  CFS 스케줄러 — vruntime과 Red-Black 트리">
                 <Prose>
                     <T id="cfs">CFS</T>(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
                     <strong className="text-gray-900 dark:text-gray-100">vruntime(가상 실행 시간)</strong>을 사용합니다.
@@ -471,7 +471,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.5 컨텍스트 스위치 */}
-            <Section id="s25" title="2.5  컨텍스트 스위치 단계별 애니메이션">
+            <Section id="s26" title="2.6  컨텍스트 스위치 단계별 애니메이션">
                 <Prose>
                     <T id="context_switch">컨텍스트 스위치</T>는 커널이 현재 실행 중인 프로세스를 바꾸는 과정입니다. CPU
                     레지스터 전체를 저장하고 복원해야 하므로 일반 함수 호출보다 수백~수천 배 비쌉니다. 아래
@@ -492,7 +492,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.5.1 __schedule() 콜스택 */}
-            <Section id="s251" title="2.5.1  __schedule() 콜스택 분석">
+            <Section id="s261" title="2.6.1  __schedule() 콜스택 분석">
                 <Prose>
                     자발적·비자발적 <T id="context_switch">컨텍스트 스위치</T> 모두{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
@@ -557,7 +557,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.6 CPU Affinity와 CPU Pinning */}
-            <Section id="s26" title="2.6  CPU Affinity와 CPU Pinning">
+            <Section id="s27" title="2.7  CPU Affinity와 CPU Pinning">
                 <Prose>
                     기본적으로 <T id="cfs">CFS</T>는 런큐에서 어느 CPU든 프로세스를 실행할 수 있습니다. 하지만{' '}
                     <strong className="text-gray-900 dark:text-gray-100">CPU affinity(CPU 친화성)</strong>를 설정하면
@@ -646,7 +646,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.7 SMP와 NUMA */}
-            <Section id="s27" title="2.7  SMP와 NUMA — 멀티코어 환경의 스케줄링">
+            <Section id="s28" title="2.8  SMP와 NUMA — 멀티코어 환경의 스케줄링">
                 <Prose>
                     현대 서버는 단일 CPU가 아닙니다. 리눅스 스케줄러는 멀티코어·멀티소켓 환경을 지원하기 위해
                     <strong className="text-gray-900 dark:text-gray-100"> SMP</strong>와{' '}
@@ -745,7 +745,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.8 RT 스케줄러 */}
-            <Section id="s28" title="2.8  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
+            <Section id="s29" title="2.9  RT 스케줄러 — SCHED_FIFO와 SCHED_RR">
                 <Prose>
                     <T id="cfs">CFS</T>는 공정성(fairness)을 목표로 하지만, 일부 태스크는{' '}
                     <strong className="text-gray-900 dark:text-gray-100">데드라인 보장</strong>이 필요합니다. 리눅스
@@ -898,7 +898,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.9 cgroups */}
-            <Section id="s29" title="2.9  cgroups — 프로세스 자원 제어의 핵심">
+            <Section id="s210" title="2.10  cgroups — 프로세스 자원 제어의 핵심">
                 <Prose>
                     <strong className="text-gray-900 dark:text-gray-100">
                         <T id="cgroup">cgroups</T>(Control Groups)
@@ -1064,7 +1064,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.10 스케줄러 통계와 분석 */}
-            <Section id="s210" title="2.10  스케줄러 통계와 분석">
+            <Section id="s211" title="2.11  스케줄러 통계와 분석">
                 <Prose>
                     스케줄링 문제(높은 레이턴시, CPU 불균형)는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
@@ -1133,7 +1133,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* 2.11 SCHED_DEADLINE */}
-            <Section id="s211" title="2.11  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
+            <Section id="s212" title="2.12  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
                 <Prose>
                     <p>
                         SCHED_FIFO와 SCHED_RR은 고정 우선순위 기반으로 동작하지만, <strong><T id="sched_deadline">SCHED_DEADLINE</T></strong>은 각
@@ -1226,7 +1226,7 @@ export default function Topic02Scheduler() {
             </Section>
 
             {/* ── 2.12 관련 커널 파라미터 ─────────────────────────────────── */}
-            <Section id="s212" title="2.12  관련 커널 파라미터">
+            <Section id="s213" title="2.13  관련 커널 파라미터">
                 <Prose>
                     CFS 스케줄러의 동작을 튜닝할 수 있는 주요 커널 파라미터입니다.
                     <code>sysctl</code> 또는 <code>/proc/sys/kernel</code>을 통해 런타임에 조정할 수 있습니다.

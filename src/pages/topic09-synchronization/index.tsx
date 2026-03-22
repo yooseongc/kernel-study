@@ -463,53 +463,8 @@ export default function Topic08() {
                 </div>
             </Section>
 
-            {/* 9.11 futex */}
-            <Section id="s911" title="9.11  futex — 유저공간 잠금의 커널 기반">
-                <Prose>
-                    pthread_mutex, C++ std::mutex 등 유저공간 잠금의 대부분은 내부적으로{' '}
-                    <strong>futex(Fast Userspace Mutex)</strong>를 사용합니다. 경쟁이 없을 때는 커널 진입 없이 원자적
-                    연산만으로 잠금을 획득해 성능을 최적화합니다.
-                </Prose>
-
-                <CodeBlock code={snippets.futexCode} language="c" filename="futex 동작 원리" />
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: 'pthread_mutex',
-                            desc: 'POSIX 스레드 뮤텍스. glibc가 futex 위에 구현.',
-                            color: '#3b82f6',
-                        },
-                        {
-                            title: 'Go sync.Mutex',
-                            desc: 'Go 런타임의 Goroutine 스케줄러 통합 뮤텍스. futex 활용.',
-                            color: '#10b981',
-                        },
-                        {
-                            title: 'Java synchronized',
-                            desc: 'JVM Monitor Lock. OS에 따라 futex 또는 유사 메커니즘.',
-                            color: '#f59e0b',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className="rounded-xl p-4 space-y-2"
-                            style={{
-                                background: card.color + (isDark ? '18' : '0d'),
-                                border: `1px solid ${card.color}44`,
-                            }}
-                        >
-                            <div className="font-mono text-xs font-bold" style={{ color: card.color }}>
-                                {card.title}
-                            </div>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
-                        </div>
-                    ))}
-                </div>
-            </Section>
-
-            {/* 9.12 Wait Queue */}
-            <Section id="s912" title="9.12  Wait Queue — 블로킹 I/O의 핵심">
+            {/* 9.11 Wait Queue */}
+            <Section id="s911" title="9.11  Wait Queue — 블로킹 I/O의 핵심">
                 <Prose>
                     <T id="wait_queue">Wait Queue</T>는 커널에서 "특정 조건이 될 때까지 이 프로세스를 재워라"를 구현하는
                     기본 메커니즘입니다. 소켓 read(), 파일 I/O, 디바이스 드라이버의 거의 모든 블로킹 동작이
@@ -634,8 +589,8 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
                 />
             </Section>
 
-            {/* 9.13 Completion */}
-            <Section id="s913" title="9.13  Completion — 일회성 완료 신호">
+            {/* 9.12 Completion */}
+            <Section id="s912" title="9.12  Completion — 일회성 완료 신호">
                 <Prose>
                     Wait Queue가 "반복적인 조건 대기"라면,{' '}
                     <T id="completion">Completion</T>은
@@ -729,8 +684,8 @@ void cleanup(void) {
                 </div>
             </Section>
 
-            {/* 9.14 RCU Grace Period */}
-            <Section id="s914" title="9.14  RCU Grace Period — 독자 완전 탈출 후 메모리 해제">
+            {/* 9.13 RCU Grace Period */}
+            <Section id="s913" title="9.13  RCU Grace Period — 독자 완전 탈출 후 메모리 해제">
                 <Prose>
                     <T id="rcu">RCU</T> 업데이터는 새 버전 포인터로 교체(publish) 후, 기존 데이터를 즉시 해제할 수
                     없습니다. <strong>이미 구버전을 읽고 있는 독자(reader)</strong>가 있을 수 있기 때문입니다. Grace
@@ -801,8 +756,8 @@ void cleanup(void) {
                 <CodeBlock code={snippets.rcuGracePeriodCode} language="c" filename="rcu_grace_period.c" />
             </Section>
 
-            {/* 9.15 futex */}
-            <Section id="s915" title="9.15  futex — 유저 공간 동기화의 핵심">
+            {/* 9.14 futex */}
+            <Section id="s914" title="9.14  futex — 유저 공간 동기화의 핵심">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">futex</strong> (Fast Userspace muTEX){' '}
                     <KernelRef path="kernel/futex/core.c" sym="do_futex" />는 유저 공간 동기화 프리미티브의
@@ -860,8 +815,8 @@ int unlock(int *futex_word) {
                 </InfoBox>
             </Section>
 
-            {/* 9.16 관련 커널 파라미터 */}
-            <Section id="s916" title="9.16  관련 커널 파라미터">
+            {/* 9.15 관련 커널 파라미터 */}
+            <Section id="s915" title="9.15  관련 커널 파라미터">
                 <Prose>
                     동기화 및 락 디버깅과 관련된 주요 커널 파라미터입니다.
                     RT 태스크 제한, hung task 감지, 락 통계 수집 등 운영 환경에서 유용한 설정들입니다.

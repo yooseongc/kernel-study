@@ -1356,7 +1356,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             </Section>
 
             {/* 3.13 Memory Ordering */}
-            <Section id="s313" title="3.13  Memory Ordering — 메모리 배리어와 순서 보장">
+            <Section id="s3313" title="3.13  Memory Ordering — 메모리 배리어와 순서 보장">
                 <Prose>
                     멀티코어 CPU에서는 성능 최적화를 위해 메모리 읽기/쓰기 순서가 프로그래머가 작성한 순서와 다를 수 있습니다.
                     CPU의 store buffer, invalidation queue, 그리고 컴파일러 최적화가 순서를 바꿀 수 있으며,
@@ -1405,7 +1405,7 @@ if (flag) {
             </Section>
 
             {/* 3.14 zswap/zram */}
-            <Section id="s314" title="3.14  zswap / zram — 메모리 압축과 스왑 최적화">
+            <Section id="s3314" title="3.14  zswap / zram — 메모리 압축과 스왑 최적화">
                 <Prose>
                     메모리가 부족할 때 커널은 페이지를 스왑 디바이스로 내보냅니다. 하지만 디스크 I/O는 느리므로,
                     커널은 스왑 전에 페이지를 <strong className="text-gray-800 dark:text-gray-200">압축</strong>하여 메모리에

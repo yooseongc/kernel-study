@@ -442,18 +442,8 @@ lock(B) ← 대기   lock(A) ← 대기
                 <InfoTable headers={['유형', '측정 대상', '도구']} rows={cpuTypeRows} />
             </Section>
 
-            {/* 11.13 관련 커널 파라미터 */}
-            <Section id="s1113" title="11.13  관련 커널 파라미터">
-                <Prose>
-                    디버깅과 성능 분석에 영향을 미치는 주요 커널 파라미터입니다. 개발/테스트 환경에서는 제한을
-                    완화하고, 프로덕션에서는 보안을 고려하여 설정합니다.
-                </Prose>
-                <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.debugParamRows} />
-                <CodeBlock code={snippets.debugParamCheckCode} language="bash" filename="# 디버깅 파라미터 확인/변경" />
-            </Section>
-
-            {/* 11.14 KASAN 심화 */}
-            <Section id="s1114" title="11.14  KASAN 심화 — Shadow Memory와 KFENCE">
+            {/* 11.13 KASAN 심화 */}
+            <Section id="s1113" title="11.13  KASAN 심화 — Shadow Memory와 KFENCE">
                 <Prose>
                     KASAN은 커널 메모리의 모든 바이트에 대해 <strong className="text-gray-800 dark:text-gray-200">shadow memory</strong>를
                     유지합니다. 실제 메모리 8바이트마다 1바이트의 shadow를 할당하여, 해당 메모리가 접근 가능한지를 기록합니다.
@@ -500,8 +490,8 @@ dmesg | grep -A 20 "BUG: KFENCE:"
                 </Alert>
             </Section>
 
-            {/* 11.15 lockdep 심화 */}
-            <Section id="s1115" title="11.15  lockdep 심화 — 의존성 그래프와 경고 해석">
+            {/* 11.14 lockdep 심화 */}
+            <Section id="s1114" title="11.14  lockdep 심화 — 의존성 그래프와 경고 해석">
                 <Prose>
                     lockdep은 커널이 실행 중에 관찰한 모든 잠금 획득 순서를 <strong className="text-gray-800 dark:text-gray-200">의존성
                     그래프</strong>로 기록합니다. 새 잠금 획득이 기존 그래프에 사이클을 형성하면 — 실제 데드락이 발생하지 않았더라도 —
@@ -537,8 +527,8 @@ cat /proc/lockdep_stats
                 </Prose>
             </Section>
 
-            {/* 11.16 bpftool */}
-            <Section id="s1116" title="11.16  bpftool — eBPF 프로그램 관리와 디버깅">
+            {/* 11.15 bpftool */}
+            <Section id="s1115" title="11.15  bpftool — eBPF 프로그램 관리와 디버깅">
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">bpftool</strong>은 커널에 로드된 eBPF 프로그램과 맵을
                     검사·관리하는 공식 CLI 도구입니다. <T id="bcc">BCC</T>나 <T id="bpftrace">bpftrace</T>가 생성한 프로그램의
@@ -591,6 +581,16 @@ bpftool perf list`} language="bash" filename="# bpftool 주요 명령어" />
                     bpftool은 커널 소스 트리의 tools/bpf/bpftool/에 포함되어 있으며,
                     배포판에서는 bpftool 또는 linux-tools 패키지로 설치할 수 있습니다.
                 </Alert>
+            </Section>
+
+            {/* 11.16 관련 커널 파라미터 */}
+            <Section id="s1116" title="11.16  관련 커널 파라미터">
+                <Prose>
+                    디버깅과 성능 분석에 영향을 미치는 주요 커널 파라미터입니다. 개발/테스트 환경에서는 제한을
+                    완화하고, 프로덕션에서는 보안을 고려하여 설정합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.debugParamRows} />
+                <CodeBlock code={snippets.debugParamCheckCode} language="bash" filename="# 디버깅 파라미터 확인/변경" />
             </Section>
 
             <TopicNavigation topicId="11-debugging" />

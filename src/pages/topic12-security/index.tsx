@@ -708,8 +708,8 @@ export default function Topic12() {
                 <CodeBlock code={snippets.pidNsCloneCode} language="c" filename="clone() — 새 PID namespace 생성" />
             </Section>
 
-            {/* 12.9 cgroup v2 심화 */}
-            <Section id="s129" title="12.9  cgroup v2 심화 — Unified Hierarchy">
+            {/* 12.8 cgroup v2 심화 */}
+            <Section id="s128" title="12.8  cgroup v2 심화 — Unified Hierarchy">
                 <Prose>
                     <T id="cgroup">cgroup v2</T> <KernelRef path="kernel/cgroup/cgroup.c" label="cgroup.c" />는
                     모든 컨트롤러를 단일 계층 구조(unified hierarchy)로 통합한 차세대 자원 관리 인터페이스입니다.
@@ -761,8 +761,8 @@ cat /sys/fs/cgroup/myapp/io.pressure`} language="bash" filename="# cgroup v2 설
                 </Alert>
             </Section>
 
-            {/* 12.10 namespace 심화 */}
-            <Section id="s1210" title="12.10  namespace 심화 — 8종 격리 메커니즘">
+            {/* 12.9 namespace 심화 */}
+            <Section id="s129" title="12.9  namespace 심화 — 8종 격리 메커니즘">
                 <Prose>
                     <T id="namespace">Linux namespace</T> <KernelRef path="kernel/nsproxy.c" sym="nsproxy" />는
                     프로세스가 바라보는 시스템 자원의 <strong className="text-gray-800 dark:text-gray-200">뷰(view)</strong>를 격리합니다.
@@ -819,8 +819,8 @@ cat /proc/self/uid_map
                 </InfoBox>
             </Section>
 
-            {/* 12.11 관련 커널 파라미터 */}
-            <Section id="s1211" title="12.11  관련 커널 파라미터">
+            {/* 12.10 관련 커널 파라미터 */}
+            <Section id="s1210" title="12.10  관련 커널 파라미터">
                 <Prose>
                     보안 강화에 관련된 주요 커널 파라미터입니다. 프로덕션 환경에서는 공격 표면을 줄이기 위해
                     적극적으로 설정해야 합니다.
