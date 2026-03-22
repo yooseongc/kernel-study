@@ -129,3 +129,22 @@ cat /proc/net/softnet_stat
 
 # IRQ 분배 확인 (RPS/RFS)
 cat /proc/irq/*/smp_affinity`
+
+// ── 5.10 관련 커널 파라미터 ──────────────────────────────────────────────────
+export const irqParamsCode = `# IRQ CPU 친화도 확인/변경
+cat /proc/irq/42/smp_affinity        # 16진수 비트마스크
+cat /proc/irq/42/smp_affinity_list   # CPU 번호 목록
+echo 3 > /proc/irq/42/smp_affinity   # CPU 0,1에 바인딩
+
+# softlockup 설정
+sysctl kernel.softlockup_panic
+sysctl -w kernel.softlockup_panic=1
+
+# hung task 타임아웃
+sysctl kernel.hung_task_timeout_secs
+sysctl -w kernel.hung_task_timeout_secs=300
+
+# NAPI budget 확인/변경
+sysctl net.core.netdev_budget
+sysctl net.core.netdev_budget_usecs
+sysctl -w net.core.netdev_budget=600`

@@ -7,6 +7,8 @@ import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { InfoBox } from '../../components/ui/InfoBox'
+import { InfoTable } from '../../components/ui/InfoTable'
+import { Prose } from '../../components/ui/Prose'
 import { NetworkLayerDiagram } from '../../components/concepts/network/NetworkLayerDiagram'
 import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
@@ -892,6 +894,33 @@ export default function Topic05() {
                 </div>
 
                 <CodeBlock code={snippets.congCtrlCode} language="bash" filename="# TCP 혼잡 제어 설정 및 확인" />
+            </Section>
+
+            {/* 6.14 관련 커널 파라미터 */}
+            <Section id="s6614" title="6.14  관련 커널 파라미터">
+                <Prose>
+                    네트워크 스택의 동작을 제어하는 주요 커널 파라미터입니다.{' '}
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">sysctl</code>로
+                    런타임에 조정할 수 있으며, 고성능 서버에서는 튜닝이 필수입니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['net.core.rmem_max', '212992', '소켓 수신 버퍼 최대 크기(바이트)'] },
+                        { cells: ['net.core.wmem_max', '212992', '소켓 송신 버퍼 최대 크기(바이트)'] },
+                        { cells: ['net.core.somaxconn', '4096', 'listen() 백로그 큐 최대 길이'] },
+                        { cells: ['net.core.netdev_max_backlog', '1000', 'NAPI 이전 NIC→커널 패킷 큐 최대 길이'] },
+                        { cells: ['net.ipv4.tcp_congestion_control', 'cubic', 'TCP 혼잡 제어 알고리즘 (cubic/bbr/reno)'] },
+                        { cells: ['net.ipv4.tcp_max_syn_backlog', '1024', 'SYN 대기열 최대 크기'] },
+                        { cells: ['net.ipv4.tcp_tw_reuse', '2', 'TIME_WAIT 소켓 재사용 (0=비활성, 1=활성, 2=loopback만)'] },
+                        { cells: ['net.ipv4.tcp_fin_timeout', '60', 'FIN_WAIT2 타임아웃(초)'] },
+                        { cells: ['net.ipv4.ip_local_port_range', '32768 60999', '로컬 포트 할당 범위'] },
+                        { cells: ['net.core.busy_poll', '0', 'busy polling 타임아웃(μs). 0이면 비활성'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.kernelParamsCode} language="bash" filename="# 네트워크 파라미터 확인 및 튜닝" />
             </Section>
 
             <TopicNavigation topicId="06-network-stack" />

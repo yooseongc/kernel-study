@@ -151,3 +151,16 @@ ip route add local default dev lo table 100
 
 # 3. 프록시 소켓: IP_TRANSPARENT 옵션 필요
 # setsockopt(fd, SOL_IP, IP_TRANSPARENT, &opt, sizeof(opt))`
+
+export const netfilterParamsCode = `# conntrack 관련 파라미터 확인
+sysctl net.netfilter.nf_conntrack_max
+sysctl net.netfilter.nf_conntrack_buckets
+sysctl net.netfilter.nf_conntrack_tcp_timeout_established
+
+# IP 포워딩 확인 및 활성화
+sysctl net.ipv4.ip_forward
+sysctl -w net.ipv4.ip_forward=1
+
+# conntrack 테이블 크기 튜닝 (대규모 NAT 환경)
+sysctl -w net.netfilter.nf_conntrack_max=262144
+echo 65536 > /sys/module/nf_conntrack/parameters/hashsize`

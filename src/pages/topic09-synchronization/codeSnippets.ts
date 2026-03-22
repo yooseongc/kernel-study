@@ -214,3 +214,19 @@ rcu_read_lock();
 struct my_data *p = rcu_dereference(global_ptr);
 /* p 사용 (이 구간 동안 p는 해제되지 않음이 보장) */
 rcu_read_unlock();`
+
+export const syncParamsCode = `# RT 태스크 CPU 시간 제한 확인
+sysctl kernel.sched_rt_runtime_us
+# 950000 → 1초 중 950ms까지 RT 태스크 사용 가능
+
+# hung task 감지 설정
+sysctl kernel.hung_task_timeout_secs
+# 120 → 120초 이상 TASK_UNINTERRUPTIBLE이면 경고
+
+# lock 통계 수집 활성화 (CONFIG_LOCK_STAT 필요)
+sysctl -w kernel.lock_stat=1
+cat /proc/lock_stat | head -30
+
+# 패닉 관련 설정
+sysctl kernel.panic           # 0이면 패닉 후 대기
+sysctl kernel.panic_on_warn   # 1이면 WARN()에서 즉시 패닉`

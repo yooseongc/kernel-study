@@ -258,3 +258,14 @@ chrt --deadline --sched-runtime 5000000 \\
 chrt -p $$
 # scheduling policy: SCHED_DEADLINE
 # runtime/deadline/period: 5000000/10000000/20000000`
+
+// ── 2.12 관련 커널 파라미터 ──────────────────────────────────────────────────
+export const schedParamsCode = `# CFS 파라미터 확인
+sysctl kernel.sched_min_granularity_ns
+sysctl kernel.sched_latency_ns
+
+# 실시간 변경
+sysctl -w kernel.sched_latency_ns=4000000
+
+# /proc/sys/kernel 직접 접근
+cat /proc/sys/kernel/sched_min_granularity_ns`

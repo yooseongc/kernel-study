@@ -247,3 +247,21 @@ numastat -p $$
 # Node  0    1
 # Numa_Hit   ...  ← 로컬 노드 히트
 # Numa_Miss  ...  ← 원격 노드에서 할당`
+
+// ── 3.13 관련 커널 파라미터 ──────────────────────────────────────────────────
+export const memParamsCode = `# 주요 VM 파라미터 확인
+sysctl vm.swappiness
+sysctl vm.overcommit_memory
+sysctl vm.dirty_ratio
+
+# dirty 비율 변경
+sysctl -w vm.dirty_ratio=30
+sysctl -w vm.dirty_background_ratio=15
+
+# HugePages 설정
+sysctl -w vm.nr_hugepages=128
+cat /proc/meminfo | grep HugePages
+
+# THP 설정 확인/변경
+cat /sys/kernel/mm/transparent_hugepage/enabled
+echo madvise > /sys/kernel/mm/transparent_hugepage/enabled`

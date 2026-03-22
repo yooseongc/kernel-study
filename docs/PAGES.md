@@ -68,6 +68,7 @@
 - CFS Red-Black 트리 인터랙티브 시각화
 - 컨텍스트 스위치 단계별 애니메이션 (AnimatedDiagram)
 - `sched_entity`와 `vruntime` 비교 그래프
+- 관련 커널 파라미터 (CFS sysctl 파라미터 표 + 확인 명령어)
 
 ---
 
@@ -80,6 +81,7 @@
 - 4단계 페이지 테이블 워크 시각화
 - Buddy Allocator 블록 분할/합병 인터랙티브
 - SLUB 캐시 구조 다이어그램
+- 관련 커널 파라미터 (vm.* sysctl 파라미터 표 + 확인 명령어)
 
 ---
 
@@ -106,6 +108,7 @@
 - IRQ 처리 흐름 DAG
 - Top Half vs Bottom Half 타임라인 비교
 - Softirq / Tasklet / Workqueue 비교 표 + 다이어그램
+- 관련 커널 파라미터 (IRQ 친화도, softlockup, NAPI budget 파라미터 표 + 확인 명령어)
 
 ---
 

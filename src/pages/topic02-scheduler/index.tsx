@@ -1205,6 +1205,28 @@ export default function Topic02Scheduler() {
                 </div>
             </Section>
 
+            {/* ── 2.12 관련 커널 파라미터 ─────────────────────────────────── */}
+            <Section id="s212" title="2.12  관련 커널 파라미터">
+                <Prose>
+                    CFS 스케줄러의 동작을 튜닝할 수 있는 주요 커널 파라미터입니다.
+                    <code>sysctl</code> 또는 <code>/proc/sys/kernel</code>을 통해 런타임에 조정할 수 있습니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['kernel.sched_min_granularity_ns', '750000 (0.75ms)', 'CFS 최소 실행 시간. 이보다 짧게 선점하지 않음'] },
+                        { cells: ['kernel.sched_latency_ns', '6000000 (6ms)', 'CFS 스케줄링 주기. 모든 태스크가 한 번씩 실행되는 목표 시간'] },
+                        { cells: ['kernel.sched_wakeup_granularity_ns', '1000000 (1ms)', '깨어난 태스크가 선점하려면 현재 태스크보다 이만큼 vruntime이 작아야 함'] },
+                        { cells: ['kernel.sched_child_runs_first', '0', '1이면 fork 후 자식이 먼저 실행 (CoW 페이지 폴트 최적화)'] },
+                        { cells: ['kernel.sched_nr_migrate', '32', '로드 밸런싱 시 한 번에 이동하는 최대 태스크 수'] },
+                        { cells: ['kernel.sched_rt_runtime_us', '950000', 'RT 태스크가 사용 가능한 CPU 시간 비율 (950ms/1s)'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.schedParamsCode} language="bash" filename="스케줄러 파라미터 확인/변경" />
+            </Section>
+
             <TopicNavigation topicId="02-scheduler" />
         </div>
     )

@@ -6,6 +6,8 @@ import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
+import { Prose } from '../../components/ui/Prose'
+import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
@@ -1328,6 +1330,31 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
                 <CodeBlock code={snippets.numaCtrlCode} language="c" filename="mbind() / set_mempolicy()" />
                 <CodeBlock code={snippets.numaBashCode} language="bash" filename="# numactl — NUMA 정책 제어" />
+            </Section>
+
+            {/* ── 3.13 관련 커널 파라미터 ─────────────────────────────────── */}
+            <Section id="s3313" title="3.13  관련 커널 파라미터">
+                <Prose>
+                    가상 메모리와 메모리 관리에 영향을 미치는 주요 커널 파라미터입니다.
+                    <code>sysctl</code> 또는 <code>/proc/sys/vm</code>을 통해 런타임에 조정할 수 있습니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['vm.swappiness', '60', '스왑 사용 적극성 (0=최소, 100=적극). 0이면 메모리 부족 시에만 스왑'] },
+                        { cells: ['vm.overcommit_memory', '0', '0=휴리스틱, 1=항상 허용, 2=스왑+비율까지만'] },
+                        { cells: ['vm.overcommit_ratio', '50', 'overcommit_memory=2일 때 물리 메모리의 허용 비율(%)'] },
+                        { cells: ['vm.dirty_ratio', '20', 'dirty 페이지가 전체 메모리의 이 비율 초과 시 동기 write-back 강제'] },
+                        { cells: ['vm.dirty_background_ratio', '10', '이 비율 초과 시 백그라운드 write-back 시작'] },
+                        { cells: ['vm.min_free_kbytes', '(동적)', '커널이 유지하는 최소 여유 메모리. kswapd 동작 임계값에 영향'] },
+                        { cells: ['vm.oom_kill_allocating_task', '0', '1이면 OOM 시 메모리 요청한 프로세스를 즉시 kill'] },
+                        { cells: ['vm.nr_hugepages', '0', '사전 할당 HugePages 수 (2MB 단위)'] },
+                        { cells: ['vm.transparent_hugepage', 'always', 'THP 설정 (always/madvise/never)'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.memParamsCode} language="bash" filename="메모리 파라미터 확인/변경" />
             </Section>
 
             <TopicNavigation topicId="03-memory" />

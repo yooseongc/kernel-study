@@ -7,6 +7,7 @@ import * as d3 from 'd3'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
@@ -800,6 +801,29 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                         </p>
                     </div>
                 </div>
+            </Section>
+
+            {/* ── 5.10 관련 커널 파라미터 ─────────────────────────────────── */}
+            <Section id="s5510" title="5.10  관련 커널 파라미터">
+                <Prose>
+                    인터럽트 처리 및 NAPI 동작에 영향을 미치는 주요 커널 파라미터입니다.
+                    IRQ 친화도는 <code>/proc/irq</code>에서, 나머지는 <code>sysctl</code>로 조정합니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['/proc/irq/N/smp_affinity', '(전체 CPU)', 'IRQ N의 CPU 친화도 비트마스크 (16진수)'] },
+                        { cells: ['/proc/irq/N/smp_affinity_list', '(전체)', 'IRQ 친화도 (CPU 번호 목록)'] },
+                        { cells: ['kernel.softlockup_panic', '0', '1이면 soft lockup 감지 시 패닉'] },
+                        { cells: ['kernel.softlockup_all_cpu_backtrace', '0', '1이면 soft lockup 시 모든 CPU 백트레이스'] },
+                        { cells: ['kernel.hung_task_timeout_secs', '120', 'TASK_UNINTERRUPTIBLE 상태로 이 시간 초과 시 경고'] },
+                        { cells: ['net.core.netdev_budget', '300', 'NAPI 폴링 한 주기에서 처리하는 최대 패킷 수'] },
+                        { cells: ['net.core.netdev_budget_usecs', '2000', 'NAPI 폴링 한 주기 최대 시간(μs)'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.irqParamsCode} language="bash" filename="인터럽트 파라미터 확인/변경" />
             </Section>
 
             <TopicNavigation topicId="05-interrupts" />

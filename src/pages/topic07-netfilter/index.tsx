@@ -9,6 +9,7 @@ import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { Prose } from '../../components/ui/Prose'
 import * as snippets from './codeSnippets'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 ─────────────────────────────────
@@ -867,6 +868,28 @@ export default function Topic06() {
                 </TableWrapper>
 
                 <CodeBlock code={snippets.conntrackHelperCode} language="bash" filename="# conntrack helper 활용" />
+            </Section>
+
+            {/* 7.10 관련 커널 파라미터 */}
+            <Section id="s7710" title="7.10  관련 커널 파라미터">
+                <Prose>
+                    Netfilter와 conntrack의 동작을 제어하는 주요 커널 파라미터입니다.
+                    NAT 게이트웨이나 방화벽 환경에서는 conntrack 테이블 크기 튜닝이 특히 중요합니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['net.netfilter.nf_conntrack_max', '65536', 'conntrack 테이블 최대 엔트리 수'] },
+                        { cells: ['net.netfilter.nf_conntrack_buckets', '16384', 'conntrack 해시 테이블 버킷 수'] },
+                        { cells: ['net.netfilter.nf_conntrack_tcp_timeout_established', '432000', 'TCP ESTABLISHED 상태 conntrack 타임아웃(초, 5일)'] },
+                        { cells: ['net.netfilter.nf_conntrack_tcp_timeout_time_wait', '120', 'TIME_WAIT 상태 conntrack 타임아웃(초)'] },
+                        { cells: ['net.ipv4.ip_forward', '0', 'IP 포워딩 활성화 (라우터/NAT 필수)'] },
+                        { cells: ['net.bridge.bridge-nf-call-iptables', '1', '브릿지 패킷에 iptables 적용 여부'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.netfilterParamsCode} language="bash" filename="# 넷필터 파라미터 확인 및 튜닝" />
             </Section>
 
             <TopicNavigation topicId="07-netfilter" />

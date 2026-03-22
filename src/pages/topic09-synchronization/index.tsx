@@ -783,6 +783,28 @@ void cleanup(void) {
                 <CodeBlock code={snippets.rcuGracePeriodCode} language="c" filename="rcu_grace_period.c" />
             </Section>
 
+            {/* 9.15 관련 커널 파라미터 */}
+            <Section id="s915" title="9.15  관련 커널 파라미터">
+                <Prose>
+                    동기화 및 락 디버깅과 관련된 주요 커널 파라미터입니다.
+                    RT 태스크 제한, hung task 감지, 락 통계 수집 등 운영 환경에서 유용한 설정들입니다.
+                </Prose>
+
+                <InfoTable
+                    headers={['파라미터', '기본값', '설명']}
+                    rows={[
+                        { cells: ['kernel.sched_rt_runtime_us', '950000', 'RT 태스크 CPU 시간 제한 (950ms/1s). -1이면 무제한'] },
+                        { cells: ['kernel.hung_task_timeout_secs', '120', 'TASK_UNINTERRUPTIBLE 상태 경고 임계값(초)'] },
+                        { cells: ['kernel.panic_on_warn', '0', '1이면 WARN() 발생 시 즉시 패닉'] },
+                        { cells: ['kernel.panic', '0', '패닉 후 재부팅까지 대기 시간(초). 0이면 대기'] },
+                        { cells: ['kernel.lock_stat', '0', '1이면 /proc/lock_stat으로 잠금 통계 수집'] },
+                        { cells: ['kernel.max_lock_depth', '1024', 'lockdep 최대 추적 깊이'] },
+                    ]}
+                />
+
+                <CodeBlock code={snippets.syncParamsCode} language="bash" filename="# 동기화 관련 파라미터 확인" />
+            </Section>
+
             <TopicNavigation topicId="09-synchronization" />
         </div>
     )

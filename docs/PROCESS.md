@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 39)
+> 마지막 업데이트: 2026-03-22 (Sprint 41)
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Sprint | 내용 | 완료일 |
 |--------|------|--------|
+| 41 | Topic 06 §6.14, Topic 07 §7.10, Topic 09 §9.15 — "관련 커널 파라미터" 섹션 추가 (네트워크 스택/넷필터/동기화 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
+| 40 | Topic 02 §2.12, Topic 03 §3.13, Topic 05 §5.10 — "관련 커널 파라미터" 섹션 추가 (CFS/메모리/인터럽트 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
 | 39 | Topic 06 §6.1 패킷 수신 과정 시각화 개선: 7단계 상세 설명 추가, NetworkLayerDiagram에 단계별 한글 레이블 삽입, NAPI 핵심 포인트 InfoBox 추가, 다이어그램 높이 확대(340→420px) | 2026-03-22 |
 | 38 | Topic 04 §4.7 리눅스 파일 종류와 권한 (7종 파일 타입 InfoTable, mode bits/8진수/특수비트 설명, 실전 명령어, setuid 보안 Alert), Topic 09 GlossaryTooltip 보강 (spinlock/mutex/rcu/atomic 첫 등장에 `<T>` 추가) | 2026-03-22 |
 | 37 | Topic 07 §7.4.1 iptables Table×Chain 매트릭스 (raw/mangle/nat/filter × 5 chains, 처리 우선순위), §7.4.2 NAT 설명 (SNAT/DNAT/MASQUERADE, 명령어 예제, conntrack 역변환) 추가 | 2026-03-22 |

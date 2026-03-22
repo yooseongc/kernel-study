@@ -249,3 +249,13 @@ ss -tin | grep -A2 "ESTAB"
 # BBR 상태 확인
 ss -tin | grep bbr
 # bbr bw:100Mbps mrtt:1.5`
+
+export const kernelParamsCode = `# 주요 네트워크 파라미터 확인
+sysctl net.core.rmem_max net.core.wmem_max net.core.somaxconn
+sysctl net.ipv4.tcp_congestion_control
+
+# 고성능 서버 튜닝 예시
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+sysctl -w net.ipv4.tcp_congestion_control=bbr
+sysctl -w net.core.somaxconn=65535`
