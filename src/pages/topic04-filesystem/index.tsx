@@ -4,6 +4,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
@@ -264,43 +265,16 @@ f_flags: O_RDONLY`}</pre>
 
                 {/* dirty 페이지 설명 카드 3개 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {[
-                        {
-                            title: 'dirty 페이지',
-                            desc: 'write()된 데이터가 캐시에는 있지만 디스크에 아직 없는 상태. 전력 차단 시 손실 가능.',
-                            color: 'red',
-                        },
-                        {
-                            title: 'pdflush / writeback',
-                            desc: '백그라운드 커널 스레드가 주기적으로 dirty 페이지를 디스크에 기록합니다 (dirty_expire_centisecs).',
-                            color: 'yellow',
-                        },
-                        {
-                            title: 'fsync()',
-                            desc: '애플리케이션이 명시적으로 dirty 페이지 즉시 디스크 기록을 요청합니다. DB의 WAL 커밋에 필수.',
-                            color: 'green',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`rounded-xl border p-4 space-y-1.5
-                ${card.color === 'red' ? 'bg-red-950/20 border-red-800/50' : ''}
-                ${card.color === 'yellow' ? 'bg-yellow-950/20 border-yellow-800/50' : ''}
-                ${card.color === 'green' ? 'bg-green-950/20 border-green-800/50' : ''}
-              `}
-                        >
-                            <div
-                                className={`text-xs font-semibold uppercase tracking-wide font-mono
-                  ${card.color === 'red' ? 'text-red-400' : ''}
-                  ${card.color === 'yellow' ? 'text-yellow-400' : ''}
-                  ${card.color === 'green' ? 'text-green-400' : ''}
-                `}
-                            >
-                                {card.title}
-                            </div>
-                            <div className="text-xs text-gray-400 leading-relaxed">{card.desc}</div>
-                        </div>
-                    ))}
+                    <InfoBox color="red" title="dirty 페이지">
+                        write()된 데이터가 캐시에는 있지만 디스크에 아직 없는 상태. 전력 차단 시 손실 가능.
+                    </InfoBox>
+                    <InfoBox color="amber" title="pdflush / writeback">
+                        백그라운드 커널 스레드가 주기적으로 dirty 페이지를 디스크에 기록합니다
+                        (dirty_expire_centisecs).
+                    </InfoBox>
+                    <InfoBox color="green" title="fsync()">
+                        애플리케이션이 명시적으로 dirty 페이지 즉시 디스크 기록을 요청합니다. DB의 WAL 커밋에 필수.
+                    </InfoBox>
                 </div>
 
                 {/* write-back 흐름 */}
