@@ -272,7 +272,7 @@ function renderNetfilterFlow(
 
     // INPUT (top path)
     drawHookNode(INPUT_X + HW / 2, TOP_Y, 'INPUT', [
-        TBL.mangle, TBL.filter, { ...TBL.nat, label: 'nat (SNAT)' },
+        TBL.mangle, { ...TBL.nat, label: 'nat (DNAT)' }, TBL.filter,
     ], hookColors.INPUT)
 
     // Process (top path)
@@ -622,7 +622,7 @@ export default function Topic06() {
                         </li>
                         <li>
                             <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">nat</code> — 주소 변환.
-                            SNAT/DNAT/MASQUERADE (PREROUTING, OUTPUT, POSTROUTING)
+                            SNAT/DNAT/MASQUERADE (PREROUTING, INPUT, OUTPUT, POSTROUTING)
                         </li>
                         <li>
                             <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">mangle</code> — 패킷 헤더 수정.
@@ -640,7 +640,7 @@ export default function Topic06() {
                     rows={[
                         { cells: ['raw', '✓', '', '', '✓', ''] },
                         { cells: ['mangle', '✓', '✓', '✓', '✓', '✓'] },
-                        { cells: ['nat', '✓', '', '', '✓', '✓'] },
+                        { cells: ['nat', '✓', '✓', '', '✓', '✓'] },
                         { cells: ['filter', '', '✓', '✓', '✓', ''] },
                     ]}
                 />
