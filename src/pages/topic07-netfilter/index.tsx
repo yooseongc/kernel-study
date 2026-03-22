@@ -10,6 +10,7 @@ import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { InfoTable } from '../../components/ui/InfoTable'
 import { Prose } from '../../components/ui/Prose'
+import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
@@ -474,7 +475,8 @@ export default function Topic06() {
                     <strong>
                         <T id="netfilter">Netfilter</T>
                     </strong>
-                    는 리눅스 커널 네트워크 스택의 <em>훅(hook) 프레임워크</em>입니다. 커널 내부에 5개의 고정된 훅
+                    는 리눅스 커널 네트워크 스택의 <em>훅(hook) 프레임워크</em>입니다.{' '}
+                    <KernelRef path="include/uapi/linux/netfilter.h" label="netfilter hooks" /> 커널 내부에 5개의 고정된 훅
                     포인트를 두고, 각 포인트에서 등록된 함수를 우선순위 순서대로 호출합니다.
                     <br />
                     <br />
@@ -700,7 +702,8 @@ export default function Topic06() {
                     <T id="netfilter">Netfilter</T>{' '}
                     <strong>
                         <T id="conntrack">conntrack</T>
-                    </strong>
+                    </strong>{' '}
+                    <KernelRef path="net/netfilter/nf_conntrack_core.c" sym="nf_conntrack" />
                     은 stateful 방화벽의 핵심 컴포넌트입니다. 커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
                     응답 패킷을 자동으로 허용하거나 NAT 역변환을 처리합니다.
                 </InfoBox>
@@ -765,7 +768,7 @@ export default function Topic06() {
                 <InfoBox>
                     <ul className="space-y-1 list-disc list-inside">
                         <li>
-                            <strong>TPROXY</strong>: 패킷을 실제 목적지가 아닌 <em>로컬 소켓</em>으로 리다이렉트합니다.
+                            <strong><T id="tproxy">TPROXY</T></strong>: 패킷을 실제 목적지가 아닌 <em>로컬 소켓</em>으로 리다이렉트합니다.
                             NAT와 달리 패킷의 목적지 IP/포트를 변경하지 않습니다.
                         </li>
                         <li>투명 프록시(transparent proxy) 구현에 필수이며, Envoy, Squid 등에서 활용됩니다.</li>

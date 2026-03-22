@@ -232,14 +232,14 @@ export default function Topic05() {
                         <li>
                             <span className="font-semibold text-red-600 dark:text-red-400">NIC 수신 &amp; DMA 복사</span>{' '}
                             &mdash; 네트워크 카드가 전기 신호를 프레임으로 조립하고,{' '}
-                            <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">DMA</code>로
-                            메인 메모리의 RX 링 버퍼에 복사합니다. CPU 개입 없이 하드웨어가 직접 수행합니다.
+                            <T id="dma">DMA</T>로
+                            메인 메모리의 RX <T id="ring_buffer">링 버퍼</T>에 복사합니다. CPU 개입 없이 하드웨어가 직접 수행합니다.
                         </li>
                         <li>
                             <span className="font-semibold text-amber-600 dark:text-amber-400">IRQ → NAPI poll</span>{' '}
                             &mdash; NIC가 <T id="irq">IRQ</T>를 발생시키면, 드라이버의 인터럽트 핸들러가{' '}
                             <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">napi_schedule()</code>을
-                            호출하여 NAPI 폴링을 등록합니다. 이후 softirq 컨텍스트에서{' '}
+                            호출하여 NAPI 폴링을 등록합니다. 이후 <T id="softirq">softirq</T> 컨텍스트에서{' '}
                             <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-yellow-600 dark:text-yellow-300">napi_poll()</code>이
                             링 버퍼의 패킷들을 <T id="sk_buff">sk_buff</T>로 변환합니다.
                         </li>
@@ -348,6 +348,14 @@ export default function Topic05() {
                 <NapiCompare />
 
                 <CodeBlock code={snippets.napiPollCode} language="c" filename="drivers/net/my_driver.c" />
+
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="net/core/dev.c" sym="napi_poll" />
+                        <KernelRef path="include/linux/netdevice.h" sym="napi_struct" />
+                        <KernelRef path="net/core/dev.c" sym="netif_receive_skb" />
+                    </div>
+                </InfoBox>
             </Section>
 
             <Section id="s663" title="6.3  sk_buff 구조">
@@ -374,6 +382,14 @@ export default function Topic05() {
                     <code className="font-mono">data</code> 포인터를 앞으로 당기거나 뒤로 밀어 헤더를 노출/숨깁니다.
                     실제 메모리 복사는 일어나지 않습니다.
                 </div>
+
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/skbuff.h" sym="sk_buff" />
+                        <KernelRef path="net/core/skbuff.c" sym="alloc_skb" />
+                        <KernelRef path="include/linux/netdevice.h" sym="net_device" />
+                    </div>
+                </InfoBox>
             </Section>
 
             <Section id="s664" title="6.4  L2 / L3 / L4 처리 흐름">
@@ -477,7 +493,7 @@ export default function Topic05() {
             <Section id="s667" title="6.7  TX 경로 — 송신 패킷의 여정">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 <T id="sk_buff">sk_buff</T>를
-                    생성하고 qdisc(큐 디시플린)를 거쳐 NIC 하드웨어까지 전달됩니다. 각 레이어에서 헤더를 추가하고
+                    생성하고 <T id="qdisc">qdisc</T>(큐 디시플린)를 거쳐 NIC 하드웨어까지 전달됩니다. 각 레이어에서 헤더를 추가하고
                     라우팅을 결정한 뒤 드라이버가 DMA로 실제 전송합니다.
                 </p>
 
@@ -670,7 +686,7 @@ export default function Topic05() {
                         파트 B: 네트워크 네임스페이스 — 컨테이너 네트워크 격리
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                        네트워크 네임스페이스는 네트워크 스택(인터페이스, 라우팅 테이블, iptables 규칙, 소켓)을 독립된
+                        <T id="namespace">네트워크 네임스페이스</T>는 네트워크 스택(인터페이스, 라우팅 테이블, iptables 규칙, 소켓)을 독립된
                         공간으로 분리합니다. Docker/K8s 컨테이너 네트워크의 기반입니다.
                     </p>
 

@@ -275,7 +275,7 @@ export default function Topic07() {
                 <Prose>
                     <T id="ebpf">eBPF</T>(extended Berkeley Packet Filter)는 커널에서 안전하게 사용자 정의 코드를
                     실행하는 범용 VM입니다. <T id="xdp">XDP</T>뿐만 아니라 <T id="kprobe">kprobe</T>, tracepoint,
-                    cgroup, perf 등 다양한 지점에서 동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
+                    <T id="cgroup">cgroup</T>, perf 등 다양한 지점에서 동작합니다. JIT 컴파일을 통해 네이티브에 가까운 성능을 냅니다.
                 </Prose>
                 <EbpfPipelineDiagram />
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
@@ -449,7 +449,7 @@ export default function Topic07() {
                 </div>
                 <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
                     <span className="font-bold text-gray-700 dark:text-gray-300">선택 기준:</span> 단순 DDoS
-                    방어·로드밸런싱은 XDP, Netfilter 연동이 필요하거나 egress 처리가 필요한 복잡한 정책은 TC BPF를
+                    방어·로드밸런싱은 XDP, <T id="netfilter">Netfilter</T> 연동이 필요하거나 egress 처리가 필요한 복잡한 정책은 TC BPF를
                     사용합니다. 두 가지를 함께 사용하는 것도 가능합니다.
                 </div>
             </Section>
@@ -494,7 +494,7 @@ export default function Topic07() {
             {/* 8.9 bcc Tools */}
             <Section id="s89" title="8.9  bcc Tools — 즉시 사용 가능한 eBPF 도구">
                 <Prose>
-                    BCC(BPF Compiler Collection)는 <T id="ebpf">eBPF</T> 기반 관찰 도구 모음입니다. 커널 컴파일 없이
+                    <T id="bcc">BCC</T>(BPF Compiler Collection)는 <T id="ebpf">eBPF</T> 기반 관찰 도구 모음입니다. 커널 컴파일 없이
                     실시간으로 시스템 내부를 관찰합니다.
                 </Prose>
                 <InfoTable headers={['도구', '기능', '사용 예시']} rows={bccToolRows} />
@@ -680,7 +680,7 @@ export default function Topic07() {
             {/* 8.11 seccomp-BPF */}
             <Section id="s811" title="8.11  seccomp-BPF — 시스템 콜 필터링">
                 <Prose>
-                    seccomp(Secure Computing)은 프로세스가 사용할 수 있는 시스템 콜을 제한하는 Linux 보안 기능입니다.
+                    <T id="seccomp">seccomp</T>(Secure Computing)은 프로세스가 사용할 수 있는 시스템 콜을 제한하는 Linux 보안 기능입니다.
                     seccomp-BPF는 BPF 프로그램으로 허용/거부 규칙을 정밀하게 표현합니다. Docker, Chrome, systemd의 보안
                     기반입니다.
                 </Prose>
@@ -758,7 +758,7 @@ export default function Topic07() {
             {/* 8.12 bpftrace */}
             <Section id="s812" title="8.12  bpftrace — 커널 추적 원라이너">
                 <Prose>
-                    bpftrace는 DTrace에서 영감을 받은 고수준 커널 추적 언어입니다. <T id="ebpf">eBPF</T> 프로그램을
+                    <T id="bpftrace">bpftrace</T>는 DTrace에서 영감을 받은 고수준 커널 추적 언어입니다. <T id="ebpf">eBPF</T> 프로그램을
                     자동으로 생성해 kprobe, uprobe, tracepoint, USDT를 단 한 줄 명령으로 탐색할 수 있습니다.{' '}
                     <code>bpftool</code>, <code>bcc</code>와 함께 현대 리눅스 관측성(observability)의 핵심 도구입니다.
                 </Prose>

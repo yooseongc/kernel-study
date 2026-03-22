@@ -9,6 +9,7 @@ import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { ProcTreeChart } from '../../components/concepts/debug/ProcTreeChart'
 import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkBottleneckChart'
 import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
+import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ export default function Topic10() {
                 topicId="11-debugging"
                 items={[
                     'perf stat/record/report로 CPU 성능 이벤트를 수집하고 분석하는 방법을 이해합니다',
-                    'ftrace와 kprobe를 이용해 커널 함수 호출을 실시간으로 추적하는 기법을 배웁니다',
+                    'ftrace와 <T id="kprobe">kprobe</T>를 이용해 커널 함수 호출을 실시간으로 추적하는 기법을 배웁니다',
                     'Kernel Oops 메시지를 해석하고 /proc, /sys 인터페이스로 시스템 상태를 진단하는 방법을 파악합니다',
                 ]}
             />
@@ -105,7 +106,7 @@ export default function Topic10() {
             <Section id="s112" title="11.2  dmesg와 커널 로그">
                 <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">printk()</code>로 출력된 커널 메시지는
-                    ring buffer에 저장됩니다. <code className="font-mono text-blue-600 dark:text-blue-400">dmesg</code>{' '}
+                    <T id="ring_buffer">ring buffer</T>에 저장됩니다. <code className="font-mono text-blue-600 dark:text-blue-400">dmesg</code>{' '}
                     명령으로 버퍼를 읽을 수 있으며 로그 레벨로 필터링할 수 있습니다.
                 </Prose>
                 <CodeBlock code={snippets.dmesgCode} language="bash" filename="dmesg 명령어" />
@@ -154,7 +155,7 @@ export default function Topic10() {
             {/* 11.4 kdump / crash */}
             <Section id="s114" title="11.4  kdump / crash — 프로덕션 크래시 사후 분석">
                 <Prose>
-                    서버가 Kernel Panic으로 재부팅된 후, kdump가 저장한 메모리 덤프(vmcore)를 crash 유틸리티로
+                    서버가 Kernel Panic으로 재부팅된 후, <T id="kdump">kdump</T>가 저장한 메모리 덤프(vmcore)를 crash 유틸리티로
                     분석합니다. 라이브 디버깅 없이 사후 분석 가능합니다.
                 </Prose>
                 <CodeBlock code={snippets.kdumpSetupCode} language="bash" filename="# kdump 설정" />
@@ -226,7 +227,7 @@ export default function Topic10() {
             {/* 11.6 ftrace */}
             <Section id="s116" title="11.6  ftrace">
                 <Prose>
-                    <T id="ftrace">ftrace</T>는 커널 함수 호출 추적 도구입니다.{' '}
+                    <T id="ftrace">ftrace</T> <KernelRef path="kernel/trace/ftrace.c" label="ftrace" />는 커널 함수 호출 추적 도구입니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">/sys/kernel/debug/tracing/</code>{' '}
                     인터페이스를 통해 제어하며 특정 함수, PID, 이벤트를 타겟팅하여 정밀하게 추적할 수 있습니다.
                 </Prose>
@@ -262,7 +263,7 @@ export default function Topic10() {
             {/* 11.9 컨테이너 환경 디버깅 */}
             <Section id="s119" title="11.9  컨테이너 환경 디버깅">
                 <Prose>
-                    컨테이너(Docker/K8s)는 cgroup과 namespace로 격리됩니다. OOM, 성능 저하 문제의 원인이 컨테이너
+                    컨테이너(Docker/K8s)는 <T id="cgroup">cgroup</T>과 <T id="namespace">namespace</T>로 격리됩니다. <T id="oom_killer">OOM</T>, 성능 저하 문제의 원인이 컨테이너
                     내부인지 호스트인지 구분하는 방법입니다.
                 </Prose>
                 <CodeBlock code={snippets.containerCgroupCode} language="bash" filename="# 컨테이너 cgroup 디버깅" />
@@ -302,7 +303,8 @@ export default function Topic10() {
             {/* 11.10 lockdep */}
             <Section id="s1110" title="11.10  lockdep — 잠금 순서 검증기">
                 <Prose>
-                    <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>은 커널에 내장된 동적
+                    <code className="font-mono text-blue-600 dark:text-blue-400">lockdep</code>{' '}
+                    <KernelRef path="kernel/locking/lockdep.c" label="lockdep" />은 커널에 내장된 동적
                     분석 도구로, 프로그램 실행 중 잠금 획득 순서를 추적하고{' '}
                     <strong className="text-gray-800 dark:text-gray-200">데드락 가능성</strong>을 런타임에 감지합니다.{' '}
                     <T id="lockdep">lockdep</T>은 실제 데드락이 발생하기 전에 경고합니다.
@@ -367,7 +369,8 @@ lock(B) ← 대기   lock(A) ← 대기
                 <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">
                         <T id="kasan">KASAN</T> (Kernel Address Sanitizer)
-                    </strong>
+                    </strong>{' '}
+                    <KernelRef path="mm/kasan/" label="KASAN" />
                     은 커널의 메모리 안전성 버그를 런타임에 탐지합니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">use-after-free</code>,{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">out-of-bounds</code> 접근 같은 버그는
@@ -419,7 +422,7 @@ lock(B) ← 대기   lock(A) ← 대기
             {/* 11.12 Flame Graph */}
             <Section id="s1112" title="11.12  Flame Graph — CPU 병목 시각화">
                 <Prose>
-                    <strong className="text-gray-800 dark:text-gray-200">Flame Graph</strong>는 Brendan Gregg가 개발한{' '}
+                    <T id="flame_graph">Flame Graph</T>는 Brendan Gregg가 개발한{' '}
                     <strong>CPU 시간 사용 시각화</strong> 기법입니다. 함수 콜스택을 수평 방향으로 쌓아, 폭이 넓을수록
                     CPU를 많이 사용함을 직관적으로 표현합니다.{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">perf record</code> →{' '}

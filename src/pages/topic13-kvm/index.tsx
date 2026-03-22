@@ -5,6 +5,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,7 +42,7 @@ export default function Topic13Kvm() {
             <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">
                 <Prose>
                     <T id="kvm">KVM</T>은 Linux 커널 모듈(kvm.ko, kvm_intel.ko / kvm_amd.ko)로 구현된 Type-1
-                    하이퍼바이저입니다. 유저 공간의 QEMU가{' '}
+                    하이퍼바이저입니다. <KernelRef path="virt/kvm/kvm_main.c" label="kvm_main" /> 유저 공간의 <T id="qemu">QEMU</T>가{' '}
                     <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-blue-600 dark:text-blue-300 text-xs">
                         /dev/kvm
                     </code>{' '}
@@ -130,6 +131,7 @@ export default function Topic13Kvm() {
             <Section id="s1312" title="13.2  VMCS / VMCB — VMENTRY · VMEXIT 제어">
                 <Prose>
                     Intel VT-x는{' '}
+                    <KernelRef path="arch/x86/kvm/vmx/vmx.c" label="VMX" />{' '}
                     <strong className="text-gray-800 dark:text-gray-200">
                         <T id="vmcs">VMCS</T>
                     </strong>
@@ -218,7 +220,7 @@ export default function Topic13Kvm() {
                 <Prose>
                     <T id="ept">EPT</T>(Extended Page Tables)는{' '}
                     <strong className="text-gray-800 dark:text-gray-200">게스트 물리 주소 → 호스트 물리 주소</strong>{' '}
-                    변환을 하드웨어가 처리합니다. 소프트웨어 기반 Shadow Page Table 대비 <T id="vmexit">VMEXIT</T>{' '}
+                    변환을 하드웨어가 처리합니다. 소프트웨어 기반 <T id="shadow_page_table">Shadow Page Table</T> 대비 <T id="vmexit">VMEXIT</T>{' '}
                     횟수를 크게 줄입니다.
                 </Prose>
 
@@ -468,7 +470,8 @@ export default function Topic13Kvm() {
             <Section id="s1316" title="13.6  vhost — 커널 내 virtio 백엔드">
                 <Prose>
                     기본 <T id="virtio">virtio</T>는 I/O 요청을 QEMU 유저 공간 백엔드가 처리합니다.
-                    <strong className="text-gray-800 dark:text-gray-200"> vhost</strong>는 커널 내부에서 virtio 큐를
+                    <strong className="text-gray-800 dark:text-gray-200"> <T id="vhost">vhost</T></strong>{' '}
+                    <KernelRef path="drivers/vhost/net.c" label="vhost-net" />는 커널 내부에서 virtio 큐를
                     직접 처리해
                     <strong className="text-gray-800 dark:text-gray-200"> 컨텍스트 스위치 없이</strong> 패킷/I/O를
                     처리합니다. vhost-net(네트워크)과 vhost-blk(블록 I/O)이 대표적입니다.

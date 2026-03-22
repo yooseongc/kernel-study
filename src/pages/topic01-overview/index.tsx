@@ -17,6 +17,7 @@ import { renderSubsystemGraph } from '../../components/concepts/overview/Subsyst
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
 import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { KernelRef } from '../../components/ui/KernelRef'
 import {
     syscallFlowChart,
     taskStructCode,
@@ -262,11 +263,9 @@ export default function Topic01Overview() {
             <Section id="s16" title="1.6  task_struct — 프로세스의 본체">
                 <Prose>
                     커널에서 모든 프로세스/스레드는{' '}
-                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
-                        task_struct
-                    </code>
-                    라는 거대한 구조체로 표현됩니다. 여기에는 PID, 메모리 정보, 열린 파일, 스케줄링 정보 등이 모두
-                    포함됩니다.
+                    <T id="task_struct">task_struct</T>
+                    라는 거대한 구조체로 표현됩니다. 여기에는 <T id="pid">PID</T>, 메모리 정보, 열린 파일, 스케줄링 정보 등이 모두
+                    포함됩니다. <KernelRef path="include/linux/sched.h" sym="task_struct" />
                 </Prose>
                 <CodeBlock code={taskStructCode} language="c" filename="include/linux/sched.h" />
             </Section>
@@ -278,7 +277,7 @@ export default function Topic01Overview() {
                         write(fd, buf, n)
                     </code>{' '}
                     한 번의 호출이 커널 안에서 어떤 경로를 거치는지 단계별로 살펴봅니다. 각 단계마다 어느 영역이
-                    활성화되는지 강조됩니다.
+                    활성화되는지 강조됩니다. <KernelRef path="arch/x86/entry/entry_64.S" sym="entry_SYSCALL_64" />
                 </Prose>
 
                 <AnimatedDiagram

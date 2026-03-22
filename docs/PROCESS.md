@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 44)
+> 마지막 업데이트: 2026-03-22 (Sprint 45)
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Sprint | 내용 | 완료일 |
 |--------|------|--------|
+| 46 | 콘텐츠 개선 Phase 2 — "관련 커널 소스" 요약 박스 (topic02/03/06/09 핵심 섹션에 InfoBox+KernelRef 집합), KernelRef 미사용 8개 토픽에 소스 링크 추가 (topic01/04/05/07/10/11/12/13) | 2026-03-22 |
+| 45 | 콘텐츠 개선 Phase 1 — KernelRef URL 버그 수정 (#L→/C/ident/), glossary 15개 용어 추가 (92개→), 전 13개 토픽 `<T>` 링크 감사·보강 (~40개 추가), 중복 `<T>` 제거 (topic04) | 2026-03-22 |
 | 44 | Topic 01 §1.5 Mermaid→정적 JSX 카드 레이아웃 전환 (전체 계층 구조 4레이어), Topic 02 §2.9 CgroupTreeViz 노드 간격 확대 (separation 1.4/2, height 300→420, nodeW 104→114, nodeH 34→38) | 2026-03-22 |
 | 43 | Topic 01 §1.9, Topic 11 §11.13, Topic 12 §12.8, Topic 13 §13.7 — "관련 커널 파라미터" 섹션 추가 (커널개요/디버깅/보안/KVM sysctl·모듈 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
 | 42 | Topic 04 §4.8, Topic 08 §8.13, Topic 10 §10.11 — "관련 커널 파라미터" 섹션 추가 (파일시스템/XDP·eBPF/드라이버 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |

@@ -10,6 +10,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
 import * as snippets from './codeSnippets'
@@ -185,7 +186,7 @@ export default function Topic04() {
                 <Prose>
                     <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등 외부 장치가
                     CPU에 보내는 비동기 신호입니다. 반면 <strong className="text-gray-200">예외(Exception)</strong>는
-                    CPU가 명령어를 실행하는 도중 내부에서 발생하는 동기적 이벤트입니다 (page fault, divide-by-zero 등).
+                    CPU가 명령어를 실행하는 도중 내부에서 발생하는 동기적 이벤트입니다 (<T id="page_fault">page fault</T>, divide-by-zero 등).
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -263,8 +264,9 @@ export default function Topic04() {
 
             <Section id="s552" title="5.2  IRQ 처리 흐름">
                 <Prose>
-                    <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 IDT를 통해 ISR을 호출합니다. ISR은
-                    가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.
+                    <T id="irq">IRQ</T>가 발생하면 CPU는 현재 실행을 잠깐 멈추고 <T id="idt">IDT</T>를 통해 ISR을 호출합니다. ISR은
+                    가능한 한 빠르게 종료(Top Half)하고, 나머지 처리는 Bottom Half로 예약합니다.{' '}
+                    <KernelRef path="kernel/irq/manage.c" sym="request_irq" />
                 </Prose>
                 <AnimatedDiagram
                     steps={irqSteps}
@@ -323,9 +325,11 @@ export default function Topic04() {
                 <Prose>
                     Bottom Half 메커니즘은 요구사항(컨텍스트, sleep 가능 여부, 우선순위)에 따라
                     <T id="softirq">Softirq</T>, <T id="tasklet">Tasklet</T>, <T id="workqueue">Workqueue</T> 세 가지로
-                    구분됩니다. 네트워크 RX/TX처럼 성능이 중요한 경로는 <T id="softirq">Softirq</T>, 드라이버의 일반
+                    구분됩니다. 네트워크 RX/TX처럼 성능이 중요한 경로는 <T id="softirq">Softirq</T>,{' '}
+                    <KernelRef path="kernel/softirq.c" sym="__do_softirq" /> 드라이버의 일반
                     지연 처리는 <T id="tasklet">Tasklet</T>, 파일시스템 등 sleep이 필요한 작업은{' '}
-                    <T id="workqueue">Workqueue</T>를 사용합니다.
+                    <T id="workqueue">Workqueue</T>를 사용합니다.{' '}
+                    <KernelRef path="kernel/workqueue.c" sym="queue_work" />
                 </Prose>
 
                 <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
@@ -501,7 +505,8 @@ export default function Topic04() {
                     전통적인 Bottom Half(<T id="softirq">Softirq</T>/<T id="tasklet">Tasklet</T>)는 인터럽트
                     컨텍스트에서 실행되어 슬립이 불가합니다. Linux 2.6.30부터 도입된{' '}
                     <strong className="text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널 스레드로 실행해 슬립
-                    가능하고 우선순위를 조정할 수 있습니다.
+                    가능하고 우선순위를 조정할 수 있습니다.{' '}
+                    <KernelRef path="kernel/irq/manage.c" sym="request_threaded_irq" />
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-6">
@@ -590,7 +595,7 @@ export default function Topic04() {
 
             <Section id="s558" title="5.8  PREEMPT_RT — 실시간 리눅스 커널">
                 <Prose>
-                    표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 스핀락을 보유한 채 선점 불가 구간이
+                    표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 <T id="spinlock">스핀락</T>을 보유한 채 선점 불가 구간이
                     존재합니다. <strong className="text-gray-200">PREEMPT_RT 패치</strong>는 이런 구간을 최소화해 최악
                     지연(worst-case latency)을 수십 마이크로초 이내로 줄입니다. 산업용 로봇, 오디오 처리, 자동차 제어
                     시스템에서 사용됩니다.
@@ -690,8 +695,8 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
             <Section id="s559" title="5.9  IRQ Coalescing — 인터럽트 합치기와 NAPI 폴링">
                 <Prose>
                     고속 NIC에서 패킷이 초당 수백만 건 수신되면 패킷마다 인터럽트를 발생시킬 경우 CPU가 인터럽트
-                    처리에만 매몰되는 <strong className="text-gray-200">interrupt storm</strong>이 발생합니다. IRQ
-                    coalescing은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만 인터럽트를
+                    처리에만 매몰되는 <strong className="text-gray-200">interrupt storm</strong>이 발생합니다. <T id="irq_coalescing">IRQ
+                    coalescing</T>은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만 인터럽트를
                     발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
                 </Prose>
 
@@ -806,7 +811,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
             {/* ── 5.10 관련 커널 파라미터 ─────────────────────────────────── */}
             <Section id="s5510" title="5.10  관련 커널 파라미터">
                 <Prose>
-                    인터럽트 처리 및 NAPI 동작에 영향을 미치는 주요 커널 파라미터입니다.
+                    인터럽트 처리 및 <T id="napi">NAPI</T> 동작에 영향을 미치는 주요 커널 파라미터입니다.
                     IRQ 친화도는 <code>/proc/irq</code>에서, 나머지는 <code>sysctl</code>로 조정합니다.
                 </Prose>
 

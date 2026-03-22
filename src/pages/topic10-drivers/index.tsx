@@ -9,6 +9,7 @@ import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { DriverTreeChart } from '../../components/concepts/driver/DriverTreeChart'
 import { DMAViz, dmaSteps } from '../../components/concepts/driver/DMAViz'
+import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,14 +83,15 @@ export default function Topic09() {
                 items={[
                     '커널 모듈의 초기화/종료 생명주기와 module_init/module_exit 매크로를 이해합니다',
                     '문자 디바이스 드라이버가 file_operations 구조체를 통해 시스템 콜과 연결되는 방법을 배웁니다',
-                    'NIC 드라이버의 DMA 설정과 IRQ 등록, NAPI 처리 루프를 파악합니다',
+                    'NIC 드라이버의 DMA 설정과 IRQ 등록, <T id="napi">NAPI</T> 처리 루프를 파악합니다',
                 ]}
             />
 
             {/* 10.1 커널 모듈 */}
             <Section id="s101" title="10.1  커널 모듈">
                 <Prose>
-                    커널 모듈은 실행 중인 커널에 동적으로 로드/언로드 가능한 코드입니다. 재부팅 없이 드라이버를
+                    커널 모듈은 실행 중인 커널에 동적으로 로드/언로드 가능한 코드입니다.{' '}
+                    <KernelRef path="include/linux/module.h" sym="module" /> 재부팅 없이 드라이버를
                     추가하거나 제거할 수 있으며,{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_init</code> /{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">module_exit</code>{' '}
@@ -139,7 +141,7 @@ export default function Topic09() {
 
                 {/* 문자 디바이스 등록 흐름 */}
                 <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-2">
-                    문자 디바이스 등록 흐름
+                    문자 디바이스 등록 흐름 <KernelRef path="include/linux/cdev.h" sym="cdev" />
                 </h3>
                 <CodeBlock code={snippets.cdevRegisterCode} language="c" filename="drivers/char/my_char.c" />
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -187,7 +189,7 @@ export default function Topic09() {
             <Section id="s103" title="10.3  NIC 드라이버와 DMA">
                 <Prose>
                     고성능 NIC는 CPU를 거치지 않고 <T id="dma">DMA</T>(Direct Memory Access)로 직접 메모리에 패킷을
-                    씁니다. 드라이버가 사전에 RX 링 버퍼의 <T id="dma">DMA</T> 주소를 NIC에 알려주면, NIC는 패킷 수신 시
+                    씁니다. 드라이버가 사전에 RX <T id="ring_buffer">링 버퍼</T>의 <T id="dma">DMA</T> 주소를 NIC에 알려주면, NIC는 패킷 수신 시
                     해당 주소로 데이터를 전송하고 <T id="irq">IRQ</T>를 발생시킵니다.
                 </Prose>
                 <AnimatedDiagram
@@ -208,7 +210,7 @@ export default function Topic09() {
                 <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-900/20 px-4 py-3 text-xs text-blue-800 dark:text-blue-200">
                     <span className="font-bold text-blue-700 dark:text-blue-300">핵심:</span>{' '}
                     <span className="font-mono">dma_map_single()</span>은 가상 주소를 PCIe 버스에서 접근 가능한 물리
-                    주소로 변환합니다. IOMMU가 있는 환경에서는 IOMMU 매핑 테이블을 통해 DMA 격리(isolation)가
+                    주소로 변환합니다. <T id="iommu">IOMMU</T>가 있는 환경에서는 IOMMU 매핑 테이블을 통해 DMA 격리(isolation)가
                     이루어집니다.
                 </div>
             </Section>
@@ -218,6 +220,7 @@ export default function Topic09() {
                 <Prose>
                     드라이버는 커널의 다양한 프레임워크에 콜백을 등록하는 방식으로 동작합니다. 네트워크 드라이버는{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">net_device_ops</code>{' '}
+                    <KernelRef path="include/linux/netdevice.h" sym="net_device_ops" />{' '}
                     구조체에 함수 포인터를 채워 커널에 등록하며, 커널은 필요한 시점에 해당 콜백을 호출합니다.
                 </Prose>
                 <InfoTable headers={['콜백', '호출 시점', '동작']} rows={netdevOpsRows} />
@@ -291,7 +294,7 @@ export default function Topic09() {
                     처리하기 어려운 디바이스 제어 명령은{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">ioctl()</code>로,
                     대용량 데이터 공유는{' '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">mmap()</code>으로
+                    <T id="mmap">mmap()</T>으로
                     처리합니다.
                 </Prose>
                 <CodeBlock code={snippets.ioctlCode} language="c" filename="drivers/my_driver_ioctl.c" />
@@ -350,7 +353,7 @@ export default function Topic09() {
             <Section id="s108" title="10.8  platform_driver — 임베디드 드라이버 모델">
                 <Prose>
                     <T id="pci">PCI</T>, USB와 달리 ARM/임베디드 보드의 온칩 주변장치는 장치를 자동 감지할 수 없습니다.{' '}
-                    <strong className="text-gray-700 dark:text-gray-300">Device Tree</strong>와{' '}
+                    <T id="device_tree">Device Tree</T>와{' '}
                     <strong className="text-gray-700 dark:text-gray-300">platform_driver</strong>가 이를 해결합니다.
                 </Prose>
                 <CodeBlock code={snippets.platformDriverCode} language="c" filename="drivers/my_platform.c" />
@@ -393,7 +396,8 @@ export default function Topic09() {
             <Section id="s109" title="10.9  PCI/PCIe 드라이버 모델">
                 <Prose>
                     서버의 NIC, NVMe SSD, GPU는 모두 <T id="pci">PCIe</T> 버스로 연결됩니다.{' '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">pci_driver</code>는
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">pci_driver</code>{' '}
+                    <KernelRef path="include/linux/pci.h" sym="pci_driver" />는
                     커널이 PCIe 디바이스를 감지하면 자동으로 드라이버를 매칭하고{' '}
                     <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">probe()</code>를
                     호출하는 표준 프레임워크입니다. platform_driver와 구조는 같지만 Device Tree 대신 Vendor/Device ID로

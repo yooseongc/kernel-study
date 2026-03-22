@@ -6,7 +6,7 @@ interface KernelRefProps {
 
 export function KernelRef({ path, sym, label }: KernelRefProps) {
     const href = sym
-        ? `https://elixir.bootlin.com/linux/latest/source/${path}#L${sym}`
+        ? `https://elixir.bootlin.com/linux/latest/C/ident/${sym}`
         : `https://elixir.bootlin.com/linux/latest/source/${path}`
     const display = label ?? (sym ? sym : (path.split('/').pop() ?? path))
 

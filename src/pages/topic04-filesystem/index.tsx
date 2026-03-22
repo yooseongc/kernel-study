@@ -8,6 +8,7 @@ import { InfoBox } from '../../components/ui/InfoBox'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { Prose } from '../../components/ui/Prose'
 import { Alert } from '../../components/ui/Alert'
+import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
@@ -88,7 +89,7 @@ export default function Topic11Filesystem() {
             {/* 4.1 VFS 계층 구조 */}
             <Section id="s441" title="4.1  VFS — Virtual File System">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <T id="vfs">VFS</T>는 커널의 파일시스템 추상화 계층입니다.{' '}
+                    VFS는 커널의 파일시스템 추상화 계층입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         open()
                     </code>
@@ -100,8 +101,9 @@ export default function Topic11Filesystem() {
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         write()
                     </code>{' '}
-                    같은 POSIX syscall을 받아서 실제 파일시스템(ext4, XFS, tmpfs, NFS 등)으로 전달합니다. 유저는 어떤
-                    파일시스템을 쓰는지 몰라도 됩니다.
+                    같은 POSIX <T id="syscall">syscall</T>을 받아서 실제 파일시스템(<T id="ext4">ext4</T>, XFS, tmpfs, NFS 등)으로 전달합니다. 유저는 어떤
+                    파일시스템을 쓰는지 몰라도 됩니다. <KernelRef path="include/linux/fs.h" sym="inode" />{' '}
+                    <KernelRef path="include/linux/dcache.h" sym="dentry" />
                 </p>
 
                 {/* VFS 레이어 다이어그램 */}
@@ -255,7 +257,7 @@ f_flags: O_RDONLY`}</pre>
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         read()
                     </code>
-                    는 <T id="page_cache">페이지 캐시</T>를 확인하고 필요하면 디스크 I/O를 일으킵니다.
+                    는 페이지 캐시를 확인하고 필요하면 디스크 I/O를 일으킵니다.
                 </p>
 
                 <AnimatedDiagram
@@ -272,7 +274,7 @@ f_flags: O_RDONLY`}</pre>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     커널은 디스크에서 읽은 데이터를{' '}
                     <strong className="text-gray-900 dark:text-gray-100">
-                        <T id="page_cache">페이지 캐시</T>(Page Cache)
+                        페이지 캐시(Page Cache)
                     </strong>
                     에 보관합니다. 같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다. write()된 데이터는 먼저
                     캐시에 기록되고(dirty 상태), 백그라운드에서 디스크에 씁니다.
@@ -422,7 +424,8 @@ f_flags: O_RDONLY`}</pre>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     ext4는 Linux의 기본 파일시스템입니다.
                     <strong className="text-gray-900 dark:text-gray-100"> 저널(journal)</strong>로 크래시 후에도
-                    파일시스템 일관성을 보장합니다. 저널링 모드에 따라 성능과 안전성이 달라집니다.
+                    파일시스템 일관성을 보장합니다. <T id="journaling">저널링</T> 모드에 따라 성능과 안전성이 달라집니다.{' '}
+                    <KernelRef path="fs/ext4/" label="fs/ext4/" />
                 </p>
 
                 {/* 저널링 모드 테이블 */}
@@ -517,7 +520,8 @@ f_flags: O_RDONLY`}</pre>
                         <T id="bio">bio</T>
                     </strong>{' '}
                     → <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
-                    <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.
+                    <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.{' '}
+                    <KernelRef path="include/linux/bio.h" sym="bio" />
                 </p>
 
                 {/* 블록 I/O 계층 다이어그램 */}
@@ -601,9 +605,9 @@ f_flags: O_RDONLY`}</pre>
             {/* 4.6 대표 파일시스템 비교 */}
             <Section id="s446" title="4.6  대표 파일시스템 비교 — ext4 · XFS · Btrfs · overlayfs">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <T id="vfs">VFS</T> 추상화 덕분에 리눅스는 같은 시스템에서 여러 파일시스템을 동시에 마운트할 수
+                    VFS 추상화 덕분에 리눅스는 같은 시스템에서 여러 파일시스템을 동시에 마운트할 수
                     있습니다. 디스크 기반(ext4, XFS, Btrfs), 메모리 기반(tmpfs), 커널 정보 노출용 가상 FS(procfs,
-                    sysfs), 컨테이너 레이어링(overlayfs), 원격 파일(NFS)이 대표적입니다.
+                    sysfs), 컨테이너 레이어링(<T id="overlayfs">overlayfs</T>), 원격 파일(NFS)이 대표적입니다.
                 </p>
 
                 {/* 비교 표 */}

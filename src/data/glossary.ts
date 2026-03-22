@@ -716,4 +716,153 @@ export const glossary: GlossaryTerm[] = [
             '프로세스 그룹의 CPU, 메모리, I/O, 네트워크 자원 사용량을 제한·계측하는 커널 기능. Docker/Kubernetes 컨테이너 자원 제한의 기반입니다. cgroups v2는 단일 계층 구조와 pressure 지표를 제공합니다.',
         topicRef: '02-scheduler',
     },
+    {
+        id: 'red_black_tree',
+        term: 'Red-Black Tree',
+        aliases: ['RB Tree', 'rbtree'],
+        category: 'general',
+        definition:
+            '자가 균형 이진 탐색 트리로, 삽입·삭제·검색 모두 O(log N) 복잡도를 보장합니다. 커널에서 CFS 스케줄러의 vruntime 관리, VMA 탐색, epoll 파일디스크립터 관리 등 성능이 중요한 곳에 광범위하게 사용됩니다. include/linux/rbtree.h에 정의되어 있습니다.',
+        topicRef: '02-scheduler',
+    },
+
+    // ── 메모리 (추가) ────────────────────────────────────────────────────────
+    {
+        id: 'page_table',
+        term: '페이지 테이블',
+        aliases: ['Page Table', 'PGD/PUD/PMD/PTE'],
+        category: 'memory',
+        definition:
+            '가상 주소를 물리 주소로 변환하는 커널 자료구조. x86-64에서는 PGD → PUD → PMD → PTE 4단계 구조를 사용하며, CR3 레지스터가 최상위 테이블을 가리킵니다. 각 단계에서 가상 주소의 9비트씩을 인덱스로 사용하여 최종 물리 페이지 프레임을 찾습니다.',
+        topicRef: '03-memory',
+    },
+    {
+        id: 'gfp_flags',
+        term: 'GFP Flags',
+        aliases: ['Get Free Pages', '__GFP_*'],
+        category: 'memory',
+        definition:
+            '커널 메모리 할당 시 동작을 제어하는 플래그. GFP_KERNEL(슬립 가능), GFP_ATOMIC(인터럽트 컨텍스트, 슬립 불가), GFP_DMA(DMA 영역), GFP_HIGHUSER(유저 페이지) 등이 있습니다. 할당 함수(kmalloc, alloc_pages 등)의 필수 인자입니다.',
+        topicRef: '03-memory',
+    },
+
+    // ── 파일시스템 (추가) ─────────────────────────────────────────────────────
+    {
+        id: 'ext4',
+        term: 'ext4',
+        aliases: ['Fourth Extended Filesystem'],
+        category: 'fs',
+        definition:
+            '리눅스의 기본 저널링 파일시스템. ext3의 후속으로, extent 기반 블록 매핑, delayed allocation, 멀티블록 할당, 최대 1EB 볼륨/16TB 파일 크기를 지원합니다. fs/ext4/에 구현되어 있으며 대부분의 리눅스 배포판에서 기본 파일시스템으로 사용됩니다.',
+        topicRef: '04-filesystem',
+    },
+    {
+        id: 'journaling',
+        term: '저널링',
+        aliases: ['Journaling', 'Journal'],
+        category: 'fs',
+        definition:
+            '파일시스템 변경 사항을 먼저 저널(로그) 영역에 기록한 뒤 실제 데이터를 쓰는 기법. 갑작스런 전원 차단 시 저널을 재생(replay)하여 파일시스템 일관성을 복구할 수 있습니다. ext4는 JBD2(Journaling Block Device 2)를 사용하며, data=ordered가 기본 모드입니다.',
+        topicRef: '04-filesystem',
+    },
+
+    // ── 인터럽트 (추가) ───────────────────────────────────────────────────────
+    {
+        id: 'idt',
+        term: 'IDT',
+        aliases: ['Interrupt Descriptor Table'],
+        category: 'interrupt',
+        definition:
+            'x86 아키텍처에서 인터럽트/예외 번호(0~255)를 핸들러 함수 주소에 매핑하는 테이블. CPU가 인터럽트를 받으면 IDTR 레지스터가 가리키는 IDT에서 해당 벡터의 게이트 디스크립터를 읽어 핸들러로 점프합니다. arch/x86/kernel/idt.c에서 초기화됩니다.',
+        topicRef: '05-interrupts',
+    },
+
+    // ── 네트워크 (추가) ───────────────────────────────────────────────────────
+    {
+        id: 'qdisc',
+        term: 'qdisc',
+        aliases: ['Queueing Discipline', 'TC qdisc'],
+        category: 'network',
+        definition:
+            '리눅스 트래픽 제어(TC)의 핵심 구성요소로, 패킷 큐잉과 스케줄링 정책을 정의합니다. pfifo_fast(기본), HTB(계층적 토큰 버킷), fq_codel(공정 큐잉+지연 제어) 등이 있으며, tc 명령으로 설정합니다. net/sched/에 구현되어 있습니다.',
+        topicRef: '07-netfilter',
+    },
+    {
+        id: 'tproxy',
+        term: 'TPROXY',
+        aliases: ['Transparent Proxy'],
+        category: 'network',
+        definition:
+            '클라이언트가 프록시의 존재를 인지하지 못한 채 트래픽을 프록시 서버로 리다이렉트하는 Netfilter 기능. iptables -j TPROXY와 정책 라우팅(ip rule fwmark)을 조합하여 원본 목적지 주소를 유지한 채 로컬 소켓으로 전달합니다.',
+        topicRef: '07-netfilter',
+    },
+
+    // ── 드라이버 (추가) ───────────────────────────────────────────────────────
+    {
+        id: 'ring_buffer',
+        term: 'Ring Buffer',
+        aliases: ['Circular Buffer', 'Descriptor Ring'],
+        category: 'driver',
+        definition:
+            '고정 크기 순환 버퍼로, NIC 드라이버에서 TX/RX 디스크립터 링으로 광범위하게 사용됩니다. head/tail 포인터로 생산자-소비자 패턴을 구현하며, DMA와 결합하여 CPU 개입 없이 패킷을 전송/수신합니다. ftrace 이벤트 버퍼도 ring buffer 구조입니다.',
+        topicRef: '10-drivers',
+    },
+    {
+        id: 'device_tree',
+        term: 'Device Tree',
+        aliases: ['DT', 'DTB', 'FDT'],
+        category: 'driver',
+        definition:
+            '하드웨어 구성을 기술하는 데이터 구조로, ARM/RISC-V 등 비-x86 플랫폼에서 부트로더가 커널에 전달합니다. .dts(소스) → .dtb(바이너리)로 컴파일되며, 커널은 이를 파싱하여 플랫폼 디바이스를 자동 생성합니다. arch/arm64/boot/dts/에 보드별 파일이 있습니다.',
+        topicRef: '10-drivers',
+    },
+    {
+        id: 'iommu',
+        term: 'IOMMU',
+        aliases: ['Input-Output MMU', 'Intel VT-d', 'AMD-Vi', 'SMMU'],
+        category: 'driver',
+        definition:
+            '디바이스의 DMA 주소를 물리 주소로 변환하는 하드웨어 유닛. 디바이스가 임의 메모리에 접근하는 것을 차단하여 보안을 강화하고, VFIO를 통한 디바이스 패스스루 가상화를 가능하게 합니다. Intel VT-d, AMD-Vi, ARM SMMU가 대표적입니다.',
+        topicRef: '10-drivers',
+    },
+
+    // ── 디버깅 (추가) ─────────────────────────────────────────────────────────
+    {
+        id: 'kdump',
+        term: 'kdump',
+        aliases: ['Kernel Dump', 'crash dump'],
+        category: 'debug',
+        definition:
+            '커널 패닉 발생 시 메모리 덤프를 캡처하는 메커니즘. kexec로 미리 로드된 캡처 커널이 패닉 직후 부팅되어 /proc/vmcore를 통해 크래시 덤프를 저장합니다. crash 유틸리티로 덤프를 분석하여 패닉 원인을 추적할 수 있습니다.',
+        topicRef: '11-debugging',
+    },
+    {
+        id: 'bcc',
+        term: 'BCC',
+        aliases: ['BPF Compiler Collection'],
+        category: 'debug',
+        definition:
+            'eBPF 프로그램을 Python/Lua로 작성할 수 있게 하는 도구 모음. execsnoop, biolatency, tcpconnect 등 100+ 분석 도구를 포함합니다. bpftrace보다 복잡한 로직에 적합하며, libbcc가 BPF 프로그램을 런타임에 컴파일합니다.',
+        topicRef: '11-debugging',
+    },
+
+    // ── 가상화 (추가) ─────────────────────────────────────────────────────────
+    {
+        id: 'shadow_page_table',
+        term: 'Shadow Page Table',
+        aliases: ['SPT'],
+        category: 'virt',
+        definition:
+            'EPT/NPT가 없는 환경에서 KVM이 게스트 가상 주소를 호스트 물리 주소로 변환하기 위해 유지하는 페이지 테이블. 게스트 페이지 테이블 변경을 인터셉트하여 shadow 엔트리를 동기화합니다. EPT/NPT 대비 VMEXIT 오버헤드가 크므로 최신 CPU에서는 사용하지 않습니다.',
+        topicRef: '13-kvm',
+    },
+    {
+        id: 'qemu',
+        term: 'QEMU',
+        aliases: ['Quick Emulator'],
+        category: 'virt',
+        definition:
+            'KVM과 함께 사용되는 유저 공간 가상 머신 모니터. CPU 가상화는 KVM 커널 모듈이 담당하고, QEMU는 가상 디바이스(디스크, 네트워크, GPU) 에뮬레이션과 VM 라이프사이클 관리를 담당합니다. QEMU의 ioctl을 통해 KVM에 VCPU 생성·실행을 요청합니다.',
+        topicRef: '13-kvm',
+    },
 ]

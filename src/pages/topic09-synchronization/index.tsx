@@ -7,6 +7,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/RaceConditionViz'
 import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
@@ -179,6 +180,14 @@ export default function Topic08() {
                 <InfoTable headers={['동작', '허용']} rows={rwlockRows} />
 
                 <CodeBlock code={snippets.rwlockCode} language="c" filename="rwlock.c" />
+
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/spinlock.h" sym="spinlock_t" />
+                        <KernelRef path="kernel/locking/mutex.c" sym="mutex_lock" />
+                        <KernelRef path="include/linux/rwlock.h" label="rwlock.h" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* Lock comparison chart */}
@@ -333,7 +342,7 @@ export default function Topic08() {
                         {
                             step: '1. Read',
                             api: 'rcu_read_lock()',
-                            desc: '실제 락 없음. 그냥 선점(preemption) 비활성화만 수행. O(1).',
+                            desc: '실제 락 없음. 그냥 <T id="preemption">선점(preemption)</T> 비활성화만 수행. O(1).',
                             color: '#06b6d4',
                         },
                         {
@@ -381,6 +390,14 @@ export default function Topic08() {
                     <code className="font-mono">task_list</code>, 라우팅 테이블, 네트워크 디바이스 목록은 모두
                     <T id="rcu">RCU</T>로 보호됩니다. 읽기 성능이 critical한 곳에서 RWLock 대비 큰 이점을 가집니다.
                 </div>
+
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/rcu/tree.c" sym="synchronize_rcu" />
+                        <KernelRef path="include/linux/rcupdate.h" label="rcupdate.h" />
+                        <KernelRef path="kernel/rcu/tree.c" sym="rcu_gp_kthread" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 9.10 멀티코어 환경에서 네트워크 성능 */}
@@ -620,8 +637,8 @@ if (ret < 0)    return -ERESTARTSYS; /* 시그널 */
             <Section id="s913" title="9.13  Completion — 일회성 완료 신호">
                 <Prose>
                     Wait Queue가 "반복적인 조건 대기"라면,{' '}
-                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">Completion</code>은
-                    "딱 한 번의 완료 신호"에 최적화된 간단한 인터페이스입니다. 드라이버 초기화, 스레드 종료 대기, DMA
+                    <T id="completion">Completion</T>은
+                    "딱 한 번의 완료 신호"에 최적화된 간단한 인터페이스입니다. 드라이버 초기화, 스레드 종료 대기, <T id="dma">DMA</T>
                     완료 신호에 주로 사용됩니다.
                 </Prose>
 

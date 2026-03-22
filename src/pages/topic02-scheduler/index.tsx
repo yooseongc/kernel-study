@@ -5,6 +5,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
@@ -56,9 +57,7 @@ export default function Topic02Scheduler() {
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에
                     스케줄링할까요? 이 페이지에서는{' '}
-                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
-                        task_struct
-                    </code>
+                    <T id="task_struct">task_struct</T>
                     ,<T id="cfs">CFS</T> 스케줄러, 그리고 <T id="context_switch">컨텍스트 스위치</T>를 시각적으로
                     탐구합니다.
                 </p>
@@ -178,6 +177,13 @@ export default function Topic02Scheduler() {
                     <strong className="text-gray-900 dark:text-gray-100">vruntime</strong>이 여기 저장됩니다.
                 </Prose>
                 <CodeBlock code={snippets.schedEntityCode} language="c" filename="include/linux/sched.h" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="include/linux/sched.h" sym="task_struct" />
+                        <KernelRef path="include/linux/sched.h" sym="sched_entity" />
+                        <KernelRef path="kernel/fork.c" sym="copy_process" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 2.3 프로세스 상태 전이 */}
@@ -352,7 +358,7 @@ export default function Topic02Scheduler() {
                     <T id="cfs">CFS</T>(Completely Fair Scheduler)는 모든 프로세스에게 공정한 CPU 시간을 주기 위해{' '}
                     <strong className="text-gray-900 dark:text-gray-100">vruntime(가상 실행 시간)</strong>을 사용합니다.
                     vruntime이 가장 작은 프로세스 = 가장 덜 실행된 프로세스 = 다음 실행 대상. 이를 빠르게 찾기 위해{' '}
-                    <strong className="text-gray-900 dark:text-gray-100">Red-Black 트리(자가 균형 BST)</strong>를
+                    <strong className="text-gray-900 dark:text-gray-100"><T id="red_black_tree">Red-Black 트리</T>(자가 균형 BST)</strong>를
                     사용합니다. 트리의 가장 왼쪽 노드가 항상 다음 실행 대상입니다.
                 </Prose>
 
@@ -455,6 +461,13 @@ export default function Topic02Scheduler() {
                 </div>
 
                 <CodeBlock code={snippets.prioToWeightCode} language="c" filename="kernel/sched/fair.c" />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/sched/fair.c" sym="pick_next_task_fair" />
+                        <KernelRef path="kernel/sched/fair.c" sym="update_curr" />
+                        <KernelRef path="kernel/sched/sched.h" sym="cfs_rq" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 2.5 컨텍스트 스위치 */}
@@ -469,6 +482,13 @@ export default function Topic02Scheduler() {
                     renderStep={(step) => <ContextSwitchViz step={step} />}
                     autoPlayInterval={2500}
                 />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="kernel/sched/core.c" sym="__schedule" />
+                        <KernelRef path="kernel/sched/core.c" sym="context_switch" />
+                        <KernelRef path="arch/x86/entry/entry_64.S" label="entry_64.S" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 2.5.1 __schedule() 콜스택 */}
@@ -630,7 +650,7 @@ export default function Topic02Scheduler() {
                 <Prose>
                     현대 서버는 단일 CPU가 아닙니다. 리눅스 스케줄러는 멀티코어·멀티소켓 환경을 지원하기 위해
                     <strong className="text-gray-900 dark:text-gray-100"> SMP</strong>와{' '}
-                    <strong className="text-gray-900 dark:text-gray-100">NUMA</strong>를 이해해야 합니다.
+                    <strong className="text-gray-900 dark:text-gray-100"><T id="numa">NUMA</T></strong>를 이해해야 합니다.
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1116,7 +1136,7 @@ export default function Topic02Scheduler() {
             <Section id="s211" title="2.11  SCHED_DEADLINE — 실시간 데드라인 스케줄링">
                 <Prose>
                     <p>
-                        SCHED_FIFO와 SCHED_RR은 고정 우선순위 기반으로 동작하지만, <strong>SCHED_DEADLINE</strong>은 각
+                        SCHED_FIFO와 SCHED_RR은 고정 우선순위 기반으로 동작하지만, <strong><T id="sched_deadline">SCHED_DEADLINE</T></strong>은 각
                         태스크에 <code>runtime</code> / <code>deadline</code> / <code>period</code>를 명시하여
                         CBS(Constant Bandwidth Server) 알고리즘으로 CPU 대역폭을 수학적으로 보장합니다. EDF(Earliest
                         Deadline First) 정책에 따라 절대 데드라인이 가장 임박한 태스크를 우선 선점하므로, 멀티미디어

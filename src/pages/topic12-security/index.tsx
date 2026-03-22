@@ -5,6 +5,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -114,7 +115,7 @@ export default function Topic12() {
                             arrow: true,
                         },
                         {
-                            label: '[ SELinux / AppArmor / seccomp ]',
+                            label: <>[ SELinux / AppArmor / <T id="seccomp">seccomp</T> ]</>,
                             sub: '정책 기반 허용/거부',
                             color: '#ef4444',
                             bg: 'bg-red-50 dark:bg-red-950/30',
@@ -189,6 +190,7 @@ export default function Topic12() {
             <Section id="s123" title="12.3  LSM 프레임워크">
                 <Prose>
                     <T id="lsm">LSM</T>(Linux Security Module)은 커널 보안 결정 지점에 훅을 제공합니다.{' '}
+                    <KernelRef path="security/security.c" label="LSM framework" />{' '}
                     <T id="selinux">SELinux</T>, <T id="apparmor">AppArmor</T>, Smack 등이 이 프레임워크 위에
                     구현됩니다.
                 </Prose>
@@ -305,7 +307,8 @@ export default function Topic12() {
             {/* 12.6 Namespace와 보안 모델 */}
             <Section id="s126" title="12.6  Namespace — 컨테이너 격리의 기반">
                 <Prose>
-                    Linux <T id="linux_namespace">namespace</T>는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.
+                    Linux <T id="linux_namespace">namespace</T>는 프로세스 그룹이 독립된 시스템 뷰를 갖도록 격리합니다.{' '}
+                    <KernelRef path="kernel/nsproxy.c" sym="nsproxy" />
                     Docker·K8s 컨테이너의 핵심 격리 메커니즘이며, <T id="capability">Capabilities</T>·
                     <T id="lsm">LSM</T>과 결합해 컨테이너 보안을 구성합니다.
                 </Prose>
@@ -407,7 +410,7 @@ export default function Topic12() {
                             },
                             {
                                 layer: 'seccomp',
-                                role: '허용 시스템 콜 화이트리스트',
+                                role: <>허용 시스템 콜 화이트리스트 <KernelRef path="kernel/seccomp.c" sym="seccomp" /></>,
                                 example: 'Docker 기본 프로파일: 44개 syscall 차단',
                                 color: '#ef4444',
                             },

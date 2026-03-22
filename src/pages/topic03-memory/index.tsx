@@ -8,6 +8,7 @@ import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
+import { InfoBox } from '../../components/ui/InfoBox'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
@@ -164,7 +165,7 @@ export default function Topic03() {
                     Virtual Memory &amp; Memory Management
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    가상주소와 물리주소, 페이지 테이블, <T id="mm_struct">mm_struct</T>/<T id="vma">VMA</T>,{' '}
+                    가상주소와 물리주소, <T id="page_table">페이지 테이블</T>, <T id="mm_struct">mm_struct</T>/<T id="vma">VMA</T>,{' '}
                     <T id="page_fault">Page Fault</T>, <T id="buddy_allocator">Buddy</T>/<T id="slub">SLUB</T>,{' '}
                     <T id="tlb">TLB</T>, <T id="hugepage">Huge Pages</T>
                 </p>
@@ -485,6 +486,13 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     </div>
                 </div>
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="arch/x86/mm/pgtable.c" label="pgtable.c" />
+                        <KernelRef path="arch/x86/include/asm/pgtable_types.h" label="pgtable_types.h" />
+                        <KernelRef path="mm/memory.c" sym="handle_mm_fault" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 3.3 mm_struct & VMA */}
@@ -567,7 +575,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             <li>
                                 <code className="font-mono">vm_flags</code>: VM_READ | VM_WRITE | VM_ANONYMOUS
                             </li>
-                            <li>fork 시 Copy-on-Write(CoW)로 공유</li>
+                            <li>fork 시 Copy-on-Write(<T id="cow">CoW</T>)로 공유</li>
                         </ul>
                     </div>
                     <div
@@ -586,7 +594,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         <ul
                             className={`list-disc list-inside space-y-1 text-xs ${isDark ? 'text-purple-200' : 'text-purple-800'}`}
                         >
-                            <li>파일 내용을 가상 주소에 직접 매핑 (page cache 공유)</li>
+                            <li>파일 내용을 가상 주소에 직접 매핑 (<T id="page_cache">page cache</T> 공유)</li>
                             <li>read/write 없이 포인터로 파일 접근</li>
                             <li>
                                 <code className="font-mono">MAP_SHARED</code>: 쓰기가 파일에 반영
@@ -703,6 +711,13 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
 
                 <BuddyAllocatorViz />
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="mm/page_alloc.c" sym="__alloc_pages" />
+                        <KernelRef path="mm/page_alloc.c" sym="__free_pages" />
+                        <KernelRef path="include/linux/gfp.h" label="gfp.h" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 3.6 SLUB Allocator */}
@@ -731,6 +746,13 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                         </div>
                     ))}
                 </div>
+                <InfoBox color="gray" title="관련 커널 소스">
+                    <div className="flex flex-wrap gap-2">
+                        <KernelRef path="mm/slub.c" sym="kmem_cache_alloc" />
+                        <KernelRef path="mm/slub.c" sym="kmem_cache_create" />
+                        <KernelRef path="include/linux/slab.h" label="slab.h" />
+                    </div>
+                </InfoBox>
             </Section>
 
             {/* 3.7 memory cgroup */}
@@ -843,8 +865,8 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* 3.8 vmalloc vs kmalloc */}
             <Section id="s338" title="3.8  vmalloc vs kmalloc — 커널 메모리 할당 API">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    커널 코드에서 메모리를 동적 할당할 때 두 가지 주요 API가 있습니다. 물리적 연속성 요구 여부가 선택
-                    기준입니다.
+                    커널 코드에서 메모리를 동적 할당할 때 두 가지 주요 API가 있습니다. <T id="gfp_flags">GFP 플래그</T>와
+                    물리적 연속성 요구 여부가 선택 기준입니다.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
@@ -1243,7 +1265,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
             {/* ── 3.12  NUMA 메모리 정책 ── */}
             <Section id="s3312" title="3.12  NUMA 메모리 정책 — mbind()와 numactl">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    NUMA(Non-Uniform Memory Access) 시스템에서 CPU는 자신과 연결된 <strong>로컬 메모리</strong>에 빠르게
+                    <T id="numa">NUMA</T>(Non-Uniform Memory Access) 시스템에서 CPU는 자신과 연결된 <strong>로컬 메모리</strong>에 빠르게
                     접근하고, 원격 노드 메모리는 더 느립니다. 메모리 정책(memory policy)으로 어느 NUMA 노드에 할당할지
                     제어할 수 있습니다.
                 </p>
