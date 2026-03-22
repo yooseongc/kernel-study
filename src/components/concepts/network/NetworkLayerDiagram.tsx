@@ -23,7 +23,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'User Process',
             fn: 'recv() / read()',
-            step: '\u2776 app이 데이터를 읽음',
+            step: '7. app이 데이터를 읽음',
             fill: isDark ? 'oklch(22% 0.06 250)' : 'oklch(93% 0.02 250)',
             stroke: isDark ? 'oklch(62% 0.20 250)' : 'oklch(50% 0.20 250)',
             textColor: c.text,
@@ -32,7 +32,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Socket Layer',
             fn: 'sock_recvmsg()',
-            step: '\u2775 소켓 수신 큐에서 복사',
+            step: '6. 소켓 수신 큐에서 유저로 복사',
             fill: c.blueFill,
             stroke: c.blueStroke,
             textColor: c.blueText,
@@ -41,7 +41,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Transport Layer L4',
             fn: 'tcp_v4_rcv() / udp_rcv()',
-            step: '\u2774 TCP/UDP 처리, 포트 매칭',
+            step: '5. TCP/UDP 처리, 포트 매칭',
             fill: c.indigoFill,
             stroke: c.indigoStroke,
             textColor: c.indigoText,
@@ -50,7 +50,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Network Layer L3',
             fn: 'ip_rcv() / ip_route_input()',
-            step: '\u2773 IP 주소 확인, 라우팅 결정',
+            step: '4. IP 주소 확인, 라우팅 결정',
             fill: c.purpleFill,
             stroke: c.purpleStroke,
             textColor: c.purpleText,
@@ -59,7 +59,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Link Layer L2',
             fn: 'eth_type_trans() / arp_rcv()',
-            step: '\u2772 MAC 주소 확인, 프로토콜 분류',
+            step: '3. MAC 주소 확인, 프로토콜 분류',
             fill: c.pinkFill,
             stroke: c.pinkStroke,
             textColor: c.pinkText,
@@ -68,7 +68,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'Driver / NAPI',
             fn: 'netif_receive_skb() / napi_poll()',
-            step: '\u2771 NAPI poll로 sk_buff 생성',
+            step: '2. NAPI poll로 sk_buff 생성',
             fill: c.amberFill,
             stroke: c.amberStroke,
             textColor: c.amberText,
@@ -77,7 +77,7 @@ function getNetworkLayers(isDark: boolean): LayerInfo[] {
         {
             label: 'NIC Hardware',
             fn: 'DMA Ring Buffer / IRQ',
-            step: '\u2460 패킷 수신, DMA로 링 버퍼 복사',
+            step: '1. 패킷 수신, DMA로 링 버퍼 복사',
             fill: c.redFill,
             stroke: c.redStroke,
             textColor: c.redText,
@@ -105,49 +105,34 @@ function renderNetworkLayers(
     const layerH = totalH / n
     const rx = 8
 
-    // Draw "패킷 ↑" arrow on the left
+    // Draw "패킷 흐름 ↑" arrow on the left
     const arrowX = padX + arrowAreaW / 2
-    const arrowTop = padTop + 12
-    const arrowBottom = padTop + totalH - 12
+    const arrowTop = padTop + 20
+    const arrowBottom = padTop + totalH - 20
 
-    svg.append('defs')
-        .append('marker')
-        .attr('id', 'arrow-up')
-        .attr('markerWidth', 10)
-        .attr('markerHeight', 10)
-        .attr('refX', 5)
-        .attr('refY', 3)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,6 L5,0 L10,6')
-        .attr('fill', 'none')
-        .attr('stroke', c.textMuted)
-        .attr('stroke-width', 1.5)
-
+    // Simple arrow line with triangle head
     svg.append('line')
         .attr('x1', arrowX)
         .attr('y1', arrowBottom)
         .attr('x2', arrowX)
-        .attr('y2', arrowTop + 10)
+        .attr('y2', arrowTop)
         .attr('stroke', c.textMuted)
         .attr('stroke-width', 2)
-        .attr('marker-end', 'url(#arrow-up)')
 
+    // Triangle arrowhead
+    svg.append('polygon')
+        .attr('points', `${arrowX - 5},${arrowTop + 8} ${arrowX},${arrowTop} ${arrowX + 5},${arrowTop + 8}`)
+        .attr('fill', c.textMuted)
+
+    // Label
     svg.append('text')
         .attr('x', arrowX)
-        .attr('y', arrowBottom + 14)
+        .attr('y', arrowBottom + 16)
         .attr('text-anchor', 'middle')
         .attr('fill', c.textMuted)
-        .attr('font-size', 11)
-        .text('패킷')
-
-    svg.append('text')
-        .attr('x', arrowX)
-        .attr('y', arrowTop - 4)
-        .attr('text-anchor', 'middle')
-        .attr('fill', c.textMuted)
-        .attr('font-size', 14)
-        .text('↑')
+        .attr('font-size', 10)
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .text('패킷 흐름 ↑')
 
     // Draw layers (top = user, bottom = hardware)
     networkLayers.forEach((layer, i) => {

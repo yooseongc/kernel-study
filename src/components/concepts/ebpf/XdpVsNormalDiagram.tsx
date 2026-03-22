@@ -36,7 +36,7 @@ function renderXdpVsNormal(
         .attr('fill', dimColor)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('일반 경로 (Normal Path)')
 
     g.append('text')
@@ -46,7 +46,7 @@ function renderXdpVsNormal(
         .attr('fill', c.amberStroke)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('XDP 경로 (eXpress Data Path)')
 
     // divider
@@ -99,7 +99,7 @@ function renderXdpVsNormal(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', dimColor)
                 .attr('font-size', '8px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(sublabel)
         }
     }
@@ -220,7 +220,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '7.5px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .text(act.desc)
 
         // arrow from xdp hook down to actions
@@ -237,7 +237,7 @@ function renderXdpVsNormal(
         .attr('text-anchor', 'middle')
         .attr('fill', passAction.color)
         .attr('font-size', '7.5px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('↓ 일반 경로 계속')
 }
 

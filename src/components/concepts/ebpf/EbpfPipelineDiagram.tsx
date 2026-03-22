@@ -148,7 +148,7 @@ function renderEbpfPipeline(
         .attr('dominant-baseline', 'middle')
         .attr('fill', c2.redText)
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .attr('font-weight', 'bold')
         .text('로드 거부')
 
@@ -158,7 +158,7 @@ function renderEbpfPipeline(
         .attr('text-anchor', 'middle')
         .attr('fill', c2.redText)
         .attr('font-size', '8px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('실패')
 
     // title
@@ -167,7 +167,7 @@ function renderEbpfPipeline(
         .attr('y', height - 8)
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('eBPF 실행 파이프라인: 사용자 코드 → 커널 안전 실행')
 
     void textColor
