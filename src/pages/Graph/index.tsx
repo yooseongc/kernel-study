@@ -240,36 +240,39 @@ function renderGraph(
         .attr('pointer-events', 'none')
         .text((d) => d.label)
 
-    // 초기 위치를 중심 근처에 배치 (급격한 이동 방지)
+    // 초기 위치를 중심 근처에 원형 배치
+    const cx = width / 2
+    const cy = height / 2
     nodes.forEach((n, i) => {
-        if (n.x == null) {
-            const angle = (i / nodes.length) * 2 * Math.PI
-            const radius = n.type === 'topic' ? 150 : 250 + Math.random() * 100
-            n.x = width / 2 + Math.cos(angle) * radius
-            n.y = height / 2 + Math.sin(angle) * radius
-        }
+        const angle = (i / nodes.length) * 2 * Math.PI
+        const radius = n.type === 'topic' ? 120 : 200 + Math.random() * 80
+        n.x = cx + Math.cos(angle) * radius
+        n.y = cy + Math.sin(angle) * radius
     })
 
     // Force 시뮬레이션
     const sim = d3
         .forceSimulation<GraphNode>(nodes)
-        .alpha(0.6)
+        .alpha(0.5)
+        .alphaDecay(0.03)
         .force(
             'link',
             d3
                 .forceLink<GraphNode, GraphLink>(links)
                 .id((d) => d.id)
-                .distance((d) => (d.kind === 'sharedTag' ? 260 : 130))
+                .distance((d) => (d.kind === 'sharedTag' ? 220 : 110))
                 .strength((d) => (d.kind === 'sharedTag' ? 0.15 : 0.35)),
         )
         .force(
             'charge',
-            d3.forceManyBody<GraphNode>().strength((d) => (d.type === 'topic' ? -800 : -120)),
+            d3.forceManyBody<GraphNode>().strength((d) => (d.type === 'topic' ? -600 : -80)),
         )
-        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.03))
+        // forceX/forceY로 중심 유지 + 경계 이탈 방지
+        .force('x', d3.forceX(cx).strength(0.08))
+        .force('y', d3.forceY(cy).strength(0.08))
         .force(
             'collision',
-            d3.forceCollide<GraphNode>((d) => (d.type === 'topic' ? d.r + 30 : d.r + 35)),
+            d3.forceCollide<GraphNode>((d) => (d.type === 'topic' ? d.r + 25 : d.r + 28)),
         )
         .on('tick', () => {
             linkSel

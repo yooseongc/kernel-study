@@ -42,6 +42,8 @@ export function D3Container({ renderFn, deps = [], className = '', height = 480,
                         setScale(Math.round(event.transform.k * 100))
                     })
                 svg.call(zoom)
+                // 더블클릭 줌 리셋 비활성화 (의도치 않은 줌 변경 방지)
+                svg.on('dblclick.zoom', null)
                 zoomRef.current = zoom
             }
         }
