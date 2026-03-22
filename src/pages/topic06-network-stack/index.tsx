@@ -228,17 +228,17 @@ export default function Topic05() {
                     {[
                         {
                             label: 'L2 (Data Link)',
-                            color: 'bg-violet-900/40 border-violet-700/50 text-violet-300',
+                            color: 'bg-violet-50 dark:bg-violet-900/40 border-violet-200 dark:border-violet-700/50 text-violet-700 dark:text-violet-300',
                             desc: 'Ethernet, ARP, MAC 주소 처리',
                         },
                         {
                             label: 'L3 (Network)',
-                            color: 'bg-purple-900/40 border-purple-700/50 text-purple-300',
+                            color: 'bg-purple-50 dark:bg-purple-900/40 border-purple-200 dark:border-purple-700/50 text-purple-700 dark:text-purple-300',
                             desc: 'IP 주소, 라우팅, TTL, 단편화',
                         },
                         {
                             label: 'L4 (Transport)',
-                            color: 'bg-indigo-900/40 border-indigo-700/50 text-indigo-300',
+                            color: 'bg-indigo-50 dark:bg-indigo-900/40 border-indigo-200 dark:border-indigo-700/50 text-indigo-700 dark:text-indigo-300',
                             desc: 'TCP/UDP 포트, 연결 상태 관리',
                         },
                     ].map((item) => (
@@ -327,7 +327,7 @@ export default function Topic05() {
                                 <tr
                                     key={i}
                                     className={`border-t border-gray-700 ${
-                                        i % 2 === 0 ? 'bg-gray-900' : 'bg-gray-900/50'
+                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'
                                     }`}
                                 >
                                     <td className="px-4 py-2.5 font-mono text-blue-400">{row.syscall}</td>
@@ -432,7 +432,7 @@ export default function Topic05() {
                             {tsoGsoRows.map((row, i) => (
                                 <tr
                                     key={i}
-                                    className={`border-t border-gray-700 ${i % 2 === 0 ? 'bg-gray-900' : 'bg-gray-900/50'}`}
+                                    className={`border-t border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'}`}
                                 >
                                     <td className="px-4 py-2.5 font-mono font-bold text-blue-400">{row.name}</td>
                                     <td className="px-4 py-2.5 text-gray-300">{row.location}</td>
@@ -440,8 +440,8 @@ export default function Topic05() {
                                         <span
                                             className={`px-2 py-0.5 rounded text-xs font-mono ${
                                                 row.direction === 'TX'
-                                                    ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50'
-                                                    : 'bg-green-900/50 text-green-300 border border-green-700/50'
+                                                    ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50'
+                                                    : 'bg-green-50 dark:bg-green-900/50 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700/50'
                                             }`}
                                         >
                                             {row.direction}

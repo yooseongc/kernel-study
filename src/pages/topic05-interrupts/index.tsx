@@ -78,11 +78,11 @@ type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'
 
 function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?: BadgeColor }) {
     const map: Record<BadgeColor, string> = {
-        blue: 'bg-blue-900/40 text-blue-300 border-blue-700/50',
-        red: 'bg-red-900/40 text-red-300 border-red-700/50',
-        amber: 'bg-amber-900/40 text-amber-300 border-amber-700/50',
-        green: 'bg-green-900/40 text-green-300 border-green-700/50',
-        purple: 'bg-purple-900/40 text-purple-300 border-purple-700/50',
+        blue: 'bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/50',
+        red: 'bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700/50',
+        amber: 'bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700/50',
+        green: 'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700/50',
+        purple: 'bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700/50',
     }
     return <span className={`inline-block text-xs font-mono px-2 py-0.5 rounded border ${map[color]}`}>{children}</span>
 }
