@@ -7,16 +7,26 @@
 
 ## 1. 파일 구조 규칙
 
-- 각 Topic 페이지는 `src/pages/topic{NN}-{slug}/index.tsx` 위치에 위치합니다.
-- 파일 최상단에는 **코드 상수(문자열)**를 먼저 선언하고, 그 다음에 **헬퍼 컴포넌트**, 마지막에 **default export 페이지 컴포넌트**를 배치합니다.
+각 Topic 페이지는 아래 구조를 따릅니다:
 
 ```
-파일 순서:
-  1. import 문
-  2. 코드 상수 (const xxxCode = `...`)
-  3. 파일 내부 헬퍼 컴포넌트 (Section, Prose, InfoTable 등)
-  4. export default function TopicXX() { ... }
+src/pages/topic{NN}-{slug}/
+├── index.tsx          ← 페이지 컴포넌트 (조합 레이어, 목표 800줄 이하)
+├── codeSnippets.ts    ← 코드 문자열/차트 상수 (export const xxxCode = `...`)
+└── chartData.ts       ← (선택) Mermaid 차트/테이블 데이터 상수
 ```
+
+**index.tsx 파일 순서:**
+```
+1. import 문 (공통 컴포넌트 + codeSnippets + concepts)
+2. 인라인 데이터 (배열/객체 — steps, rows 등)
+3. export default function TopicXX() { ... }
+```
+
+**추출 규칙:**
+- 코드 문자열 (`const xxxCode = \`...\``) → `codeSnippets.ts`
+- Mermaid 차트/테이블 데이터 → `chartData.ts`
+- 50줄 이상 D3/React 시각화 → `src/components/concepts/{category}/`
 
 ---
 
@@ -63,29 +73,54 @@
 
 ---
 
-## 4. 섹션 헬퍼 컴포넌트
+## 4. 공통 UI 컴포넌트 (`src/components/ui/`)
 
-모든 페이지에서 아래 `Section` 함수를 **파일 내부에 선언**하여 사용합니다.
+**모든 컴포넌트는 라이트/다크 모드를 모두 지원합니다. 인라인 색상 하드코딩 금지.**
 
+### 필수 사용 컴포넌트
+
+| 컴포넌트 | import 경로 | 용도 |
+|----------|-------------|------|
+| `Section` | `../../components/ui/Section` | 모든 섹션 래퍼 (id + title) |
+| `Prose` | `../../components/ui/Prose` | 본문 단락 텍스트 |
+| `InfoTable` | `../../components/ui/InfoTable` | 비교/참조 테이블 |
+| `InfoBox` | `../../components/ui/InfoBox` | 색상 배경 설명 박스 (10+ 색상 지원) |
+| `StatCard` | `../../components/ui/StatCard` | 수치 카드 (title + value + desc) |
+| `Alert` | `../../components/ui/Alert` | 팁(💡)/경고(⚠️)/정보(ℹ️)/위험(🚨) |
+| `TopicNavigation` | `../../components/ui/TopicNavigation` | 이전/다음 토픽 (자동 계산) |
+| `LearningCard` | `../../components/ui/LearningCard` | 토픽 상단 학습 목표 카드 |
+| `KernelRef` | `../../components/ui/KernelRef` | 커널 소스 외부 링크 배지 |
+
+### 사용 규칙
+
+**색상 배경 박스 → `InfoBox` 사용:**
 ```tsx
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-    return (
-        <section id={id} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
-}
+// ❌ 금지: 인라인 다크모드 전용 색상
+<div className="bg-blue-900/20 border-blue-800 text-blue-200">...</div>
+
+// ✅ 올바른 사용:
+<InfoBox color="blue" title="제목">설명 텍스트</InfoBox>
 ```
 
-**규칙:**
-- 섹션 제목은 `Section` 컴포넌트의 `title` prop으로 전달
-- 섹션 번호는 title 문자열 안에 포함: `"1.1  커널이 하는 일"` (공백 2칸 사용)
-- 섹션 번호의 별도 색상 span 태그는 사용하지 않음 (번호 포함 텍스트 전체가 h2)
-- `id` 속성: `s{NN}{M}` 형식 (예: Topic 1의 1번째 섹션 = `s111`, Topic 12의 3번째 = `s123`)
-- 직접 `<section>` 태그와 `<h2>` 태그를 분리해서 쓰는 방식 금지
+**수치/성능 카드 → `StatCard` 사용:**
+```tsx
+<StatCard title="syscall 비용" value="~100 ns" color="amber" desc="설명..." />
+```
+
+**팁/경고 박스 → `Alert` 사용:**
+```tsx
+<Alert variant="tip" title="핵심:">중요한 내용</Alert>
+```
+
+**하단 네비게이션 → `TopicNavigation` 사용:**
+```tsx
+<TopicNavigation topicId="02-scheduler" />  // 이전/다음 자동 계산
+```
+
+### Section 규칙
+- 섹션 번호는 title 안에 포함: `"1.1  커널이 하는 일"` (공백 2칸)
+- `id`: `s{NN}{M}` 형식 (예: `s111`, `s123`)
+- `<section>` + `<h2>` 직접 사용 금지 → 반드시 `Section` 컴포넌트 사용
 
 ---
 
@@ -110,82 +145,75 @@ function Prose({ children }: { children: React.ReactNode }) {
 
 ## 6. 색상 규칙
 
-| 용도 | 클래스 |
-|------|--------|
-| 토픽 번호 레이블 | `text-blue-500 dark:text-blue-400` |
-| 섹션 h2 제목 | `text-gray-900 dark:text-white` |
-| 설명 텍스트 | `text-gray-600 dark:text-gray-400` |
-| 부제목 / 메타 | `text-gray-500 dark:text-gray-400` |
-| 인라인 코드 | `text-blue-600 dark:text-blue-300` |
-| 카드 보더 (중립) | `border-gray-200 dark:border-gray-700` |
-| 강조 텍스트 | `text-gray-800 dark:text-gray-200` (bold) |
+### 반드시 `dark:` 프리픽스 사용
 
-- D3 다이어그램의 노드/링크 색상은 `src/lib/colors.ts`의 oklch 팔레트를 따릅니다.
-- 카드 컴포넌트의 accent 색상은 인라인 `style={{ borderColor: color + '55' }}` 방식을 허용합니다.
+**모든 색상 클래스는 라이트 + 다크 모드 쌍으로 작성합니다.**
+
+```tsx
+// ❌ 금지: 다크모드 전용 색상 (dark: 프리픽스 없음)
+className="bg-blue-900/20 text-blue-300 border-blue-800"
+
+// ✅ 올바른 사용:
+className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+```
+
+### 기본 색상 팔레트
+
+| 용도 | 라이트 | 다크 |
+|------|--------|------|
+| 토픽 번호 레이블 | `text-blue-500` | `dark:text-blue-400` |
+| 섹션 h2 제목 | `text-gray-900` | `dark:text-white` |
+| 설명 텍스트 | `text-gray-600` | `dark:text-gray-400` |
+| 부제목 / 메타 | `text-gray-500` | `dark:text-gray-400` |
+| 인라인 코드 | `text-blue-600` | `dark:text-blue-300` |
+| 카드 보더 (중립) | `border-gray-200` | `dark:border-gray-700` |
+| 카드 배경 (중립) | `bg-gray-50` | `dark:bg-gray-900` |
+| 강조 텍스트 | `text-gray-800` | `dark:text-gray-200` |
+
+### 색상 박스/카드는 컴포넌트 우선
+
+인라인 색상 조합 대신 `InfoBox`, `StatCard`, `Alert` 컴포넌트를 사용하면 라이트/다크 모드가 자동으로 보장됩니다.
+
+### D3 차트 색상
+
+- `src/lib/colors.ts`의 oklch 팔레트를 사용합니다.
+- SVG 내부에 `svg.style('background', ...)` 설정 금지 → 부모 div에서 배경 처리
+- SVG font-family: 본문 `'Pretendard Variable', Pretendard, sans-serif`, 코드 `'JetBrains Mono', monospace`
 
 ---
 
 ## 7. 하단 네비게이션
 
-### 중간 페이지 (이전 ↔ 다음이 모두 있는 경우)
+**`TopicNavigation` 컴포넌트를 사용합니다.**
 
 ```tsx
-<nav className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 flex items-center justify-between">
-    <div>
-        <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">이전 토픽</div>
-        <div className="font-semibold text-gray-900 dark:text-gray-200 text-sm">{NN} · {이전 제목}</div>
-        <div className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">{이전 부제}</div>
-    </div>
-    <div className="flex flex-col items-end gap-1">
-        <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">다음 토픽</div>
-        <div className="font-semibold text-gray-900 dark:text-gray-200 text-sm">{NN} · {다음 제목}</div>
-        <div className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">{다음 부제}</div>
-    </div>
-</nav>
+<TopicNavigation topicId="02-scheduler" />
 ```
 
-단, 이전 또는 다음이 없는 경우 해당 측 텍스트를 생략합니다.
-
-### 마지막 페이지 (현재 Topic 10~13)
-
-```tsx
-<div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
-    <div className="text-2xl font-bold text-gray-900 dark:text-white">
-        {학습 완료 제목}
-    </div>
-    <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm max-w-2xl mx-auto">
-        {요약 설명}
-    </p>
-    <a
-        href="#/"
-        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-    >
-        <span>←</span> 홈으로 돌아가기
-    </a>
-</div>
-```
-
-- `footer`, `section` 태그로 네비를 감싸지 않습니다.
-- 텍스트 링크 단독 사용(`hover:underline` 방식) 금지.
+- `kernelTopics` 배열에서 이전/다음 토픽을 자동 계산합니다.
+- 인라인 `<nav>` 태그 하드코딩 금지.
 
 ---
 
-## 8. 적용 현황
+## 8. 개념 시각화 컴포넌트 (`src/components/concepts/`)
 
-| Topic | 헤더 | Section 함수 | 하단 네비 | 적합 여부 |
-|-------|------|-------------|---------|---------|
-| 01 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 02 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 03 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 04 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 05 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 06 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 07 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 08 | ⬜ 수정 필요 | ⬜ 미적용 | ⬜ 수정 필요 | ❌ |
-| 09 | ⬜ 수정 필요 | ✅ 적용 | ⬜ 수정 필요 | ⚠️ |
-| 10 | ⬜ 수정 필요 | ✅ 적용 | ✅ 완료 카드 | ⚠️ |
-| 11 | ⬜ 수정 필요 | ✅ 적용 | ✅ 완료 카드 | ⚠️ |
-| 12 | ⬜ 수정 필요 | ✅ 적용 | ✅ 완료 카드 | ⚠️ |
-| 13 | ⬜ 수정 필요 | ✅ 적용 | ✅ 완료 카드 | ⚠️ |
+50줄 이상의 D3/React 시각화 컴포넌트는 토픽 파일에서 추출하여 개념별 디렉터리에 배치합니다:
 
-> 수정 계획: Sprint 9 일괄 적용 예정 (2026-03-21 16:02 KST)
+```
+src/components/concepts/
+├── scheduler/    (ProcessStateDiagram, CfsTreeViz, ContextSwitchViz, ...)
+├── memory/       (BuddyAllocatorViz, PageTableViz, CoWAnimationViz, ...)
+├── network/      (NetworkLayerDiagram, SkbuffLayout, ...)
+├── interrupt/    (IRQViz, DeferredWorkFlow)
+├── ebpf/         (XdpVsNormalDiagram, EbpfPipelineDiagram)
+├── sync/         (RaceConditionViz, LockComparisonChart, RcuGracePeriodViz)
+├── driver/       (DriverTreeChart, DMAViz)
+├── debug/        (FlameGraphViz, ProcTreeChart, NetworkBottleneckChart)
+├── filesystem/   (OpenFlowViz, VfsLayerDiagram)
+└── overview/     (RingDiagram, SyscallFlowViz, ...)
+```
+
+**규칙:**
+- Section 래퍼(`<Section id=... title=...>`)는 index.tsx에 유지
+- concept 컴포넌트는 순수 시각화만 export
+- codeSnippets를 import하지 않음 (코드는 index.tsx에서 관리)
