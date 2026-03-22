@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 34)
+> 마지막 업데이트: 2026-03-22 (Sprint 35)
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Sprint | 내용 | 완료일 |
 |--------|------|--------|
+| 35 | 다크모드 전용 색상 수정: `dark:` 프리픽스 없이 사용된 Tailwind 클래스에 라이트모드 대응 추가 (VirtualAddressViz, NapiCompare, SkbuffLayout, IRQViz, DMAViz, NetworkFlowViz, TxFlowViz, SyscallFlowViz, CoWAnimationViz, NetworkLayerDiagram — 10개 파일) | 2026-03-22 |
 | 25 | CodeBlock 복사 버튼, 홈 문구 수정, README 버전 동기화 (Vite 8, Three.js 0.183), TOC "이 페이지" 한국어 통일 | 2026-03-22 |
 | 26 | 토픽 메타데이터 확장 (status/difficulty/prerequisites), 홈 카드 난이도 배지 + 선수 지식, 검색 가중치·그룹화·섹션 검색 추가, 용어사전 카테고리 필터 칩 + 내부 검색 | 2026-03-22 |
 | 27 | KernelRef 컴포넌트 (elixir.bootlin.com 링크), LearningCard 컴포넌트 (학습 목표 3줄 + 선수지식 링크) 신규 생성, 전체 13개 토픽 적용, topic02/03/06/08/09에 KernelRef 삽입 | 2026-03-22 |

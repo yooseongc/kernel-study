@@ -40,11 +40,11 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">
                                     PTE (RO)
                                 </div>
-                                <div className="text-xs text-gray-400">↘</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↘</div>
                             </div>
                             {/* Shared physical page */}
                             <div className="flex flex-col items-center gap-1">
@@ -64,11 +64,11 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950 px-4 py-2 text-xs font-mono text-purple-700 dark:text-purple-300">
                                     PTE (RO)
                                 </div>
-                                <div className="text-xs text-gray-400">↙</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↙</div>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-xs font-mono text-gray-500 dark:text-gray-400">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-xs font-mono text-gray-500 dark:text-gray-400">
                                     PTE (RO)
                                 </div>
@@ -110,7 +110,7 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950 px-4 py-2 text-xs font-mono text-red-700 dark:text-red-300">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950 px-4 py-2 text-xs font-mono text-red-700 dark:text-red-300">
                                     PTE (RO) ← FAULT
                                 </div>
@@ -132,11 +132,11 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">
                                     PTE (RW)
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-100 dark:bg-emerald-900 px-4 py-3 text-xs font-bold text-emerald-800 dark:text-emerald-200 text-center">
                                     물리 페이지 A<br />
                                     <span className="font-normal">(RW, 독립)</span>
@@ -154,11 +154,11 @@ export function CoWAnimationViz() {
                                 <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">
                                     VMA
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-4 py-2 text-xs font-mono text-emerald-700 dark:text-emerald-300">
                                     PTE (RW)
                                 </div>
-                                <div className="text-xs text-gray-400">↓</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">↓</div>
                                 <div className="rounded-lg border-2 border-emerald-500 dark:border-emerald-400 bg-emerald-100 dark:bg-emerald-900 px-4 py-3 text-xs font-bold text-emerald-800 dark:text-emerald-200 text-center">
                                     물리 페이지 B<br />
                                     <span className="font-normal">(새로 복사, RW)</span>

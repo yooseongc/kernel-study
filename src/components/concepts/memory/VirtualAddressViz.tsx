@@ -19,8 +19,8 @@ const addrRows: AddrRow[] = [
         addrTop: '0xFFFFFFFFFFFFFFFF',
         addrBottom: '0xFFFF800000000000',
         heightPct: 25,
-        bg: 'bg-violet-900/60 dark:bg-violet-900/60',
-        textColor: 'text-violet-200',
+        bg: 'bg-violet-100 dark:bg-violet-900/60',
+        textColor: 'text-violet-700 dark:text-violet-200',
     },
     {
         label: '/// non-canonical hole ///',
@@ -28,7 +28,7 @@ const addrRows: AddrRow[] = [
         addrTop: '0xFFFF800000000000',
         addrBottom: '0x00007FFFFFFFFFFF',
         heightPct: 10,
-        bg: 'bg-gray-800/60 dark:bg-gray-800/60',
+        bg: 'bg-gray-100 dark:bg-gray-800/60',
         textColor: 'text-gray-500',
         striped: true,
     },
@@ -37,48 +37,48 @@ const addrRows: AddrRow[] = [
         sublabel: '↓ 아래 방향 성장',
         addrTop: '0x00007FFFFFFFFFFF',
         heightPct: 8,
-        bg: 'bg-amber-900/50 dark:bg-amber-900/50',
-        textColor: 'text-amber-200',
+        bg: 'bg-amber-100 dark:bg-amber-900/50',
+        textColor: 'text-amber-700 dark:text-amber-200',
     },
     {
         label: 'mmap / shared libs',
         sublabel: '파일 매핑, 동적 라이브러리',
         heightPct: 15,
-        bg: 'bg-purple-900/50 dark:bg-purple-900/50',
-        textColor: 'text-purple-200',
+        bg: 'bg-purple-100 dark:bg-purple-900/50',
+        textColor: 'text-purple-700 dark:text-purple-200',
     },
     {
         label: '(미할당)',
         heightPct: 12,
-        bg: 'bg-gray-900/40 dark:bg-gray-900/40',
+        bg: 'bg-gray-50 dark:bg-gray-900/40',
         textColor: 'text-gray-600',
     },
     {
         label: 'heap',
         sublabel: '↑ 위 방향 성장',
         heightPct: 10,
-        bg: 'bg-emerald-900/50 dark:bg-emerald-900/50',
-        textColor: 'text-emerald-200',
+        bg: 'bg-emerald-100 dark:bg-emerald-900/50',
+        textColor: 'text-emerald-700 dark:text-emerald-200',
     },
     {
         label: 'BSS / data',
         sublabel: '전역 변수, 정적 변수',
         heightPct: 10,
-        bg: 'bg-blue-800/50 dark:bg-blue-800/50',
-        textColor: 'text-blue-200',
+        bg: 'bg-blue-100 dark:bg-blue-800/50',
+        textColor: 'text-blue-700 dark:text-blue-200',
     },
     {
         label: 'text (코드)',
         sublabel: '.text 섹션',
         heightPct: 7,
-        bg: 'bg-blue-900/60 dark:bg-blue-900/60',
-        textColor: 'text-blue-300',
+        bg: 'bg-blue-100 dark:bg-blue-900/60',
+        textColor: 'text-blue-700 dark:text-blue-300',
     },
     {
         label: 'NULL guard (4KB)',
         addrBottom: '0x0000000000000000',
         heightPct: 3,
-        bg: 'bg-gray-950/80 dark:bg-gray-950/80',
+        bg: 'bg-gray-200 dark:bg-gray-950/80',
         textColor: 'text-gray-600',
     },
 ]
@@ -95,7 +95,7 @@ export function VirtualAddressViz() {
     return (
         <div className="flex gap-3">
             {/* Left: address space bars */}
-            <div className="flex-1 flex flex-col border border-gray-700 rounded-lg overflow-hidden text-xs font-mono">
+            <div className="flex-1 flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden text-xs font-mono">
                 {addrRows.map((row, i) => (
                     <div
                         key={i}
@@ -124,7 +124,7 @@ export function VirtualAddressViz() {
 
             {/* Right: hex address labels */}
             <div
-                className="relative w-44 text-[10px] font-mono text-gray-400"
+                className="relative w-44 text-[10px] font-mono text-gray-600 dark:text-gray-400"
                 style={{ height: `${addrRows.reduce((s, r) => s + r.heightPct * 3.2, 0)}px` }}
             >
                 {addrRows.map((row, i) => {
@@ -138,7 +138,7 @@ export function VirtualAddressViz() {
                             className="absolute left-0 flex items-center gap-1"
                             style={{ top: lbl.offset }}
                         >
-                            <div className="w-3 h-px bg-gray-600" />
+                            <div className="w-3 h-px bg-gray-300 dark:bg-gray-600" />
                             <span className="whitespace-nowrap leading-none">{lbl.text}</span>
                         </div>
                     ))
@@ -175,13 +175,13 @@ const processes3_1 = [
         pid: 1234,
         accent: {
             border: 'border-blue-600 dark:border-blue-700',
-            bg: 'bg-blue-950/40',
-            head: 'bg-blue-900/50',
+            bg: 'bg-blue-50 dark:bg-blue-950/40',
+            head: 'bg-blue-100 dark:bg-blue-900/50',
             dot: 'bg-blue-400',
-            text: 'text-blue-300',
-            cr3: 'text-blue-400',
-            physBg: 'bg-blue-900/60',
-            physText: 'text-blue-300',
+            text: 'text-blue-700 dark:text-blue-300',
+            cr3: 'text-blue-600 dark:text-blue-400',
+            physBg: 'bg-blue-100 dark:bg-blue-900/60',
+            physText: 'text-blue-700 dark:text-blue-300',
         },
     },
     {
@@ -189,13 +189,13 @@ const processes3_1 = [
         pid: 5678,
         accent: {
             border: 'border-emerald-600 dark:border-emerald-700',
-            bg: 'bg-emerald-950/40',
-            head: 'bg-emerald-900/50',
+            bg: 'bg-emerald-50 dark:bg-emerald-950/40',
+            head: 'bg-emerald-100 dark:bg-emerald-900/50',
             dot: 'bg-emerald-400',
-            text: 'text-emerald-300',
-            cr3: 'text-emerald-400',
-            physBg: 'bg-emerald-900/60',
-            physText: 'text-emerald-300',
+            text: 'text-emerald-700 dark:text-emerald-300',
+            cr3: 'text-emerald-600 dark:text-emerald-400',
+            physBg: 'bg-emerald-100 dark:bg-emerald-900/60',
+            physText: 'text-emerald-700 dark:text-emerald-300',
         },
     },
     {
@@ -203,13 +203,13 @@ const processes3_1 = [
         pid: 9012,
         accent: {
             border: 'border-amber-600 dark:border-amber-700',
-            bg: 'bg-amber-950/40',
-            head: 'bg-amber-900/50',
+            bg: 'bg-amber-50 dark:bg-amber-950/40',
+            head: 'bg-amber-100 dark:bg-amber-900/50',
             dot: 'bg-amber-400',
-            text: 'text-amber-300',
-            cr3: 'text-amber-400',
-            physBg: 'bg-amber-900/60',
-            physText: 'text-amber-300',
+            text: 'text-amber-700 dark:text-amber-300',
+            cr3: 'text-amber-600 dark:text-amber-400',
+            physBg: 'bg-amber-100 dark:bg-amber-900/60',
+            physText: 'text-amber-700 dark:text-amber-300',
         },
     },
 ]
@@ -233,20 +233,20 @@ export function MultiProcessVAViz() {
                             <span className="text-gray-500 text-[10px] ml-auto">PID {p.pid}</span>
                         </div>
                         {/* Mini address space bars */}
-                        <div className="flex flex-col divide-y divide-gray-800/50">
-                            <div className="bg-violet-900/60 px-2.5 py-1.5">
-                                <div className="text-violet-300 font-semibold text-[10px]">커널 공간</div>
+                        <div className="flex flex-col divide-y divide-gray-200 dark:divide-gray-800/50">
+                            <div className="bg-violet-100 dark:bg-violet-900/60 px-2.5 py-1.5">
+                                <div className="text-violet-700 dark:text-violet-300 font-semibold text-[10px]">커널 공간</div>
                                 <div className="text-violet-500 text-[9px]">공유 ↔</div>
                             </div>
-                            <div className="bg-amber-900/30 px-2.5 py-1">
-                                <div className="text-amber-300 text-[10px]">stack</div>
+                            <div className="bg-amber-100 dark:bg-amber-900/30 px-2.5 py-1">
+                                <div className="text-amber-700 dark:text-amber-300 text-[10px]">stack</div>
                                 <div className="text-gray-600 text-[9px]">0x7fff…</div>
                             </div>
-                            <div className="bg-emerald-900/30 px-2.5 py-1">
-                                <div className="text-emerald-300 text-[10px]">heap</div>
+                            <div className="bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-1">
+                                <div className="text-emerald-700 dark:text-emerald-300 text-[10px]">heap</div>
                             </div>
-                            <div className="bg-blue-900/30 px-2.5 py-1.5">
-                                <div className="text-blue-300 text-[10px]">text / data</div>
+                            <div className="bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1.5">
+                                <div className="text-blue-700 dark:text-blue-300 text-[10px]">text / data</div>
                                 <div className="text-gray-600 text-[9px]">0x0040_0000</div>
                             </div>
                         </div>
@@ -269,16 +269,16 @@ export function MultiProcessVAViz() {
             </div>
 
             {/* Physical memory bar */}
-            <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-3 space-y-2">
-                <div className="text-[11px] text-gray-400 font-mono font-semibold">물리 메모리 — 단 하나</div>
-                <div className="flex rounded-lg overflow-hidden h-9 text-[10px] font-mono border border-gray-700">
-                    <div className="w-16 shrink-0 bg-violet-900/70 flex items-center justify-center text-violet-300 border-r border-violet-800">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60 p-3 space-y-2">
+                <div className="text-[11px] text-gray-600 dark:text-gray-400 font-mono font-semibold">물리 메모리 — 단 하나</div>
+                <div className="flex rounded-lg overflow-hidden h-9 text-[10px] font-mono border border-gray-200 dark:border-gray-700">
+                    <div className="w-16 shrink-0 bg-violet-100 dark:bg-violet-900/70 flex items-center justify-center text-violet-700 dark:text-violet-300 border-r border-violet-300 dark:border-violet-800">
                         커널
                     </div>
                     {processes3_1.map((p) => (
                         <div
                             key={p.pid}
-                            className={`flex-1 ${p.accent.physBg} flex items-center justify-center ${p.accent.physText} border-r border-gray-700 last:border-r-0`}
+                            className={`flex-1 ${p.accent.physBg} flex items-center justify-center ${p.accent.physText} border-r border-gray-200 dark:border-gray-700 last:border-r-0`}
                         >
                             {p.name}
                         </div>
@@ -286,10 +286,10 @@ export function MultiProcessVAViz() {
                 </div>
                 <div className="flex gap-6 text-[10px] text-gray-500">
                     <span>
-                        ↑ 커널 공간: 세 프로세스 <strong className="text-gray-300">모두 같은</strong> 물리 주소 공유
+                        ↑ 커널 공간: 세 프로세스 <strong className="text-gray-700 dark:text-gray-300">모두 같은</strong> 물리 주소 공유
                     </span>
                     <span>
-                        ↑ 유저 공간: 프로세스마다 <strong className="text-gray-300">서로 다른</strong> 물리 페이지
+                        ↑ 유저 공간: 프로세스마다 <strong className="text-gray-700 dark:text-gray-300">서로 다른</strong> 물리 페이지
                     </span>
                 </div>
             </div>

@@ -92,8 +92,8 @@ export function IRQViz({ step }: { step: number }) {
                                     boxShadow: isActive ? `0 0 16px ${z.activeBorder}55` : 'none',
                                 }}
                             >
-                                <div className="text-sm font-bold text-white">{z.label}</div>
-                                <div className="text-[10px] text-gray-400">{z.sub}</div>
+                                <div className="text-sm font-bold text-gray-900 dark:text-white">{z.label}</div>
+                                <div className="text-[10px] text-gray-600 dark:text-gray-400">{z.sub}</div>
                                 {isActive && (
                                     <div
                                         className="text-[9px] mt-1 font-mono px-2 py-0.5 rounded"
@@ -103,12 +103,12 @@ export function IRQViz({ step }: { step: number }) {
                                     </div>
                                 )}
                             </div>
-                            {showArrow && <div className="text-gray-400 text-2xl font-bold select-none">→</div>}
+                            {showArrow && <div className="text-gray-600 dark:text-gray-400 text-2xl font-bold select-none">→</div>}
                         </div>
                     )
                 })}
             </div>
-            <div className="rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2 text-xs text-gray-200 font-mono text-center">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/50 px-4 py-2 text-xs text-gray-700 dark:text-gray-200 font-mono text-center">
                 {current.note}
             </div>
         </div>

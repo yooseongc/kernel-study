@@ -108,12 +108,12 @@ function TxFlowStep({ step }: { step: number }) {
                                 boxShadow: isActive ? `0 0 16px ${zone.activeBorder}44` : 'none',
                             }}
                         >
-                            <div className="text-sm font-bold text-white text-center">{zone.label}</div>
-                            <div className="text-[10px] text-gray-400 text-center mt-1">{zone.sublabel}</div>
+                            <div className="text-sm font-bold text-gray-900 dark:text-white text-center">{zone.label}</div>
+                            <div className="text-[10px] text-gray-600 dark:text-gray-400 text-center mt-1">{zone.sublabel}</div>
                             {isActive && detail.zone === zone.id && (
                                 <div className="mt-2 rounded bg-black/30 px-2 py-1 text-center">
-                                    <div className="text-[11px] font-mono text-yellow-300">{detail.fn}</div>
-                                    <div className="text-[10px] text-gray-300">{detail.desc}</div>
+                                    <div className="text-[11px] font-mono text-yellow-700 dark:text-yellow-300">{detail.fn}</div>
+                                    <div className="text-[10px] text-gray-700 dark:text-gray-300">{detail.desc}</div>
                                 </div>
                             )}
                         </div>
