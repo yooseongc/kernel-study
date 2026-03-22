@@ -225,35 +225,35 @@ export default function Topic07() {
                         {
                             action: 'XDP_DROP',
                             desc: '패킷 즉시 폐기 (DDoS 방어)',
-                            color: 'text-red-400',
-                            bg: 'bg-red-900/20 dark:bg-red-900/20',
-                            border: 'border-red-800/50',
+                            color: 'text-red-600 dark:text-red-400',
+                            bg: 'bg-red-50 dark:bg-red-900/20',
+                            border: 'border-red-200 dark:border-red-800/50',
                         },
                         {
                             action: 'XDP_PASS',
                             desc: '일반 네트워크 스택으로 전달',
-                            color: 'text-green-400',
-                            bg: 'bg-green-900/20 dark:bg-green-900/20',
-                            border: 'border-green-800/50',
+                            color: 'text-green-600 dark:text-green-400',
+                            bg: 'bg-green-50 dark:bg-green-900/20',
+                            border: 'border-green-200 dark:border-green-800/50',
                         },
                         {
                             action: 'XDP_TX',
                             desc: '수신 NIC로 즉시 반송',
-                            color: 'text-purple-400',
-                            bg: 'bg-purple-900/20 dark:bg-purple-900/20',
-                            border: 'border-purple-800/50',
+                            color: 'text-purple-600 dark:text-purple-400',
+                            bg: 'bg-purple-50 dark:bg-purple-900/20',
+                            border: 'border-purple-200 dark:border-purple-800/50',
                         },
                         {
                             action: 'XDP_REDIRECT',
                             desc: '다른 NIC나 CPU로 전달',
-                            color: 'text-cyan-400',
-                            bg: 'bg-cyan-900/20 dark:bg-cyan-900/20',
-                            border: 'border-cyan-800/50',
+                            color: 'text-cyan-600 dark:text-cyan-400',
+                            bg: 'bg-cyan-50 dark:bg-cyan-900/20',
+                            border: 'border-cyan-200 dark:border-cyan-800/50',
                         },
                     ].map((item) => (
                         <div key={item.action} className={`rounded-lg border ${item.border} ${item.bg} px-3 py-3`}>
                             <div className={`font-mono text-xs font-bold mb-1 ${item.color}`}>{item.action}</div>
-                            <div className="text-gray-400 dark:text-gray-500 text-xs leading-snug">{item.desc}</div>
+                            <div className="text-gray-600 dark:text-gray-400 text-xs leading-snug">{item.desc}</div>
                         </div>
                     ))}
                 </div>

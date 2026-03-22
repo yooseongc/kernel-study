@@ -22,12 +22,12 @@ function renderEbpfPipeline(
     const g = svg.append('g')
 
     const stages = [
-        { label: 'eBPF C 코드', sub: '.c 소스', color: c2.blueStroke },
-        { label: 'clang/llvm', sub: 'compiling', color: c2.purpleStroke },
-        { label: 'eBPF 바이트코드', sub: '.o ELF', color: c2.cyanStroke },
-        { label: 'verifier', sub: '정적 분석', color: c2.amberStroke },
-        { label: 'JIT 컴파일', sub: 'native code', color: c2.greenStroke },
-        { label: '커널 실행', sub: 'in-kernel', color: c2.greenStroke },
+        { label: 'eBPF C 코드', sub: '.c 소스', fill: c2.blueFill, stroke: c2.blueStroke, text: c2.blueText },
+        { label: 'clang/llvm', sub: 'compiling', fill: c2.purpleFill, stroke: c2.purpleStroke, text: c2.purpleText },
+        { label: 'eBPF 바이트코드', sub: '.o ELF', fill: c2.cyanFill, stroke: c2.cyanStroke, text: c2.cyanText },
+        { label: 'verifier', sub: '정적 분석', fill: c2.amberFill, stroke: c2.amberStroke, text: c2.amberText },
+        { label: 'JIT 컴파일', sub: 'native code', fill: c2.greenFill, stroke: c2.greenStroke, text: c2.greenText },
+        { label: '커널 실행', sub: 'in-kernel', fill: c2.greenFill, stroke: c2.greenStroke, text: c2.greenText },
     ]
 
     const padX = 16
@@ -47,8 +47,8 @@ function renderEbpfPipeline(
             .attr('width', boxW)
             .attr('height', boxH)
             .attr('rx', 6)
-            .attr('fill', st.color + (isDark ? '22' : '11'))
-            .attr('stroke', st.color)
+            .attr('fill', st.fill)
+            .attr('stroke', st.stroke)
             .attr('stroke-width', 1.5)
 
         g.append('text')
@@ -56,7 +56,7 @@ function renderEbpfPipeline(
             .attr('y', cy - 6)
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'middle')
-            .attr('fill', st.color)
+            .attr('fill', st.text)
             .attr('font-size', '9px')
             .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
