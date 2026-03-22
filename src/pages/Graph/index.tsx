@@ -77,7 +77,7 @@ function buildData(
                 label: `${String(t.number).padStart(2, '0')}. ${t.title}`,
                 topicIndex: i,
                 route: t.route,
-                r: 22,
+                r: 32,
             })
         })
     }
@@ -93,7 +93,7 @@ function buildData(
                 label: g.term,
                 category: g.category,
                 route: `/glossary#${g.id}`,
-                r: 7,
+                r: 12,
             })
         })
     }
@@ -150,8 +150,8 @@ function renderGraph(
         .data(links)
         .join('line')
         .attr('stroke', d => d.kind === 'sharedTag' ? edgeColor : edgeColorDash)
-        .attr('stroke-width', d => d.kind === 'sharedTag' ? 1.5 : 0.8)
-        .attr('stroke-dasharray', d => d.kind === 'topicRef' ? '4,3' : 'none')
+        .attr('stroke-width', d => d.kind === 'sharedTag' ? 2 : 1)
+        .attr('stroke-dasharray', d => d.kind === 'topicRef' ? '6,4' : 'none')
         .attr('opacity', d => d.kind === 'sharedTag' ? 0.5 : 0.35)
 
     // 노드 그룹
@@ -192,7 +192,7 @@ function renderGraph(
             if (d.type === 'topic') return topicStroke(d.topicIndex!, isDark)
             return CAT_COLOR[d.category ?? 'general']
         })
-        .attr('stroke-width', d => d.type === 'topic' ? 2 : 1)
+        .attr('stroke-width', d => d.type === 'topic' ? 2.5 : 1.5)
 
     // 토픽 번호 레이블 (원 안)
     nodeSel.filter(d => d.type === 'topic')
@@ -200,7 +200,7 @@ function renderGraph(
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .attr('fill', d => topicStroke(d.topicIndex!, isDark))
-        .attr('font-size', '9px')
+        .attr('font-size', '13px')
         .attr('font-family', 'monospace')
         .attr('font-weight', 'bold')
         .attr('pointer-events', 'none')
@@ -210,40 +210,40 @@ function renderGraph(
     nodeSel.filter(d => d.type === 'topic')
         .append('text')
         .attr('text-anchor', 'middle')
-        .attr('y', d => d.r + 11)
+        .attr('y', d => d.r + 14)
         .attr('fill', d => topicStroke(d.topicIndex!, isDark))
-        .attr('font-size', '8px')
+        .attr('font-size', '10px')
         .attr('font-family', 'sans-serif')
         .attr('pointer-events', 'none')
         .text(d => {
             const title = d.label.replace(/^\d+\.\s*/, '')
-            return title.length > 11 ? title.slice(0, 10) + '…' : title
+            return title.length > 14 ? title.slice(0, 13) + '…' : title
         })
 
     // 용어 텍스트 레이블 (원 우측, 상시 표시)
     nodeSel.filter(d => d.type === 'glossary')
         .append('text')
-        .attr('x', d => d.r + 4)
+        .attr('x', d => d.r + 5)
         .attr('y', 1)
         .attr('dominant-baseline', 'middle')
         .attr('fill', d => CAT_COLOR[d.category ?? 'general'])
-        .attr('font-size', '6.5px')
+        .attr('font-size', '9px')
         .attr('font-family', 'sans-serif')
         .attr('pointer-events', 'none')
-        .text(d => d.label.length > 9 ? d.label.slice(0, 8) + '…' : d.label)
+        .text(d => d.label)
 
     // Force 시뮬레이션
     const sim = d3.forceSimulation<GraphNode>(nodes)
         .force('link', d3.forceLink<GraphNode, GraphLink>(links)
             .id(d => d.id)
-            .distance(d => d.kind === 'sharedTag' ? 190 : 95)
-            .strength(d => d.kind === 'sharedTag' ? 0.2 : 0.45)
+            .distance(d => d.kind === 'sharedTag' ? 260 : 130)
+            .strength(d => d.kind === 'sharedTag' ? 0.15 : 0.35)
         )
         .force('charge', d3.forceManyBody<GraphNode>()
-            .strength(d => d.type === 'topic' ? -500 : -70)
+            .strength(d => d.type === 'topic' ? -800 : -120)
         )
-        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.05))
-        .force('collision', d3.forceCollide<GraphNode>(d => d.type === 'topic' ? d.r + 18 : d.r + 22))
+        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.03))
+        .force('collision', d3.forceCollide<GraphNode>(d => d.type === 'topic' ? d.r + 30 : d.r + 35))
         .on('tick', () => {
             linkSel
                 .attr('x1', d => (d.source as GraphNode).x ?? 0)
@@ -351,7 +351,7 @@ export default function Graph() {
                 <D3Container
                     renderFn={renderFn}
                     deps={[nodes, links, isDark]}
-                    height={640}
+                    height={800}
                     zoomable
                 />
                 {/* 툴팁 */}

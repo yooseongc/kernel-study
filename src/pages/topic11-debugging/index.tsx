@@ -1,288 +1,14 @@
-import { useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
 import { useTheme } from '../../hooks/useTheme'
-import * as d3 from 'd3'
-import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
 import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 11.1  /proc 트리 D3 시각화
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface TreeNodeData {
-  name: string
-  color?: string
-  children?: TreeNodeData[]
-}
-
-function renderProcTree(
-    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-    width: number,
-    height: number,
-    isDark: boolean,
-) {
-    const c = themeColors(isDark)
-    const bg = c.bg
-    const textColor = c.text
-    const dimColor = c.textMuted
-    const linkColor = c.link
-
-    svg.style('background', bg)
-
-    const treeData: TreeNodeData = {
-        name: '/proc',
-        color: '#3b82f6',
-        children: [
-            {
-                name: '/proc/<pid>/',
-                color: '#10b981',
-                children: [
-                    { name: 'maps', color: '#34d399' },
-                    { name: 'status', color: '#34d399' },
-                    { name: 'fd/', color: '#34d399' },
-                    { name: 'net/', color: '#34d399' },
-                ],
-            },
-            {
-                name: '/proc/net/',
-                color: '#8b5cf6',
-                children: [
-                    { name: 'dev', color: '#a78bfa' },
-                    { name: 'tcp', color: '#a78bfa' },
-                    { name: 'softnet_stat', color: '#a78bfa' },
-                ],
-            },
-            {
-                name: '/proc/sys/',
-                color: '#f59e0b',
-                children: [
-                    { name: 'kernel/', color: '#fbbf24' },
-                    { name: 'net/', color: '#fbbf24' },
-                ],
-            },
-            { name: '/proc/interrupts', color: '#ef4444' },
-        ],
-    }
-
-    const padX = 20
-    const padY = 20
-    const innerW = width - padX * 2
-    const innerH = height - padY * 2
-
-    const root = d3.hierarchy<TreeNodeData>(treeData)
-
-    const treeLayout = d3.tree<TreeNodeData>().size([innerH, innerW])
-    treeLayout(root)
-
-    const g = svg.append('g')
-
-    // Bezier links
-    const linkGenerator = d3
-        .linkHorizontal<d3.HierarchyPointLink<TreeNodeData>, d3.HierarchyPointNode<TreeNodeData>>()
-        .x((d) => (d as d3.HierarchyPointNode<TreeNodeData>).y + padX)
-        .y((d) => (d as d3.HierarchyPointNode<TreeNodeData>).x + padY)
-
-    const pointRoot = root as d3.HierarchyPointNode<TreeNodeData>
-    g.selectAll('path.link')
-        .data(pointRoot.links())
-        .enter()
-        .append('path')
-        .attr('class', 'link')
-        .attr('d', (d) => linkGenerator(d) ?? '')
-        .attr('fill', 'none')
-        .attr('stroke', linkColor)
-        .attr('stroke-width', 1.2)
-
-    // Nodes
-    const nodes = g.selectAll('g.node')
-        .data(root.descendants())
-        .enter()
-        .append('g')
-        .attr('class', 'node')
-        .attr('transform', (d) => {
-            const pd = d as d3.HierarchyPointNode<TreeNodeData>
-            return `translate(${pd.y + padX},${pd.x + padY})`
-        })
-
-    nodes
-        .append('circle')
-        .attr('r', 4)
-        .attr('fill', (d) => d.data.color ?? dimColor)
-        .attr('stroke', (d) => d.data.color ?? dimColor)
-        .attr('stroke-width', 1.5)
-
-    nodes
-        .append('text')
-        .attr('x', (d) => (d.children ? -8 : 8))
-        .attr('y', 0)
-        .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-        .attr('dominant-baseline', 'middle')
-        .attr('fill', (d) => d.data.color ?? textColor)
-        .attr('font-size', '10px')
-        .attr('font-family', 'monospace')
-        .attr('font-weight', (d) => (d.depth <= 1 ? 'bold' : 'normal'))
-        .text((d) => d.data.name)
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 11.6  네트워크 병목 바 차트 D3 시각화
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface BottleneckItem {
-  label: string
-  priority: number
-  color: string
-  cmd: string
-}
-
-const bottleneckData: BottleneckItem[] = [
-    { label: 'NIC RX drop', priority: 95, color: '#ef4444', cmd: 'ethtool -S eth0 | grep drop' },
-    { label: 'softnet drop', priority: 80, color: '#f59e0b', cmd: '/proc/net/softnet_stat col2' },
-    { label: 'conntrack full', priority: 65, color: '#8b5cf6', cmd: 'conntrack -S' },
-    { label: 'socket buffer', priority: 50, color: '#3b82f6', cmd: 'ss -nmp | grep rcvbuf' },
-    { label: '앱 처리 지연', priority: 35, color: '#10b981', cmd: 'strace / perf' },
-]
-
-function renderNetworkBottleneck(
-    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-    width: number,
-    height: number,
-    isDark: boolean,
-) {
-    const c2 = themeColors(isDark)
-    const bg = c2.bg
-    const axisColor = c2.textDim
-    const textColor = c2.text
-    const dimColor = c2.textMuted
-
-    svg.style('background', bg)
-
-    const padLeft = 110
-    const padRight = 16
-    const padTop = 16
-    const padBottom = 32
-
-    const innerW = width - padLeft - padRight
-    const innerH = height - padTop - padBottom
-
-    const g = svg.append('g')
-
-    const xScale = d3
-        .scaleLinear()
-        .domain([0, 100])
-        .range([padLeft, padLeft + innerW])
-
-    const barHeight = Math.min(innerH / bottleneckData.length - 8, 28)
-    const stepY = innerH / bottleneckData.length
-
-    // X axis
-    g.append('line')
-        .attr('x1', padLeft)
-        .attr('y1', padTop + innerH)
-        .attr('x2', padLeft + innerW)
-        .attr('y2', padTop + innerH)
-        .attr('stroke', axisColor)
-        .attr('stroke-width', 1)
-
-    // X axis ticks
-    ;[0, 25, 50, 75, 100].forEach((tick) => {
-        const x = xScale(tick)
-        g.append('line')
-            .attr('x1', x)
-            .attr('y1', padTop)
-            .attr('x2', x)
-            .attr('y2', padTop + innerH)
-            .attr('stroke', axisColor)
-            .attr('stroke-width', 0.5)
-            .attr('stroke-dasharray', '3 3')
-
-        g.append('text')
-            .attr('x', x)
-            .attr('y', padTop + innerH + 14)
-            .attr('text-anchor', 'middle')
-            .attr('fill', dimColor)
-            .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
-            .text(tick === 100 ? '높음' : tick === 0 ? '낮음' : `${tick}`)
-    })
-
-    // Y axis label
-    g.append('text')
-        .attr('x', padLeft + innerW / 2)
-        .attr('y', padTop + innerH + 28)
-        .attr('text-anchor', 'middle')
-        .attr('fill', dimColor)
-        .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
-        .text('체크 우선순위')
-
-    // Bars
-    bottleneckData.forEach((item, i) => {
-        const cy = padTop + i * stepY + stepY / 2
-        const barW = xScale(item.priority) - padLeft
-
-        // Background track
-        g.append('rect')
-            .attr('x', padLeft)
-            .attr('y', cy - barHeight / 2)
-            .attr('width', innerW)
-            .attr('height', barHeight)
-            .attr('rx', 4)
-            .attr('fill', c2.bgCard)
-
-        // Bar
-        g.append('rect')
-            .attr('x', padLeft)
-            .attr('y', cy - barHeight / 2)
-            .attr('width', barW)
-            .attr('height', barHeight)
-            .attr('rx', 4)
-            .attr('fill', item.color + (isDark ? 'bb' : 'cc'))
-
-        // Label (left)
-        g.append('text')
-            .attr('x', padLeft - 6)
-            .attr('y', cy - 4)
-            .attr('text-anchor', 'end')
-            .attr('dominant-baseline', 'middle')
-            .attr('fill', item.color)
-            .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
-            .attr('font-weight', 'bold')
-            .text(item.label)
-
-        // Command label (left, secondary)
-        g.append('text')
-            .attr('x', padLeft - 6)
-            .attr('y', cy + 8)
-            .attr('text-anchor', 'end')
-            .attr('dominant-baseline', 'middle')
-            .attr('fill', dimColor)
-            .attr('font-size', '7.5px')
-            .attr('font-family', 'monospace')
-            .text(item.cmd)
-
-        // Value label inside bar
-        if (barW > 30) {
-            g.append('text')
-                .attr('x', padLeft + barW - 6)
-                .attr('y', cy)
-                .attr('text-anchor', 'end')
-                .attr('dominant-baseline', 'middle')
-                .attr('fill', textColor)
-                .attr('font-size', '9px')
-                .attr('font-family', 'monospace')
-                .attr('font-weight', 'bold')
-                .text(`${item.priority}`)
-        }
-    })
-}
+import { ProcTreeChart } from '../../components/concepts/debug/ProcTreeChart'
+import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkBottleneckChart'
+import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -612,97 +338,10 @@ bpftrace -e 'profile:hz:99 { @[kstack] = count(); }' \\
 # 5. off-CPU flame graph (블로킹 시간 분석)
 offcputime -df -p $(pgrep myapp) 30 | flamegraph.pl > offcpu.svg`
 
-interface FlameNode {
-    label: string
-    widthPct: number
-    color: string
-    children?: FlameNode[]
-}
-
-const flameTreeData: FlameNode = {
-    label: 'main',
-    widthPct: 100,
-    color: '#ef4444',
-    children: [
-        {
-            label: 'process_request',
-            widthPct: 70,
-            color: '#f97316',
-            children: [
-                {
-                    label: 'db_query',
-                    widthPct: 40,
-                    color: '#f59e0b',
-                    children: [
-                        { label: 'pg_exec', widthPct: 25, color: '#eab308' },
-                        { label: 'pg_parse', widthPct: 15, color: '#84cc16' },
-                    ],
-                },
-                { label: 'json_encode', widthPct: 30, color: '#22c55e' },
-            ],
-        },
-        { label: 'idle', widthPct: 30, color: '#06b6d4' },
-    ],
-}
-
-const flameInterpretCards = [
-    {
-        title: '넓은 평평한 상단 블록',
-        color: '#ef4444',
-        desc: '해당 함수가 CPU 사용량이 많음 → 최적화 대상',
-    },
-    {
-        title: '좁고 깊은 타워',
-        color: '#f97316',
-        desc: '깊은 재귀 또는 많은 중간 호출 → 불필요한 추상화 확인',
-    },
-    {
-        title: 'kernel 스택 넓게 나타남',
-        color: '#8b5cf6',
-        desc: '시스템 콜 또는 인터럽트 처리 병목',
-    },
-    {
-        title: 'idle이 전체의 대부분',
-        color: '#06b6d4',
-        desc: 'CPU 바운드가 아닌 I/O 바운드 → off-CPU 분석 필요',
-    },
-]
-
 const cpuTypeRows: TableRow[] = [
     { cells: ['on-CPU', 'CPU를 실제로 쓰는 시간', 'perf, bpftrace profile:'] },
     { cells: ['off-CPU', '블로킹(락, I/O) 대기 시간', 'offcputime (bcc), wakeuptime'] },
 ]
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Flame Graph mock visualisation component
-// ─────────────────────────────────────────────────────────────────────────────
-
-function FlameBlock({ node, offsetPct }: { node: FlameNode; offsetPct: number }) {
-    return (
-        <div
-            style={{ width: `${node.widthPct}%`, marginLeft: `${offsetPct}%`, position: 'relative' }}
-            className="flex flex-col-reverse"
-        >
-            {/* render children above (visually they appear above because of flex-col-reverse on parent) */}
-            {node.children && node.children.length > 0 && (
-                <div className="flex items-end w-full" style={{ position: 'relative' }}>
-                    {node.children.map((child) => (
-                        <FlameBlock key={child.label} node={child} offsetPct={0} />
-                    ))}
-                </div>
-            )}
-            <div
-                title={`${node.label} — ${node.widthPct}%`}
-                style={{ backgroundColor: node.color, width: '100%' }}
-                className="h-8 flex items-center justify-center overflow-hidden border border-white/20 dark:border-black/30 cursor-default select-none rounded-sm"
-            >
-                <span className="text-white text-xs font-mono font-semibold truncate px-1">
-                    {node.label} <span className="opacity-75">({node.widthPct}%)</span>
-                </span>
-            </div>
-        </div>
-    )
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main page
@@ -711,20 +350,6 @@ function FlameBlock({ node, offsetPct }: { node: FlameNode; offsetPct: number })
 export default function Topic10() {
     const { theme } = useTheme()
     const isDark = theme === 'dark'
-
-    const renderProcTreeFn = useCallback(
-        (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
-            renderProcTree(svg, w, h, isDark)
-        },
-        [isDark]
-    )
-
-    const renderNetworkBottleneckFn = useCallback(
-        (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
-            renderNetworkBottleneck(svg, w, h, isDark)
-        },
-        [isDark]
-    )
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
@@ -761,14 +386,7 @@ export default function Topic10() {
           제공하는 가상 파일시스템입니다. 런타임 커널 상태를 파일 인터페이스로 노출하여 사용자
           공간에서 커널 내부 정보를 읽거나 파라미터를 조정할 수 있습니다.
                 </Prose>
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <D3Container
-                        renderFn={renderProcTreeFn}
-                        deps={[isDark]}
-                        height={280}
-                        zoomable={true}
-                    />
-                </div>
+                <ProcTreeChart />
                 <InfoTable headers={['명령어', '설명']} rows={procCmdRows} />
                 <div className="space-y-3">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 font-mono">
@@ -940,13 +558,7 @@ export default function Topic10() {
           네트워크 성능 문제는 NIC 드롭부터 애플리케이션 처리 지연까지 여러 계층에서 발생합니다.
           체크 우선순위에 따라 순서대로 점검하면 빠르게 병목 지점을 찾을 수 있습니다.
                 </Prose>
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <D3Container
-                        renderFn={renderNetworkBottleneckFn}
-                        deps={[isDark]}
-                        height={200}
-                    />
-                </div>
+                <NetworkBottleneckChart />
                 <InfoTable
                     headers={['위치', '확인 방법', '조치']}
                     rows={bottleneckTableRows}
@@ -1139,58 +751,10 @@ lock(B) ← 대기   lock(A) ← 대기
                     파이프라인으로 생성합니다.
                 </Prose>
 
-                {/* Axis legend */}
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                    {[
-                        { axis: 'X축', desc: '샘플 수 (시간 비율). 왼→오른쪽 순서는 의미 없음 (알파벳 순)' },
-                        { axis: 'Y축', desc: '콜 스택 깊이. 아래가 호출자(caller), 위가 피호출자(callee)' },
-                        { axis: '폭', desc: '해당 함수가 샘플에 등장한 횟수 → CPU 사용 비율' },
-                        { axis: '색상', desc: '의미 없음(구분용). 빨간계열=유저 공간, 파란계열=커널 공간 관례' },
-                    ].map((item) => (
-                        <div
-                            key={item.axis}
-                            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 space-y-1"
-                        >
-                            <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{item.axis}</span>
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{item.desc}</p>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Mock flame graph visualisation */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 p-4 space-y-2">
-                    <p className="text-xs font-mono text-gray-500 dark:text-gray-500 mb-3">
-                        ▲ 콜스택 (위 = callee) &nbsp;|&nbsp; 폭 = CPU 사용 비율
-                    </p>
-                    <div className="w-full flex flex-col-reverse">
-                        <FlameBlock node={flameTreeData} offsetPct={0} />
-                    </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-600 pt-1">
-                        * 모의 시각화 — 실제 flame graph는 SVG 인터랙티브로 열립니다
-                    </p>
-                </div>
+                <FlameGraphViz />
 
                 {/* Pipeline code */}
                 <CodeBlock code={flameGenCode} language="bash" filename="# Flame Graph 생성 파이프라인" />
-
-                {/* Interpretation cards */}
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">해석 예시</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {flameInterpretCards.map((card) => (
-                        <div
-                            key={card.title}
-                            className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
-                            style={{ borderColor: card.color + '55' }}
-                        >
-                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
-                                {card.title}
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
-                                {card.desc}
-                            </p>
-                        </div>
-                    ))}
-                </div>
 
                 {/* on-CPU vs off-CPU table */}
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">on-CPU vs off-CPU</p>

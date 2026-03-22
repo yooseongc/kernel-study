@@ -1,10 +1,6 @@
-import { useState, useCallback } from 'react'
 import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
 import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
 import { useTheme } from '../../hooks/useTheme'
-import * as d3 from 'd3'
-import { themeColors } from '../../lib/colors'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
@@ -12,291 +8,9 @@ import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 9.1  Race Condition — AnimatedDiagram step renderer
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface RaceState {
-  counter: number
-  regA: number | null
-  regB: number | null
-  activeA: boolean
-  activeB: boolean
-  highlight: 'none' | 'a' | 'b' | 'danger'
-  note: string
-}
-
-const raceStates: RaceState[] = [
-    {
-        counter: 0,
-        regA: null,
-        regB: null,
-        activeA: false,
-        activeB: false,
-        highlight: 'none',
-        note: '두 스레드 모두 대기 중. counter = 0',
-    },
-    {
-        counter: 0,
-        regA: 0,
-        regB: null,
-        activeA: true,
-        activeB: false,
-        highlight: 'a',
-        note: 'Thread A가 counter(=0)를 레지스터로 읽음. 아직 쓰지 않음.',
-    },
-    {
-        counter: 0,
-        regA: 0,
-        regB: 0,
-        activeA: false,
-        activeB: true,
-        highlight: 'b',
-        note: '컨텍스트 스위치! Thread B도 counter(=0)를 읽음. A의 결과는 아직 반영 안 됨.',
-    },
-    {
-        counter: 1,
-        regA: 0,
-        regB: 0,
-        activeA: true,
-        activeB: false,
-        highlight: 'a',
-        note: 'Thread A: reg+1=1 을 counter에 씀. counter = 1.',
-    },
-    {
-        counter: 1,
-        regA: 0,
-        regB: 0,
-        activeA: false,
-        activeB: true,
-        highlight: 'danger',
-        note: 'Thread B: reg+1=1 을 counter에 씀. counter = 1 (기댓값 2!). 데이터 손실 발생!',
-    },
-]
-
-const raceAnimSteps = [
-    { label: '① 초기 상태', description: 'counter=0, Thread A/B 모두 대기' },
-    { label: '② Thread A: counter 읽기', description: 'A가 counter=0 읽음 (레지스터에 저장)' },
-    {
-        label: '③ Thread B: counter 읽기 (컨텍스트 스위치)',
-        description: 'B도 counter=0 읽음 (A는 아직 쓰지 않음)',
-    },
-    { label: '④ Thread A: counter+1 쓰기', description: 'A가 register+1=1을 counter에 씀' },
-    {
-        label: '⑤ Thread B: counter+1 쓰기 (데이터 손실!)',
-        description: 'B도 register+1=1을 counter에 씀 → counter=1 (기댓값 2!)',
-    },
-]
-
-const colBase = 'rounded-lg border px-3 py-3 flex flex-col gap-1 min-w-0'
-
-function ThreadBox({
-    label,
-    regVal,
-    active,
-    danger,
-}: {
-    label: string
-    regVal: number | null
-    active: boolean
-    danger: boolean
-}) {
-    const borderCls = danger
-        ? 'border-red-500 bg-red-900/20'
-        : active
-            ? 'border-blue-500 bg-blue-900/20'
-            : 'border-gray-700 bg-gray-800/40'
-    const textCls = danger ? 'text-red-400' : active ? 'text-blue-300' : 'text-gray-500'
-    return (
-        <div className={`${colBase} ${borderCls} flex-1`}>
-            <div className={`text-xs font-mono font-bold ${textCls}`}>{label}</div>
-            <div className="text-xs text-gray-400 font-mono">
-          reg ={' '}
-                <span className={regVal !== null ? 'text-yellow-300' : 'text-gray-600'}>
-                    {regVal !== null ? regVal : '—'}
-                </span>
-            </div>
-            {active && (
-                <div className={`text-[10px] font-mono ${danger ? 'text-red-400' : 'text-green-400'}`}>
-                    {danger ? '▶ STORE (충돌!)' : '▶ 실행 중'}
-                </div>
-            )}
-        </div>
-    )
-}
-
-function RaceViz({ step }: { step: number }) {
-    const s = raceStates[step]
-
-    const activeA = s.activeA
-    const activeB = s.activeB
-    const isDanger = s.highlight === 'danger'
-
-    return (
-        <div className="flex flex-col gap-3 p-2">
-            <div className="flex gap-3 items-stretch">
-                {/* Thread A */}
-                <ThreadBox
-                    label="Thread A"
-                    regVal={s.regA}
-                    active={activeA}
-                    danger={false}
-                />
-
-                {/* Shared counter */}
-                <div
-                    className={`${colBase} flex-1 items-center justify-center ${
-                        isDanger
-                            ? 'border-red-500 bg-red-900/30'
-                            : 'border-yellow-600/60 bg-yellow-900/10'
-                    }`}
-                >
-                    <div className="text-xs font-mono text-yellow-400 font-bold text-center">
-            shared counter
-                    </div>
-                    <div
-                        className={`text-2xl font-mono font-bold text-center ${
-                            isDanger ? 'text-red-400' : 'text-yellow-300'
-                        }`}
-                    >
-                        {s.counter}
-                    </div>
-                    {isDanger && (
-                        <div className="text-[10px] font-mono text-red-400 text-center">
-              기댓값: 2 ← 손실!
-                        </div>
-                    )}
-                </div>
-
-                {/* Thread B */}
-                <ThreadBox
-                    label="Thread B"
-                    regVal={s.regB}
-                    active={activeB}
-                    danger={isDanger}
-                />
-            </div>
-
-            <div
-                className={`rounded-lg px-3 py-2 text-xs font-mono ${
-                    isDanger
-                        ? 'bg-red-900/30 text-red-300 border border-red-700/50'
-                        : 'bg-gray-800/60 text-gray-400 border border-gray-700/50'
-                }`}
-            >
-                {s.note}
-            </div>
-        </div>
-    )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 9.2–9.5  Lock comparison D3 bar chart
-// ─────────────────────────────────────────────────────────────────────────────
-
-function renderLockComparison(
-    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-    width: number,
-    height: number,
-    isDark: boolean,
-) {
-    const c = themeColors(isDark)
-    const bg = c.bg
-    const textColor = c.text
-    const dimColor = c.textMuted
-
-    svg.style('background', bg)
-
-    const g = svg.append('g')
-
-    const data = [
-        { label: 'Spinlock', overhead: 85, color: c.amberStroke },
-        { label: 'Mutex', overhead: 60, color: c.amberText },
-        { label: 'RWLock-R', overhead: 45, color: c.greenStroke },
-        { label: 'RWLock-W', overhead: 70, color: isDark ? 'oklch(72% 0.18 130)' : 'oklch(46% 0.20 130)' },
-        { label: 'Atomic', overhead: 20, color: c.greenText },
-        { label: 'RCU-R', overhead: 5, color: c.cyanStroke },
-    ]
-
-    const padX = 12
-    const padTop = 20
-    const padBottom = 38
-    const chartW = width - padX * 2
-    const chartH = height - padTop - padBottom
-
-    const barW = Math.min((chartW / data.length) - 10, 52)
-    const stepX = chartW / data.length
-
-    // Y axis max
-    const maxVal = 100
-
-    data.forEach((d, i) => {
-        const cx = padX + i * stepX + stepX / 2
-        const barH = (d.overhead / maxVal) * chartH
-        const barY = padTop + chartH - barH
-
-        // bar
-        g.append('rect')
-            .attr('x', cx - barW / 2)
-            .attr('y', barY)
-            .attr('width', barW)
-            .attr('height', barH)
-            .attr('rx', 4)
-            .attr('fill', d.color + (isDark ? 'bb' : 'cc'))
-            .attr('stroke', d.color)
-            .attr('stroke-width', 1)
-
-        // overhead label above bar
-        g.append('text')
-            .attr('x', cx)
-            .attr('y', barY - 4)
-            .attr('text-anchor', 'middle')
-            .attr('fill', d.color)
-            .attr('font-size', '10px')
-            .attr('font-family', 'monospace')
-            .attr('font-weight', 'bold')
-            .text(`${d.overhead}`)
-
-        // x-axis label
-        g.append('text')
-            .attr('x', cx)
-            .attr('y', padTop + chartH + 14)
-            .attr('text-anchor', 'middle')
-            .attr('fill', textColor)
-            .attr('font-size', '9px')
-            .attr('font-family', 'monospace')
-            .text(d.label)
-    })
-
-    // baseline
-    g.append('line')
-        .attr('x1', padX)
-        .attr('y1', padTop + chartH)
-        .attr('x2', width - padX)
-        .attr('y2', padTop + chartH)
-        .attr('stroke', dimColor)
-        .attr('stroke-width', 1)
-
-    // Y-axis label
-    g.append('text')
-        .attr('x', padX)
-        .attr('y', padTop - 6)
-        .attr('fill', dimColor)
-        .attr('font-size', '9px')
-        .attr('font-family', 'monospace')
-        .text('상대적 오버헤드 →')
-
-    // chart title
-    g.append('text')
-        .attr('x', width - padX)
-        .attr('y', padTop + chartH + 30)
-        .attr('text-anchor', 'end')
-        .attr('fill', dimColor)
-        .attr('font-size', '8.5px')
-        .attr('font-family', 'monospace')
-        .text('낮을수록 오버헤드 적음')
-}
+import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/RaceConditionViz'
+import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
+import { RcuGracePeriodViz } from '../../components/concepts/sync/RcuGracePeriodViz'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -556,16 +270,6 @@ export default function Topic08() {
     const { theme } = useTheme()
     const isDark = theme === 'dark'
 
-    // AnimatedDiagram step state (lifted so RaceViz can receive it)
-    const [raceStep, setRaceStep] = useState(0)
-
-    const renderLockFn = useCallback(
-        (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, w: number, h: number) => {
-            renderLockComparison(svg, w, h, isDark)
-        },
-        [isDark]
-    )
-
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
             {/* Header */}
@@ -604,11 +308,7 @@ export default function Topic08() {
 
                 <AnimatedDiagram
                     steps={raceAnimSteps}
-                    renderStep={(step) => {
-                        // sync external state for RaceViz
-                        if (step !== raceStep) setRaceStep(step)
-                        return <RaceViz step={step} />
-                    }}
+                    renderStep={(step) => <RaceConditionViz step={step} />}
                     autoPlayInterval={2200}
                 />
 
@@ -704,7 +404,7 @@ export default function Topic08() {
           락 종류별 상대적 오버헤드 비교
                 </h3>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700">
-                    <D3Container renderFn={renderLockFn} deps={[isDark]} height={220} />
+                    <LockComparisonChart />
                 </div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 font-mono">
           RCU-R은 실질적으로 오버헤드가 거의 없습니다 (선점 비활성화만 수행).
@@ -1256,98 +956,7 @@ void cleanup(void) {
                 </Prose>
 
                 {/* Grace Period 타임라인 SVG */}
-                <div className="overflow-x-auto">
-                    <svg
-                        viewBox="0 0 780 260"
-                        width="780"
-                        height="260"
-                        className="w-full max-w-3xl mx-auto block"
-                        style={{ minWidth: 520 }}
-                        aria-label="RCU Grace Period 타임라인"
-                    >
-                        {/* 배경 */}
-                        <rect width="780" height="260" rx="10" fill={isDark ? '#111827' : '#f9fafb'} />
-
-                        {/* Grace Period 배경 구간: x=210 ~ x=490 */}
-                        <rect x="210" y="10" width="280" height="230" rx="4"
-                            fill={isDark ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)'}
-                            stroke="#ef4444" strokeWidth="1" strokeDasharray="6,3" />
-                        <text x="350" y="26" textAnchor="middle" fontSize="10" fill="#ef4444" fontWeight="bold">
-                            Grace Period
-                        </text>
-
-                        {/* 시간 축 */}
-                        <line x1="30" y1="245" x2="760" y2="245" stroke={isDark ? '#6b7280' : '#9ca3af'} strokeWidth="1.5" />
-                        <polygon points="758,241 766,245 758,249" fill={isDark ? '#6b7280' : '#9ca3af'} />
-                        <text x="40" y="259" fontSize="10" fill={isDark ? '#9ca3af' : '#6b7280'}>시간</text>
-                        {/* 눈금 */}
-                        {[100, 210, 350, 490, 620, 730].map((x) => (
-                            <line key={x} x1={x} y1="241" x2={x} y2="249" stroke={isDark ? '#4b5563' : '#d1d5db'} strokeWidth="1" />
-                        ))}
-
-                        {/* 레이블 열 */}
-                        <text x="28" y="72"  fontSize="11" fontWeight="600" fill={isDark ? '#93c5fd' : '#2563eb'} textAnchor="start">업데이터</text>
-                        <text x="28" y="112" fontSize="11" fontWeight="600" fill={isDark ? '#fdba74' : '#ea580c'} textAnchor="start">Reader 1</text>
-                        <text x="28" y="152" fontSize="11" fontWeight="600" fill={isDark ? '#fdba74' : '#ea580c'} textAnchor="start">Reader 2</text>
-                        <text x="28" y="192" fontSize="11" fontWeight="600" fill={isDark ? '#86efac' : '#16a34a'} textAnchor="start">Reader 3</text>
-
-                        {/* 업데이터 바: publish 구간 x=100~210 */}
-                        <rect x="100" y="59" width="110" height="18" rx="4"
-                            fill={isDark ? 'rgba(59,130,246,0.35)' : 'rgba(59,130,246,0.25)'}
-                            stroke="#3b82f6" strokeWidth="1.5" />
-                        <text x="155" y="72" textAnchor="middle" fontSize="9" fill={isDark ? '#93c5fd' : '#1d4ed8'} fontWeight="bold">
-                            publish (rcu_assign_pointer)
-                        </text>
-                        {/* publish 화살표 아래로 */}
-                        <line x1="210" y1="77" x2="210" y2="95" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="3,2" />
-                        <polygon points="206,93 210,101 214,93" fill="#3b82f6" />
-
-                        {/* Reader 1: x=100~490 (구버전) */}
-                        <rect x="100" y="99" width="390" height="18" rx="4"
-                            fill={isDark ? 'rgba(249,115,22,0.3)' : 'rgba(249,115,22,0.2)'}
-                            stroke="#f97316" strokeWidth="1.5" />
-                        <text x="295" y="112" textAnchor="middle" fontSize="9" fill={isDark ? '#fdba74' : '#c2410c'} fontWeight="bold">
-                            구버전 포인터 사용 중
-                        </text>
-                        {/* Reader 1 종료 표시 */}
-                        <line x1="490" y1="95" x2="490" y2="125" stroke="#f97316" strokeWidth="1.5" />
-                        <text x="494" y="110" fontSize="9" fill={isDark ? '#fdba74' : '#c2410c'}>종료</text>
-
-                        {/* Reader 2: x=155~490 (구버전) */}
-                        <rect x="155" y="139" width="335" height="18" rx="4"
-                            fill={isDark ? 'rgba(249,115,22,0.3)' : 'rgba(249,115,22,0.2)'}
-                            stroke="#f97316" strokeWidth="1.5" />
-                        <text x="322" y="152" textAnchor="middle" fontSize="9" fill={isDark ? '#fdba74' : '#c2410c'} fontWeight="bold">
-                            구버전 포인터 사용 중
-                        </text>
-                        {/* Reader 2 종료 표시 */}
-                        <line x1="490" y1="135" x2="490" y2="165" stroke="#f97316" strokeWidth="1.5" />
-                        <text x="494" y="150" fontSize="9" fill={isDark ? '#fdba74' : '#c2410c'}>종료</text>
-
-                        {/* Reader 3: x=540~660 (신버전, grace period 후) */}
-                        <rect x="540" y="179" width="150" height="18" rx="4"
-                            fill={isDark ? 'rgba(34,197,94,0.25)' : 'rgba(34,197,94,0.18)'}
-                            stroke="#22c55e" strokeWidth="1.5" />
-                        <text x="615" y="192" textAnchor="middle" fontSize="9" fill={isDark ? '#86efac' : '#15803d'} fontWeight="bold">
-                            신버전 포인터 사용
-                        </text>
-
-                        {/* Grace Period 끝 → Reclaim 화살표 */}
-                        <line x1="490" y1="170" x2="490" y2="210" stroke="#22c55e" strokeWidth="2" />
-                        <polygon points="486,208 490,216 494,208" fill="#22c55e" />
-                        <rect x="430" y="216" width="150" height="20" rx="4"
-                            fill={isDark ? 'rgba(34,197,94,0.2)' : 'rgba(34,197,94,0.15)'}
-                            stroke="#22c55e" strokeWidth="1.5" />
-                        <text x="505" y="230" textAnchor="middle" fontSize="10" fill={isDark ? '#86efac' : '#15803d'} fontWeight="bold">
-                            call_rcu → kfree
-                        </text>
-
-                        {/* Grace Period 레이블 아래 구간 표시 */}
-                        <line x1="210" y1="235" x2="490" y2="235" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4,2" />
-                        <polygon points="487,231 495,235 487,239" fill="#ef4444" />
-                        <polygon points="213,231 205,235 213,239" fill="#ef4444" />
-                    </svg>
-                </div>
+                <RcuGracePeriodViz />
 
                 {/* 핵심 개념 카드 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
