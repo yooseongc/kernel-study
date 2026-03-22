@@ -145,7 +145,7 @@ function renderDriverTree(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', c.textMuted)
                 .attr('font-size', '8px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(nd.data.sub)
         }
     })
