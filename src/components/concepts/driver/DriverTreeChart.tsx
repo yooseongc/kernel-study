@@ -133,7 +133,7 @@ function renderDriverTree(
             .attr('dominant-baseline', 'middle')
             .attr('fill', colors.text)
             .attr('font-size', '10px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
             .attr('font-weight', 'bold')
             .text(nd.data.name)
 

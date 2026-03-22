@@ -231,7 +231,7 @@ export default function Topic10() {
                     인터페이스를 통해 제어하며 특정 함수, PID, 이벤트를 타겟팅하여 정밀하게 추적할 수 있습니다.
                 </Prose>
                 <CodeBlock code={snippets.ftraceCode} language="bash" filename="ftrace 설정" />
-                <div className="rounded-lg border border-blue-800/40 bg-blue-900/20 dark:bg-blue-950/30 px-4 py-3 text-xs text-blue-700 dark:text-blue-300">
+                <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-950/30 px-4 py-3 text-xs text-blue-700 dark:text-blue-300">
                     <span className="font-bold text-blue-600 dark:text-blue-400">팁:</span>{' '}
                     <code className="font-mono">function_graph</code> tracer를 사용하면 함수 호출 트리와 실행 시간을
                     함께 볼 수 있습니다. 네트워크 병목 분석 시 <code className="font-mono">tcp_*</code> 필터와 조합하면
