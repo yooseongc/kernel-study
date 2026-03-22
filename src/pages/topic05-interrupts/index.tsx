@@ -10,6 +10,7 @@ import { Prose } from '../../components/ui/Prose'
 import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
+import { Alert } from '../../components/ui/Alert'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
@@ -56,7 +57,7 @@ const irqSteps = [
 
 function Th({ children }: { children: React.ReactNode }) {
     return (
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-800/60">
+        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide bg-gray-50 dark:bg-gray-800/60">
             {children}
         </th>
     )
@@ -65,7 +66,7 @@ function Th({ children }: { children: React.ReactNode }) {
 function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
     return (
         <td
-            className={`px-3 py-2 text-sm text-gray-300 border-t border-gray-700/50 ${mono ? 'font-mono text-xs' : ''}`}
+            className={`px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700/50 ${mono ? 'font-mono text-xs' : ''}`}
         >
             {children}
         </td>
@@ -73,7 +74,7 @@ function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
 }
 
 function SubTitle({ children }: { children: React.ReactNode }) {
-    return <h3 className="text-base font-semibold text-gray-200 mb-3 mt-6">{children}</h3>
+    return <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">{children}</h3>
 }
 
 type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'
@@ -98,7 +99,7 @@ const coalescingParams = [
         name: 'rx-usecs',
         dir: 'RX',
         default: '50–100 μs',
-        color: 'border-blue-700/60',
+        color: 'border-blue-200 dark:border-blue-700/60',
         titleColor: 'text-blue-700 dark:text-blue-300',
         desc: 'RX 인터럽트 합치기 시간(μs). 낮추면 레이턴시↓ 처리량↓, 높이면 레이턴시↑ 처리량↑',
     },
@@ -106,7 +107,7 @@ const coalescingParams = [
         name: 'rx-frames',
         dir: 'RX',
         default: '0 (비활성)',
-        color: 'border-cyan-700/60',
+        color: 'border-cyan-200 dark:border-cyan-700/60',
         titleColor: 'text-cyan-700 dark:text-cyan-300',
         desc: 'N개 프레임이 쌓이면 인터럽트 발생. rx-usecs와 OR 조건으로 동작',
     },
@@ -114,7 +115,7 @@ const coalescingParams = [
         name: 'tx-usecs',
         dir: 'TX',
         default: '50 μs',
-        color: 'border-amber-700/60',
+        color: 'border-amber-200 dark:border-amber-700/60',
         titleColor: 'text-amber-700 dark:text-amber-300',
         desc: 'TX 완료 인터럽트 합치기 시간. 송신 처리량 최적화에 사용',
     },
@@ -122,7 +123,7 @@ const coalescingParams = [
         name: 'tx-frames',
         dir: 'TX',
         default: '0 (비활성)',
-        color: 'border-orange-700/60',
+        color: 'border-orange-200 dark:border-orange-700/60',
         titleColor: 'text-orange-700 dark:text-orange-300',
         desc: 'TX 방향 프레임 수 기준 인터럽트. tx-usecs와 OR 조건',
     },
@@ -130,7 +131,7 @@ const coalescingParams = [
         name: 'adaptive-rx',
         dir: 'RX',
         default: 'on (지원 시)',
-        color: 'border-green-700/60',
+        color: 'border-green-200 dark:border-green-700/60',
         titleColor: 'text-green-700 dark:text-green-300',
         desc: '드라이버가 트래픽 패턴을 분석해 coalescing 값을 자동 조정 (Intel ixgbe 등 지원)',
     },
@@ -184,12 +185,12 @@ export default function Topic04() {
 
             <Section id="s551" title="5.1  인터럽트와 예외의 차이">
                 <Prose>
-                    <strong className="text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등 외부 장치가
-                    CPU에 보내는 비동기 신호입니다. 반면 <strong className="text-gray-200">예외(Exception)</strong>는
+                    <strong className="text-gray-800 dark:text-gray-200">인터럽트(Interrupt)</strong>는 NIC, 키보드, 타이머 등 외부 장치가
+                    CPU에 보내는 비동기 신호입니다. 반면 <strong className="text-gray-800 dark:text-gray-200">예외(Exception)</strong>는
                     CPU가 명령어를 실행하는 도중 내부에서 발생하는 동기적 이벤트입니다 (<T id="page_fault">page fault</T>, divide-by-zero 등).
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -217,7 +218,7 @@ export default function Topic04() {
                             ).map(([label, intCol, excCol]) => (
                                 <tr key={label}>
                                     <Td>
-                                        <span className="font-semibold text-gray-300">{label}</span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
                                     </Td>
                                     <Td mono>{intCol}</Td>
                                     <Td mono>{excCol}</Td>
@@ -228,7 +229,7 @@ export default function Topic04() {
                 </div>
 
                 <SubTitle>예외 세분화: Fault / Trap / Abort</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-700">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -277,13 +278,13 @@ export default function Topic04() {
 
             <Section id="s553" title="5.3  Top Half / Bottom Half">
                 <Prose>
-                    인터럽트 처리는 두 단계로 분리됩니다. <strong className="text-gray-200">Top Half</strong>는{' '}
+                    인터럽트 처리는 두 단계로 분리됩니다. <strong className="text-gray-800 dark:text-gray-200">Top Half</strong>는{' '}
                     <T id="irq">IRQ</T> 발생 직후 인터럽트가 비활성화된 상태에서 최소한의 작업(ACK, 데이터 복사)만
-                    수행합니다. <strong className="text-gray-200">Bottom Half</strong>는 인터럽트를 재활성화한 뒤 나머지
+                    수행합니다. <strong className="text-gray-800 dark:text-gray-200">Bottom Half</strong>는 인터럽트를 재활성화한 뒤 나머지
                     무거운 처리(프로토콜 스택, 패킷 분류 등)를 수행합니다.
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -304,7 +305,7 @@ export default function Topic04() {
                             ).map(([label, top, bot]) => (
                                 <tr key={label}>
                                     <Td>
-                                        <span className="font-semibold text-gray-300">{label}</span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
                                     </Td>
                                     <Td mono>{top}</Td>
                                     <Td mono>{bot}</Td>
@@ -332,7 +333,7 @@ export default function Topic04() {
                     <KernelRef path="kernel/workqueue.c" sym="queue_work" />
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -401,7 +402,7 @@ export default function Topic04() {
                 </div>
 
                 <SubTitle>Softirq 우선순위 (벡터 번호 순)</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -427,7 +428,7 @@ export default function Topic04() {
                             ).map(([num, name, desc]) => (
                                 <tr key={num}>
                                     <Td>
-                                        <span className="font-mono text-amber-400">{num}</span>
+                                        <span className="font-mono text-amber-600 dark:text-amber-400">{num}</span>
                                     </Td>
                                     <Td mono>{name}</Td>
                                     <Td>{desc}</Td>
@@ -451,8 +452,8 @@ export default function Topic04() {
                     {[
                         {
                             title: 'jiffies',
-                            color: 'border-gray-600',
-                            titleColor: 'text-gray-300',
+                            color: 'border-gray-200 dark:border-gray-600',
+                            titleColor: 'text-gray-800 dark:text-gray-300',
                             points: [
                                 '부팅 이후 틱(tick) 횟수',
                                 'CONFIG_HZ=250 → 4ms 해상도',
@@ -462,7 +463,7 @@ export default function Topic04() {
                         },
                         {
                             title: 'hrtimer',
-                            color: 'border-blue-700/60',
+                            color: 'border-blue-200 dark:border-blue-700/60',
                             titleColor: 'text-blue-700 dark:text-blue-300',
                             points: [
                                 '나노초 단위 고해상도',
@@ -473,7 +474,7 @@ export default function Topic04() {
                         },
                         {
                             title: 'Timer Wheel',
-                            color: 'border-amber-700/60',
+                            color: 'border-amber-200 dark:border-amber-700/60',
                             titleColor: 'text-amber-700 dark:text-amber-300',
                             points: [
                                 '낮은 해상도 타이머 관리',
@@ -483,11 +484,11 @@ export default function Topic04() {
                             ],
                         },
                     ].map((card) => (
-                        <div key={card.title} className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}>
+                        <div key={card.title} className={`rounded-xl border ${card.color} bg-white dark:bg-gray-900/50 p-4`}>
                             <div className={`font-bold text-sm mb-3 ${card.titleColor}`}>{card.title}</div>
                             <ul className="space-y-1">
                                 {card.points.map((p) => (
-                                    <li key={p} className="text-xs text-gray-400 flex gap-2">
+                                    <li key={p} className="text-xs text-gray-600 dark:text-gray-400 flex gap-2">
                                         <span className="text-gray-600">·</span>
                                         {p}
                                     </li>
@@ -504,14 +505,14 @@ export default function Topic04() {
                 <Prose>
                     전통적인 Bottom Half(<T id="softirq">Softirq</T>/<T id="tasklet">Tasklet</T>)는 인터럽트
                     컨텍스트에서 실행되어 슬립이 불가합니다. Linux 2.6.30부터 도입된{' '}
-                    <strong className="text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널 스레드로 실행해 슬립
+                    <strong className="text-gray-800 dark:text-gray-200">Threaded IRQ</strong>는 핸들러를 전용 커널 스레드로 실행해 슬립
                     가능하고 우선순위를 조정할 수 있습니다.{' '}
                     <KernelRef path="kernel/irq/manage.c" sym="request_threaded_irq" />
                 </Prose>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-6">
-                    <div className="bg-gray-800 rounded-xl border border-gray-700 p-4">
-                        <div className="text-sm font-bold text-gray-200 mb-3">전통적 방식</div>
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                        <div className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">전통적 방식</div>
                         <ul className="space-y-1">
                             {[
                                 '하드웨어 인터럽트 → request_irq() 핸들러',
@@ -519,7 +520,7 @@ export default function Topic04() {
                                 '우선순위 조정 불가',
                                 '긴 처리는 workqueue로 defer',
                             ].map((p) => (
-                                <li key={p} className="text-xs text-gray-400 flex gap-2">
+                                <li key={p} className="text-xs text-gray-600 dark:text-gray-400 flex gap-2">
                                     <span className="text-gray-600">·</span>
                                     {p}
                                 </li>
@@ -527,7 +528,7 @@ export default function Topic04() {
                         </ul>
                     </div>
 
-                    <div className="bg-gray-800 rounded-xl border border-blue-700/50 p-4">
+                    <div className="bg-blue-50 dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/50 p-4">
                         <div className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-3">
                             <T id="threaded_irq">Threaded IRQ</T> (현대)
                         </div>
@@ -539,7 +540,7 @@ export default function Topic04() {
                                 'nice/RT 우선순위 조정 가능',
                                 'PREEMPT_RT 커널과 완벽 호환',
                             ].map((p) => (
-                                <li key={p} className="text-xs text-gray-400 flex gap-2">
+                                <li key={p} className="text-xs text-gray-600 dark:text-gray-400 flex gap-2">
                                     <span className="text-blue-600">·</span>
                                     {p}
                                 </li>
@@ -568,26 +569,26 @@ export default function Topic04() {
                     {[
                         {
                             title: '단일 CPU 고정',
-                            color: 'border-gray-600',
-                            titleColor: 'text-gray-300',
+                            color: 'border-gray-200 dark:border-gray-600',
+                            titleColor: 'text-gray-800 dark:text-gray-300',
                             desc: '캐시 친화성 극대화. 단일 고성능 서버에서 특정 NIC 전용으로 배정할 때 사용합니다.',
                         },
                         {
                             title: 'CPU 분산',
-                            color: 'border-blue-700/60',
+                            color: 'border-blue-200 dark:border-blue-700/60',
                             titleColor: 'text-blue-700 dark:text-blue-300',
                             desc: 'IRQ를 여러 CPU에 나눠 처리. 대용량 트래픽 서버에서 병목을 줄이는 전략입니다.',
                         },
                         {
                             title: 'NUMA 인식',
-                            color: 'border-amber-700/60',
+                            color: 'border-amber-200 dark:border-amber-700/60',
                             titleColor: 'text-amber-700 dark:text-amber-300',
                             desc: 'IRQ를 NIC와 같은 NUMA 노드 CPU에 배정해 PCIe 버스 지역성을 유지합니다.',
                         },
                     ].map((card) => (
-                        <div key={card.title} className={`rounded-xl border ${card.color} bg-gray-900/50 p-4`}>
+                        <div key={card.title} className={`rounded-xl border ${card.color} bg-white dark:bg-gray-900/50 p-4`}>
                             <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
-                            <p className="text-xs text-gray-400 leading-relaxed">{card.desc}</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -596,13 +597,13 @@ export default function Topic04() {
             <Section id="s558" title="5.8  PREEMPT_RT — 실시간 리눅스 커널">
                 <Prose>
                     표준 Linux 커널은 일부 경우 인터럽트를 비활성화하거나 <T id="spinlock">스핀락</T>을 보유한 채 선점 불가 구간이
-                    존재합니다. <strong className="text-gray-200">PREEMPT_RT 패치</strong>는 이런 구간을 최소화해 최악
+                    존재합니다. <strong className="text-gray-800 dark:text-gray-200">PREEMPT_RT 패치</strong>는 이런 구간을 최소화해 최악
                     지연(worst-case latency)을 수십 마이크로초 이내로 줄입니다. 산업용 로봇, 오디오 처리, 자동차 제어
                     시스템에서 사용됩니다.
                 </Prose>
 
                 <SubTitle>핵심 변경사항</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-700 mb-6">
+                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -623,7 +624,7 @@ export default function Topic04() {
                             ).map(([feat, normal, rt]) => (
                                 <tr key={feat}>
                                     <Td>
-                                        <span className="font-semibold text-gray-300 font-mono text-xs">{feat}</span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-300 font-mono text-xs">{feat}</span>
                                     </Td>
                                     <Td mono>{normal}</Td>
                                     <Td mono>{rt}</Td>
@@ -657,77 +658,72 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     {[
                         {
                             title: '산업용 제어',
-                            color: 'border-red-700/60',
+                            color: 'border-red-200 dark:border-red-700/60',
                             titleColor: 'text-red-700 dark:text-red-300',
                             desc: '로봇 팔, CNC 기계 — 1ms 이하 응답 보장, Xenomai/PREEMPT_RT',
                         },
                         {
                             title: '오디오 처리',
-                            color: 'border-blue-700/60',
+                            color: 'border-blue-200 dark:border-blue-700/60',
                             titleColor: 'text-blue-700 dark:text-blue-300',
                             desc: '전문 DAW (JACK Audio) — 버퍼 언더런 없는 실시간 오디오 처리',
                         },
                         {
                             title: '자동차/항공',
-                            color: 'border-amber-700/60',
+                            color: 'border-amber-200 dark:border-amber-700/60',
                             titleColor: 'text-amber-700 dark:text-amber-300',
                             desc: 'AUTOSAR Adaptive, 드론 비행 제어 — 결정론적 응답 시간 필수',
                         },
                     ].map((card) => (
-                        <div key={card.title} className={`bg-gray-800 rounded-xl border ${card.color} p-4`}>
+                        <div key={card.title} className={`bg-white dark:bg-gray-800 rounded-xl border ${card.color} p-4`}>
                             <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
-                            <p className="text-xs text-gray-400 leading-relaxed">{card.desc}</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="rounded-xl border border-amber-700/50 bg-amber-900/10 p-4">
-                    <div className="flex items-start gap-3">
-                        <span className="text-amber-400 text-sm font-bold mt-0.5">!</span>
-                        <p className="text-sm text-amber-200/80 leading-relaxed">
-                            PREEMPT_RT는 평균 처리량(throughput)을 희생하고 최악 지연을 줄입니다. 일반 서버에서는 표준
-                            커널이 더 높은 처리량을 제공합니다.
-                        </p>
-                    </div>
-                </div>
+                <Alert variant="warning" title="트레이드오프:">
+                    PREEMPT_RT는 평균 처리량(throughput)을 희생하고 최악 지연을 줄입니다. 일반 서버에서는 표준
+                    커널이 더 높은 처리량을 제공합니다.
+                </Alert>
             </Section>
 
             <Section id="s559" title="5.9  IRQ Coalescing — 인터럽트 합치기와 NAPI 폴링">
                 <Prose>
                     고속 NIC에서 패킷이 초당 수백만 건 수신되면 패킷마다 인터럽트를 발생시킬 경우 CPU가 인터럽트
-                    처리에만 매몰되는 <strong className="text-gray-200">interrupt storm</strong>이 발생합니다. <T id="irq_coalescing">IRQ
-                    coalescing</T>은 <strong className="text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만 인터럽트를
+                    처리에만 매몰되는 <strong className="text-gray-800 dark:text-gray-200">interrupt storm</strong>이 발생합니다. <T id="irq_coalescing">IRQ
+                    coalescing</T>은 <strong className="text-gray-800 dark:text-gray-200">N개 패킷 또는 T μs마다 한 번</strong>만 인터럽트를
                     발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
                 </Prose>
 
                 <SubTitle>NAPI 폴링 모드 동작 흐름</SubTitle>
-                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 mb-6 space-y-3">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-5 mb-6 space-y-3">
                     {[
                         {
                             step: '①',
                             color: 'text-blue-600 dark:text-blue-400',
-                            border: 'border-blue-700/50',
+                            border: 'border-blue-200 dark:border-blue-700/50',
                             text: '첫 패킷 도착 → 인터럽트 발생 → IRQ handler: 인터럽트 비활성화 + softirq 스케줄',
                         },
                         {
                             step: '②',
                             color: 'text-cyan-600 dark:text-cyan-400',
-                            border: 'border-cyan-700/50',
+                            border: 'border-cyan-200 dark:border-cyan-700/50',
                             text: 'NET_RX_SOFTIRQ 실행 → napi_poll() → 최대 budget(기본 300)개 패킷을 폴링으로 처리',
                         },
                         {
                             step: '③',
                             color: 'text-green-600 dark:text-green-400',
-                            border: 'border-green-700/50',
+                            border: 'border-green-200 dark:border-green-700/50',
                             text: 'budget 소진 또는 큐가 비면 → 인터럽트 재활성화 → 다음 패킷 대기',
                         },
                     ].map((item) => (
                         <div
                             key={item.step}
-                            className={`flex items-start gap-3 rounded-lg border ${item.border} bg-gray-800/60 p-3`}
+                            className={`flex items-start gap-3 rounded-lg border ${item.border} bg-white dark:bg-gray-800/60 p-3`}
                         >
                             <span className={`font-bold text-sm shrink-0 ${item.color}`}>{item.step}</span>
-                            <p className="text-sm text-gray-300 leading-relaxed">{item.text}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{item.text}</p>
                         </div>
                     ))}
                 </div>
@@ -735,22 +731,22 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                 <SubTitle>Coalescing 파라미터</SubTitle>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {coalescingParams.map((p) => (
-                        <div key={p.name} className={`rounded-xl border ${p.color} bg-gray-900/50 p-4`}>
+                        <div key={p.name} className={`rounded-xl border ${p.color} bg-white dark:bg-gray-900/50 p-4`}>
                             <div className="flex items-center gap-2 mb-1">
                                 <span className={`font-mono font-bold text-sm ${p.titleColor}`}>{p.name}</span>
-                                <span className="text-xs text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">
+                                <span className="text-xs text-gray-500 border border-gray-300 dark:border-gray-700 rounded px-1.5 py-0.5">
                                     {p.dir}
                                 </span>
                             </div>
                             <div className="text-xs text-gray-500 mb-2">기본값: {p.default}</div>
-                            <p className="text-xs text-gray-400 leading-relaxed">{p.desc}</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{p.desc}</p>
                         </div>
                     ))}
                 </div>
 
                 <SubTitle>레이턴시 vs 처리량 트레이드오프</SubTitle>
-                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 mb-6">
-                    <div className="flex items-center gap-6 mb-4 text-xs text-gray-400">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-5 mb-6">
+                    <div className="flex items-center gap-6 mb-4 text-xs text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1.5">
                             <span className="inline-block w-3 h-3 rounded-sm bg-blue-500/70"></span>처리량 (높을수록
                             좋음)
@@ -763,7 +759,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     <div className="space-y-3">
                         {coalescingTradeoff.map((row) => (
                             <div key={row.label} className="grid grid-cols-[80px_1fr] gap-3 items-center">
-                                <span className="text-xs font-mono text-gray-400 text-right">{row.label}</span>
+                                <span className="text-xs font-mono text-gray-500 dark:text-gray-400 text-right">{row.label}</span>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <div
@@ -795,17 +791,12 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     filename="# IRQ Coalescing 설정 및 NAPI 통계 확인"
                 />
 
-                <div className="rounded-xl border border-blue-700/50 bg-blue-900/10 p-4 mt-4">
-                    <div className="flex items-start gap-3">
-                        <span className="text-blue-400 text-sm font-bold mt-0.5 shrink-0">tip</span>
-                        <p className="text-sm text-blue-200/80 leading-relaxed">
-                            HFT(초고빈도 거래) 또는 실시간 게임 서버는{' '}
-                            <strong className="text-blue-700 dark:text-blue-300">rx-usecs 0, rx-frames 1</strong>로 인터럽트를 즉시
-                            발생시켜 레이턴시를 최소화합니다. 반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로
-                            설정해 CPU 사용률을 낮추고 처리량을 극대화합니다.
-                        </p>
-                    </div>
-                </div>
+                <Alert variant="tip" title="실무 가이드:">
+                    HFT(초고빈도 거래) 또는 실시간 게임 서버는{' '}
+                    <strong>rx-usecs 0, rx-frames 1</strong>로 인터럽트를 즉시
+                    발생시켜 레이턴시를 최소화합니다. 반대로 스트리밍·파일 전송 서버는 rx-usecs 1000 이상으로
+                    설정해 CPU 사용률을 낮추고 처리량을 극대화합니다.
+                </Alert>
             </Section>
 
             {/* ── 5.10 관련 커널 파라미터 ─────────────────────────────────── */}
