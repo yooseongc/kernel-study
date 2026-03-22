@@ -143,8 +143,8 @@ function renderGraph(
     // D3Container의 zoom이 첫 번째 g에 attach됨
     const g = svg.append('g')
 
-    const edgeColor = isDark ? 'oklch(35% 0 0)' : 'oklch(75% 0 0)'
-    const edgeColorDash = isDark ? 'oklch(45% 0 0)' : 'oklch(65% 0 0)'
+    const edgeColor = isDark ? 'oklch(55% 0 0)' : 'oklch(55% 0 0)'
+    const edgeColorDash = isDark ? 'oklch(50% 0.06 250)' : 'oklch(55% 0.06 250)'
 
     // 링크
     const linkSel = g
@@ -153,9 +153,9 @@ function renderGraph(
         .data(links)
         .join('line')
         .attr('stroke', (d) => (d.kind === 'sharedTag' ? edgeColor : edgeColorDash))
-        .attr('stroke-width', (d) => (d.kind === 'sharedTag' ? 2 : 1))
+        .attr('stroke-width', (d) => (d.kind === 'sharedTag' ? 2.5 : 1.5))
         .attr('stroke-dasharray', (d) => (d.kind === 'topicRef' ? '6,4' : 'none'))
-        .attr('opacity', (d) => (d.kind === 'sharedTag' ? 0.5 : 0.35))
+        .attr('opacity', (d) => (d.kind === 'sharedTag' ? 0.7 : 0.5))
 
     // 노드 그룹
     const nodeSel = g
@@ -240,9 +240,20 @@ function renderGraph(
         .attr('pointer-events', 'none')
         .text((d) => d.label)
 
+    // 초기 위치를 중심 근처에 배치 (급격한 이동 방지)
+    nodes.forEach((n, i) => {
+        if (n.x == null) {
+            const angle = (i / nodes.length) * 2 * Math.PI
+            const radius = n.type === 'topic' ? 150 : 250 + Math.random() * 100
+            n.x = width / 2 + Math.cos(angle) * radius
+            n.y = height / 2 + Math.sin(angle) * radius
+        }
+    })
+
     // Force 시뮬레이션
     const sim = d3
         .forceSimulation<GraphNode>(nodes)
+        .alpha(0.6)
         .force(
             'link',
             d3

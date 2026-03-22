@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 33)
+> 마지막 업데이트: 2026-03-22 (Sprint 34)
 
 ---
 
@@ -17,6 +17,7 @@
 | 31 | 리팩터링 — topic04-filesystem/index.tsx (1047줄→885줄) OpenFlowViz(95줄), VfsLayerDiagram(68줄) 추출 → `src/components/concepts/filesystem/`; topic03-memory/index.tsx (1330줄→1194줄) renderSlubViz(141줄) 추출 → `src/components/concepts/memory/SlubViz.tsx` | 2026-03-22 |
 | 32 | 리팩터링 — topic11(1206→770줄): 중복 인라인 코드→추출 컴포넌트 교체; topic09(1115→1025줄): RcuGracePeriodViz 추출; topic03(1194→1061줄): CoWAnimationViz 교체 | 2026-03-22 |
 | 33 | 리팩터링 — topic08(1434→993줄) dead D3 코드 정리, topic05(1265→982줄) IRQViz+DeferredWorkFlow 추출, topic01(1102→432줄) SyscallFlowViz 등 4개 추출 + chartData.ts 분리; 그래프 노드 크기 확대(r: 32/12), 텍스트 확대, force 간격 확대, 높이 800px; lint 에러 전체 해소 | 2026-03-22 |
+| 34 | topic04~13 codeSnippets.ts 분리 (9개 파일, 82개 상수, ~1,900줄 추출); 그래프 엣지 색상 밝게 (oklch 55% → 가시성 개선) + opacity 0.7/0.5 + stroke 굵게; force 노드 초기 배치 원형 분포 (급격한 이동 방지); Rolldown UTF-8 boundary 버그 우회 (manualChunks 'code-snippets') | 2026-03-22 |
 | 1 | 프로젝트 골격 구축 (Vite+React+TS, 라우팅, 공통 컴포넌트, GitHub Actions 배포) | 2026-03-21 |
 | 1.5 | UI 강화 (다크모드, 검색 모달, Glossary 페이지, 36개 용어 초기 데이터) | 2026-03-21 |
 | 2 | Topic 01~03 콘텐츠 구현 (syscall 흐름, CFS/컨텍스트스위치 D3, 메모리 관리 전체) | 2026-03-21 |
