@@ -24,12 +24,12 @@ function renderLockComparison(
     const g = svg.append('g')
 
     const data = [
-        { label: 'Spinlock', overhead: 85, color: c.amberStroke },
-        { label: 'Mutex', overhead: 60, color: c.amberText },
-        { label: 'RWLock-R', overhead: 45, color: c.greenStroke },
-        { label: 'RWLock-W', overhead: 70, color: isDark ? 'oklch(72% 0.18 130)' : 'oklch(46% 0.20 130)' },
-        { label: 'Atomic', overhead: 20, color: c.greenText },
-        { label: 'RCU-R', overhead: 5, color: c.cyanStroke },
+        { label: 'Spinlock', overhead: 85, fill: c.amberFill, stroke: c.amberStroke, text: c.amberText },
+        { label: 'Mutex', overhead: 60, fill: c.purpleFill, stroke: c.purpleStroke, text: c.purpleText },
+        { label: 'RWLock-R', overhead: 45, fill: c.greenFill, stroke: c.greenStroke, text: c.greenText },
+        { label: 'RWLock-W', overhead: 70, fill: c.blueFill, stroke: c.blueStroke, text: c.blueText },
+        { label: 'Atomic', overhead: 20, fill: c.cyanFill, stroke: c.cyanStroke, text: c.cyanText },
+        { label: 'RCU-R', overhead: 5, fill: c.indigoFill, stroke: c.indigoStroke, text: c.indigoText },
     ]
 
     const padX = 12
@@ -54,15 +54,15 @@ function renderLockComparison(
             .attr('width', barW)
             .attr('height', barH)
             .attr('rx', 4)
-            .attr('fill', d.color + (isDark ? 'bb' : 'cc'))
-            .attr('stroke', d.color)
-            .attr('stroke-width', 1)
+            .attr('fill', d.fill)
+            .attr('stroke', d.stroke)
+            .attr('stroke-width', 1.5)
 
         g.append('text')
             .attr('x', cx)
             .attr('y', barY - 4)
             .attr('text-anchor', 'middle')
-            .attr('fill', d.color)
+            .attr('fill', d.text)
             .attr('font-size', '10px')
             .attr('font-family', "'JetBrains Mono', monospace")
             .attr('font-weight', 'bold')
