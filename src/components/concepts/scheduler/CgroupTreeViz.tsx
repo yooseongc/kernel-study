@@ -55,7 +55,7 @@ function renderCgroupTree(svg: d3.Selection<SVGSVGElement, unknown, null, undefi
     const c = themeColors(isDark)
     const textFill = c.text
     const dimFill = c.textMuted
-    const linkColor = c.link
+    const linkColor = c.textDim
 
     type ColorPair = { fill: string; stroke: string; text: string }
     const colorMap: Record<string, ColorPair> = {

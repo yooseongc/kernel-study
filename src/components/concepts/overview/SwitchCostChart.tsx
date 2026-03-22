@@ -85,6 +85,7 @@ export function renderSwitchCostChart(
                 .attr('text-anchor', 'middle')
                 .attr('fill', c.textMuted)
                 .attr('font-size', '10px')
+                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
                 .text(line)
         })
     })
@@ -97,5 +98,6 @@ export function renderSwitchCostChart(
         .attr('text-anchor', 'middle')
         .attr('fill', c.textMuted)
         .attr('font-size', '11px')
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('지연 시간 (로그 스케일)')
 }

@@ -168,9 +168,9 @@ export function renderRingDiagram(
         .attr('r', hvR)
         .attr('fill', 'none')
         .attr('stroke', hvTheme.stroke)
-        .attr('stroke-width', 1.5)
+        .attr('stroke-width', 2)
         .attr('stroke-dasharray', '6 4')
-        .attr('opacity', 0.6)
+        .attr('opacity', 0.8)
         .attr('cursor', 'pointer')
         .on('click', () => onSelect(ringData[0]))
 
