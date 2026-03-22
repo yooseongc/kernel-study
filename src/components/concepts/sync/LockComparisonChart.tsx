@@ -91,7 +91,7 @@ function renderLockComparison(
         .attr('y', padTop - 6)
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('상대적 오버헤드 →')
 
     g.append('text')
@@ -100,7 +100,7 @@ function renderLockComparison(
         .attr('text-anchor', 'end')
         .attr('fill', dimColor)
         .attr('font-size', '8.5px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
         .text('낮을수록 오버헤드 적음')
 }
 
