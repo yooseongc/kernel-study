@@ -15,6 +15,7 @@ import type { RingInfo } from '../../components/concepts/overview/RingDiagram'
 import { renderSwitchCostChart } from '../../components/concepts/overview/SwitchCostChart'
 import { renderSubsystemGraph } from '../../components/concepts/overview/SubsystemGraph'
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
+import { InfoTable } from '../../components/ui/InfoTable'
 import {
     syscallFlowChart,
     kernelStructureChart,
@@ -24,6 +25,8 @@ import {
     syscallCatalogCode,
     syscallTableRows,
     forkCompareRows,
+    kernelParamRows,
+    kernelParamCheckCode,
 } from './chartData'
 
 export default function Topic01Overview() {
@@ -416,6 +419,23 @@ export default function Topic01Overview() {
                         </table>
                     </div>
                 </div>
+            </Section>
+
+            {/* 섹션 9: 관련 커널 파라미터 */}
+            <Section id="s19" title="1.9  관련 커널 파라미터">
+                <Prose>
+                    커널 동작을 제어하는 주요 sysctl 파라미터입니다.{' '}
+                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
+                        /proc/sys/
+                    </code>{' '}
+                    또는{' '}
+                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
+                        sysctl
+                    </code>{' '}
+                    명령으로 런타임에 조회·변경할 수 있습니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={kernelParamRows} />
+                <CodeBlock code={kernelParamCheckCode} language="bash" filename="# 커널 파라미터 확인 명령" />
             </Section>
 
             <TopicNavigation topicId="01-overview" />

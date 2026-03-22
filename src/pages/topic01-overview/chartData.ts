@@ -172,3 +172,27 @@ export const forkCompareRows = [
     { fn: 'vfork()', posix: 'O', memory: '완전 공유 (exec 전까지)', usage: '구식, execve 직전에만 사용' },
     { fn: 'clone()', posix: 'X (리눅스)', memory: '플래그로 선택', usage: '스레드(CLONE_VM), 컨테이너(CLONE_NEWPID)' },
 ]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1.9  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const kernelParamRows = [
+    { cells: ['kernel.hostname', '(설정값)', '시스템 호스트명'] },
+    { cells: ['kernel.osrelease', '(읽기전용)', '커널 버전 문자열 (예: 6.8.0-generic)'] },
+    { cells: ['kernel.panic', '0', '패닉 후 재부팅 대기(초). 0이면 무한 대기'] },
+    { cells: ['kernel.sysrq', '176', 'SysRq 키 기능 비트마스크 (1=모두 활성)'] },
+    { cells: ['kernel.core_pattern', 'core', '코어 덤프 파일 경로 패턴'] },
+    { cells: ['kernel.randomize_va_space', '2', 'ASLR 레벨. 0=비활성, 1=스택, 2=스택+힙+mmap'] },
+]
+
+export const kernelParamCheckCode = `# 커널 기본 정보
+uname -a
+sysctl kernel.osrelease kernel.hostname
+
+# ASLR 확인
+sysctl kernel.randomize_va_space
+cat /proc/sys/kernel/randomize_va_space
+
+# SysRq 활성화
+echo 1 > /proc/sys/kernel/sysrq`

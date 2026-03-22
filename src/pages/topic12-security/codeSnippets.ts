@@ -193,3 +193,34 @@ export const pidNsCloneCode = `/* clone()으로 새 PID namespace 생성 */
 pid_t child = clone(child_fn, stack_top,
     CLONE_NEWPID | SIGCHLD, NULL);
 /* child_fn 안에서 getpid() == 1 */`
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12.8  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const securityParamRows = [
+    { cells: ['kernel.randomize_va_space', '2', 'ASLR (0=비활성, 1=부분, 2=전체)'] },
+    { cells: ['kernel.yama.ptrace_scope', '1', 'ptrace 범위. 0=모두, 1=부모만, 2=관리자, 3=비활성'] },
+    { cells: ['kernel.modules_disabled', '0', '1이면 커널 모듈 로드 영구 차단'] },
+    { cells: ['kernel.kexec_load_disabled', '0', '1이면 kexec 비활성 (보안 부팅)'] },
+    { cells: ['kernel.unprivileged_userns_clone', '1', '비특권 user namespace 생성 허용'] },
+    { cells: ['net.ipv4.conf.all.rp_filter', '1', '역경로 필터링 (스푸핑 방지). 1=strict, 2=loose'] },
+    { cells: ['kernel.seccomp.actions_avail', '(읽기전용)', '사용 가능한 seccomp 액션 목록'] },
+]
+
+export const securityParamCheckCode = `# 보안 관련 파라미터 확인
+sysctl kernel.randomize_va_space
+sysctl kernel.yama.ptrace_scope
+sysctl kernel.modules_disabled
+sysctl kernel.kexec_load_disabled
+
+# 역경로 필터링 확인 (스푸핑 방지)
+sysctl net.ipv4.conf.all.rp_filter
+sysctl net.ipv4.conf.default.rp_filter
+
+# seccomp 사용 가능 액션
+cat /proc/sys/kernel/seccomp/actions_avail
+# kill_process kill_thread trap errno trace log allow
+
+# 모듈 로드 영구 차단 (주의: 재부팅 전까지 해제 불가)
+# sysctl -w kernel.modules_disabled=1`

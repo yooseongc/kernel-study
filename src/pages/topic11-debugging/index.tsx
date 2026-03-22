@@ -438,6 +438,16 @@ lock(B) ← 대기   lock(A) ← 대기
                 <InfoTable headers={['유형', '측정 대상', '도구']} rows={cpuTypeRows} />
             </Section>
 
+            {/* 11.13 관련 커널 파라미터 */}
+            <Section id="s1113" title="11.13  관련 커널 파라미터">
+                <Prose>
+                    디버깅과 성능 분석에 영향을 미치는 주요 커널 파라미터입니다. 개발/테스트 환경에서는 제한을
+                    완화하고, 프로덕션에서는 보안을 고려하여 설정합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.debugParamRows} />
+                <CodeBlock code={snippets.debugParamCheckCode} language="bash" filename="# 디버깅 파라미터 확인/변경" />
+            </Section>
+
             <TopicNavigation topicId="11-debugging" />
         </div>
     )

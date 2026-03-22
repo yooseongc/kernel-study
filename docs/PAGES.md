@@ -56,6 +56,8 @@
 5. 전체 계층 구조 — Mermaid graph TB
 6. task_struct — 실제 커널 소스 코드 (CodeBlock, C언어 하이라이팅)
 7. 시스템 콜 전체 흐름 — 단계별 애니메이션 (AnimatedDiagram)
+8. 주요 시스템 콜 카탈로그 — syscall 비교 표, fork/clone/vfork 비교
+9. 관련 커널 파라미터 — sysctl 파라미터 표 + 확인 명령어
 
 ---
 
@@ -177,6 +179,7 @@
 - `/proc` 파일 시스템 트리 탐색기
 - Oops/Panic 메시지 해부 (인터랙티브 주석)
 - perf/ftrace 출력 시각화
+- 관련 커널 파라미터 (디버깅 sysctl 파라미터 표 + 확인 명령어)
 
 ---
 
@@ -188,3 +191,20 @@
 - DAC (임의적 접근 제어) 구조
 - Capabilities 권한 분리
 - LSM 프레임워크 (AppArmor, SELinux)
+- Namespace (PID/Mount/User/Network)
+- 관련 커널 파라미터 (보안 sysctl 파라미터 표 + 확인 명령어)
+
+---
+
+### Topic 13 — KVM / 가상화
+
+**시각화 도구:** D3
+
+**섹션 구성:**
+- KVM 커널 하이퍼바이저 구조
+- VMCS/VMCB — VMENTRY·VMEXIT 제어
+- EPT 중첩 페이지 테이블
+- virtio 반가상화 I/O
+- KVM 관리 실전
+- vhost 커널 내 virtio 백엔드
+- 관련 커널 파라미터 (KVM 모듈 파라미터 표 + 확인 명령어)

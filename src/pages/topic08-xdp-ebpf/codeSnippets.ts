@@ -228,3 +228,21 @@ bpftrace -e 'kprobe:oom_kill_process { printf("OOM killed: %s (pid %d)\\n", comm
 # 6. CPU 플레임그래프용 스택 샘플링
 bpftrace -e 'profile:hz:99 { @[kstack, ustack, comm] = count(); }' -o out.bt
 # → bpftrace에서 직접 flamegraph 데이터 생성 가능`
+
+// 8.13 관련 커널 파라미터
+export const bpfKernelParamCode = `# eBPF/XDP 관련 커널 파라미터 확인
+sysctl kernel.unprivileged_bpf_disabled
+sysctl net.core.bpf_jit_enable
+sysctl net.core.bpf_jit_harden
+sysctl net.core.bpf_jit_kallsyms
+
+# BPF 통계 수집 활성화
+sysctl -w kernel.bpf_stats_enabled=1
+bpftool prog show   # run_time_ns, run_cnt 확인 가능
+
+# JIT 컴파일 확인
+sysctl net.core.bpf_jit_enable
+# 1 = JIT 활성 (권장)
+
+# AF_XDP UMEM 관련
+sysctl net.core.optmem_max`

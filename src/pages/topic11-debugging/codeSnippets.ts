@@ -270,6 +270,33 @@ kasan_disable_current();
 /* ... 의도적인 접근 ... */
 kasan_enable_current();`
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 11.13  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const debugParamRows = [
+    { cells: ['kernel.panic_on_oops', '0', '1이면 Oops 발생 시 즉시 패닉'] },
+    { cells: ['kernel.panic_on_warn', '0', '1이면 WARN() 발생 시 패닉'] },
+    { cells: ['kernel.ftrace_enabled', '1', 'ftrace 프레임워크 활성화'] },
+    { cells: ['kernel.perf_event_paranoid', '2', 'perf 사용 권한. -1=무제한, 0=커널+유저, 2=유저만'] },
+    { cells: ['kernel.kptr_restrict', '1', '커널 포인터 노출 제한. 0=노출, 1=CAP_SYSLOG필요, 2=완전차단'] },
+    { cells: ['kernel.dmesg_restrict', '0', '1이면 일반 사용자 dmesg 차단'] },
+    { cells: ['kernel.core_uses_pid', '1', '1이면 코어 덤프 파일명에 PID 포함'] },
+]
+
+export const debugParamCheckCode = `# 디버깅 관련 파라미터 확인
+sysctl kernel.panic_on_oops kernel.panic_on_warn
+sysctl kernel.ftrace_enabled
+sysctl kernel.perf_event_paranoid
+sysctl kernel.kptr_restrict kernel.dmesg_restrict
+
+# perf 권한 완화 (개발 환경)
+sysctl -w kernel.perf_event_paranoid=-1
+sysctl -w kernel.kptr_restrict=0
+
+# Oops 시 패닉으로 전환 (프로덕션 — kdump와 함께 사용)
+sysctl -w kernel.panic_on_oops=1`
+
 export const flameGenCode = `# 1. perf로 CPU 샘플 수집 (30초, 99Hz)
 perf record -F 99 -a --call-graph dwarf -g sleep 30
 # 또는 특정 프로세스만

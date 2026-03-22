@@ -2,6 +2,7 @@ import { CodeBlock } from '../../components/viz/CodeBlock'
 import { T } from '../../components/ui/GlossaryTooltip'
 import { Section } from '../../components/ui/Section'
 import { Prose } from '../../components/ui/Prose'
+import { InfoTable } from '../../components/ui/InfoTable'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import * as snippets from './codeSnippets'
@@ -681,6 +682,23 @@ export default function Topic13Kvm() {
                 </div>
 
                 <CodeBlock code={snippets.vhostCode} language="bash" filename="# vhost-net / vhost-user / SR-IOV 실전 명령" />
+            </Section>
+
+            {/* 13.7 관련 커널 파라미터 */}
+            <Section id="s1317" title="13.7  관련 커널 파라미터">
+                <Prose>
+                    KVM 가상화 성능과 기능에 영향을 미치는 주요 파라미터입니다. 모듈 파라미터는{' '}
+                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
+                        /sys/module/
+                    </code>{' '}
+                    경로에서 확인하고, sysctl 파라미터는{' '}
+                    <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
+                        sysctl
+                    </code>{' '}
+                    명령으로 조정합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.kvmParamRows} />
+                <CodeBlock code={snippets.kvmParamCheckCode} language="bash" filename="# KVM 파라미터 확인/변경" />
             </Section>
 
             <TopicNavigation topicId="13-kvm" />

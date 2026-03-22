@@ -5,7 +5,8 @@ import { Section } from '../../components/ui/Section'
 import { LearningCard } from '../../components/ui/LearningCard'
 import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { InfoBox } from '../../components/ui/InfoBox'
-import { InfoTable } from '../../components/ui/InfoTable'
+import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
+import { Prose } from '../../components/ui/Prose'
 import { Alert } from '../../components/ui/Alert'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
@@ -46,6 +47,20 @@ const openFlowSteps = [
 
 // OpenFlowViz → extracted to components/concepts/filesystem/OpenFlowViz.tsx
 // VfsLayerDiagram → extracted to components/concepts/filesystem/VfsLayerDiagram.tsx
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4.8  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+const kernelParamRows: TableRow[] = [
+    { cells: ['vm.dirty_ratio', '20', 'dirty 페이지가 전체 메모리의 이 비율 초과 시 프로세스가 동기 write-back'] },
+    { cells: ['vm.dirty_background_ratio', '10', '이 비율 초과 시 백그라운드 flush 스레드가 write-back 시작'] },
+    { cells: ['vm.dirty_expire_centisecs', '3000', 'dirty 페이지가 이 시간(1/100초) 이상이면 write-back 대상'] },
+    { cells: ['vm.dirty_writeback_centisecs', '500', 'flush 스레드의 깨어나는 주기(1/100초)'] },
+    { cells: ['vm.vfs_cache_pressure', '100', 'dentry/inode 캐시 회수 적극성. 50이면 덜 회수, 200이면 적극 회수'] },
+    { cells: ['fs.file-max', '(동적)', '시스템 전체 최대 열린 파일 수'] },
+    { cells: ['fs.nr_open', '1048576', '프로세스당 최대 fd 수'] },
+    { cells: ['fs.inotify.max_user_watches', '8192', '사용자당 inotify 감시 최대 수'] },
+]
 
 export default function Topic11Filesystem() {
     return (
@@ -915,6 +930,17 @@ f_flags: O_RDONLY`}</pre>
                     점검해야 합니다. <code className="font-mono text-xs bg-orange-100 dark:bg-orange-900/30 px-1 rounded">find / -perm -4000 -type f</code>로
                     시스템 내 setuid 파일을 검색할 수 있습니다.
                 </Alert>
+            </Section>
+
+            <Section id="s448" title="4.8  관련 커널 파라미터">
+                <Prose>
+                    파일시스템과 I/O 성능에 직접 영향을 미치는 주요 커널 파라미터입니다.
+                    <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">sysctl</code> 명령으로
+                    조회·변경할 수 있으며, <code className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">/etc/sysctl.conf</code>에
+                    기록하면 부팅 시 자동 적용됩니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={kernelParamRows} />
+                <CodeBlock code={snippets.fsKernelParamCode} language="bash" filename="# 파일시스템 관련 파라미터 확인" />
             </Section>
 
             <TopicNavigation topicId="04-filesystem" />

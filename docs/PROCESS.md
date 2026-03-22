@@ -1,6 +1,6 @@
 # Kernel Study — 진행사항
 
-> 마지막 업데이트: 2026-03-22 (Sprint 41)
+> 마지막 업데이트: 2026-03-22 (Sprint 43)
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Sprint | 내용 | 완료일 |
 |--------|------|--------|
+| 43 | Topic 01 §1.9, Topic 11 §11.13, Topic 12 §12.8, Topic 13 §13.7 — "관련 커널 파라미터" 섹션 추가 (커널개요/디버깅/보안/KVM sysctl·모듈 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
+| 42 | Topic 04 §4.8, Topic 08 §8.13, Topic 10 §10.11 — "관련 커널 파라미터" 섹션 추가 (파일시스템/XDP·eBPF/드라이버 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
 | 41 | Topic 06 §6.14, Topic 07 §7.10, Topic 09 §9.15 — "관련 커널 파라미터" 섹션 추가 (네트워크 스택/넷필터/동기화 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
 | 40 | Topic 02 §2.12, Topic 03 §3.13, Topic 05 §5.10 — "관련 커널 파라미터" 섹션 추가 (CFS/메모리/인터럽트 sysctl 파라미터 InfoTable + 확인 명령어 CodeBlock) | 2026-03-22 |
 | 39 | Topic 06 §6.1 패킷 수신 과정 시각화 개선: 7단계 상세 설명 추가, NetworkLayerDiagram에 단계별 한글 레이블 삽입, NAPI 핵심 포인트 InfoBox 추가, 다이어그램 높이 확대(340→420px) | 2026-03-22 |

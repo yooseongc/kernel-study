@@ -184,3 +184,16 @@ df -i
 # Filesystem       Inodes  IUsed   IFree IUse%
 # /dev/nvme0n1p2  6553600 182400 6371200    3%
 # tmpfs           2048000      8 2047992    1%`
+
+// 4.8 관련 커널 파라미터
+export const fsKernelParamCode = `# 파일시스템 관련 파라미터 확인
+sysctl vm.dirty_ratio vm.dirty_background_ratio
+sysctl fs.file-max fs.nr_open
+
+# dirty 페이지 상태 확인
+cat /proc/vmstat | grep dirty
+cat /proc/meminfo | grep Dirty
+
+# 열린 파일 수 확인
+cat /proc/sys/fs/file-nr
+# 할당된fd  미사용  최대`

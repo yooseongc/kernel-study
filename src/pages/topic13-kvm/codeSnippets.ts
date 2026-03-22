@@ -171,3 +171,35 @@ perf kvm stat -p <qemu_pid> sleep 5
 
 # 게스트 메모리 사용량
 cat /sys/kernel/debug/kvm/*/mmu_cache_miss`
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 13.7  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const kvmParamRows = [
+    { cells: ['/sys/module/kvm/parameters/halt_poll_ns', '200000', 'VM halt 시 호스트 폴링 시간(ns). 높을수록 지연↓ CPU↑'] },
+    { cells: ['/sys/module/kvm_intel/parameters/nested', '0', '중첩 가상화 활성화 (nested VMX)'] },
+    { cells: ['/sys/module/kvm_intel/parameters/ept', '1', 'EPT(Extended Page Table) 사용 여부'] },
+    { cells: ['/sys/module/kvm_intel/parameters/vpid', '1', 'VPID(Virtual Processor ID) — TLB flush 최적화'] },
+    { cells: ['vm.nr_hugepages', '0', 'HugePages 사전 할당 (VM 메모리 백엔드용)'] },
+    { cells: ['/sys/module/kvm/parameters/enable_vmware_backdoor', '0', 'VMware 호환 백도어 포트'] },
+]
+
+export const kvmParamCheckCode = `# KVM 모듈 파라미터 확인
+cat /sys/module/kvm/parameters/halt_poll_ns
+cat /sys/module/kvm_intel/parameters/nested
+cat /sys/module/kvm_intel/parameters/ept
+cat /sys/module/kvm_intel/parameters/vpid
+
+# 중첩 가상화 활성화
+modprobe -r kvm_intel
+modprobe kvm_intel nested=1
+# 또는 영구 설정:
+# echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf
+
+# HugePages 할당 (2MB * 1024 = 2GB)
+sysctl -w vm.nr_hugepages=1024
+cat /proc/meminfo | grep HugePages
+
+# halt_poll_ns 조정 (지연 vs CPU 트레이드오프)
+echo 400000 > /sys/module/kvm/parameters/halt_poll_ns`

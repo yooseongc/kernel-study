@@ -165,6 +165,19 @@ const bpftraceVsBccRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 8.13  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+const bpfKernelParamRows: TableRow[] = [
+    { cells: ['kernel.unprivileged_bpf_disabled', '2', '0=허용, 1=영구 차단, 2=부팅 시 허용→차단'] },
+    { cells: ['net.core.bpf_jit_enable', '1', 'eBPF JIT 컴파일러 활성화 (0=해석, 1=JIT, 2=JIT+디버그)'] },
+    { cells: ['net.core.bpf_jit_harden', '0', 'JIT 하드닝. 1이면 상수 블라인딩 활성 (JIT spray 방지)'] },
+    { cells: ['net.core.bpf_jit_kallsyms', '0', '1이면 JIT 컴파일된 BPF를 /proc/kallsyms에 노출'] },
+    { cells: ['kernel.bpf_stats_enabled', '0', '1이면 BPF 프로그램 실행 통계 수집'] },
+    { cells: ['net.core.optmem_max', '20480', '소켓 옵션 메모리 최대값 (AF_XDP UMEM에 영향)'] },
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -791,6 +804,15 @@ export default function Topic07() {
 
                 {/* bcc / bpftool 비교 */}
                 <InfoTable headers={['도구', '특징']} rows={bpftraceVsBccRows} />
+            </Section>
+
+            <Section id="s813" title="8.13  관련 커널 파라미터">
+                <Prose>
+                    XDP와 eBPF 동작에 영향을 미치는 주요 커널 파라미터입니다.
+                    보안과 성능 사이의 균형을 조절할 때 활용합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={bpfKernelParamRows} />
+                <CodeBlock code={snippets.bpfKernelParamCode} language="bash" filename="# XDP/eBPF 관련 파라미터 확인" />
             </Section>
 
             <TopicNavigation topicId="08-xdp-ebpf" />

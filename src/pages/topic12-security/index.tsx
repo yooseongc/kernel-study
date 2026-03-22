@@ -703,6 +703,16 @@ export default function Topic12() {
                 <CodeBlock code={snippets.pidNsCloneCode} language="c" filename="clone() — 새 PID namespace 생성" />
             </Section>
 
+            {/* 12.8 관련 커널 파라미터 */}
+            <Section id="s128" title="12.8  관련 커널 파라미터">
+                <Prose>
+                    보안 강화에 관련된 주요 커널 파라미터입니다. 프로덕션 환경에서는 공격 표면을 줄이기 위해
+                    적극적으로 설정해야 합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.securityParamRows} />
+                <CodeBlock code={snippets.securityParamCheckCode} language="bash" filename="# 보안 파라미터 확인/변경" />
+            </Section>
+
             <TopicNavigation topicId="12-security" />
         </div>
     )

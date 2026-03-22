@@ -45,6 +45,19 @@ const netdevOpsRows: TableRow[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 10.11  관련 커널 파라미터
+// ─────────────────────────────────────────────────────────────────────────────
+const driverKernelParamRows: TableRow[] = [
+    { cells: ['kernel.modules_disabled', '0', '1이면 모듈 로드/언로드 영구 차단 (보안)'] },
+    { cells: ['kernel.modprobe', '/sbin/modprobe', '자동 모듈 로드 시 사용할 유저공간 헬퍼 경로'] },
+    { cells: ['kernel.tainted', '0', '커널 오염 플래그 비트마스크 (비공식 모듈 등)'] },
+    { cells: ['vm.legacy_va_layout', '0', '1이면 레거시 가상 주소 레이아웃 사용'] },
+    { cells: ['kernel.printk', '4 4 1 7', '콘솔 로그 레벨 (현재/기본/최소/부팅시)'] },
+    { cells: ['kernel.dmesg_restrict', '0', '1이면 일반 사용자의 dmesg 접근 차단'] },
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -597,6 +610,15 @@ export default function Topic09() {
                         </div>
                     ))}
                 </div>
+            </Section>
+
+            <Section id="s1011" title="10.11  관련 커널 파라미터">
+                <Prose>
+                    디바이스 드라이버와 커널 모듈 관리에 영향을 미치는 주요 커널 파라미터입니다.
+                    보안 강화 시 모듈 로드 제한과 dmesg 접근 제어를 함께 설정합니다.
+                </Prose>
+                <InfoTable headers={['파라미터', '기본값', '설명']} rows={driverKernelParamRows} />
+                <CodeBlock code={snippets.driverKernelParamCode} language="bash" filename="# 드라이버/모듈 관련 파라미터 확인" />
             </Section>
 
             <TopicNavigation topicId="10-drivers" />

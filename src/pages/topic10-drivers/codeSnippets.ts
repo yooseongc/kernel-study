@@ -389,3 +389,23 @@ cat /dev/mydev
 rmmod mydev
 dmesg | tail -5
 # mydev: unloaded`
+
+// 10.11 관련 커널 파라미터
+export const driverKernelParamCode = `# 모듈 로드 제한 확인
+sysctl kernel.modules_disabled
+# 0 → 모듈 로드 가능, 1 → 영구 차단
+
+# 커널 오염 상태 확인
+sysctl kernel.tainted
+# 0 = 정상, 비트마스크로 오염 원인 표시
+
+# 콘솔 로그 레벨 확인/변경
+sysctl kernel.printk
+# 4 4 1 7 → 현재/기본/최소/부팅시
+
+# dmesg 접근 제한
+sysctl kernel.dmesg_restrict
+# 1이면 일반 사용자 dmesg 접근 차단
+
+# modprobe 경로 확인
+sysctl kernel.modprobe`
