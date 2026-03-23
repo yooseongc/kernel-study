@@ -5,7 +5,7 @@ import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
-import { CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme } from '@study-ui/components'
+import { CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.5  소켓 시스템 콜 표

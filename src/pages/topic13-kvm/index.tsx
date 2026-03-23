@@ -1,6 +1,6 @@
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, Prose, Section, T } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings

@@ -4,7 +4,7 @@ import { ProcessStateDiagram } from '../../components/concepts/scheduler/Process
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , TopicPage } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────

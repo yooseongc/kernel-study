@@ -2,7 +2,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { XdpVsNormalDiagram } from '../../components/concepts/ebpf/XdpVsNormalDiagram'
 import { EbpfPipelineDiagram } from '../../components/concepts/ebpf/EbpfPipelineDiagram'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XDP DDoS 예제 코드

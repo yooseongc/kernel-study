@@ -3,7 +3,7 @@ import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkB
 import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { Alert, CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
+import { Alert, CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings

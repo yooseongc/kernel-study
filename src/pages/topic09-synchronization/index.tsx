@@ -3,7 +3,7 @@ import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/
 import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
 import { RcuGracePeriodViz } from '../../components/concepts/sync/RcuGracePeriodViz'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets

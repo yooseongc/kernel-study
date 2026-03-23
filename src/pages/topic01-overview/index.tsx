@@ -6,7 +6,7 @@ import { renderSubsystemGraph } from '../../components/concepts/overview/Subsyst
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
 import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert, AnimatedDiagram, CodeBlock, D3Container, InfoBox, InfoTable, MermaidDiagram, Prose, Section, StatCard, T } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, D3Container, InfoBox, InfoTable, MermaidDiagram, Prose, Section, StatCard, T , TopicPage } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 import {
     syscallFlowChart,

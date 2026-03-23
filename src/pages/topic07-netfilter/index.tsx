@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, themeColors, useTheme } from '@study-ui/components'
+import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, themeColors, useTheme , TopicPage } from '@study-ui/components'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
 function renderNetfilterFlow(

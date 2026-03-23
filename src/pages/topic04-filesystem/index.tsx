@@ -2,7 +2,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow , TopicPage } from '@study-ui/components'
 
 const openFlowSteps = [
     {

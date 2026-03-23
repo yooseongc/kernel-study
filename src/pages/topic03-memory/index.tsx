@@ -13,7 +13,7 @@ import { BuddyAllocatorViz } from '../../components/concepts/memory/BuddyAllocat
 import { CoWAnimationViz } from '../../components/concepts/memory/CoWAnimationViz'
 
 import { renderSlubViz } from '../../components/concepts/memory/SlubViz'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme , TopicPage } from '@study-ui/components'
 
 // VirtualAddressViz, MultiProcessVAViz → extracted to components/concepts/memory/VirtualAddressViz.tsx
 

@@ -4,7 +4,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets

@@ -2,7 +2,7 @@ import { DriverTreeChart } from '../../components/concepts/driver/DriverTreeChar
 import { DMAViz, dmaSteps } from '../../components/concepts/driver/DMAViz'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
+import { AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
