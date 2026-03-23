@@ -13,7 +13,8 @@ import { BuddyAllocatorViz } from '../../components/concepts/memory/BuddyAllocat
 import { CoWAnimationViz } from '../../components/concepts/memory/CoWAnimationViz'
 
 import { renderSlubViz } from '../../components/concepts/memory/SlubViz'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme , TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 
 // VirtualAddressViz, MultiProcessVAViz → extracted to components/concepts/memory/VirtualAddressViz.tsx
 
@@ -483,39 +484,15 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
 
                 {/* VMA flags table */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden text-sm">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">
-                                    플래그
-                                </th>
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">의미</th>
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">
-                                    예시 영역
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {vmaFlags.map((row, i) => (
-                                <tr
-                                    key={row.flag}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">
-                                        {row.flag}
-                                    </td>
-                                    <td className="px-4 py-2 text-xs text-gray-700 dark:text-gray-300">{row.desc}</td>
-                                    <td className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 font-mono">
-                                        {row.example}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '플래그', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                        { header: '의미', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '예시 영역', mono: true, cellClassName: 'text-gray-500 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={vmaFlags.map((row) => ({ cells: [row.flag, row.desc, row.example] }))}
+                />
 
                 {/* mmap 익명/파일 매핑 */}
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">
@@ -626,35 +603,15 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 />
 
                 {/* Page fault types table */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden text-sm">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">종류</th>
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">조건</th>
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">비용</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pageFaultTypes.map((row, i) => (
-                                <tr
-                                    key={row.type}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                        {row.type}
-                                    </td>
-                                    <td className="px-4 py-2 text-xs text-gray-600 dark:text-gray-400">{row.cond}</td>
-                                    <td className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
-                                        {row.cost}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '종류', cellClassName: 'text-gray-700 dark:text-gray-300 font-semibold' },
+                        { header: '조건', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                        { header: '비용', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={pageFaultTypes.map((row) => ({ cells: [row.type, row.cond, row.cost] }))}
+                />
             </Section>
 
             {/* 3.5 Buddy Allocator */}
@@ -736,33 +693,14 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </p>
 
                 {/* control files table */}
-                <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden text-sm">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">
-                                    파일
-                                </th>
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">설명</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {memcgFiles.map((row, i) => (
-                                <tr
-                                    key={row.file}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-600 dark:text-blue-400">
-                                        {row.file}
-                                    </td>
-                                    <td className="px-4 py-2 text-xs text-gray-600 dark:text-gray-400">{row.desc}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '파일', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                        { header: '설명', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={memcgFiles.map((row) => ({ cells: [row.file, row.desc] }))}
+                />
 
                 <div
                     className={`rounded-lg border px-4 py-3 text-sm ${
@@ -883,59 +821,21 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     language="c"
                     filename="include/linux/slab.h + include/linux/vmalloc.h"
                 />
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    플래그
-                                </th>
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    슬립
-                                </th>
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    사용 위치
-                                </th>
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    설명
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                { flag: 'GFP_KERNEL', sleep: '가능', ctx: '프로세스 컨텍스트', desc: '일반적 할당' },
-                                {
-                                    flag: 'GFP_ATOMIC',
-                                    sleep: '불가',
-                                    ctx: '인터럽트/스핀락 보유 중',
-                                    desc: '실패 가능성 높음',
-                                },
-                                { flag: 'GFP_DMA', sleep: '가능', ctx: 'DMA 필요', desc: 'x86: 16MB 이하 영역' },
-                                { flag: 'GFP_NOWAIT', sleep: '불가', ctx: '빠른 경로', desc: 'ATOMIC보다 덜 엄격' },
-                            ].map((row, i) => (
-                                <tr
-                                    key={i}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 font-mono text-blue-600 dark:text-blue-600 dark:text-blue-400">
-                                        {row.flag}
-                                    </td>
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                        {row.sleep}
-                                    </td>
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
-                                        {row.ctx}
-                                    </td>
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
-                                        {row.desc}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '플래그', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                        { header: '슬립', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '사용 위치', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                        { header: '설명', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['GFP_KERNEL', '가능', '프로세스 컨텍스트', '일반적 할당'] },
+                        { cells: ['GFP_ATOMIC', '불가', '인터럽트/스핀락 보유 중', '실패 가능성 높음'] },
+                        { cells: ['GFP_DMA', '가능', 'DMA 필요', 'x86: 16MB 이하 영역'] },
+                        { cells: ['GFP_NOWAIT', '불가', '빠른 경로', 'ATOMIC보다 덜 엄격'] },
+                    ]}
+                />
             </Section>
 
             {/* 3.9 kswapd와 메모리 회수 */}
@@ -1009,46 +909,23 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
 
                 {/* LRU List Table */}
-                <div className="overflow-x-auto">
-                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Linux LRU 리스트 구조 (5개)
-                    </div>
-                    <table className="w-full text-sm border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    리스트
-                                </th>
-                                <th className="text-left p-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-                                    설명
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                { list: 'Active Anonymous', desc: '최근 접근된 익명 페이지 (heap, stack)' },
-                                { list: 'Inactive Anonymous', desc: '오래된 익명 페이지 → 스왑 대상' },
-                                { list: 'Active File', desc: '최근 접근된 파일 캐시' },
-                                { list: 'Inactive File', desc: '오래된 파일 캐시 → 1순위 회수' },
-                                { list: 'Unevictable', desc: '잠금된 페이지 (mlock, 공유 메모리)' },
-                            ].map((row, i) => (
-                                <tr
-                                    key={i}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 font-mono text-purple-600 dark:text-purple-400 whitespace-nowrap">
-                                        {row.list}
-                                    </td>
-                                    <td className="p-2 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
-                                        {row.desc}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Linux LRU 리스트 구조 (5개)
                 </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '리스트', nowrap: true, cellClassName: 'text-purple-600 dark:text-purple-400' },
+                        { header: '설명', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['Active Anonymous', '최근 접근된 익명 페이지 (heap, stack)'] },
+                        { cells: ['Inactive Anonymous', '오래된 익명 페이지 → 스왑 대상'] },
+                        { cells: ['Active File', '최근 접근된 파일 캐시'] },
+                        { cells: ['Inactive File', '오래된 파일 캐시 → 1순위 회수'] },
+                        { cells: ['Unevictable', '잠금된 페이지 (mlock, 공유 메모리)'] },
+                    ]}
+                />
                 <CodeBlock code={snippets.kswapdBashCode} language="bash" filename="# 메모리 회수 상태 확인" />
                 <CodeBlock code={snippets.kswapdCCode} language="c" filename="mm/vmscan.c 핵심 흐름" />
             </Section>
