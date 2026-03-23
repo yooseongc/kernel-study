@@ -5,7 +5,7 @@ import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
-import { CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme } from '@study-ui/components'
+import { CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme , SubSection } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -588,9 +588,7 @@ export default function Topic05() {
             <Section id="s6611" title="6.11  SO_REUSEPORT와 네트워크 네임스페이스">
                 {/* 파트 A: SO_REUSEPORT */}
                 <div className="space-y-3">
-                    <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                        파트 A: SO_REUSEPORT — 멀티코어 서버 성능
-                    </h3>
+                    <SubSection>파트 A: SO_REUSEPORT — 멀티코어 서버 성능</SubSection>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                         전통적으로 하나의 포트에는 하나의 소켓만 바인딩할 수 있었습니다.{' '}
                         <code className="font-mono text-blue-600 dark:text-blue-400">SO_REUSEPORT</code>는 여러 소켓(각자 다른
@@ -623,9 +621,7 @@ export default function Topic05() {
 
                 {/* 파트 B: 네트워크 네임스페이스 */}
                 <div className="space-y-3">
-                    <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                        파트 B: 네트워크 네임스페이스 — 컨테이너 네트워크 격리
-                    </h3>
+                    <SubSection>파트 B: 네트워크 네임스페이스 — 컨테이너 네트워크 격리</SubSection>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                         <T id="namespace">네트워크 네임스페이스</T>는 네트워크 스택(인터페이스, 라우팅 테이블, iptables 규칙, 소켓)을 독립된
                         공간으로 분리합니다. Docker/K8s 컨테이너 네트워크의 기반입니다.

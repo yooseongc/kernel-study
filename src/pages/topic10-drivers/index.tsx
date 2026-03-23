@@ -2,7 +2,7 @@ import { DriverTreeChart } from '../../components/concepts/driver/DriverTreeChar
 import { DMAViz, dmaSteps } from '../../components/concepts/driver/DMAViz'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
+import { AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage , SubSection } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -119,9 +119,7 @@ export default function Topic09() {
                 </div>
 
                 {/* 문자 디바이스 등록 흐름 */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-2">
-                    문자 디바이스 등록 흐름 <KernelRef path="include/linux/cdev.h" sym="cdev" />
-                </h3>
+                <SubSection>문자 디바이스 등록 흐름 <KernelRef path="include/linux/cdev.h" sym="cdev" /></SubSection>
                 <CodeBlock code={snippets.cdevRegisterCode} language="c" filename="drivers/char/my_char.c" />
                 <div className="grid grid-cols-2 gap-3 text-xs">
                     {[

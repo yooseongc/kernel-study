@@ -4,7 +4,7 @@ import { ProcessStateDiagram } from '../../components/concepts/scheduler/Process
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , TopicPage , SubSection } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────
@@ -249,9 +249,7 @@ export default function Topic02Scheduler() {
                 <CfsTreeViz />
 
                 {/* nice / priority / weight 관계 */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6">
-                    nice / priority / weight — CFS 핵심 수식
-                </h3>
+                <SubSection>nice / priority / weight — CFS 핵심 수식</SubSection>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     nice 값은 프로세스의 상대적 CPU 우선순위를 나타냅니다.{' '}
                     <strong className="text-gray-900 dark:text-gray-100">

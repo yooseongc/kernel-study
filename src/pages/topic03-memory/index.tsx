@@ -13,7 +13,7 @@ import { BuddyAllocatorViz } from '../../components/concepts/memory/BuddyAllocat
 import { CoWAnimationViz } from '../../components/concepts/memory/CoWAnimationViz'
 
 import { renderSlubViz } from '../../components/concepts/memory/SlubViz'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme , SubSection } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // VirtualAddressViz, MultiProcessVAViz → extracted to components/concepts/memory/VirtualAddressViz.tsx
@@ -231,9 +231,7 @@ export default function Topic03() {
                 </div>
 
                 {/* 단일 프로세스 상세 레이아웃 */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
-                    단일 프로세스의 가상 주소 레이아웃 (x86-64)
-                </h3>
+                <SubSection>단일 프로세스의 가상 주소 레이아웃 (x86-64)</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     48비트 주소 공간(256TB) 중 상위 128TB는 커널 전용, 하위 128TB는 유저 공간입니다. 중간의
                     non-canonical 구간에 접근하면 즉시 #GP 예외가 발생합니다.
@@ -327,9 +325,7 @@ export default function Topic03() {
                 </div>
 
                 {/* TLB */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-2">
-                    TLB (Translation Lookaside Buffer) — 주소 변환 캐시
-                </h3>
+                <SubSection>TLB (Translation Lookaside Buffer) — 주소 변환 캐시</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     4단계 페이지 테이블 워크는 메모리를 최대 4번 참조해야 합니다(PGD→PUD→PMD→PTE). 매 메모리 접근마다 이
                     과정을 반복하면 성능이 심각하게 저하됩니다. CPU는 최근 변환 결과를 <T id="tlb">TLB</T>라는 하드웨어
@@ -390,9 +386,7 @@ export default function Topic03() {
                 </div>
 
                 {/* TLB Flush 설명 */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-2">
-                    TLB Flush — 컨텍스트 스위치 시 무효화
-                </h3>
+                <SubSection>TLB Flush — 컨텍스트 스위치 시 무효화</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     컨텍스트 스위치 시 다른 프로세스의 가상 주소 매핑이 TLB에 남으면 안 됩니다. 커널은 TLB를
                     무효화합니다.
@@ -426,9 +420,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 />
 
                 {/* TLB Shootdown 설명 */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-2">
-                    TLB Shootdown과 관련 기법
-                </h3>
+                <SubSection>TLB Shootdown과 관련 기법</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     멀티코어 환경에서 한 CPU가 페이지 매핑을 변경하면 다른 CPU들의 TLB도 무효화해야 합니다. 이를{' '}
                     <strong className="font-semibold text-gray-700 dark:text-gray-300">TLB Shootdown</strong>이라고
@@ -495,9 +487,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 />
 
                 {/* mmap 익명/파일 매핑 */}
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">
-                    mmap() — 두 가지 매핑 방식
-                </h3>
+                <SubSection>mmap() — 두 가지 매핑 방식</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="font-mono text-blue-600 dark:text-blue-400">mmap()</code>은 가상 주소 공간에 새로운{' '}
                     <T id="vma">VMA</T>를 만드는 핵심 syscall입니다. 매핑 방식에 따라 <strong>익명 매핑</strong>과{' '}
@@ -716,9 +706,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 <CodeBlock code={snippets.memcgCode} language="bash" filename="memory cgroup v2 설정" />
 
                 {/* OOM Killer */}
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white mt-6">
-                    OOM Killer — 메모리 부족 시 프로세스 종료
-                </h3>
+                <SubSection>OOM Killer — 메모리 부족 시 프로세스 종료</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     물리 메모리가 완전히 소진되면 커널 <T id="oom_killer">OOM Killer</T>가{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">oom_score</code> 기준으로 희생 프로세스를 선택해 강제
