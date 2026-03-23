@@ -75,7 +75,7 @@ export default function Topic10() {
                 <ProcTreeChart />
                 <InfoTable headers={['명령어', '설명']} rows={procCmdRows} />
                 <div className="space-y-3">
-                    <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 font-mono">
+                    <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">
                         /proc/net/ — 네트워크 상태 파일
                     </h3>
                     <CodeBlock code={snippets.procNetCode} language="bash" filename="# /proc/net/ 실전 활용" />

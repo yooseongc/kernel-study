@@ -170,7 +170,7 @@ export default function Topic08() {
 
             {/* Lock comparison chart */}
             <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 font-mono">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     락 종류별 상대적 오버헤드 비교
                 </h3>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700">

@@ -13,7 +13,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-6 py-10">
             {/* Hero */}
             <div className="mb-12">
-                <div className="inline-block text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 rounded-full px-3 py-1 mb-4">
+                <div className="inline-block text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 rounded-full px-3 py-1 mb-4">
                     리눅스 커널 내부 시각화 학습
                 </div>
                 <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">

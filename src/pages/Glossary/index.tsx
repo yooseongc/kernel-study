@@ -33,7 +33,7 @@ export default function Glossary() {
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-10">
-            <div className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">용어 사전</div>
+            <div className="text-xs text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-widest font-semibold">용어 사전</div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">커널 용어 사전</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
                 리눅스 커널을 이해하는 데 필요한 핵심 용어 {glossary.length}개
@@ -115,7 +115,7 @@ export default function Glossary() {
                     >
                         <div className="flex items-start justify-between gap-3 mb-2">
                             <div>
-                                <span className="font-mono font-bold text-gray-900 dark:text-gray-100">
+                                <span className="font-bold text-gray-900 dark:text-gray-100">
                                     {term.term}
                                 </span>
                                 {term.aliases && term.aliases.length > 0 && (
