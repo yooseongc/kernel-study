@@ -600,69 +600,15 @@ export default function Topic13Kvm() {
                             virtio 백엔드 방식 비교
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
-                            <thead>
-                                <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    {['방식', '처리 위치', '레이턴시', '설정 복잡도'].map((h) => (
-                                        <th
-                                            key={h}
-                                            className="px-4 py-2.5 text-left font-semibold text-gray-500 dark:text-gray-400"
-                                        >
-                                            {h}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    {
-                                        method: 'virtio (에뮬레이션)',
-                                        location: 'QEMU 유저공간',
-                                        latency: '높음',
-                                        complexity: '낮음',
-                                        latencyColor: 'text-red-500',
-                                        complexityColor: 'text-green-500',
-                                    },
-                                    {
-                                        method: 'vhost-net',
-                                        location: '커널 스레드',
-                                        latency: '중간',
-                                        complexity: '낮음',
-                                        latencyColor: 'text-yellow-500',
-                                        complexityColor: 'text-green-500',
-                                    },
-                                    {
-                                        method: 'vhost-user (DPDK)',
-                                        location: '유저 공간 (PMD)',
-                                        latency: '낮음',
-                                        complexity: '높음',
-                                        latencyColor: 'text-green-500',
-                                        complexityColor: 'text-red-500',
-                                    },
-                                    {
-                                        method: 'SR-IOV',
-                                        location: '하드웨어 직접',
-                                        latency: '최저',
-                                        complexity: '매우 높음',
-                                        latencyColor: 'text-blue-500',
-                                        complexityColor: 'text-red-600',
-                                    },
-                                ].map((row) => (
-                                    <tr key={row.method}>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">
-                                            {row.method}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.location}</td>
-                                        <td className={`px-4 py-2.5 ${row.latencyColor}`}>{row.latency}</td>
-                                        <td className={`px-4 py-2.5 ${row.complexityColor}`}>
-                                            {row.complexity}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={['방식', '처리 위치', '레이턴시', '설정 복잡도']}
+                        rows={[
+                            { cells: ['virtio (에뮬레이션)', 'QEMU 유저공간', <span key="l1" className="text-red-500">높음</span>, <span key="c1" className="text-green-500">낮음</span>] },
+                            { cells: ['vhost-net', '커널 스레드', <span key="l2" className="text-yellow-500">중간</span>, <span key="c2" className="text-green-500">낮음</span>] },
+                            { cells: ['vhost-user (DPDK)', '유저 공간 (PMD)', <span key="l3" className="text-green-500">낮음</span>, <span key="c3" className="text-red-500">높음</span>] },
+                            { cells: ['SR-IOV', '하드웨어 직접', <span key="l4" className="text-blue-500">최저</span>, <span key="c4" className="text-red-600">매우 높음</span>] },
+                        ]}
+                    />
                 </div>
 
                 <CodeBlock code={snippets.vhostCode} language="bash" filename="# vhost-net / vhost-user / SR-IOV 실전 명령" />

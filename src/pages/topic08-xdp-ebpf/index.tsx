@@ -2,7 +2,8 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { XdpVsNormalDiagram } from '../../components/concepts/ebpf/XdpVsNormalDiagram'
 import { EbpfPipelineDiagram } from '../../components/concepts/ebpf/EbpfPipelineDiagram'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow , TopicPage } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T, TopicPage, useTheme } from '@study-ui/components'
+import type { TableColumn, TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XDP DDoS 예제 코드
@@ -385,46 +386,14 @@ export default function Topic07() {
 
             {/* 8.7 TC BPF vs XDP */}
             <Section id="s87" title="8.7  TC BPF vs XDP 비교">
-                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-                                {['항목', 'XDP', 'TC BPF'].map((h, i) => (
-                                    <th
-                                        key={i}
-                                        className={`px-4 py-2.5 text-left font-semibold text-xs ${
-                                            i === 1
-                                                ? 'text-yellow-600 dark:text-yellow-400'
-                                                : i === 2
-                                                    ? 'text-purple-600 dark:text-purple-400'
-                                                    : 'text-gray-700 dark:text-gray-300'
-                                        }`}
-                                    >
-                                        {h}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tcVsXdpRows.map((row, ri) => (
-                                <tr
-                                    key={ri}
-                                    className="border-b last:border-0 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
-                                >
-                                    <td className="px-4 py-2.5 text-xs text-gray-700 dark:text-gray-300 font-semibold">
-                                        {row.cells[0]}
-                                    </td>
-                                    <td className="px-4 py-2.5 text-xs text-yellow-600 dark:text-yellow-400">
-                                        {row.cells[1]}
-                                    </td>
-                                    <td className="px-4 py-2.5 text-xs text-purple-600 dark:text-purple-400">
-                                        {row.cells[2]}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    headers={[
+                        { header: '항목', cellClassName: 'text-gray-700 dark:text-gray-300 font-semibold' },
+                        { header: 'XDP', headerClassName: 'text-yellow-600 dark:text-yellow-400', cellClassName: 'text-yellow-600 dark:text-yellow-400' },
+                        { header: 'TC BPF', headerClassName: 'text-purple-600 dark:text-purple-400', cellClassName: 'text-purple-600 dark:text-purple-400' },
+                    ] satisfies TableColumn[]}
+                    rows={tcVsXdpRows}
+                />
                 <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
                     <span className="font-bold text-gray-700 dark:text-gray-300">선택 기준:</span> 단순 DDoS
                     방어·로드밸런싱은 XDP, <T id="netfilter">Netfilter</T> 연동이 필요하거나 egress 처리가 필요한 복잡한 정책은 TC BPF를

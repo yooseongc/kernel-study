@@ -5,7 +5,8 @@ import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
-import { CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , TopicPage } from '@study-ui/components'
+import { CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.5  소켓 시스템 콜 표
@@ -386,31 +387,15 @@ export default function Topic05() {
                     연결되어 소켓 객체와 <T id="sk_buff">sk_buff</T>를 조작합니다.
                 </p>
 
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                <th className="text-left px-4 py-2 font-semibold">시스템 콜</th>
-                                <th className="text-left px-4 py-2 font-semibold">커널 함수</th>
-                                <th className="text-left px-4 py-2 font-semibold">동작</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {syscallRows.map((row, i) => (
-                                <tr
-                                    key={i}
-                                    className={`border-t border-gray-200 dark:border-gray-700 ${
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'
-                                    }`}
-                                >
-                                    <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-400">{row.syscall}</td>
-                                    <td className="px-4 py-2.5 font-mono text-purple-600 dark:text-purple-400">{row.kernelFn}</td>
-                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.desc}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '시스템 콜', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                        { header: '커널 함수', mono: true, cellClassName: 'text-purple-600 dark:text-purple-400' },
+                        { header: '동작', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={syscallRows.map((row) => ({ cells: [row.syscall, row.kernelFn, row.desc] }))}
+                />
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="rounded-lg border border-blue-200 dark:border-blue-800/40 bg-blue-50 dark:bg-blue-950/20 p-3">
@@ -491,41 +476,18 @@ export default function Topic05() {
                     합쳐 CPU 인터럽트 오버헤드를 줄입니다 (LRO는 NIC 하드웨어, GRO는 <T id="napi">NAPI</T> 소프트웨어).
                 </p>
 
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                <th className="text-left px-4 py-2 font-semibold">기법</th>
-                                <th className="text-left px-4 py-2 font-semibold">처리 위치</th>
-                                <th className="text-left px-4 py-2 font-semibold">방향</th>
-                                <th className="text-left px-4 py-2 font-semibold">효과</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tsoGsoRows.map((row, i) => (
-                                <tr
-                                    key={i}
-                                    className={`border-t border-gray-200 dark:border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'}`}
-                                >
-                                    <td className="px-4 py-2.5 font-bold text-blue-600 dark:text-blue-400">{row.name}</td>
-                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.location}</td>
-                                    <td className="px-4 py-2.5">
-                                        <span
-                                            className={`px-2 py-0.5 rounded text-xs font-mono ${
-                                                row.direction === 'TX'
-                                                    ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50'
-                                                    : 'bg-green-50 dark:bg-green-900/50 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700/50'
-                                            }`}
-                                        >
-                                            {row.direction}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">{row.effect}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '기법', cellClassName: 'text-blue-600 dark:text-blue-400 font-bold' },
+                        { header: '처리 위치', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '방향', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '효과', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={tsoGsoRows.map((row) => ({
+                        cells: [row.name, row.location, row.direction, row.effect],
+                    }))}
+                />
 
                 <CodeBlock code={snippets.tsoCheckCode} language="bash" filename="ethtool — TSO/GSO/GRO 확인" />
             </Section>
@@ -821,43 +783,15 @@ export default function Topic05() {
                 </div>
 
                 {/* 비교 표 */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-xs border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-gray-700 dark:text-gray-300 font-semibold">
-                                    항목
-                                </th>
-                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-blue-600 dark:text-blue-400 font-semibold">
-                                    CUBIC
-                                </th>
-                                <th className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-green-600 dark:text-green-400 font-semibold">
-                                    BBR
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {congCompareRows.map((row, i) => (
-                                <tr
-                                    key={i}
-                                    className={
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }
-                                >
-                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 font-medium text-gray-700 dark:text-gray-300">
-                                        {row.item}
-                                    </td>
-                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-600 dark:text-gray-400">
-                                        {row.cubic}
-                                    </td>
-                                    <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 text-gray-600 dark:text-gray-400">
-                                        {row.bbr}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    headers={[
+                        { header: '항목', cellClassName: 'text-gray-700 dark:text-gray-300 font-medium' },
+                        { header: 'CUBIC', headerClassName: 'text-blue-600 dark:text-blue-400', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                        { header: 'BBR', headerClassName: 'text-green-600 dark:text-green-400', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={congCompareRows.map((row) => ({ cells: [row.item, row.cubic, row.bbr] }))}
+                />
 
                 {/* Slow Start → Congestion Avoidance 상태 설명 */}
                 <div className="space-y-2">
