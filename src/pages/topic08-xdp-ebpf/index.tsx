@@ -364,7 +364,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold text-sm" style={{ color: card.color }}>
+                            <div className="font-bold text-sm" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <ul className="space-y-1">
@@ -410,7 +410,7 @@ export default function Topic07() {
                             className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3 hover:shadow-lg transition-shadow"
                         >
                             <div>
-                                <div className="text-xs font-mono font-bold mb-0.5" style={{ color: card.accentColor }}>
+                                <div className="text-xs font-bold mb-0.5" style={{ color: card.accentColor }}>
                                     {card.title}
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 text-xs">{card.subtitle}</div>
@@ -477,7 +477,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold text-sm" style={{ color: card.color }}>
+                            <div className="font-bold text-sm" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <ul className="space-y-1">
@@ -569,7 +569,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold text-sm" style={{ color: card.color }}>
+                            <div className="font-bold text-sm" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <ul className="space-y-1">
@@ -615,7 +615,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold" style={{ color: card.color }}>
+                            <div className="font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <div className="text-gray-600 dark:text-gray-400 leading-snug">{card.desc}</div>
@@ -693,7 +693,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold" style={{ color: card.color }}>
+                            <div className="font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <div className="text-gray-600 dark:text-gray-400 leading-snug">{card.desc}</div>
@@ -721,7 +721,7 @@ export default function Topic07() {
                                 border: `1px solid ${card.color}55`,
                             }}
                         >
-                            <div className="font-mono font-bold" style={{ color: card.color }}>
+                            <div className="font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
                             <div className="text-gray-600 dark:text-gray-400 leading-snug">{card.desc}</div>
