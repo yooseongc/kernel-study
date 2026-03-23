@@ -1,20 +1,10 @@
 import { useCallback } from 'react'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
-import { Alert } from '../../components/ui/Alert'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
 import * as snippets from './codeSnippets'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, useTheme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -220,8 +210,8 @@ export default function Topic04() {
                                     <Td>
                                         <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
                                     </Td>
-                                    <Td mono>{intCol}</Td>
-                                    <Td mono>{excCol}</Td>
+                                    <Td>{intCol}</Td>
+                                    <Td>{excCol}</Td>
                                 </tr>
                             ))}
                         </tbody>
@@ -254,7 +244,7 @@ export default function Topic04() {
                                         </Badge>
                                     </Td>
                                     <Td>{desc}</Td>
-                                    <Td mono>{ret}</Td>
+                                    <Td>{ret}</Td>
                                     <Td mono>{ex}</Td>
                                 </tr>
                             ))}
@@ -307,8 +297,8 @@ export default function Topic04() {
                                     <Td>
                                         <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
                                     </Td>
-                                    <Td mono>{top}</Td>
-                                    <Td mono>{bot}</Td>
+                                    <Td>{top}</Td>
+                                    <Td>{bot}</Td>
                                 </tr>
                             ))}
                         </tbody>
@@ -383,7 +373,7 @@ export default function Topic04() {
                                     <Td>
                                         <Badge color={r.color}>{r.name}</Badge>
                                     </Td>
-                                    <Td mono>{r.ctx}</Td>
+                                    <Td>{r.ctx}</Td>
                                     <Td>
                                         <span
                                             className={
@@ -565,33 +555,17 @@ export default function Topic04() {
                 <CodeBlock code={snippets.irqAffinityCode} language="bash" filename="# IRQ 어피니티 설정" />
 
                 <SubTitle>어피니티 전략</SubTitle>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: '단일 CPU 고정',
-                            color: 'border-gray-200 dark:border-gray-600',
-                            titleColor: 'text-gray-800 dark:text-gray-300',
-                            desc: '캐시 친화성 극대화. 단일 고성능 서버에서 특정 NIC 전용으로 배정할 때 사용합니다.',
-                        },
-                        {
-                            title: 'CPU 분산',
-                            color: 'border-blue-200 dark:border-blue-700/60',
-                            titleColor: 'text-blue-700 dark:text-blue-300',
-                            desc: 'IRQ를 여러 CPU에 나눠 처리. 대용량 트래픽 서버에서 병목을 줄이는 전략입니다.',
-                        },
-                        {
-                            title: 'NUMA 인식',
-                            color: 'border-amber-200 dark:border-amber-700/60',
-                            titleColor: 'text-amber-700 dark:text-amber-300',
-                            desc: 'IRQ를 NIC와 같은 NUMA 노드 CPU에 배정해 PCIe 버스 지역성을 유지합니다.',
-                        },
-                    ].map((card) => (
-                        <div key={card.title} className={`rounded-xl border ${card.color} bg-white dark:bg-gray-900/50 p-4`}>
-                            <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={3}>
+                    <InfoBox color="gray" title="단일 CPU 고정">
+                        캐시 친화성 극대화. 단일 고성능 서버에서 특정 NIC 전용으로 배정할 때 사용합니다.
+                    </InfoBox>
+                    <InfoBox color="blue" title="CPU 분산">
+                        IRQ를 여러 CPU에 나눠 처리. 대용량 트래픽 서버에서 병목을 줄이는 전략입니다.
+                    </InfoBox>
+                    <InfoBox color="amber" title="NUMA 인식">
+                        IRQ를 NIC와 같은 NUMA 노드 CPU에 배정해 PCIe 버스 지역성을 유지합니다.
+                    </InfoBox>
+                </CardGrid>
             </Section>
 
             <Section id="s558" title="5.8  PREEMPT_RT — 실시간 리눅스 커널">
@@ -624,10 +598,10 @@ export default function Topic04() {
                             ).map(([feat, normal, rt]) => (
                                 <tr key={feat}>
                                     <Td>
-                                        <span className="font-semibold text-gray-800 dark:text-gray-300 font-mono text-xs">{feat}</span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-300 text-xs">{feat}</span>
                                     </Td>
-                                    <Td mono>{normal}</Td>
-                                    <Td mono>{rt}</Td>
+                                    <Td>{normal}</Td>
+                                    <Td>{rt}</Td>
                                 </tr>
                             ))}
                         </tbody>
@@ -654,33 +628,17 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                 />
 
                 <SubTitle>RT 커널 사용 사례</SubTitle>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {[
-                        {
-                            title: '산업용 제어',
-                            color: 'border-red-200 dark:border-red-700/60',
-                            titleColor: 'text-red-700 dark:text-red-300',
-                            desc: '로봇 팔, CNC 기계 — 1ms 이하 응답 보장, Xenomai/PREEMPT_RT',
-                        },
-                        {
-                            title: '오디오 처리',
-                            color: 'border-blue-200 dark:border-blue-700/60',
-                            titleColor: 'text-blue-700 dark:text-blue-300',
-                            desc: '전문 DAW (JACK Audio) — 버퍼 언더런 없는 실시간 오디오 처리',
-                        },
-                        {
-                            title: '자동차/항공',
-                            color: 'border-amber-200 dark:border-amber-700/60',
-                            titleColor: 'text-amber-700 dark:text-amber-300',
-                            desc: 'AUTOSAR Adaptive, 드론 비행 제어 — 결정론적 응답 시간 필수',
-                        },
-                    ].map((card) => (
-                        <div key={card.title} className={`bg-white dark:bg-gray-800 rounded-xl border ${card.color} p-4`}>
-                            <div className={`font-bold text-sm mb-2 ${card.titleColor}`}>{card.title}</div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={3}>
+                    <InfoBox color="red" title="산업용 제어">
+                        로봇 팔, CNC 기계 — 1ms 이하 응답 보장, Xenomai/PREEMPT_RT
+                    </InfoBox>
+                    <InfoBox color="blue" title="오디오 처리">
+                        전문 DAW (JACK Audio) — 버퍼 언더런 없는 실시간 오디오 처리
+                    </InfoBox>
+                    <InfoBox color="amber" title="자동차/항공">
+                        AUTOSAR Adaptive, 드론 비행 제어 — 결정론적 응답 시간 필수
+                    </InfoBox>
+                </CardGrid>
 
                 <Alert variant="warning" title="트레이드오프:">
                     PREEMPT_RT는 평균 처리량(throughput)을 희생하고 최악 지연을 줄입니다. 일반 서버에서는 표준

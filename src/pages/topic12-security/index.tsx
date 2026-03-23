@@ -1,14 +1,6 @@
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert } from '../../components/ui/Alert'
-import { InfoBox } from '../../components/ui/InfoBox'
 import * as snippets from './codeSnippets'
+import { Alert, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -171,7 +163,7 @@ export default function Topic12() {
                             <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
                                 {card.title}
                             </div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">{card.subtitle}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">{card.subtitle}</div>
                             <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{card.desc}</p>
                         </div>
                     ))}

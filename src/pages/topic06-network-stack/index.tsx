@@ -1,19 +1,11 @@
 import * as snippets from './codeSnippets'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { useTheme } from '../../hooks/useTheme'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { Prose } from '../../components/ui/Prose'
 import { NetworkLayerDiagram } from '../../components/concepts/network/NetworkLayerDiagram'
 import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
+import { CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.5  소켓 시스템 콜 표
@@ -411,8 +403,8 @@ export default function Topic05() {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                <th className="text-left px-4 py-2 font-semibold font-mono">시스템 콜</th>
-                                <th className="text-left px-4 py-2 font-semibold font-mono">커널 함수</th>
+                                <th className="text-left px-4 py-2 font-semibold">시스템 콜</th>
+                                <th className="text-left px-4 py-2 font-semibold">커널 함수</th>
                                 <th className="text-left px-4 py-2 font-semibold">동작</th>
                             </tr>
                         </thead>
@@ -528,7 +520,7 @@ export default function Topic05() {
                                     key={i}
                                     className={`border-t border-gray-200 dark:border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'}`}
                                 >
-                                    <td className="px-4 py-2.5 font-mono font-bold text-blue-600 dark:text-blue-400">{row.name}</td>
+                                    <td className="px-4 py-2.5 font-bold text-blue-600 dark:text-blue-400">{row.name}</td>
                                     <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.location}</td>
                                     <td className="px-4 py-2.5">
                                         <span

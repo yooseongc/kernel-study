@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@source "../lib/study-ui-lib/packages/ui/src/**/*.tsx";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

@@ -1,8 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.4  L2/L3/L4 처리 흐름 시각화 (AnimatedDiagram용 step 컴포넌트)
 // ─────────────────────────────────────────────────────────────────────────────
-import { AnimatedDiagram } from '../../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../../hooks/useTheme'
+import { AnimatedDiagram,useTheme } from '@study-ui/components'
 
 const flowSteps = [
     {

@@ -8,6 +8,12 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
+    /* Path aliases */
+    "paths": {
+      "@study-ui/components": ["./lib/study-ui-lib/packages/ui/src/index.ts"],
+      "@study-ui/components/*": ["./lib/study-ui-lib/packages/ui/src/*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

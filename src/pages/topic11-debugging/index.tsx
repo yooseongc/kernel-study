@@ -1,17 +1,9 @@
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { useTheme } from '../../hooks/useTheme'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { ProcTreeChart } from '../../components/concepts/debug/ProcTreeChart'
 import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkBottleneckChart'
 import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert } from '../../components/ui/Alert'
 import * as snippets from './codeSnippets'
+import { Alert, CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings

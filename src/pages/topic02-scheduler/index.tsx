@@ -1,19 +1,11 @@
 import * as snippets from './codeSnippets'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert } from '../../components/ui/Alert'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { ProcessStateDiagram } from '../../components/concepts/scheduler/ProcessStateDiagram'
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 
 // ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────
 const contextSwitchSteps = [
@@ -104,44 +96,21 @@ export default function Topic02Scheduler() {
                             프로세스 vs 스레드 비교
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        구분
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-blue-600 dark:text-blue-400 font-semibold text-xs uppercase tracking-wide">
-                                        프로세스
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-green-600 dark:text-green-400 font-semibold text-xs uppercase tracking-wide">
-                                        스레드
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    ['생성 시스템 콜', 'fork()', 'clone(CLONE_THREAD)'],
-                                    ['주소 공간', '독립적 (mm_struct 복사)', '공유 (같은 mm_struct)'],
-                                    ['파일 디스크립터', '독립적 (복사)', '공유'],
-                                    ['신호 처리', '독립적', '같은 스레드 그룹'],
-                                    ['생성 비용', '높음', '낮음'],
-                                    ['PID/TGID', 'PID == TGID', 'PID != TGID (TGID = 메인 스레드)'],
-                                ].map(([key, proc, thread]) => (
-                                    <tr
-                                        key={key}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
-                                    >
-                                        <td className="px-4 py-2.5 font-mono text-xs text-gray-500 dark:text-gray-400 font-semibold">
-                                            {key}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{proc}</td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{thread}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '구분', cellClassName: 'text-gray-500 dark:text-gray-400 font-semibold' },
+                            { header: '프로세스', headerClassName: 'text-blue-600 dark:text-blue-400', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '스레드', headerClassName: 'text-green-600 dark:text-green-400', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['생성 시스템 콜', 'fork()', 'clone(CLONE_THREAD)'] },
+                            { cells: ['주소 공간', '독립적 (mm_struct 복사)', '공유 (같은 mm_struct)'] },
+                            { cells: ['파일 디스크립터', '독립적 (복사)', '공유'] },
+                            { cells: ['신호 처리', '독립적', '같은 스레드 그룹'] },
+                            { cells: ['생성 비용', '높음', '낮음'] },
+                            { cells: ['PID/TGID', 'PID == TGID', 'PID != TGID (TGID = 메인 스레드)'] },
+                        ]}
+                    />
                 </div>
 
                 {/* 팁 박스 */}
@@ -203,94 +172,23 @@ export default function Topic02Scheduler() {
                             상태 코드 및 전환 트리거
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        상태 (ps)
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        값
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        설명
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        진입 트리거
-                                    </th>
-                                    <th className="text-left px-4 py-2.5 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        탈출 트리거
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    [
-                                        'TASK_NEW',
-                                        '—',
-                                        '막 생성된 프로세스. 아직 런큐에 없음',
-                                        'fork() / clone()',
-                                        '스케줄러가 런큐에 추가',
-                                    ],
-                                    [
-                                        'TASK_RUNNING',
-                                        '0 / R',
-                                        'CPU 실행 중 또는 런큐 대기 중',
-                                        '스케줄러 선택 / 슬립에서 깨어남',
-                                        'sleep(), exit(), SIGSTOP',
-                                    ],
-                                    [
-                                        'TASK_INTERRUPTIBLE',
-                                        '1 / S',
-                                        '시그널로 깨울 수 있는 슬립',
-                                        'wait_event(), sleep()',
-                                        '시그널 수신 / 이벤트 완료',
-                                    ],
-                                    [
-                                        'TASK_UNINTERRUPTIBLE',
-                                        '2 / D',
-                                        '시그널로도 못 깨우는 슬립. 블록 I/O 전용. 소켓/네트워크 I/O는 INTERRUPTIBLE 사용',
-                                        '블록 디바이스 I/O 대기 (디스크 read 등)',
-                                        'I/O 완료 (인터럽트)',
-                                    ],
-                                    [
-                                        'TASK_STOPPED',
-                                        '4 / T',
-                                        'SIGSTOP 또는 디버거(ptrace)에 의해 정지',
-                                        'SIGSTOP, ptrace attach',
-                                        'SIGCONT 수신',
-                                    ],
-                                    [
-                                        'EXIT_ZOMBIE',
-                                        '16 / Z',
-                                        '종료됐지만 부모가 wait() 미호출. 좀비 상태',
-                                        'exit() 호출',
-                                        '부모 프로세스의 wait() / waitpid()',
-                                    ],
-                                ].map(([state, val, desc, enter, exit_]) => (
-                                    <tr
-                                        key={state}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
-                                    >
-                                        <td className="px-4 py-2.5 font-mono text-xs text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                                            {state}
-                                        </td>
-                                        <td className="px-4 py-2.5 font-mono text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                                            {val}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300 text-xs">{desc}</td>
-                                        <td className="px-4 py-2.5 text-green-700 dark:text-green-400 text-xs">
-                                            {enter}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-orange-600 dark:text-orange-400 text-xs">
-                                            {exit_}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '상태 (ps)', mono: true, nowrap: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                            { header: '값', mono: true, nowrap: true, cellClassName: 'text-gray-500 dark:text-gray-400' },
+                            { header: '설명', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '진입 트리거', cellClassName: 'text-green-700 dark:text-green-400' },
+                            { header: '탈출 트리거', cellClassName: 'text-orange-600 dark:text-orange-400' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['TASK_NEW', '—', '막 생성된 프로세스. 아직 런큐에 없음', 'fork() / clone()', '스케줄러가 런큐에 추가'] },
+                            { cells: ['TASK_RUNNING', '0 / R', 'CPU 실행 중 또는 런큐 대기 중', '스케줄러 선택 / 슬립에서 깨어남', 'sleep(), exit(), SIGSTOP'] },
+                            { cells: ['TASK_INTERRUPTIBLE', '1 / S', '시그널로 깨울 수 있는 슬립', 'wait_event(), sleep()', '시그널 수신 / 이벤트 완료'] },
+                            { cells: ['TASK_UNINTERRUPTIBLE', '2 / D', '시그널로도 못 깨우는 슬립. 블록 I/O 전용', '블록 디바이스 I/O 대기 (디스크 read 등)', 'I/O 완료 (인터럽트)'] },
+                            { cells: ['TASK_STOPPED', '4 / T', 'SIGSTOP 또는 디버거(ptrace)에 의해 정지', 'SIGSTOP, ptrace attach', 'SIGCONT 수신'] },
+                            { cells: ['EXIT_ZOMBIE', '16 / Z', '종료됐지만 부모가 wait() 미호출. 좀비 상태', 'exit() 호출', '부모 프로세스의 wait() / waitpid()'] },
+                        ]}
+                    />
                 </div>
             </Section>
 
@@ -892,7 +790,7 @@ cat /proc/loadavg
                                         >
                                             {policy}
                                         </td>
-                                        <td className="px-4 py-2.5 font-mono text-gray-500 dark:text-gray-400">
+                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">
                                             {prio}
                                         </td>
                                         <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{desc}</td>

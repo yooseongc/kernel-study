@@ -1,18 +1,6 @@
 import { useCallback } from 'react'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert } from '../../components/ui/Alert'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import * as snippets from './codeSnippets'
 import {
     VirtualAddressViz,
@@ -25,6 +13,7 @@ import { BuddyAllocatorViz } from '../../components/concepts/memory/BuddyAllocat
 import { CoWAnimationViz } from '../../components/concepts/memory/CoWAnimationViz'
 
 import { renderSlubViz } from '../../components/concepts/memory/SlubViz'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, useTheme } from '@study-ui/components'
 
 // VirtualAddressViz, MultiProcessVAViz → extracted to components/concepts/memory/VirtualAddressViz.tsx
 
@@ -515,7 +504,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs">
+                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">
                                     플래그
                                 </th>
                                 <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">의미</th>
@@ -675,7 +664,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                                         {row.type}
                                     </td>
                                     <td className="px-4 py-2 text-xs text-gray-600 dark:text-gray-400">{row.cond}</td>
-                                    <td className="px-4 py-2 text-xs font-mono text-gray-500 dark:text-gray-400">
+                                    <td className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
                                         {row.cost}
                                     </td>
                                 </tr>
@@ -768,7 +757,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-100 dark:bg-gray-800">
-                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs">
+                                <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">
                                     파일
                                 </th>
                                 <th className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 text-xs">설명</th>
@@ -1092,40 +1081,29 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     (2MB/1GB)로 TLB 부담을 90% 줄일 수 있습니다.
                 </p>
                 {/* 3-column page size comparison */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: '4KB 일반 페이지',
-                            color: 'text-gray-600 dark:text-gray-400',
-                            border: 'border-gray-300 dark:border-gray-600',
-                            points: ['세밀한 메모리 제어', 'TLB 엔트리 많이 필요', '1GB → TLB 엔트리 262,144개'],
-                        },
-                        {
-                            title: '2MB Huge Page',
-                            color: 'text-blue-600 dark:text-blue-400',
-                            border: 'border-blue-400 dark:border-blue-600',
-                            points: ['512배 큰 페이지', '1GB → TLB 엔트리 512개', 'x86-64 기본 지원'],
-                        },
-                        {
-                            title: '1GB Huge Page',
-                            color: 'text-purple-600 dark:text-purple-400',
-                            border: 'border-purple-400 dark:border-purple-600',
-                            points: ['데이터베이스 전용', '부팅 시 예약 필요', 'NUMA 서버 최대 성능'],
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-2 ${card.border}`}
-                        >
-                            <div className={`text-sm font-bold ${card.color}`}>{card.title}</div>
-                            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                                {card.points.map((p) => (
-                                    <li key={p}>{p}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={3}>
+                    <InfoBox color="gray" title="4KB 일반 페이지">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>세밀한 메모리 제어</li>
+                            <li>TLB 엔트리 많이 필요</li>
+                            <li>1GB → TLB 엔트리 262,144개</li>
+                        </ul>
+                    </InfoBox>
+                    <InfoBox color="blue" title="2MB Huge Page">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>512배 큰 페이지</li>
+                            <li>1GB → TLB 엔트리 512개</li>
+                            <li>x86-64 기본 지원</li>
+                        </ul>
+                    </InfoBox>
+                    <InfoBox color="purple" title="1GB Huge Page">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>데이터베이스 전용</li>
+                            <li>부팅 시 예약 필요</li>
+                            <li>NUMA 서버 최대 성능</li>
+                        </ul>
+                    </InfoBox>
+                </CardGrid>
                 {/* THP vs explicit comparison */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
@@ -1161,33 +1139,17 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 <CodeBlock code={snippets.hugepagesBashCode} language="bash" filename="# Huge Pages 설정" />
                 {/* Practical recommendations */}
                 <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">실전 권장 설정</div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                        {
-                            title: '데이터베이스 (Oracle, PostgreSQL)',
-                            color: 'text-orange-600 dark:text-orange-400',
-                            desc: '명시적 HugeTLBfs + THP never. 예측 가능한 지연이 중요.',
-                        },
-                        {
-                            title: 'JVM (Java)',
-                            color: 'text-blue-600 dark:text-blue-400',
-                            desc: 'THP madvise + -XX:+UseTransparentHugePages. 힙 영역만 THP 적용.',
-                        },
-                        {
-                            title: 'Redis / Cassandra',
-                            color: 'text-red-600 dark:text-red-400',
-                            desc: 'THP never. fork() 시 CoW로 인한 THP 분리가 심각한 지연 유발.',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-1"
-                        >
-                            <div className={`text-sm font-bold ${card.color}`}>{card.title}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">{card.desc}</div>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={3}>
+                    <InfoBox color="orange" title="데이터베이스 (Oracle, PostgreSQL)">
+                        명시적 HugeTLBfs + THP never. 예측 가능한 지연이 중요.
+                    </InfoBox>
+                    <InfoBox color="blue" title="JVM (Java)">
+                        THP madvise + -XX:+UseTransparentHugePages. 힙 영역만 THP 적용.
+                    </InfoBox>
+                    <InfoBox color="red" title="Redis / Cassandra">
+                        THP never. fork() 시 CoW로 인한 THP 분리가 심각한 지연 유발.
+                    </InfoBox>
+                </CardGrid>
             </Section>
 
             {/* ── 3.11  CoW — Copy-on-Write ── */}
@@ -1203,62 +1165,36 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 <CoWAnimationViz />
 
                 {/* Key points */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                        {
-                            title: 'vfork()',
-                            color: 'text-amber-600 dark:text-amber-400',
-                            border: 'border-amber-400 dark:border-amber-600',
-                            points: [
-                                'CoW도 없이 부모 메모리를 완전 공유',
-                                'exec() 또는 _exit() 전까지만 허용',
-                                '부모는 자식이 끝날 때까지 정지',
-                            ],
-                        },
-                        {
-                            title: 'mmap(MAP_PRIVATE)',
-                            color: 'text-blue-600 dark:text-blue-400',
-                            border: 'border-blue-400 dark:border-blue-600',
-                            points: [
-                                '파일 페이지를 쓸 때 CoW 복사',
-                                '파일 원본은 변경되지 않음',
-                                '프로세스 독자 수정본만 메모리에 유지',
-                            ],
-                        },
-                        {
-                            title: '커널 함수 호출 경로',
-                            color: 'text-purple-600 dark:text-purple-400',
-                            border: 'border-purple-400 dark:border-purple-600',
-                            points: [
-                                'do_wp_page() — 쓰기 보호 폴트 진입점',
-                                'alloc_page() — 새 물리 페이지 할당',
-                                'copy_user_highpage() — 페이지 내용 복사',
-                            ],
-                        },
-                        {
-                            title: '성능 이점',
-                            color: 'text-emerald-600 dark:text-emerald-400',
-                            border: 'border-emerald-400 dark:border-emerald-600',
-                            points: [
-                                'fork+exec 패턴: 복사 비용 거의 없음',
-                                'exec()가 새 이미지로 덮으면 복사 불필요',
-                                'Redis: THP + CoW 조합 시 latency spike 주의',
-                            ],
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-2 ${card.border}`}
-                        >
-                            <div className={`text-sm font-bold ${card.color}`}>{card.title}</div>
-                            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                                {card.points.map((p) => (
-                                    <li key={p}>{p}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={2}>
+                    <InfoBox color="amber" title="vfork()">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>CoW도 없이 부모 메모리를 완전 공유</li>
+                            <li>exec() 또는 _exit() 전까지만 허용</li>
+                            <li>부모는 자식이 끝날 때까지 정지</li>
+                        </ul>
+                    </InfoBox>
+                    <InfoBox color="blue" title="mmap(MAP_PRIVATE)">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>파일 페이지를 쓸 때 CoW 복사</li>
+                            <li>파일 원본은 변경되지 않음</li>
+                            <li>프로세스 독자 수정본만 메모리에 유지</li>
+                        </ul>
+                    </InfoBox>
+                    <InfoBox color="purple" title="커널 함수 호출 경로">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>do_wp_page() — 쓰기 보호 폴트 진입점</li>
+                            <li>alloc_page() — 새 물리 페이지 할당</li>
+                            <li>copy_user_highpage() — 페이지 내용 복사</li>
+                        </ul>
+                    </InfoBox>
+                    <InfoBox color="emerald" title="성능 이점">
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>fork+exec 패턴: 복사 비용 거의 없음</li>
+                            <li>exec()가 새 이미지로 덮으면 복사 불필요</li>
+                            <li>Redis: THP + CoW 조합 시 latency spike 주의</li>
+                        </ul>
+                    </InfoBox>
+                </CardGrid>
 
                 <CodeBlock code={snippets.cowBashCode} language="bash" filename="# CoW 동작 확인" />
             </Section>
@@ -1314,42 +1250,20 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                 </div>
 
                 {/* 4 policy cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                        {
-                            title: 'MPOL_DEFAULT',
-                            color: 'text-gray-700 dark:text-gray-300',
-                            border: 'border-gray-300 dark:border-gray-600',
-                            desc: '현재 스레드가 실행 중인 CPU의 로컬 노드에 우선 할당. 기본 동작.',
-                        },
-                        {
-                            title: 'MPOL_BIND',
-                            color: 'text-red-600 dark:text-red-400',
-                            border: 'border-red-400 dark:border-red-600',
-                            desc: '지정된 노드에서만 할당. 해당 노드에 여유 메모리가 없으면 OOM 발생.',
-                        },
-                        {
-                            title: 'MPOL_PREFERRED',
-                            color: 'text-amber-600 dark:text-amber-400',
-                            border: 'border-amber-400 dark:border-amber-600',
-                            desc: '선호 노드에 우선 할당. 여유 없으면 다른 노드로 폴백. 유연한 로컬 선호.',
-                        },
-                        {
-                            title: 'MPOL_INTERLEAVE',
-                            color: 'text-purple-600 dark:text-purple-400',
-                            border: 'border-purple-400 dark:border-purple-600',
-                            desc: '여러 노드에 라운드로빈으로 분산 할당. 대역폭 최대화, 레이턴시는 평균화.',
-                        },
-                    ].map((card) => (
-                        <div
-                            key={card.title}
-                            className={`bg-white dark:bg-gray-900 rounded-xl border p-4 space-y-2 ${card.border}`}
-                        >
-                            <div className={`text-sm font-bold font-mono ${card.color}`}>{card.title}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">{card.desc}</div>
-                        </div>
-                    ))}
-                </div>
+                <CardGrid cols={2}>
+                    <InfoBox color="gray" title="MPOL_DEFAULT">
+                        현재 스레드가 실행 중인 CPU의 로컬 노드에 우선 할당. 기본 동작.
+                    </InfoBox>
+                    <InfoBox color="red" title="MPOL_BIND">
+                        지정된 노드에서만 할당. 해당 노드에 여유 메모리가 없으면 OOM 발생.
+                    </InfoBox>
+                    <InfoBox color="amber" title="MPOL_PREFERRED">
+                        선호 노드에 우선 할당. 여유 없으면 다른 노드로 폴백. 유연한 로컬 선호.
+                    </InfoBox>
+                    <InfoBox color="purple" title="MPOL_INTERLEAVE">
+                        여러 노드에 라운드로빈으로 분산 할당. 대역폭 최대화, 레이턴시는 평균화.
+                    </InfoBox>
+                </CardGrid>
 
                 <CodeBlock code={snippets.numaCtrlCode} language="c" filename="mbind() / set_mempolicy()" />
                 <CodeBlock code={snippets.numaBashCode} language="bash" filename="# numactl — NUMA 정책 제어" />

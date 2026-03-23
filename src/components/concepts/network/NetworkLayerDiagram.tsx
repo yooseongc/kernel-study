@@ -1,8 +1,6 @@
 import * as d3 from 'd3'
 import { useCallback } from 'react'
-import { useTheme } from '../../../hooks/useTheme'
-import { themeColors } from '../../../lib/colors'
-import { D3Container } from '../../../components/viz/D3Container'
+import { D3Container,themeColors,useTheme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.1  네트워크 레이어 다이어그램 (D3)

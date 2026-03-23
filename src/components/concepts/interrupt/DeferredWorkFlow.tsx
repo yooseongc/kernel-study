@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '../../../lib/colors'
+import { themeColors } from '@study-ui/components'
 
 interface DeferredStage {
     title: string

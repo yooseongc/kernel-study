@@ -2,7 +2,7 @@
 // 3.4  Page Fault 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useTheme } from '../../../hooks/useTheme'
+import { useTheme } from '@study-ui/components'
 
 type PFZone = 'process' | 'kernel' | 'memory'
 

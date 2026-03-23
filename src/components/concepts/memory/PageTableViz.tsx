@@ -2,7 +2,7 @@
 // 3.2  페이지 테이블 워크 시각화
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useTheme } from '../../../hooks/useTheme'
+import { useTheme } from '@study-ui/components'
 
 // VA = 0x00007FFF_DEADBEEF
 const vaFields = [

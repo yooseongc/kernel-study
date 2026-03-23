@@ -1,7 +1,6 @@
 import * as d3 from 'd3'
 import { useState, useCallback } from 'react'
-import { themeColors } from '../../../lib/colors'
-import { D3Container } from '../../viz/D3Container'
+import { themeColors , D3Container } from '@study-ui/components'
 
 // ── CFS 트리 데이터 ──────────────────────────────────────────────────────────
 interface CfsNode {

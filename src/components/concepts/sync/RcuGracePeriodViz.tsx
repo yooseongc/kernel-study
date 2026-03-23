@@ -1,7 +1,7 @@
 // RCU Grace Period 타임라인 SVG 시각화
 // Extracted from src/pages/topic09-synchronization/index.tsx
 
-import { useTheme } from '../../../hooks/useTheme'
+import { useTheme } from '@study-ui/components'
 
 export function RcuGracePeriodViz() {
     const { theme } = useTheme()

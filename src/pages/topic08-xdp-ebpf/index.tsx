@@ -1,15 +1,8 @@
-import { useTheme } from '../../hooks/useTheme'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { XdpVsNormalDiagram } from '../../components/concepts/ebpf/XdpVsNormalDiagram'
 import { EbpfPipelineDiagram } from '../../components/concepts/ebpf/EbpfPipelineDiagram'
 import * as snippets from './codeSnippets'
+import { CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XDP DDoS 예제 코드
@@ -414,7 +407,7 @@ export default function Topic07() {
                                 {['항목', 'XDP', 'TC BPF'].map((h, i) => (
                                     <th
                                         key={i}
-                                        className={`px-4 py-2.5 text-left font-semibold font-mono text-xs ${
+                                        className={`px-4 py-2.5 text-left font-semibold text-xs ${
                                             i === 1
                                                 ? 'text-yellow-600 dark:text-yellow-400'
                                                 : i === 2
@@ -433,13 +426,13 @@ export default function Topic07() {
                                     key={ri}
                                     className="border-b last:border-0 border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
                                 >
-                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-700 dark:text-gray-300 font-semibold">
+                                    <td className="px-4 py-2.5 text-xs text-gray-700 dark:text-gray-300 font-semibold">
                                         {row.cells[0]}
                                     </td>
-                                    <td className="px-4 py-2.5 font-mono text-xs text-yellow-600 dark:text-yellow-400">
+                                    <td className="px-4 py-2.5 text-xs text-yellow-600 dark:text-yellow-400">
                                         {row.cells[1]}
                                     </td>
-                                    <td className="px-4 py-2.5 font-mono text-xs text-purple-600 dark:text-purple-400">
+                                    <td className="px-4 py-2.5 text-xs text-purple-600 dark:text-purple-400">
                                         {row.cells[2]}
                                     </td>
                                 </tr>

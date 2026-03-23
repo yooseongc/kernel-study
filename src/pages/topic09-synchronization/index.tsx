@@ -1,19 +1,9 @@
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../hooks/useTheme'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { Alert } from '../../components/ui/Alert'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/RaceConditionViz'
 import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
 import { RcuGracePeriodViz } from '../../components/concepts/sync/RcuGracePeriodViz'
 import * as snippets from './codeSnippets'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets

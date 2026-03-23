@@ -1,8 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.7  TX 경로 시각화 (AnimatedDiagram용 step 컴포넌트)
 // ─────────────────────────────────────────────────────────────────────────────
-import { AnimatedDiagram } from '../../../components/viz/AnimatedDiagram'
-import { useTheme } from '../../../hooks/useTheme'
+import { AnimatedDiagram,useTheme } from '@study-ui/components'
 
 const txSteps = [
     {

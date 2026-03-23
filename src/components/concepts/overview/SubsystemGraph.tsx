@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '../../../lib/colors'
+import { themeColors } from '@study-ui/components'
 
 export function renderSubsystemGraph(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,

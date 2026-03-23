@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // NIC DMA flow animated visualisation
 // Extracted from src/pages/topic10-drivers/index.tsx
-import { useTheme } from '../../../hooks/useTheme'
+import { useTheme } from '@study-ui/components'
 
 export const dmaSteps = [
     {

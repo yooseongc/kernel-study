@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import * as d3 from 'd3'
 import { kernelTopics } from '../../data/kernelTopics'
 import { glossary } from '../../data/glossary'
-import { useTheme } from '../../hooks/useTheme'
-import { D3Container } from '../../components/viz/D3Container'
+import { D3Container, useTheme } from '@study-ui/components'
 
 // ── 카테고리 메타데이터 ─────────────────────────────────────────────────────
 const CAT_COLOR: Record<string, string> = {

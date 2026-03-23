@@ -1,12 +1,6 @@
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
+import { CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -76,10 +70,10 @@ export default function Topic13Kvm() {
                             className="rounded-xl border bg-white dark:bg-gray-900 p-4 space-y-2"
                             style={{ borderColor: card.color + '55' }}
                         >
-                            <div className="text-xs font-mono font-bold" style={{ color: card.color }}>
+                            <div className="text-xs font-bold" style={{ color: card.color }}>
                                 {card.type}
                             </div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500 font-mono">{card.examples}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">{card.examples}</div>
                             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{card.desc}</p>
                         </div>
                     ))}
@@ -669,12 +663,12 @@ export default function Topic13Kvm() {
                                     },
                                 ].map((row) => (
                                     <tr key={row.method}>
-                                        <td className="px-4 py-2.5 font-mono text-gray-700 dark:text-gray-300">
+                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">
                                             {row.method}
                                         </td>
                                         <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.location}</td>
-                                        <td className={`px-4 py-2.5 font-mono ${row.latencyColor}`}>{row.latency}</td>
-                                        <td className={`px-4 py-2.5 font-mono ${row.complexityColor}`}>
+                                        <td className={`px-4 py-2.5 ${row.latencyColor}`}>{row.latency}</td>
+                                        <td className={`px-4 py-2.5 ${row.complexityColor}`}>
                                             {row.complexity}
                                         </td>
                                     </tr>

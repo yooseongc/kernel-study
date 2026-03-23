@@ -1,17 +1,8 @@
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { Prose } from '../../components/ui/Prose'
-import { Alert } from '../../components/ui/Alert'
 import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , type TableRow } from '@study-ui/components'
 
 const openFlowSteps = [
     {
@@ -171,7 +162,7 @@ export default function Topic11Filesystem() {
                                         <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">
                                             {row.role}
                                         </td>
-                                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-mono">
+                                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
                                             {row.lifetime}
                                         </td>
                                     </tr>
@@ -579,7 +570,7 @@ f_flags: O_RDONLY`}</pre>
                             style={{ borderColor: card.color + '55' }}
                         >
                             <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-sm font-mono font-bold" style={{ color: card.color }}>
+                                <span className="text-sm font-bold" style={{ color: card.color }}>
                                     {card.title}
                                 </span>
                                 <span
@@ -690,7 +681,7 @@ f_flags: O_RDONLY`}</pre>
                                     key={row.name}
                                     className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                                 >
-                                    <td className="px-4 py-2.5 font-mono font-bold text-gray-900 dark:text-gray-100">
+                                    <td className="px-4 py-2.5 font-bold text-gray-900 dark:text-gray-100">
                                         {row.name}
                                     </td>
                                     <td className="px-4 py-2.5">

@@ -1,24 +1,13 @@
 import { useState } from 'react'
-import { MermaidDiagram } from '../../components/viz/MermaidDiagram'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
-import { StatCard } from '../../components/ui/StatCard'
-import { InfoBox } from '../../components/ui/InfoBox'
 import { renderRingDiagram, ringData } from '../../components/concepts/overview/RingDiagram'
 import type { RingInfo } from '../../components/concepts/overview/RingDiagram'
 import { renderSwitchCostChart } from '../../components/concepts/overview/SwitchCostChart'
 import { renderSubsystemGraph } from '../../components/concepts/overview/SubsystemGraph'
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
 import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { Alert } from '../../components/ui/Alert'
 import { KernelRef } from '../../components/ui/KernelRef'
+import { Alert, AnimatedDiagram, CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, MermaidDiagram, Prose, Section, StatCard, T, TopicNavigation } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 import {
     syscallFlowChart,
     taskStructCode,
@@ -318,45 +307,17 @@ export default function Topic01Overview() {
                 </Prose>
 
                 {/* 주요 syscall 비교 표 */}
-                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 mt-4">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="bg-gray-100 dark:bg-gray-800 text-left">
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 font-mono">
-                                    시스템 콜
-                                </th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 text-right whitespace-nowrap">
-                                    번호(x86-64)
-                                </th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">역할</th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">
-                                    관련 개념
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {syscallTableRows.map((row, i) => (
-                                <tr
-                                    key={row.name}
-                                    className={`border-t border-gray-100 dark:border-gray-800 ${
-                                        i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                    }`}
-                                >
-                                    <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-300 font-medium whitespace-nowrap">
-                                        {row.name}
-                                    </td>
-                                    <td className="px-4 py-2.5 font-mono text-gray-500 dark:text-gray-400 text-right">
-                                        {row.nr}
-                                    </td>
-                                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.role}</td>
-                                    <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">
-                                        {row.concepts}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    striped
+                    className="mt-4"
+                    headers={[
+                        { header: '시스템 콜', mono: true, nowrap: true, cellClassName: 'text-blue-600 dark:text-blue-300 font-medium' },
+                        { header: '번호(x86-64)', align: 'text-right', mono: true, nowrap: true, cellClassName: 'text-gray-500 dark:text-gray-400' },
+                        { header: '역할', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '관련 개념', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={syscallTableRows.map((row) => ({ cells: [row.name, String(row.nr), row.role, row.concepts] }))}
+                />
 
                 {/* syscall 번호 확인 CodeBlock */}
                 <CodeBlock code={syscallCatalogCode} language="bash" filename="strace / perf / /proc" />
@@ -378,45 +339,16 @@ export default function Topic01Overview() {
                     <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                         fork() vs clone() vs vfork() 비교
                     </p>
-                    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="bg-gray-100 dark:bg-gray-800 text-left">
-                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200 font-mono">
-                                        함수
-                                    </th>
-                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">
-                                        POSIX
-                                    </th>
-                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">
-                                        메모리 공유
-                                    </th>
-                                    <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-200">
-                                        주요 용도
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {forkCompareRows.map((row, i) => (
-                                    <tr
-                                        key={row.fn}
-                                        className={`border-t border-gray-100 dark:border-gray-800 ${
-                                            i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800/50'
-                                        }`}
-                                    >
-                                        <td className="px-4 py-2.5 font-mono text-blue-600 dark:text-blue-300 font-medium whitespace-nowrap">
-                                            {row.fn}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.posix}</td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{row.memory}</td>
-                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs">
-                                            {row.usage}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        striped
+                        headers={[
+                            { header: '함수', mono: true, nowrap: true, cellClassName: 'text-blue-600 dark:text-blue-300 font-medium' },
+                            { header: 'POSIX', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '메모리 공유', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '주요 용도', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                        ] satisfies TableColumn[]}
+                        rows={forkCompareRows.map((row) => ({ cells: [row.fn, row.posix, row.memory, row.usage] }))}
+                    />
                 </div>
             </Section>
 

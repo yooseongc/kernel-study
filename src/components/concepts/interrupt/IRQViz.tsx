@@ -1,4 +1,4 @@
-import { useTheme } from '../../../hooks/useTheme'
+import { useTheme } from '@study-ui/components'
 
 type IRQZone = 'device' | 'cpu' | 'memory'
 

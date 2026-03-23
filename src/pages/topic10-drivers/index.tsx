@@ -1,17 +1,8 @@
-import { useTheme } from '../../hooks/useTheme'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { AnimatedDiagram } from '../../components/viz/AnimatedDiagram'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { Prose } from '../../components/ui/Prose'
-import { InfoTable, type TableRow } from '../../components/ui/InfoTable'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { InfoBox } from '../../components/ui/InfoBox'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
 import { DriverTreeChart } from '../../components/concepts/driver/DriverTreeChart'
 import { DMAViz, dmaSteps } from '../../components/concepts/driver/DMAViz'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
+import { AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets

@@ -1,8 +1,6 @@
 import { useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme } from '../../../hooks/useTheme'
-import { themeColors } from '../../../lib/colors'
-import { D3Container } from '../../viz/D3Container'
+import { useTheme, themeColors , D3Container } from '@study-ui/components'
 
 interface ArchNode {
     label: string

@@ -1,0 +1,3 @@
+[submodule "lib/study-ui-lib"]
+	path = lib/study-ui-lib
+	url = ../study-ui-lib

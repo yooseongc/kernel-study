@@ -49,3 +49,4 @@ Desktop.ini
 # ── Test coverage ─────────────────────────────────────────────────────────────
 coverage/
 .nyc_output/
+bash.exe.stackdump

@@ -1,17 +1,8 @@
 import { useState, useCallback } from 'react'
-import { CodeBlock } from '../../components/viz/CodeBlock'
-import { D3Container } from '../../components/viz/D3Container'
-import { useTheme } from '../../hooks/useTheme'
 import * as d3 from 'd3'
-import { themeColors } from '../../lib/colors'
-import { T } from '../../components/ui/GlossaryTooltip'
-import { Section } from '../../components/ui/Section'
-import { LearningCard } from '../../components/ui/LearningCard'
-import { TopicNavigation } from '../../components/ui/TopicNavigation'
-import { InfoTable } from '../../components/ui/InfoTable'
-import { Prose } from '../../components/ui/Prose'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
+import { CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, themeColors, useTheme } from '@study-ui/components'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
 function renderNetfilterFlow(
@@ -417,13 +408,7 @@ function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
     )
 }
 
-function InfoBox({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-5 py-4 text-sm text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            {children}
-        </div>
-    )
-}
+// InfoBox는 @study-ui/components에서 import — color="blue" 사용
 
 // ── Hook detail map ────────────────────────────────────────────────────────────
 const hookDetails: Record<string, { desc: string; examples: string }> = {
@@ -471,7 +456,7 @@ export default function Topic06() {
             />
 
             <Section id="s771" title="7.1  Netfilter 구조">
-                <InfoBox>
+                <InfoBox color="blue">
                     <strong>
                         <T id="netfilter">Netfilter</T>
                     </strong>
@@ -615,7 +600,7 @@ export default function Topic06() {
             </Section>
 
             <Section id="s7741" title="7.4.1  iptables Table × Chain 매트릭스">
-                <InfoBox>
+                <InfoBox color="blue">
                     <strong>iptables</strong>는 4개의 <em>테이블</em>을 가지며, 각 테이블은 특정 체인에만 규칙을 등록할 수 있습니다.
                     <ul className="mt-3 space-y-2 list-disc list-inside">
                         <li>
@@ -665,7 +650,7 @@ export default function Topic06() {
             </Section>
 
             <Section id="s7742" title="7.4.2  NAT — 네트워크 주소 변환">
-                <InfoBox>
+                <InfoBox color="blue">
                     <strong>NAT(Network Address Translation)</strong>는 패킷의 IP 주소/포트를 변환합니다.
                     <T id="conntrack">conntrack</T>이 매핑을 추적하여 응답 패킷을 자동으로 역변환합니다.
                     <ul className="mt-3 space-y-2 list-disc list-inside">
@@ -698,7 +683,7 @@ export default function Topic06() {
             </Section>
 
             <Section id="s775" title="7.5  conntrack (연결 추적)">
-                <InfoBox>
+                <InfoBox color="blue">
                     <T id="netfilter">Netfilter</T>{' '}
                     <strong>
                         <T id="conntrack">conntrack</T>
@@ -765,7 +750,7 @@ export default function Topic06() {
             </Section>
 
             <Section id="s776" title="7.6  TPROXY와 정책 기반 라우팅">
-                <InfoBox>
+                <InfoBox color="blue">
                     <ul className="space-y-1 list-disc list-inside">
                         <li>
                             <strong><T id="tproxy">TPROXY</T></strong>: 패킷을 실제 목적지가 아닌 <em>로컬 소켓</em>으로 리다이렉트합니다.
@@ -836,7 +821,7 @@ export default function Topic06() {
                     <T id="iptables">iptables</T> 규칙 하나로 수천 개의 IP를 O(1)로 매칭합니다. 차단 목록, 화이트리스트,
                     GeoIP 차단에 활용됩니다.
                 </p>
-                <InfoBox>
+                <InfoBox color="blue">
                     <strong>성능 비교:</strong> <T id="iptables">iptables</T> 규칙 10만 개 → O(n) 순차 매칭 vs{' '}
                     <code className="font-mono text-xs bg-blue-100 dark:bg-blue-900 px-1 rounded">ipset hash:ip</code> →
                     O(1) 해시 룩업. 대규모 차단 목록에서 압도적인 성능 차이가 발생합니다.
@@ -883,7 +868,7 @@ export default function Topic06() {
                     Gateway)가 필요합니다.
                 </p>
 
-                <InfoBox>
+                <InfoBox color="blue">
                     <strong>FTP ACTIVE 모드 문제:</strong> 제어 채널(클라이언트 → 서버 21번 포트)은 conntrack이
                     추적하지만, 데이터 채널(서버 → 클라이언트 임의 포트)은 <em>새로운 연결</em>이므로 방화벽이
                     기본적으로 차단합니다.{' '}
