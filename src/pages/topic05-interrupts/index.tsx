@@ -4,7 +4,8 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme , TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, SubSection, T, TopicPage, useTheme } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -41,32 +42,6 @@ const irqSteps = [
     },
 ]
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared UI helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-function Th({ children }: { children: React.ReactNode }) {
-    return (
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide bg-gray-50 dark:bg-gray-800/60">
-            {children}
-        </th>
-    )
-}
-
-function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
-    return (
-        <td
-            className={`px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700/50 ${mono ? 'font-mono text-xs' : ''}`}
-        >
-            {children}
-        </td>
-    )
-}
-
-function SubTitle({ children }: { children: React.ReactNode }) {
-    return <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">{children}</h3>
-}
-
 type BadgeColor = 'blue' | 'red' | 'amber' | 'green' | 'purple'
 
 function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?: BadgeColor }) {
@@ -77,7 +52,7 @@ function Badge({ children, color = 'blue' }: { children: React.ReactNode; color?
         green: 'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700/50',
         purple: 'bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700/50',
     }
-    return <span className={`inline-block text-xs font-mono px-2 py-0.5 rounded border ${map[color]}`}>{children}</span>
+    return <span className={`inline-block text-xs px-2 py-0.5 rounded border ${map[color]}`}>{children}</span>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -165,77 +140,35 @@ export default function Topic04() {
                     CPU가 명령어를 실행하는 도중 내부에서 발생하는 동기적 이벤트입니다 (<T id="page_fault">page fault</T>, divide-by-zero 등).
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>구분</Th>
-                                <Th>인터럽트</Th>
-                                <Th>예외</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(
-                                [
-                                    [
-                                        '발생 원인',
-                                        '외부 장치 (NIC, 키보드, 타이머)',
-                                        'CPU 내부 (page fault, divide-by-zero)',
-                                    ],
-                                    ['동기성', '비동기 (언제든 발생)', '동기 (명령어 실행 중 발생)'],
-                                    ['처리 후', '중단된 코드로 복귀', '복구 가능 / SIGSEGV 등'],
-                                    [
-                                        '예시',
-                                        'IRQ #9 (NIC), IRQ #0 (타이머)',
-                                        '#PF (page fault), #GP (general protection)',
-                                    ],
-                                ] as [string, string, string][]
-                            ).map(([label, intCol, excCol]) => (
-                                <tr key={label}>
-                                    <Td>
-                                        <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
-                                    </Td>
-                                    <Td>{intCol}</Td>
-                                    <Td>{excCol}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    className="mb-6"
+                    headers={[
+                        { header: '구분', cellClassName: 'text-gray-800 dark:text-gray-300 font-semibold' },
+                        { header: '인터럽트', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '예외', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['발생 원인', '외부 장치 (NIC, 키보드, 타이머)', 'CPU 내부 (page fault, divide-by-zero)'] },
+                        { cells: ['동기성', '비동기 (언제든 발생)', '동기 (명령어 실행 중 발생)'] },
+                        { cells: ['처리 후', '중단된 코드로 복귀', '복구 가능 / SIGSEGV 등'] },
+                        { cells: ['예시', 'IRQ #9 (NIC), IRQ #0 (타이머)', '#PF (page fault), #GP (general protection)'] },
+                    ]}
+                />
 
-                <SubTitle>예외 세분화: Fault / Trap / Abort</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>종류</Th>
-                                <Th>설명</Th>
-                                <Th>복귀 위치</Th>
-                                <Th>대표 예</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(
-                                [
-                                    ['Fault', '복구 가능 — 원인 해결 후 재실행', '오류 발생 명령어 재실행', '#PF, #GP'],
-                                    ['Trap', '의도된 예외 (디버깅 등)', '다음 명령어로 복귀', '#BP (int3), #DB'],
-                                    ['Abort', '복구 불가 — 시스템 종료', '복귀 불가', '#DF, MCE'],
-                                ] as [string, string, string, string][]
-                            ).map(([type, desc, ret, ex]) => (
-                                <tr key={type}>
-                                    <Td>
-                                        <Badge color={type === 'Fault' ? 'amber' : type === 'Trap' ? 'blue' : 'red'}>
-                                            {type}
-                                        </Badge>
-                                    </Td>
-                                    <Td>{desc}</Td>
-                                    <Td>{ret}</Td>
-                                    <Td mono>{ex}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <SubSection>예외 세분화: Fault / Trap / Abort</SubSection>
+                <InfoTable
+                    headers={[
+                        { header: '종류', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '설명', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '복귀 위치', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '대표 예', mono: true, cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: [<Badge color="amber" key="f">Fault</Badge>, '복구 가능 — 원인 해결 후 재실행', '오류 발생 명령어 재실행', '#PF, #GP'] },
+                        { cells: [<Badge color="blue" key="t">Trap</Badge>, '의도된 예외 (디버깅 등)', '다음 명령어로 복귀', '#BP (int3), #DB'] },
+                        { cells: [<Badge color="red" key="a">Abort</Badge>, '복구 불가 — 시스템 종료', '복귀 불가', '#DF, MCE'] },
+                    ]}
+                />
             </Section>
 
             <Section id="s552" title="5.2  IRQ 처리 흐름">
@@ -259,36 +192,21 @@ export default function Topic04() {
                     무거운 처리(프로토콜 스택, 패킷 분류 등)를 수행합니다.
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>항목</Th>
-                                <Th>Top Half</Th>
-                                <Th>Bottom Half</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(
-                                [
-                                    ['실행 시점', 'IRQ 발생 즉시', '나중에 (인터럽트 활성화 상태)'],
-                                    ['인터럽트 상태', '비활성화', '활성화'],
-                                    ['실행 시간', '최소 (수 µs)', '상대적으로 길어도 됨'],
-                                    ['컨텍스트', '인터럽트 컨텍스트 (sleep 불가)', '다양 (workqueue는 sleep 가능)'],
-                                    ['목적', 'ACK, 데이터 복사', '프로토콜 처리, 네트워크 스택'],
-                                ] as [string, string, string][]
-                            ).map(([label, top, bot]) => (
-                                <tr key={label}>
-                                    <Td>
-                                        <span className="font-semibold text-gray-800 dark:text-gray-300">{label}</span>
-                                    </Td>
-                                    <Td>{top}</Td>
-                                    <Td>{bot}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    className="mb-6"
+                    headers={[
+                        { header: '항목', cellClassName: 'text-gray-800 dark:text-gray-300 font-semibold' },
+                        { header: 'Top Half', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: 'Bottom Half', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['실행 시점', 'IRQ 발생 즉시', '나중에 (인터럽트 활성화 상태)'] },
+                        { cells: ['인터럽트 상태', '비활성화', '활성화'] },
+                        { cells: ['실행 시간', '최소 (수 µs)', '상대적으로 길어도 됨'] },
+                        { cells: ['컨텍스트', '인터럽트 컨텍스트 (sleep 불가)', '다양 (workqueue는 sleep 가능)'] },
+                        { cells: ['목적', 'ACK, 데이터 복사', '프로토콜 처리, 네트워크 스택'] },
+                    ]}
+                />
 
                 <CodeBlock
                     code={snippets.topBottomHalfCode}
@@ -308,112 +226,40 @@ export default function Topic04() {
                     <KernelRef path="kernel/workqueue.c" sym="queue_work" />
                 </Prose>
 
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>메커니즘</Th>
-                                <Th>컨텍스트</Th>
-                                <Th>sleep 가능</Th>
-                                <Th>우선순위</Th>
-                                <Th>주요 용도</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                {
-                                    name: 'Softirq',
-                                    ctx: 'softirq',
-                                    sleep: '불가',
-                                    prio: '높음',
-                                    use: '네트워크 RX/TX, 타이머',
-                                    color: 'red' as BadgeColor,
-                                },
-                                {
-                                    name: 'Tasklet',
-                                    ctx: 'softirq (직렬화)',
-                                    sleep: '불가',
-                                    prio: '중간',
-                                    use: '드라이버 Bottom Half',
-                                    color: 'amber' as BadgeColor,
-                                },
-                                {
-                                    name: 'Workqueue (system)',
-                                    ctx: '프로세스',
-                                    sleep: '가능',
-                                    prio: '낮음',
-                                    use: '지연 작업, 파일시스템',
-                                    color: 'blue' as BadgeColor,
-                                },
-                                {
-                                    name: 'Workqueue (RT)',
-                                    ctx: 'RT 프로세스',
-                                    sleep: '가능',
-                                    prio: '높음',
-                                    use: '실시간 커널 스레드',
-                                    color: 'blue' as BadgeColor,
-                                },
-                            ].map((r) => (
-                                <tr key={r.name}>
-                                    <Td>
-                                        <Badge color={r.color}>{r.name}</Badge>
-                                    </Td>
-                                    <Td>{r.ctx}</Td>
-                                    <Td>
-                                        <span
-                                            className={
-                                                r.sleep === '불가' ? 'text-red-400 text-xs' : 'text-green-400 text-xs'
-                                            }
-                                        >
-                                            {r.sleep}
-                                        </span>
-                                    </Td>
-                                    <Td>{r.prio}</Td>
-                                    <Td>{r.use}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    className="mb-6"
+                    headers={['메커니즘', '컨텍스트', 'sleep 가능', '우선순위', '주요 용도']}
+                    rows={[
+                        { cells: [<Badge color="red" key="s">Softirq</Badge>, 'softirq', <span key="s1" className="text-red-400">불가</span>, '높음', '네트워크 RX/TX, 타이머'] },
+                        { cells: [<Badge color="amber" key="t">Tasklet</Badge>, 'softirq (직렬화)', <span key="t1" className="text-red-400">불가</span>, '중간', '드라이버 Bottom Half'] },
+                        { cells: [<Badge color="blue" key="w">Workqueue (system)</Badge>, '프로세스', <span key="w1" className="text-green-400">가능</span>, '낮음', '지연 작업, 파일시스템'] },
+                        { cells: [<Badge color="blue" key="r">Workqueue (RT)</Badge>, 'RT 프로세스', <span key="r1" className="text-green-400">가능</span>, '높음', '실시간 커널 스레드'] },
+                    ]}
+                />
 
-                <SubTitle>Softirq 우선순위 (벡터 번호 순)</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>번호</Th>
-                                <Th>이름</Th>
-                                <Th>설명</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(
-                                [
-                                    [0, 'HI_SOFTIRQ', '가장 높은 우선순위, tasklet_hi'],
-                                    [1, 'TIMER_SOFTIRQ', '타이머 만료 처리'],
-                                    [2, 'NET_TX_SOFTIRQ', '네트워크 패킷 송신'],
-                                    [3, 'NET_RX_SOFTIRQ', '네트워크 패킷 수신 (NAPI)'],
-                                    [4, 'BLOCK_SOFTIRQ', '블록 I/O 완료'],
-                                    [5, 'IRQ_POLL_SOFTIRQ', 'I/O 폴링'],
-                                    [6, 'TASKLET_SOFTIRQ', '일반 tasklet'],
-                                    [7, 'SCHED_SOFTIRQ', '스케줄러 (load balancing)'],
-                                    [8, 'HRTIMER_SOFTIRQ', '고해상도 타이머 (deprecated)'],
-                                    [9, 'RCU_SOFTIRQ', 'RCU 콜백 처리'],
-                                ] as [number, string, string][]
-                            ).map(([num, name, desc]) => (
-                                <tr key={num}>
-                                    <Td>
-                                        <span className="font-mono text-amber-600 dark:text-amber-400">{num}</span>
-                                    </Td>
-                                    <Td mono>{name}</Td>
-                                    <Td>{desc}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <SubSection>Softirq 우선순위 (벡터 번호 순)</SubSection>
+                <InfoTable
+                    className="mb-6"
+                    headers={[
+                        { header: '번호', mono: true, cellClassName: 'text-amber-600 dark:text-amber-400' },
+                        { header: '이름', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '설명', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['0', 'HI_SOFTIRQ', '가장 높은 우선순위, tasklet_hi'] },
+                        { cells: ['1', 'TIMER_SOFTIRQ', '타이머 만료 처리'] },
+                        { cells: ['2', 'NET_TX_SOFTIRQ', '네트워크 패킷 송신'] },
+                        { cells: ['3', 'NET_RX_SOFTIRQ', '네트워크 패킷 수신 (NAPI)'] },
+                        { cells: ['4', 'BLOCK_SOFTIRQ', '블록 I/O 완료'] },
+                        { cells: ['5', 'IRQ_POLL_SOFTIRQ', 'I/O 폴링'] },
+                        { cells: ['6', 'TASKLET_SOFTIRQ', '일반 tasklet'] },
+                        { cells: ['7', 'SCHED_SOFTIRQ', '스케줄러 (load balancing)'] },
+                        { cells: ['8', 'HRTIMER_SOFTIRQ', '고해상도 타이머 (deprecated)'] },
+                        { cells: ['9', 'RCU_SOFTIRQ', 'RCU 콜백 처리'] },
+                    ]}
+                />
 
-                <SubTitle>Deferred Work 계층 흐름</SubTitle>
+                <SubSection>Deferred Work 계층 흐름</SubSection>
                 <D3Container renderFn={renderDeferredWork} height={200} deps={[theme]} />
             </Section>
 
@@ -526,7 +372,7 @@ export default function Topic04() {
 
                 <CodeBlock code={snippets.threadedIrqCode} language="c" filename="drivers/my_driver.c" />
 
-                <SubTitle>Threaded IRQ 스레드 확인</SubTitle>
+                <SubSection>Threaded IRQ 스레드 확인</SubSection>
                 <CodeBlock code={snippets.threadedIrqCheckCode} language="bash" filename="# 실전 확인" />
             </Section>
 
@@ -539,7 +385,7 @@ export default function Topic04() {
 
                 <CodeBlock code={snippets.irqAffinityCode} language="bash" filename="# IRQ 어피니티 설정" />
 
-                <SubTitle>어피니티 전략</SubTitle>
+                <SubSection>어피니티 전략</SubSection>
                 <CardGrid cols={3}>
                     <InfoBox color="gray" title="단일 CPU 고정">
                         캐시 친화성 극대화. 단일 고성능 서버에서 특정 NIC 전용으로 배정할 때 사용합니다.
@@ -561,37 +407,22 @@ export default function Topic04() {
                     시스템에서 사용됩니다.
                 </Prose>
 
-                <SubTitle>핵심 변경사항</SubTitle>
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-6">
-                    <table className="w-full">
-                        <thead>
-                            <tr>
-                                <Th>기능</Th>
-                                <Th>일반 커널</Th>
-                                <Th>PREEMPT_RT</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(
-                                [
-                                    ['spinlock', '선점 불가 바쁜 대기', 'rt_mutex 기반 (슬립 가능)'],
-                                    ['인터럽트 핸들러', '하드 IRQ 컨텍스트', 'Threaded IRQ (kthread)'],
-                                    ['softirq', '인터럽트 컨텍스트', 'ksoftirqd 스레드로 분리'],
-                                    ['타이머', '인터럽트 컨텍스트', 'hrtimer 스레드화'],
-                                    ['최악 지연', '수ms~수십ms', '수십μs 이하'],
-                                ] as [string, string, string][]
-                            ).map(([feat, normal, rt]) => (
-                                <tr key={feat}>
-                                    <Td>
-                                        <span className="font-semibold text-gray-800 dark:text-gray-300 text-xs">{feat}</span>
-                                    </Td>
-                                    <Td>{normal}</Td>
-                                    <Td>{rt}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <SubSection>핵심 변경사항</SubSection>
+                <InfoTable
+                    className="mb-6"
+                    headers={[
+                        { header: '기능', cellClassName: 'text-gray-800 dark:text-gray-300 font-semibold' },
+                        { header: '일반 커널', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: 'PREEMPT_RT', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['spinlock', '선점 불가 바쁜 대기', 'rt_mutex 기반 (슬립 가능)'] },
+                        { cells: ['인터럽트 핸들러', '하드 IRQ 컨텍스트', 'Threaded IRQ (kthread)'] },
+                        { cells: ['softirq', '인터럽트 컨텍스트', 'ksoftirqd 스레드로 분리'] },
+                        { cells: ['타이머', '인터럽트 컨텍스트', 'hrtimer 스레드화'] },
+                        { cells: ['최악 지연', '수ms~수십ms', '수십μs 이하'] },
+                    ]}
+                />
 
                 <CodeBlock
                     code={`# PREEMPT_RT 커널 확인
@@ -612,7 +443,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     filename="# PREEMPT_RT 확인 및 latency 측정"
                 />
 
-                <SubTitle>RT 커널 사용 사례</SubTitle>
+                <SubSection>RT 커널 사용 사례</SubSection>
                 <CardGrid cols={3}>
                     <InfoBox color="red" title="산업용 제어">
                         로봇 팔, CNC 기계 — 1ms 이하 응답 보장, Xenomai/PREEMPT_RT
@@ -639,7 +470,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     발생시켜 처리량과 레이턴시를 균형 있게 조절합니다.
                 </Prose>
 
-                <SubTitle>NAPI 폴링 모드 동작 흐름</SubTitle>
+                <SubSection>NAPI 폴링 모드 동작 흐름</SubSection>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-5 mb-6 space-y-3">
                     {[
                         {
@@ -671,7 +502,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     ))}
                 </div>
 
-                <SubTitle>Coalescing 파라미터</SubTitle>
+                <SubSection>Coalescing 파라미터</SubSection>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {coalescingParams.map((p) => (
                         <div key={p.name} className={`rounded-xl border ${p.color} bg-white dark:bg-gray-900/50 p-4`}>
@@ -687,7 +518,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                     ))}
                 </div>
 
-                <SubTitle>레이턴시 vs 처리량 트레이드오프</SubTitle>
+                <SubSection>레이턴시 vs 처리량 트레이드오프</SubSection>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-5 mb-6">
                     <div className="flex items-center gap-6 mb-4 text-xs text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1.5">

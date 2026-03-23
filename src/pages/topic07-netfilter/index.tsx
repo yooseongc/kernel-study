@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, themeColors, useTheme , TopicPage } from '@study-ui/components'
+import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, SubSection, T, themeColors, TopicPage, useTheme } from '@study-ui/components'
+import type { TableColumn } from '@study-ui/components'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
 function renderNetfilterFlow(
@@ -382,31 +383,7 @@ function renderNetfilterFlow(
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-function TableWrapper({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 mb-6">
-            <table className="w-full text-sm text-left">{children}</table>
-        </div>
-    )
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-    return (
-        <th className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
-            {children}
-        </th>
-    )
-}
-
-function Td({ children, mono }: { children: React.ReactNode; mono?: boolean }) {
-    return (
-        <td
-            className={`px-4 py-2.5 text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800 ${mono ? 'font-mono text-xs' : ''}`}
-        >
-            {children}
-        </td>
-    )
-}
+// InfoBox는 @study-ui/components에서 import — color="blue" 사용
 
 // InfoBox는 @study-ui/components에서 import — color="blue" 사용
 
@@ -501,44 +478,20 @@ export default function Topic06() {
             </Section>
 
             <Section id="s773" title="7.3  훅 포인트 상세">
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>훅</Th>
-                            <Th>시점</Th>
-                            <Th>주요 용도</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td mono>PREROUTING</Td>
-                            <Td>라우팅 전 (수신 직후)</Td>
-                            <Td>
-                                DNAT, <T id="conntrack">conntrack</T>
-                            </Td>
-                        </tr>
-                        <tr>
-                            <Td mono>INPUT</Td>
-                            <Td>로컬 프로세스로 전달 전</Td>
-                            <Td>방화벽 인바운드</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>FORWARD</Td>
-                            <Td>포워딩 패킷</Td>
-                            <Td>라우터 방화벽</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>OUTPUT</Td>
-                            <Td>로컬 프로세스 송신</Td>
-                            <Td>아웃바운드 필터</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>POSTROUTING</Td>
-                            <Td>송신 직전</Td>
-                            <Td>SNAT, Masquerade</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    headers={[
+                        { header: '훅', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '시점', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '주요 용도', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['PREROUTING', '라우팅 전 (수신 직후)', 'DNAT, conntrack'] },
+                        { cells: ['INPUT', '로컬 프로세스로 전달 전', '방화벽 인바운드'] },
+                        { cells: ['FORWARD', '포워딩 패킷', '라우터 방화벽'] },
+                        { cells: ['OUTPUT', '로컬 프로세스 송신', '아웃바운드 필터'] },
+                        { cells: ['POSTROUTING', '송신 직전', 'SNAT, Masquerade'] },
+                    ]}
+                />
             </Section>
 
             <Section id="s774" title="7.4  iptables와 nftables">
@@ -546,42 +499,23 @@ export default function Topic06() {
                     두 도구 모두 <T id="netfilter">Netfilter</T> 훅을 사용하지만 아키텍처와 성능 특성이 다릅니다. 현대
                     배포판(RHEL 8+, Debian 10+)은 nftables를 기본값으로 채택했습니다.
                 </p>
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>항목</Th>
-                            <Th>iptables</Th>
-                            <Th>nftables</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td>아키텍처</Td>
-                            <Td>테이블별 별도 커널 모듈</Td>
-                            <Td>단일 프레임워크</Td>
-                        </tr>
-                        <tr>
-                            <Td>성능</Td>
-                            <Td>규칙 수 많을수록 선형 탐색</Td>
-                            <Td>JIT 컴파일, 집합(set) 지원</Td>
-                        </tr>
-                        <tr>
-                            <Td>IPv4/IPv6</Td>
-                            <Td>별도 (iptables / ip6tables)</Td>
-                            <Td>통합 (nftables)</Td>
-                        </tr>
-                        <tr>
-                            <Td>현재 상태</Td>
-                            <Td>유지보수 모드</Td>
-                            <Td>기본값 (RHEL 8+, Debian 10+)</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    className="mb-4"
+                    headers={[
+                        { header: '항목', cellClassName: 'text-gray-800 dark:text-gray-300 font-semibold' },
+                        { header: 'iptables', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: 'nftables', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['아키텍처', '테이블별 별도 커널 모듈', '단일 프레임워크'] },
+                        { cells: ['성능', '규칙 수 많을수록 선형 탐색', 'JIT 컴파일, 집합(set) 지원'] },
+                        { cells: ['IPv4/IPv6', '별도 (iptables / ip6tables)', '통합 (nftables)'] },
+                        { cells: ['현재 상태', '유지보수 모드', '기본값 (RHEL 8+, Debian 10+)'] },
+                    ]}
+                />
                 <CodeBlock code={snippets.iptablesVsNftablesCode} language="bash" filename="iptables vs nftables" />
 
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
-                    iptables 핵심 문법
-                </h3>
+                <SubSection>iptables 핵심 문법</SubSection>
                 <CodeBlock code={snippets.iptablesMainSyntaxCode} language="bash" filename="# iptables 주요 규칙 예시" />
                 <CodeBlock code={snippets.nftablesSyntaxCode} language="bash" filename="# nftables 동일 규칙" />
             </Section>
@@ -679,37 +613,21 @@ export default function Topic06() {
                     은 stateful 방화벽의 핵심 컴포넌트입니다. 커널이 모든 TCP/UDP 연결의 상태를 해시 테이블로 관리하며,
                     응답 패킷을 자동으로 허용하거나 NAT 역변환을 처리합니다.
                 </InfoBox>
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>상태</Th>
-                            <Th>의미</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td mono>NEW</Td>
-                            <Td>첫 번째 패킷 (연결 시작)</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>ESTABLISHED</Td>
-                            <Td>양방향 패킷이 확인된 연결</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>RELATED</Td>
-                            <Td>기존 연결과 관련된 새 연결 (FTP data 등)</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>INVALID</Td>
-                            <Td>추적 불가 패킷</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    headers={[
+                        { header: '상태', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '의미', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['NEW', '첫 번째 패킷 (연결 시작)'] },
+                        { cells: ['ESTABLISHED', '양방향 패킷이 확인된 연결'] },
+                        { cells: ['RELATED', '기존 연결과 관련된 새 연결 (FTP data 등)'] },
+                        { cells: ['INVALID', '추적 불가 패킷'] },
+                    ]}
+                />
                 <CodeBlock code={snippets.conntrackCode} language="bash" filename="conntrack CLI" />
 
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">
-                    conntrack 성능 튜닝
-                </h3>
+                <SubSection>conntrack 성능 튜닝</SubSection>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     고트래픽 환경에서 <T id="conntrack">conntrack</T> 테이블이 가득 차면 새 연결이 차단됩니다. 적절한
                     크기 조정이 필요합니다.
@@ -763,24 +681,17 @@ export default function Topic06() {
                     늦지만 <T id="netfilter">Netfilter</T>보다 빠른 위치에서 동작하여, eBPF 프로그램과 결합하면 매우
                     유연한 패킷 제어가 가능합니다.
                 </p>
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>위치</Th>
-                            <Th>시점</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td mono>ingress TC</Td>
-                            <Td>드라이버 → ip_rcv() 사이 (PREROUTING 전)</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>egress TC</Td>
-                            <Td>ip_output() → 드라이버 사이 (POSTROUTING 후)</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    className="mb-4"
+                    headers={[
+                        { header: '위치', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '시점', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['ingress TC', '드라이버 → ip_rcv() 사이 (PREROUTING 전)'] },
+                        { cells: ['egress TC', 'ip_output() → 드라이버 사이 (POSTROUTING 후)'] },
+                    ]}
+                />
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-5 py-4 text-sm text-gray-600 dark:text-gray-400 mb-8">
                     <div className="font-mono text-xs leading-7">
                         <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
@@ -814,37 +725,19 @@ export default function Topic06() {
                     O(1) 해시 룩업. 대규모 차단 목록에서 압도적인 성능 차이가 발생합니다.
                 </InfoBox>
                 <CodeBlock code={snippets.ipsetCode} language="bash" filename="# ipset 사용법" />
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>타입</Th>
-                            <Th>설명</Th>
-                            <Th>예시</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td mono>hash:ip</Td>
-                            <Td>단일 IP 매칭</Td>
-                            <Td>차단 IP 목록</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>hash:net</Td>
-                            <Td>CIDR 블록 매칭</Td>
-                            <Td>GeoIP 국가별 차단</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>hash:ip,port</Td>
-                            <Td>IP+포트 조합</Td>
-                            <Td>특정 서비스 차단</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>bitmap:port</Td>
-                            <Td>포트 범위 (비트맵)</Td>
-                            <Td>포트 범위 차단</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    headers={[
+                        { header: '타입', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '설명', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '예시', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['hash:ip', '단일 IP 매칭', '차단 IP 목록'] },
+                        { cells: ['hash:net', 'CIDR 블록 매칭', 'GeoIP 국가별 차단'] },
+                        { cells: ['hash:ip,port', 'IP+포트 조합', '특정 서비스 차단'] },
+                        { cells: ['bitmap:port', '포트 범위 (비트맵)', '포트 범위 차단'] },
+                    ]}
+                />
             </Section>
 
             <Section id="s779" title="7.9  Conntrack Helpers — 복잡한 프로토콜 추적">
@@ -912,42 +805,20 @@ export default function Topic06() {
                     </p>
                 </div>
 
-                <TableWrapper>
-                    <thead>
-                        <tr>
-                            <Th>Helper 모듈</Th>
-                            <Th>프로토콜</Th>
-                            <Th>페이로드에서 추출</Th>
-                            <Th>사용 포트</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <Td mono>nf_conntrack_ftp</Td>
-                            <Td>FTP</Td>
-                            <Td>PORT/PASV 명령의 IP:PORT</Td>
-                            <Td mono>21</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>nf_conntrack_sip</Td>
-                            <Td>SIP</Td>
-                            <Td>SDP의 m= 라인 IP:PORT</Td>
-                            <Td mono>5060</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>nf_conntrack_h323</Td>
-                            <Td>H.323</Td>
-                            <Td>H.245 TCS 메시지</Td>
-                            <Td mono>1720</Td>
-                        </tr>
-                        <tr>
-                            <Td mono>nf_conntrack_tftp</Td>
-                            <Td>TFTP</Td>
-                            <Td>첫 패킷의 src port</Td>
-                            <Td mono>69</Td>
-                        </tr>
-                    </tbody>
-                </TableWrapper>
+                <InfoTable
+                    headers={[
+                        { header: 'Helper 모듈', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                        { header: '프로토콜', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '페이로드에서 추출', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '사용 포트', mono: true, cellClassName: 'text-gray-500 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['nf_conntrack_ftp', 'FTP', 'PORT/PASV 명령의 IP:PORT', '21'] },
+                        { cells: ['nf_conntrack_sip', 'SIP', 'SDP의 m= 라인 IP:PORT', '5060'] },
+                        { cells: ['nf_conntrack_h323', 'H.323', 'H.245 TCS 메시지', '1720'] },
+                        { cells: ['nf_conntrack_tftp', 'TFTP', '첫 패킷의 src port', '69'] },
+                    ]}
+                />
 
                 <CodeBlock code={snippets.conntrackHelperCode} language="bash" filename="# conntrack helper 활용" />
             </Section>
