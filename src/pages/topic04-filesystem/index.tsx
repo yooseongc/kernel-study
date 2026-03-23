@@ -2,7 +2,8 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow , TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage } from '@study-ui/components'
+import type { TableColumn, TableRow } from '@study-ui/components'
 
 const openFlowSteps = [
     {
@@ -98,64 +99,19 @@ export default function Topic11Filesystem() {
                             VFS 핵심 구조체
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        구조체
-                                    </th>
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        역할
-                                    </th>
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        수명
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    {
-                                        name: 'super_block',
-                                        role: '마운트된 파일시스템 메타데이터',
-                                        lifetime: '마운트~언마운트',
-                                    },
-                                    {
-                                        name: 'inode',
-                                        role: '파일의 메타데이터 (크기, 권한, 블록 위치)',
-                                        lifetime: '파일 존재 기간',
-                                    },
-                                    {
-                                        name: 'dentry',
-                                        role: '디렉토리 항목 (이름→inode 매핑)',
-                                        lifetime: '캐시(dentry cache)',
-                                    },
-                                    {
-                                        name: 'file',
-                                        role: '열린 파일 하나 (오프셋, 플래그 포함)',
-                                        lifetime: 'open()~close()',
-                                    },
-                                ].map((row) => (
-                                    <tr
-                                        key={row.name}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                    >
-                                        <td className="px-4 py-3">
-                                            <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
-                                                {row.name}
-                                            </code>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">
-                                            {row.role}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
-                                            {row.lifetime}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '구조체', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                            { header: '역할', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '수명', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['super_block', '마운트된 파일시스템 메타데이터', '마운트~언마운트'] },
+                            { cells: ['inode', '파일의 메타데이터 (크기, 권한, 블록 위치)', '파일 존재 기간'] },
+                            { cells: ['dentry', '디렉토리 항목 (이름→inode 매핑)', '캐시(dentry cache)'] },
+                            { cells: ['file', '열린 파일 하나 (오프셋, 플래그 포함)', 'open()~close()'] },
+                        ]}
+                    />
                 </div>
 
                 {/* inode / dentry / file 관계 다이어그램 */}
@@ -317,66 +273,21 @@ f_flags: O_RDONLY`}</pre>
                     </div>
 
                     {/* sync 방법 비교 표 */}
-                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <table className="w-full text-xs">
-                            <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                                        방법
-                                    </th>
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                                        동작
-                                    </th>
-                                    <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                                        보장 수준
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    {
-                                        method: 'write()',
-                                        action: '페이지 캐시에만 쓰고 즉시 반환',
-                                        guarantee: '캐시 일관성만',
-                                    },
-                                    {
-                                        method: 'sync()',
-                                        action: '전체 dirty 페이지 플러시 (블록까지)',
-                                        guarantee: '파일시스템 전체',
-                                    },
-                                    {
-                                        method: 'fsync(fd)',
-                                        action: '특정 파일의 데이터+메타데이터 플러시',
-                                        guarantee: '파일 단위 내구성',
-                                    },
-                                    {
-                                        method: 'fdatasync(fd)',
-                                        action: '데이터만 플러시 (메타데이터 제외)',
-                                        guarantee: '데이터 내구성만',
-                                    },
-                                    {
-                                        method: 'O_SYNC',
-                                        action: 'write() 시마다 즉시 플러시',
-                                        guarantee: '매 쓰기 내구성',
-                                    },
-                                    { method: 'O_DSYNC', action: '데이터만 즉시 플러시', guarantee: '데이터만' },
-                                ].map((row) => (
-                                    <tr
-                                        key={row.method}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                    >
-                                        <td className="px-3 py-2">
-                                            <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-mono">
-                                                {row.method}
-                                            </code>
-                                        </td>
-                                        <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{row.action}</td>
-                                        <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{row.guarantee}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '방법', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                            { header: '동작', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: '보장 수준', cellClassName: 'text-gray-500 dark:text-gray-400' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['write()', '페이지 캐시에만 쓰고 즉시 반환', '캐시 일관성만'] },
+                            { cells: ['sync()', '전체 dirty 페이지 플러시', '파일시스템 전체'] },
+                            { cells: ['fsync(fd)', '특정 파일 데이터+메타데이터 플러시', '파일 단위 내구성'] },
+                            { cells: ['fdatasync(fd)', '데이터만 플러시 (메타데이터 제외)', '데이터 내구성만'] },
+                            { cells: ['O_SYNC', 'write() 시마다 즉시 플러시', '매 쓰기 내구성'] },
+                            { cells: ['O_DSYNC', '데이터만 즉시 플러시', '데이터만'] },
+                        ]}
+                    />
 
                     {/* dirty_expire_centisecs 설명 */}
                     <div className="rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 px-4 py-3 space-y-1">
@@ -412,74 +323,14 @@ f_flags: O_RDONLY`}</pre>
                             ext4 저널링 모드
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        모드
-                                    </th>
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        저널 내용
-                                    </th>
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        성능
-                                    </th>
-                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                        안전성
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {[
-                                    {
-                                        mode: 'data=writeback',
-                                        journal: '메타데이터만',
-                                        perf: '빠름',
-                                        safety: '크래시 시 데이터 손실 가능',
-                                        perfColor: 'text-green-600 dark:text-green-400',
-                                        safetyColor: 'text-red-600 dark:text-red-400',
-                                    },
-                                    {
-                                        mode: 'data=ordered (기본)',
-                                        journal: '메타데이터 + 데이터 순서 보장',
-                                        perf: '중간',
-                                        safety: '데이터는 메타데이터 전에 기록',
-                                        perfColor: 'text-yellow-600 dark:text-yellow-400',
-                                        safetyColor: 'text-yellow-600 dark:text-yellow-400',
-                                    },
-                                    {
-                                        mode: 'data=journal',
-                                        journal: '메타데이터 + 데이터 모두',
-                                        perf: '느림',
-                                        safety: '완전한 보호',
-                                        perfColor: 'text-red-600 dark:text-red-400',
-                                        safetyColor: 'text-green-600 dark:text-green-400',
-                                    },
-                                ].map((row) => (
-                                    <tr
-                                        key={row.mode}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                    >
-                                        <td className="px-4 py-3">
-                                            <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
-                                                {row.mode}
-                                            </code>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs">
-                                            {row.journal}
-                                        </td>
-                                        <td className={`px-4 py-3 text-xs font-semibold ${row.perfColor}`}>
-                                            {row.perf}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">
-                                            {row.safety}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={['모드', '저널 내용', '성능', '안전성']}
+                        rows={[
+                            { cells: [<code key="wb" className="font-mono text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">data=writeback</code>, '메타데이터만', <span key="p1" className="font-semibold text-green-600 dark:text-green-400">빠름</span>, '크래시 시 데이터 손실 가능'] },
+                            { cells: [<code key="od" className="font-mono text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">data=ordered (기본)</code>, '메타데이터 + 데이터 순서 보장', <span key="p2" className="font-semibold text-yellow-600 dark:text-yellow-400">중간</span>, '데이터는 메타데이터 전에 기록'] },
+                            { cells: [<code key="jn" className="font-mono text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">data=journal</code>, '메타데이터 + 데이터 모두', <span key="p3" className="font-semibold text-red-600 dark:text-red-400">느림</span>, '완전한 보호'] },
+                        ]}
+                    />
                 </div>
 
                 <CodeBlock code={snippets.ext4Code} language="bash" filename="# ext4 실전 명령어" />
@@ -588,103 +439,24 @@ f_flags: O_RDONLY`}</pre>
                 </p>
 
                 {/* 비교 표 */}
-                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
-                    <table className="w-full text-xs text-left">
-                        <thead>
-                            <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
-                                    파일시스템
-                                </th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">유형</th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
-                                    핵심 특징
-                                </th>
-                                <th className="px-4 py-2.5 font-semibold text-gray-700 dark:text-gray-300">
-                                    주요 용도
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                {
-                                    name: 'ext4',
-                                    type: '디스크',
-                                    tc: '#3b82f6',
-                                    feat: 'extent 기반 할당, 메타데이터 저널링, 최대 1EB 볼륨',
-                                    use: '범용 리눅스 부트 디스크, 데스크탑',
-                                },
-                                {
-                                    name: 'XFS',
-                                    type: '디스크',
-                                    tc: '#3b82f6',
-                                    feat: 'B+트리 extent 맵, 병렬 I/O, 최대 8EB 볼륨, RHEL 기본 FS',
-                                    use: '대용량 파일, DB, NAS, 미디어 서버',
-                                },
-                                {
-                                    name: 'Btrfs',
-                                    type: '디스크·CoW',
-                                    tc: '#8b5cf6',
-                                    feat: 'Copy-on-Write, 체크섬, 스냅샷, RAID, 서브볼륨',
-                                    use: 'Fedora/openSUSE 시스템, 백업, 스냅샷',
-                                },
-                                {
-                                    name: 'tmpfs',
-                                    type: '메모리',
-                                    tc: '#10b981',
-                                    feat: 'RAM+swap 사용, 재부팅 시 소멸, 크기 동적 조정',
-                                    use: '/tmp, /run, /dev/shm, 빌드 캐시',
-                                },
-                                {
-                                    name: 'procfs',
-                                    type: '가상',
-                                    tc: '#f59e0b',
-                                    feat: '커널 프로세스 정보를 파일 트리로 노출, 쓰기로 파라미터 제어',
-                                    use: '/proc/PID/, /proc/sys/, /proc/net/',
-                                },
-                                {
-                                    name: 'sysfs',
-                                    type: '가상',
-                                    tc: '#f59e0b',
-                                    feat: '디바이스 드라이버 모델(kobject) 노출, 드라이버 속성 읽기/쓰기',
-                                    use: '/sys/block/, /sys/bus/, /sys/class/',
-                                },
-                                {
-                                    name: 'overlayfs',
-                                    type: '유니온',
-                                    tc: '#ef4444',
-                                    feat: 'lower(RO)+upper(RW)→merged 뷰, copy-up, whiteout 삭제',
-                                    use: 'Docker/containerd 이미지 레이어',
-                                },
-                                {
-                                    name: 'NFS',
-                                    type: '네트워크',
-                                    tc: '#06b6d4',
-                                    feat: 'NFSv4 Kerberos 인증, 원격 파일을 로컬처럼 마운트, rsize/wsize 튜닝',
-                                    use: 'HPC 클러스터, 기업 NAS, K8s PV',
-                                },
-                            ].map((row) => (
-                                <tr
-                                    key={row.name}
-                                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                >
-                                    <td className="px-4 py-2.5 font-bold text-gray-900 dark:text-gray-100">
-                                        {row.name}
-                                    </td>
-                                    <td className="px-4 py-2.5">
-                                        <span
-                                            className="px-1.5 py-0.5 rounded text-xs font-medium"
-                                            style={{ backgroundColor: row.tc + '22', color: row.tc }}
-                                        >
-                                            {row.type}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.feat}</td>
-                                    <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400">{row.use}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <InfoTable
+                    headers={[
+                        { header: '파일시스템', cellClassName: 'text-gray-900 dark:text-gray-100 font-bold' },
+                        { header: '유형', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        { header: '핵심 특징', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                        { header: '주요 용도', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                    ] satisfies TableColumn[]}
+                    rows={[
+                        { cells: ['ext4', '디스크', 'extent 기반 할당, 메타데이터 저널링, 최대 1EB', '범용 리눅스 부트 디스크'] },
+                        { cells: ['XFS', '디스크', 'B+트리 extent 맵, 병렬 I/O, RHEL 기본 FS', '대용량 파일, DB, NAS'] },
+                        { cells: ['Btrfs', '디스크·CoW', 'Copy-on-Write, 체크섬, 스냅샷, RAID', 'Fedora/openSUSE, 백업'] },
+                        { cells: ['tmpfs', '메모리', 'RAM+swap 사용, 재부팅 시 소멸', '/tmp, /run, /dev/shm'] },
+                        { cells: ['procfs', '가상', '커널 프로세스 정보를 파일 트리로 노출', '/proc/PID/, /proc/sys/'] },
+                        { cells: ['sysfs', '가상', '디바이스 드라이버 모델 노출', '/sys/block/, /sys/bus/'] },
+                        { cells: ['overlayfs', '유니온', 'lower(RO)+upper(RW)→merged, copy-up', 'Docker/containerd 레이어'] },
+                        { cells: ['NFS', '네트워크', 'NFSv4, Kerberos 인증, 원격 마운트', 'HPC 클러스터, 기업 NAS'] },
+                    ]}
+                />
 
                 {/* 3가지 카테고리 카드 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -872,34 +644,19 @@ f_flags: O_RDONLY`}</pre>
                         <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                             특수 비트
                         </div>
-                        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                            <table className="w-full text-xs">
-                                <thead>
-                                    <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">비트</th>
-                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">8진수</th>
-                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">표시</th>
-                                        <th className="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">설명</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                    {[
-                                        { name: 'setuid', octal: '4000', display: 's (owner x 위치)', desc: '실행 시 소유자 권한으로 실행' },
-                                        { name: 'setgid', octal: '2000', display: 's (group x 위치)', desc: '실행 시 그룹 권한으로 실행 / 디렉토리: 새 파일이 그룹 상속' },
-                                        { name: 'sticky', octal: '1000', display: 't (others x 위치)', desc: '디렉토리 내 파일을 소유자만 삭제 가능 (/tmp)' },
-                                    ].map((row) => (
-                                        <tr key={row.name} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                            <td className="px-3 py-2">
-                                                <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded font-mono">{row.name}</code>
-                                            </td>
-                                            <td className="px-3 py-2 font-mono text-gray-700 dark:text-gray-300">{row.octal}</td>
-                                            <td className="px-3 py-2 font-mono text-gray-700 dark:text-gray-300">{row.display}</td>
-                                            <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{row.desc}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <InfoTable
+                            headers={[
+                                { header: '비트', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-semibold' },
+                                { header: '8진수', mono: true, cellClassName: 'text-gray-700 dark:text-gray-300' },
+                                { header: '표시', mono: true, cellClassName: 'text-gray-700 dark:text-gray-300' },
+                                { header: '설명', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                            ] satisfies TableColumn[]}
+                            rows={[
+                                { cells: ['setuid', '4000', 's (owner x 위치)', '실행 시 소유자 권한으로 실행'] },
+                                { cells: ['setgid', '2000', 's (group x 위치)', '실행 시 그룹 권한 / 디렉토리: 그룹 상속'] },
+                                { cells: ['sticky', '1000', 't (others x 위치)', '디렉토리 내 파일을 소유자만 삭제 가능 (/tmp)'] },
+                            ]}
+                        />
                     </div>
                 </div>
 
