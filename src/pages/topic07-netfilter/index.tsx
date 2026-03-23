@@ -440,7 +440,7 @@ export default function Topic06() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 07</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">패킷 처리 경로와 후킹 지점</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Packet Path &amp; Hook Points</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Packet Path &amp; Hook Points</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     Netfilter 5훅, iptables/nftables, conntrack, TPROXY, TC Hook
                 </p>

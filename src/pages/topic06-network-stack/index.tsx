@@ -195,7 +195,7 @@ export default function Topic05() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 06</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">네트워크 스택의 전체 흐름</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Network Stack End-to-End</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Network Stack End-to-End</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     패킷 수신·송신 경로, NIC/NAPI, sk_buff, L2/L3/L4, 소켓, Zero-copy, SO_REUSEPORT
                 </p>

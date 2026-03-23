@@ -46,7 +46,7 @@ export default function Topic02Scheduler() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 02</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">프로세스, 스레드, 스케줄러</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Processes, Threads &amp; Scheduler</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Processes, Threads &amp; Scheduler</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에
                     스케줄링할까요? 이 페이지에서는{' '}

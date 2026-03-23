@@ -61,7 +61,7 @@ export default function Topic10() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 11</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">성능 분석과 디버깅</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Performance Analysis & Debugging</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Performance Analysis & Debugging</p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
                     dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>,{' '}
                     <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅

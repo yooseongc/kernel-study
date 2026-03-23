@@ -29,7 +29,7 @@ export default function Topic01Overview() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 01</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">리눅스 커널 개요와 전체 구조</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     Linux Kernel Overview &amp; Architecture
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">

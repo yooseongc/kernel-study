@@ -156,7 +156,7 @@ export default function Topic04() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 05</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">인터럽트, 예외, Deferred Work</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     Interrupts, Exceptions &amp; Deferred Work
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">

@@ -151,7 +151,7 @@ export default function Topic03() {
             <header className="space-y-3">
                 <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 03</p>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">가상 메모리와 메모리 관리</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     Virtual Memory &amp; Memory Management
                 </p>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
