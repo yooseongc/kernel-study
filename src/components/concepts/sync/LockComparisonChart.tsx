@@ -3,7 +3,7 @@
 
 import { useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // D3 render function
@@ -16,6 +16,7 @@ function renderLockComparison(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const textColor = c.text
     const dimColor = c.textMuted
 
@@ -62,7 +63,7 @@ function renderLockComparison(
             .attr('text-anchor', 'middle')
             .attr('fill', d.text)
             .attr('font-size', '10px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .attr('font-weight', 'bold')
             .text(`${d.overhead}`)
 
@@ -72,7 +73,7 @@ function renderLockComparison(
             .attr('text-anchor', 'middle')
             .attr('fill', textColor)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(d.label)
     })
 
@@ -89,7 +90,7 @@ function renderLockComparison(
         .attr('y', padTop - 6)
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('상대적 오버헤드 →')
 
     g.append('text')
@@ -98,7 +99,7 @@ function renderLockComparison(
         .attr('text-anchor', 'end')
         .attr('fill', dimColor)
         .attr('font-size', '8.5px')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('낮을수록 오버헤드 적음')
 }
 

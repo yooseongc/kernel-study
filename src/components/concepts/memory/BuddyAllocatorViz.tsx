@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3.5  Buddy Allocator (인터랙티브)
@@ -104,6 +104,7 @@ function renderBuddyViz(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const freeFill = c.bgCard
     const freeStroke = c.border
     const textFill = c.text
@@ -126,7 +127,7 @@ function renderBuddyViz(
         .attr('y', 14)
         .attr('fill', headerFill)
         .attr('font-size', '10px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.sans)
         .text('Physical Pages (PFN 0–31)')
 
     // Page cells
@@ -155,7 +156,7 @@ function renderBuddyViz(
                 .attr('text-anchor', 'middle')
                 .attr('fill', dimFill)
                 .attr('font-size', '8px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', theme.fonts.mono)
                 .text(String(i))
         }
     }
@@ -185,7 +186,7 @@ function renderBuddyViz(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', isDark ? '#fff' : '#1f2937')
                 .attr('font-size', '9px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', theme.fonts.mono)
                 .attr('font-weight', 'bold')
                 .text(`#${alloc.id}`)
         }
@@ -205,7 +206,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', headerFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .attr('font-weight', 'bold')
             .text(`ord-${o}`)
 
@@ -215,7 +216,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', dimFill)
             .attr('font-size', '8px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(`${1 << o}p`)
 
         const blockText = blocks.length > 0 ? blocks.join(',') : '—'
@@ -225,7 +226,7 @@ function renderBuddyViz(
             .attr('text-anchor', 'middle')
             .attr('fill', blocks.length > 0 ? textFill : dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(blockText.length > 10 ? blockText.slice(0, 9) + '…' : blockText)
     }
 }

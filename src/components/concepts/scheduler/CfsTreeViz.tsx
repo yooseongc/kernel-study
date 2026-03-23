@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import { useState, useCallback } from 'react'
-import { themeColors , D3Container } from '@study-ui/components'
+import { themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 // ── CFS 트리 데이터 ──────────────────────────────────────────────────────────
 interface CfsNode {
@@ -93,6 +93,7 @@ function renderCFSTree(
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     svg.attr('viewBox', `0 0 ${width} ${height}`)
 
     const margin = { top: 50, right: 40, bottom: 40, left: 40 }
@@ -157,7 +158,7 @@ function renderCFSTree(
         .attr('y', -3)
         .attr('fill', (d) => (d.data.color === 'red' ? c.redText : c.text))
         .attr('font-size', '10px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.mono)
         .attr('pointer-events', 'none')
         .text((d) => d.data.name)
 
@@ -168,7 +169,7 @@ function renderCFSTree(
         .attr('y', 8)
         .attr('fill', (d) => (d.data.color === 'red' ? c.redStroke : c.textMuted))
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.mono)
         .attr('pointer-events', 'none')
         .text((d) => `${d.data.vruntime}ms`)
 
@@ -180,7 +181,7 @@ function renderCFSTree(
         .attr('fill', c.blueText)
         .attr('font-size', '10px')
         .attr('font-weight', 'bold')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.mono)
         .attr('pointer-events', 'none')
         .text('▶ NEXT')
 }

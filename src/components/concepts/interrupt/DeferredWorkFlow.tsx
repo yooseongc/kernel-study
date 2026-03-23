@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '@study-ui/components'
+import { themeColors, createD3Theme } from '@study-ui/components'
 
 interface DeferredStage {
     title: string
@@ -47,6 +47,7 @@ export function renderDeferredWorkFlow(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const textFill = c.text
     const subFill = c.textMuted
     const arrowColor = c.textMuted
@@ -93,7 +94,7 @@ export function renderDeferredWorkFlow(
             .attr('fill', s.titleColor)
             .attr('font-size', '12px')
             .attr('font-weight', 'bold')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .text(s.title)
 
         svg.append('text')
@@ -102,7 +103,7 @@ export function renderDeferredWorkFlow(
             .attr('text-anchor', 'middle')
             .attr('fill', subFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(s.sub)
 
         svg.append('line')
@@ -120,7 +121,7 @@ export function renderDeferredWorkFlow(
                 .attr('y', boxY + 64 + ii * 19)
                 .attr('fill', textFill)
                 .attr('font-size', '10px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', theme.fonts.sans)
                 .text(`• ${item}`)
         })
 
@@ -144,7 +145,7 @@ export function renderDeferredWorkFlow(
                 .attr('text-anchor', 'middle')
                 .attr('fill', labelColor)
                 .attr('font-size', '9px')
-                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+                .attr('font-family', theme.fonts.sans)
                 .text('스케줄링')
         }
     })

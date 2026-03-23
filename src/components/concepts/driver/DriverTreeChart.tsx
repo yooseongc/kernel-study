@@ -3,7 +3,7 @@
 
 import { useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data
@@ -72,6 +72,7 @@ function renderDriverTree(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
 
     const g = svg.append('g')
 
@@ -131,7 +132,7 @@ function renderDriverTree(
             .attr('dominant-baseline', 'middle')
             .attr('fill', colors.text)
             .attr('font-size', '10px')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .attr('font-weight', 'bold')
             .text(nd.data.name)
 
@@ -143,7 +144,7 @@ function renderDriverTree(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', c.textMuted)
                 .attr('font-size', '8px')
-                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+                .attr('font-family', theme.fonts.sans)
                 .text(nd.data.sub)
         }
     })

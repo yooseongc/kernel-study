@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '@study-ui/components'
+import { themeColors, createD3Theme } from '@study-ui/components'
 
 export interface RingInfo {
     ring: string
@@ -131,6 +131,7 @@ export function renderRingDiagram(
     onSelect: (ring: RingInfo) => void,
 ) {
     const isDark = document.documentElement.classList.contains('dark')
+    const d3Theme = createD3Theme(isDark)
 
     // Use viewBox for crisp scaling — 480x480 internal coordinate space
     const vw = 480
@@ -182,7 +183,7 @@ export function renderRingDiagram(
         .attr('fill', hvTheme.labelColor)
         .attr('font-size', '11px')
         .attr('font-weight', '500')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', d3Theme.fonts.mono)
         .text('Ring −1 · Hypervisor')
 
     // ── Concentric bands, outside → inside (painter's algorithm) ─────
@@ -219,7 +220,7 @@ export function renderRingDiagram(
             .attr('fill', theme.labelColor)
             .attr('font-size', '13px')
             .attr('font-weight', ring.used ? '600' : '400')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', d3Theme.fonts.mono)
             .attr('pointer-events', 'none')
             .text(ring.label)
 
@@ -230,7 +231,7 @@ export function renderRingDiagram(
             .attr('text-anchor', 'middle')
             .attr('fill', theme.sublabelColor)
             .attr('font-size', '10px')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', d3Theme.fonts.sans)
             .attr('pointer-events', 'none')
             .text(ring.sublabel)
     })
@@ -263,7 +264,7 @@ export function renderRingDiagram(
         .attr('fill', r0Theme.labelColor)
         .attr('font-size', '13px')
         .attr('font-weight', '700')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', d3Theme.fonts.mono)
         .attr('pointer-events', 'none')
         .text('Ring 0')
 
@@ -274,7 +275,7 @@ export function renderRingDiagram(
         .attr('dominant-baseline', 'middle')
         .attr('fill', r0Theme.sublabelColor)
         .attr('font-size', '10px')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', d3Theme.fonts.sans)
         .attr('pointer-events', 'none')
         .text('Kernel')
 }

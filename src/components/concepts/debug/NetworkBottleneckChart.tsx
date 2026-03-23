@@ -3,7 +3,7 @@
 
 import { useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data
@@ -35,6 +35,7 @@ function renderNetworkBottleneck(
     isDark: boolean,
 ) {
     const c2 = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const axisColor = c2.textDim
     const textColor = c2.text
     const dimColor = c2.textMuted
@@ -82,7 +83,7 @@ function renderNetworkBottleneck(
             .attr('text-anchor', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.sans)
             .text(tick === 100 ? '높음' : tick === 0 ? '낮음' : `${tick}`)
     })
 
@@ -92,7 +93,7 @@ function renderNetworkBottleneck(
         .attr('text-anchor', 'middle')
         .attr('fill', dimColor)
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.sans)
         .text('체크 우선순위')
 
     bottleneckData.forEach((item, i) => {
@@ -122,7 +123,7 @@ function renderNetworkBottleneck(
             .attr('dominant-baseline', 'middle')
             .attr('fill', item.color)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.sans)
             .attr('font-weight', 'bold')
             .text(item.label)
 
@@ -133,7 +134,7 @@ function renderNetworkBottleneck(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '7.5px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(item.cmd)
 
         if (barW > 30) {
@@ -144,7 +145,7 @@ function renderNetworkBottleneck(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', textColor)
                 .attr('font-size', '9px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', theme.fonts.mono)
                 .attr('font-weight', 'bold')
                 .text(`${item.priority}`)
         }

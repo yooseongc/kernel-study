@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '@study-ui/components'
+import { themeColors, createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3.6  SLUB Allocator D3 시각화
@@ -11,6 +11,7 @@ export function renderSlubViz(
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const textFill = c.text
     const dimFill = c.textMuted
     const borderColor = c.border
@@ -48,7 +49,7 @@ export function renderSlubViz(
         .attr('text-anchor', 'middle')
         .attr('fill', cacheColor)
         .attr('font-size', '11px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.mono)
         .attr('font-weight', 'bold')
         .text('kmem_cache')
 
@@ -58,7 +59,7 @@ export function renderSlubViz(
         .attr('text-anchor', 'middle')
         .attr('fill', dimFill)
         .attr('font-size', '9px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.mono)
         .text('task_struct  size=9536B  align=64')
 
     // 3 slab pages
@@ -96,7 +97,7 @@ export function renderSlubViz(
             .attr('text-anchor', 'middle')
             .attr('fill', slab.label === 'active' ? c.greenStroke : slab.label === 'partial' ? c.amberStroke : dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .attr('font-weight', 'bold')
             .text(slab.label)
 
@@ -149,7 +150,7 @@ export function renderSlubViz(
         .attr('y', tableY + 12)
         .attr('fill', textFill)
         .attr('font-size', '10px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.sans)
         .attr('font-weight', 'bold')
         .text('kmalloc size classes')
 
@@ -160,7 +161,7 @@ export function renderSlubViz(
             .attr('y', ry + 10)
             .attr('fill', dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(`kmalloc-${sz}   (${sz}B)`)
     })
 }

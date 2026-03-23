@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import * as d3 from 'd3'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 interface ArchNode {
     label: string
@@ -26,6 +26,7 @@ function renderKernelArch(
 
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const g = svg.append('g')
 
     // ── Color helpers ────────────────────────────────────────────────────────
@@ -72,7 +73,7 @@ function renderKernelArch(
             .attr('fill', layerText(l.hue))
             .attr('font-size', '11px')
             .attr('font-weight', 'bold')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .text(l.label)
     })
 
@@ -96,7 +97,7 @@ function renderKernelArch(
             .attr('fill', n.textColor)
             .attr('font-size', '10px')
             .attr('font-weight', '600')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .text(n.label)
 
         if (n.sub) {
@@ -107,7 +108,7 @@ function renderKernelArch(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', n.subColor)
                 .attr('font-size', '8px')
-                .attr('font-family', "'JetBrains Mono', monospace")
+                .attr('font-family', theme.fonts.mono)
                 .text(n.sub)
         }
     }

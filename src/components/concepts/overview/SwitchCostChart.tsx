@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '@study-ui/components'
+import { themeColors, createD3Theme } from '@study-ui/components'
 
 export function renderSwitchCostChart(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -8,6 +8,7 @@ export function renderSwitchCostChart(
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     svg.attr('viewBox', `0 0 ${width} ${height}`)
 
     const data = [
@@ -85,7 +86,7 @@ export function renderSwitchCostChart(
                 .attr('text-anchor', 'middle')
                 .attr('fill', c.textMuted)
                 .attr('font-size', '10px')
-                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+                .attr('font-family', theme.fonts.sans)
                 .text(line)
         })
     })
@@ -98,6 +99,6 @@ export function renderSwitchCostChart(
         .attr('text-anchor', 'middle')
         .attr('fill', c.textMuted)
         .attr('font-size', '11px')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('지연 시간 (로그 스케일)')
 }

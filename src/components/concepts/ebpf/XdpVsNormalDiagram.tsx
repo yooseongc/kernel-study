@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import { useCallback } from 'react'
-import { D3Container,themeColors,useTheme } from '@study-ui/components'
+import { D3Container,themeColors,useTheme,createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8.1  XDP vs Normal path D3 diagram
@@ -13,6 +13,7 @@ function renderXdpVsNormal(
     isDark: boolean,
 ) {
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const textColor = c.text
     const dimColor = c.textMuted
     const borderColor = c.border
@@ -34,7 +35,7 @@ function renderXdpVsNormal(
         .attr('fill', dimColor)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('일반 경로 (Normal Path)')
 
     g.append('text')
@@ -44,7 +45,7 @@ function renderXdpVsNormal(
         .attr('fill', c.amberStroke)
         .attr('font-size', '11px')
         .attr('font-weight', 'bold')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('XDP 경로 (eXpress Data Path)')
 
     // divider
@@ -85,7 +86,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', textColor)
             .attr('font-size', '10px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.sans)
             .attr('font-weight', 'bold')
             .text(label)
 
@@ -97,7 +98,7 @@ function renderXdpVsNormal(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', dimColor)
                 .attr('font-size', '8px')
-                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+                .attr('font-family', theme.fonts.sans)
                 .text(sublabel)
         }
     }
@@ -207,7 +208,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', act.color)
             .attr('font-size', '8px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .attr('font-weight', 'bold')
             .text(act.label)
 
@@ -218,7 +219,7 @@ function renderXdpVsNormal(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimColor)
             .attr('font-size', '7.5px')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .text(act.desc)
 
         // arrow from xdp hook down to actions
@@ -235,7 +236,7 @@ function renderXdpVsNormal(
         .attr('text-anchor', 'middle')
         .attr('fill', passAction.color)
         .attr('font-size', '7.5px')
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('↓ 일반 경로 계속')
 }
 

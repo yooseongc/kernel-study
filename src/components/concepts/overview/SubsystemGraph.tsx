@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { themeColors } from '@study-ui/components'
+import { themeColors, createD3Theme } from '@study-ui/components'
 
 export function renderSubsystemGraph(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -8,6 +8,7 @@ export function renderSubsystemGraph(
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     type NodeDatum = {
         id: string
         label: string
@@ -135,7 +136,7 @@ export function renderSubsystemGraph(
         .attr('dominant-baseline', 'middle')
         .attr('fill', c.text)
         .attr('font-size', '10px')
-        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-family', theme.fonts.sans)
         .each(function (d) {
             const lines = d.label.split('\n')
             const el = d3.select(this)

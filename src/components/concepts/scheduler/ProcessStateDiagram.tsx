@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import { useCallback } from 'react'
-import { useTheme, themeColors , D3Container } from '@study-ui/components'
+import { useTheme, themeColors , D3Container, createD3Theme } from '@study-ui/components'
 
 function renderProcessStateDiagram(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -13,6 +13,7 @@ function renderProcessStateDiagram(
 
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const textFill = c.text
     const dimFill = c.textMuted
     const nodeFill = c.bg
@@ -63,7 +64,7 @@ function renderProcessStateDiagram(
             .attr('dominant-baseline', 'middle')
             .attr('fill', textFill)
             .attr('font-size', '11px')
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .attr('font-weight', 'bold')
             .text(l1)
         g.append('text')
@@ -73,7 +74,7 @@ function renderProcessStateDiagram(
             .attr('dominant-baseline', 'middle')
             .attr('fill', dimFill)
             .attr('font-size', '9px')
-            .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+            .attr('font-family', theme.fonts.sans)
             .text(l2)
     }
 
@@ -95,7 +96,7 @@ function renderProcessStateDiagram(
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', labelFill)
                 .attr('font-size', '9px')
-                .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+                .attr('font-family', theme.fonts.sans)
                 .text(label)
             const bbox = textEl.node()?.getBBox()
             if (bbox) {

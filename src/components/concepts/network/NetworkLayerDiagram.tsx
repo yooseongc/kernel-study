@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import { useCallback } from 'react'
-import { D3Container,themeColors,useTheme } from '@study-ui/components'
+import { D3Container,themeColors,useTheme,createD3Theme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.1  네트워크 레이어 다이어그램 (D3)
@@ -91,6 +91,7 @@ function renderNetworkLayers(
 ) {
     const isDark = document.documentElement.classList.contains('dark')
     const c = themeColors(isDark)
+    const theme = createD3Theme(isDark)
     const networkLayers = getNetworkLayers(isDark)
     const padX = 56
     const padTop = 16
@@ -129,7 +130,7 @@ function renderNetworkLayers(
         .attr('text-anchor', 'middle')
         .attr('fill', c.textMuted)
         .attr('font-size', 10)
-        .attr('font-family', "'Pretendard Variable', Pretendard, sans-serif")
+        .attr('font-family', theme.fonts.sans)
         .text('패킷 흐름 ↑')
 
     // Draw layers (top = user, bottom = hardware)
@@ -175,7 +176,7 @@ function renderNetworkLayers(
             .attr('dominant-baseline', 'auto')
             .attr('fill', layer.fnColor)
             .attr('font-size', 10)
-            .attr('font-family', "'JetBrains Mono', monospace")
+            .attr('font-family', theme.fonts.mono)
             .text(layer.fn)
     })
 }
