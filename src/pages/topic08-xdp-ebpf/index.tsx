@@ -2,7 +2,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { XdpVsNormalDiagram } from '../../components/concepts/ebpf/XdpVsNormalDiagram'
 import { EbpfPipelineDiagram } from '../../components/concepts/ebpf/EbpfPipelineDiagram'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XDP DDoS 예제 코드
@@ -179,26 +179,11 @@ export default function Topic07() {
     const isDark = theme === 'dark'
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 08</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">XDP, eBPF, 고성능 패킷 처리</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                    XDP, eBPF &amp; High-Performance Packet Processing
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    XDP 개념, eBPF VM/verifier/맵, AF_XDP, seccomp-BPF, BTF/CO-RE
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="08-xdp-ebpf"
-                items={[
+        <TopicPage topicId="08-xdp-ebpf" learningItems={[
                     'XDP가 NIC 드라이버 레벨에서 패킷을 처리해 커널 스택 오버헤드를 제거하는 원리를 이해합니다',
                     'eBPF 프로그램이 검증기를 통과해 JIT 컴파일되고 훅에 연결되는 실행 모델을 배웁니다',
                     'TC BPF와 XDP의 차이, Maps를 통한 사용자 공간과의 데이터 공유를 파악합니다',
-                ]}
-            />
+                ]}>
 
             {/* 8.1 XDP 개념과 위치 */}
             <Section id="s81" title="8.1  XDP 개념과 위치">
@@ -807,8 +792,6 @@ export default function Topic07() {
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={bpfKernelParamRows} />
                 <CodeBlock code={snippets.bpfKernelParamCode} language="bash" filename="# XDP/eBPF 관련 파라미터 확인" />
             </Section>
-
-            <TopicNavigation topicId="08-xdp-ebpf" />
-        </div>
+        </TopicPage>
     )
 }

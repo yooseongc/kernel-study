@@ -3,7 +3,7 @@ import { NetworkBottleneckChart } from '../../components/concepts/debug/NetworkB
 import { FlameGraphViz } from '../../components/concepts/debug/FlameGraphViz'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { Alert, CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
+import { Alert, CodeBlock, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -56,26 +56,12 @@ export default function Topic10() {
     const isDark = theme === 'dark'
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 11</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">성능 분석과 디버깅</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Performance Analysis & Debugging</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    dmesg, <T id="proc">/proc</T>, /sys, Oops/Panic, <T id="perf">perf</T>, <T id="ftrace">ftrace</T>,{' '}
-                    <T id="lockdep">lockdep</T>, <T id="kasan">KASAN</T>, kdump, container 디버깅
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="11-debugging"
-                items={[
+        <TopicPage topicId="11-debugging" learningItems={[
                     'perf stat/record/report로 CPU 성능 이벤트를 수집하고 분석하는 방법을 이해합니다',
                     'ftrace와 <T id="kprobe">kprobe</T>를 이용해 커널 함수 호출을 실시간으로 추적하는 기법을 배웁니다',
                     'Kernel Oops 메시지를 해석하고 /proc, /sys 인터페이스로 시스템 상태를 진단하는 방법을 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
 
             {/* 11.1 /proc와 /sys 활용 */}
@@ -579,8 +565,6 @@ bpftool perf list`} language="bash" filename="# bpftool 주요 명령어" />
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.debugParamRows} />
                 <CodeBlock code={snippets.debugParamCheckCode} language="bash" filename="# 디버깅 파라미터 확인/변경" />
             </Section>
-
-            <TopicNavigation topicId="11-debugging" />
-        </div>
+        </TopicPage>
     )
 }

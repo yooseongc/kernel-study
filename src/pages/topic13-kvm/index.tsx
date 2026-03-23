@@ -1,6 +1,6 @@
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -12,25 +12,12 @@ import { CodeBlock, InfoTable, LearningCard, Prose, Section, T, TopicNavigation 
 
 export default function Topic13Kvm() {
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 13</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">KVM / 가상화</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">KVM, Virtualization & virtio</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    KVM 구조, VMCS/VMCB, VMENTRY/VMEXIT, EPT, virtio, 클라우드 인프라
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="13-kvm"
-                items={[
+        <TopicPage topicId="13-kvm" learningItems={[
                     'KVM이 하드웨어 가상화 확장(VMX/SVM)을 이용해 VM을 실행하는 원리를 이해합니다',
                     'VMCS(VM Control Structure)와 EPT/NPT를 통한 중첩 페이지 테이블 번역을 배웁니다',
                     'virtio 프레임워크로 게스트와 호스트가 I/O를 효율적으로 공유하는 방법을 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 13.1 KVM 개요 */}
             <Section id="s1311" title="13.1  KVM — 커널 하이퍼바이저 구조">
@@ -698,8 +685,6 @@ export default function Topic13Kvm() {
                 <CodeBlock code={snippets.kvmParamCheckCode} language="bash" filename="# KVM 파라미터 확인/변경" />
             </Section>
 
-            <TopicNavigation topicId="13-kvm" />
-
             {/* 완료 카드 */}
             <div className="rounded-2xl border border-blue-200 dark:border-blue-800/50 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 text-center space-y-4">
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">KVM / 가상화 학습 완료</div>
@@ -717,6 +702,6 @@ export default function Topic13Kvm() {
                     홈으로 돌아가기
                 </a>
             </div>
-        </div>
+        </TopicPage>
     )
 }

@@ -4,7 +4,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { IRQViz } from '../../components/concepts/interrupt/IRQViz'
 import { renderDeferredWorkFlow } from '../../components/concepts/interrupt/DeferredWorkFlow'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, useTheme } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -152,26 +152,11 @@ export default function Topic04() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 05</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">인터럽트, 예외, Deferred Work</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Interrupts, Exceptions &amp; Deferred Work
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    IRQ 처리, Top/Bottom Half, Softirq, Tasklet, Workqueue, hrtimer, Threaded IRQ
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="05-interrupts"
-                items={[
+        <TopicPage topicId="05-interrupts" learningItems={[
                     '하드웨어 인터럽트와 예외의 차이, IRQ 처리 흐름 전체를 이해합니다',
                     'Top Half/Bottom Half 분리로 인터럽트 지연을 최소화하는 설계를 배웁니다',
                     'Softirq, Tasklet, Workqueue의 차이와 적절한 사용 시나리오를 파악합니다',
-                ]}
-            />
+                ]}>
 
             <Section id="s551" title="5.1  인터럽트와 예외의 차이">
                 <Prose>
@@ -779,8 +764,6 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
 
                 <CodeBlock code={snippets.irqParamsCode} language="bash" filename="인터럽트 파라미터 확인/변경" />
             </Section>
-
-            <TopicNavigation topicId="05-interrupts" />
-        </div>
+        </TopicPage>
     )
 }

@@ -5,7 +5,7 @@ import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
-import { CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme } from '@study-ui/components'
+import { CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6.5  소켓 시스템 콜 표
@@ -191,24 +191,11 @@ export default function Topic05() {
     void theme
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 06</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">네트워크 스택의 전체 흐름</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Network Stack End-to-End</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    패킷 수신·송신 경로, NIC/NAPI, sk_buff, L2/L3/L4, 소켓, Zero-copy, SO_REUSEPORT
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="06-network-stack"
-                items={[
+        <TopicPage topicId="06-network-stack" learningItems={[
                     'NIC 드라이버에서 소켓까지 패킷이 이동하는 전체 경로를 이해합니다',
                     'sk_buff 구조체가 어떻게 네트워크 데이터를 표현하는지, NAPI 폴링을 배웁니다',
                     'L2→L3→L4 각 레이어에서 일어나는 헤더 처리와 라우팅 결정을 파악합니다',
-                ]}
-            />
+                ]}>
 
             <Section id="s661" title="6.1  패킷이 커널에 들어오는 과정">
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
@@ -930,8 +917,6 @@ export default function Topic05() {
 
                 <CodeBlock code={snippets.kernelParamsCode} language="bash" filename="# 네트워크 파라미터 확인 및 튜닝" />
             </Section>
-
-            <TopicNavigation topicId="06-network-stack" />
-        </div>
+        </TopicPage>
     )
 }

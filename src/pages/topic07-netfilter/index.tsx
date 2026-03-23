@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, themeColors, useTheme } from '@study-ui/components'
+import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, themeColors, useTheme } from '@study-ui/components'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
 function renderNetfilterFlow(
@@ -436,24 +436,11 @@ export default function Topic06() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 07</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">패킷 처리 경로와 후킹 지점</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Packet Path &amp; Hook Points</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    Netfilter 5훅, iptables/nftables, conntrack, TPROXY, TC Hook
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="07-netfilter"
-                items={[
+        <TopicPage topicId="07-netfilter" learningItems={[
                     'Netfilter의 5개 훅 포인트(PREROUTING~POSTROUTING)와 우선순위 체계를 이해합니다',
                     'iptables와 nftables가 커널 Netfilter 위에서 어떻게 동작하는지 배웁니다',
                     'TPROXY를 이용한 투명 프록시 구현과 conntrack 상태 추적 원리를 파악합니다',
-                ]}
-            />
+                ]}>
 
             <Section id="s771" title="7.1  Netfilter 구조">
                 <InfoBox color="blue">
@@ -986,8 +973,6 @@ export default function Topic06() {
 
                 <CodeBlock code={snippets.netfilterParamsCode} language="bash" filename="# 넷필터 파라미터 확인 및 튜닝" />
             </Section>
-
-            <TopicNavigation topicId="07-netfilter" />
-        </div>
+        </TopicPage>
     )
 }

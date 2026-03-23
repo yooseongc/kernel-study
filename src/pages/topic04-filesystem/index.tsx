@@ -2,7 +2,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , type TableRow } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow } from '@study-ui/components'
 
 const openFlowSteps = [
     {
@@ -56,26 +56,12 @@ const kernelParamRows: TableRow[] = [
 
 export default function Topic11Filesystem() {
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 04</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VFS와 파일시스템</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">VFS &amp; Filesystem</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    <T id="vfs">VFS</T> 계층, open() 흐름, <T id="page_cache">페이지 캐시</T>, ext4 저널링, 블록 I/O
-                    경로
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="04-filesystem"
-                items={[
+        <TopicPage topicId="04-filesystem" learningItems={[
                     'VFS가 다양한 파일시스템을 통일된 인터페이스로 추상화하는 방법을 이해합니다',
                     'inode, dentry, file 세 객체가 어떻게 협력하여 파일 접근을 처리하는지 배웁니다',
                     'Page Cache와 write-back으로 디스크 I/O를 최소화하는 원리를 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 4.1 VFS 계층 구조 */}
             <Section id="s441" title="4.1  VFS — Virtual File System">
@@ -937,8 +923,6 @@ f_flags: O_RDONLY`}</pre>
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={kernelParamRows} />
                 <CodeBlock code={snippets.fsKernelParamCode} language="bash" filename="# 파일시스템 관련 파라미터 확인" />
             </Section>
-
-            <TopicNavigation topicId="04-filesystem" />
-        </div>
+        </TopicPage>
     )
 }

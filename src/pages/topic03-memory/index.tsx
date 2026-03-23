@@ -13,7 +13,7 @@ import { BuddyAllocatorViz } from '../../components/concepts/memory/BuddyAllocat
 import { CoWAnimationViz } from '../../components/concepts/memory/CoWAnimationViz'
 
 import { renderSlubViz } from '../../components/concepts/memory/SlubViz'
-import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation, useTheme } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CardGrid, CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, T, useTheme } from '@study-ui/components'
 
 // VirtualAddressViz, MultiProcessVAViz → extracted to components/concepts/memory/VirtualAddressViz.tsx
 
@@ -146,29 +146,12 @@ export default function Topic03() {
     )
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 03</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">가상 메모리와 메모리 관리</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Virtual Memory &amp; Memory Management
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    가상주소와 물리주소, <T id="page_table">페이지 테이블</T>, <T id="mm_struct">mm_struct</T>/<T id="vma">VMA</T>,{' '}
-                    <T id="page_fault">Page Fault</T>, <T id="buddy_allocator">Buddy</T>/<T id="slub">SLUB</T>,{' '}
-                    <T id="tlb">TLB</T>, <T id="hugepage">Huge Pages</T>
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="03-memory"
-                items={[
+        <TopicPage topicId="03-memory" learningItems={[
                     '가상 주소를 물리 주소로 번역하는 페이지 테이블 4단계 구조를 이해합니다',
                     'Page Fault 발생 시 커널이 어떻게 처리하는지, CoW 최적화를 배웁니다',
                     'Buddy Allocator와 SLUB Allocator가 메모리를 어떻게 할당하는지 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 3.1 Virtual Address Space */}
             <Section id="s331" title="3.1  가상 주소 공간">
@@ -1390,8 +1373,6 @@ cat /sys/block/zram0/mm_stat
 
                 <CodeBlock code={snippets.memParamsCode} language="bash" filename="메모리 파라미터 확인/변경" />
             </Section>
-
-            <TopicNavigation topicId="03-memory" />
-        </div>
+        </TopicPage>
     )
 }

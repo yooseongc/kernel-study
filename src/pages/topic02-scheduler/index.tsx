@@ -4,7 +4,7 @@ import { ProcessStateDiagram } from '../../components/concepts/scheduler/Process
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────
@@ -41,29 +41,12 @@ const contextSwitchSteps = [
 // ── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function Topic02Scheduler() {
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 02</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">프로세스, 스레드, 스케줄러</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Processes, Threads &amp; Scheduler</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    리눅스에서 프로세스와 스레드는 어떻게 다를까요? 커널은 어떻게 수백 개의 프로세스를 공정하게 CPU에
-                    스케줄링할까요? 이 페이지에서는{' '}
-                    <T id="task_struct">task_struct</T>
-                    ,<T id="cfs">CFS</T> 스케줄러, 그리고 <T id="context_switch">컨텍스트 스위치</T>를 시각적으로
-                    탐구합니다.
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="02-scheduler"
-                items={[
+        <TopicPage topicId="02-scheduler" learningItems={[
                     'task_struct 구조체가 프로세스와 스레드를 어떻게 통일 표현하는지 이해합니다',
                     'CFS(Completely Fair Scheduler)의 가중치·vruntime 계산 방식을 배웁니다',
                     '컨텍스트 스위치 시 CPU 레지스터와 메모리 컨텍스트가 어떻게 교환되는지 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 2.1 프로세스와 스레드 */}
             <Section id="s21" title="2.1  프로세스와 스레드">
@@ -1205,8 +1188,6 @@ cat /proc/loadavg
 
                 <CodeBlock code={snippets.schedParamsCode} language="bash" filename="스케줄러 파라미터 확인/변경" />
             </Section>
-
-            <TopicNavigation topicId="02-scheduler" />
-        </div>
+        </TopicPage>
     )
 }

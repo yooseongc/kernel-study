@@ -3,7 +3,7 @@ import { RaceConditionViz, raceAnimSteps } from '../../components/concepts/sync/
 import { LockComparisonChart } from '../../components/concepts/sync/LockComparisonChart'
 import { RcuGracePeriodViz } from '../../components/concepts/sync/RcuGracePeriodViz'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , useTheme , type TableRow } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , useTheme , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code snippets
@@ -52,25 +52,12 @@ export default function Topic08() {
     const isDark = theme === 'dark'
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 09</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">동기화와 멀티코어 환경</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Synchronization & Multi-core</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    Race Condition, <T id="spinlock">Spinlock</T>, <T id="mutex">Mutex</T>, RWLock, <T id="atomic">Atomic</T>, <T id="rcu">RCU</T>, Wait Queue, Completion, seqlock, 메모리 배리어
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="09-synchronization"
-                items={[
+        <TopicPage topicId="09-synchronization" learningItems={[
                     'Spinlock, Mutex, RWLock의 내부 구현과 올바른 선택 기준을 이해합니다',
                     'RCU(Read-Copy-Update)가 읽기 성능을 극대화하는 grace period 메커니즘을 배웁니다',
                     '멀티코어 환경에서 Cache Coherence와 메모리 배리어가 동기화에 미치는 영향을 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 9.1 Race Condition */}
             <Section id="s91" title="9.1  Race Condition">
@@ -826,8 +813,6 @@ int unlock(int *futex_word) {
 
                 <CodeBlock code={snippets.syncParamsCode} language="bash" filename="# 동기화 관련 파라미터 확인" />
             </Section>
-
-            <TopicNavigation topicId="09-synchronization" />
-        </div>
+        </TopicPage>
     )
 }

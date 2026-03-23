@@ -1,6 +1,6 @@
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { Alert, CodeBlock, InfoBox, InfoTable, LearningCard, Prose, Section, T, TopicNavigation , type TableRow } from '@study-ui/components'
+import { Alert, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -33,25 +33,12 @@ const capabilityRows: TableRow[] = [
 
 export default function Topic12() {
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 space-y-14">
-            {/* Header */}
-            <header className="space-y-3">
-                <p className="text-xs font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest">Topic 12</p>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Linux 보안 모델</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Linux Security Model</p>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                    DAC, Capabilities, LSM, AppArmor, SELinux, Namespace 격리, 컨테이너 보안
-                </p>
-            </header>
-
-            <LearningCard
-                topicId="12-security"
-                items={[
+        <TopicPage topicId="12-security" learningItems={[
                     'LSM(Linux Security Module) 훅이 커널 내부에서 보안 정책을 강제하는 방법을 이해합니다',
                     'Capabilities 권한 모델로 root 권한을 세분화하고 최소 권한 원칙을 구현하는 방법을 배웁니다',
                     'PID/Network/Mount Namespace로 컨테이너 격리를 구현하는 커널 메커니즘을 파악합니다',
-                ]}
-            />
+                ]}>
+            {/* Header */}
 
             {/* 12.1 Linux 보안 모델 개요 */}
             <Section id="s121" title="12.1  Linux 보안 모델 개요">
@@ -820,8 +807,6 @@ cat /proc/self/uid_map
                 <InfoTable headers={['파라미터', '기본값', '설명']} rows={snippets.securityParamRows} />
                 <CodeBlock code={snippets.securityParamCheckCode} language="bash" filename="# 보안 파라미터 확인/변경" />
             </Section>
-
-            <TopicNavigation topicId="12-security" />
-        </div>
+        </TopicPage>
     )
 }
