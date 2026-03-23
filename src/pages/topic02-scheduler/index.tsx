@@ -268,47 +268,21 @@ export default function Topic02Scheduler() {
                                 nice → weight 변환 (대표값)
                             </span>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                                        <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                            nice
-                                        </th>
-                                        <th className="text-right px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                            weight
-                                        </th>
-                                        <th className="text-right px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                            상대 비율
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                    {[
-                                        ['-20', '88761', '×86.7'],
-                                        ['-10', '9548', '×9.3'],
-                                        ['0 (기본)', '1024', '×1.0'],
-                                        ['+10', '110', '×0.11'],
-                                        ['+19', '15', '×0.015'],
-                                    ].map(([nice, weight, ratio]) => (
-                                        <tr
-                                            key={nice}
-                                            className={`hover:bg-gray-50 dark:hover:bg-gray-900/50${nice === '0 (기본)' ? ' bg-blue-50 dark:bg-blue-950/20' : ''}`}
-                                        >
-                                            <td className="px-4 py-2 font-mono text-xs text-purple-600 dark:text-purple-400">
-                                                {nice}
-                                            </td>
-                                            <td className="px-4 py-2 font-mono text-xs text-right text-gray-900 dark:text-gray-100">
-                                                {weight}
-                                            </td>
-                                            <td className="px-4 py-2 font-mono text-xs text-right text-green-600 dark:text-green-400">
-                                                {ratio}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <InfoTable
+                            headers={[
+                                { header: 'nice', mono: true, cellClassName: 'text-purple-600 dark:text-purple-400' },
+                                { header: 'weight', align: 'text-right', mono: true, cellClassName: 'text-gray-900 dark:text-gray-100' },
+                                { header: '상대 비율', align: 'text-right', mono: true, cellClassName: 'text-green-600 dark:text-green-400' },
+                            ] satisfies TableColumn[]}
+                            rows={[
+                                { cells: ['-20', '88761', '×86.7'] },
+                                { cells: ['-10', '9548', '×9.3'] },
+                                { cells: ['0 (기본)', '1024', '×1.0'] },
+                                { cells: ['+10', '110', '×0.11'] },
+                                { cells: ['+19', '15', '×0.015'] },
+                            ]}
+                            rowClassName={(row) => row.cells[0] === '0 (기본)' ? 'bg-blue-50 dark:bg-blue-950/20' : ''}
+                        />
                     </div>
 
                     {/* vruntime 공식 설명 */}
@@ -523,38 +497,19 @@ cat /proc/loadavg
                                 설정 방법
                             </span>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                                        <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                            방법
-                                        </th>
-                                        <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                            사용
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                    {[
-                                        ['taskset -c 0,1 ./app', 'CPU 0·1에서만 실행'],
-                                        ['taskset -p 0x3 <pid>', '실행 중 프로세스 변경'],
-                                        ['sched_setaffinity()', '프로그램 내에서 직접 설정'],
-                                        ['cgroups cpuset', '컨테이너/그룹 단위 격리'],
-                                        ['numactl --cpunodebind=0', 'NUMA 노드 단위 바인딩'],
-                                    ].map(([cmd, desc]) => (
-                                        <tr key={cmd} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                            <td className="px-4 py-2 font-mono text-xs text-blue-600 dark:text-blue-400">
-                                                {cmd}
-                                            </td>
-                                            <td className="px-4 py-2 text-xs text-gray-600 dark:text-gray-400">
-                                                {desc}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <InfoTable
+                            headers={[
+                                { header: '방법', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400' },
+                                { header: '사용', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                            ] satisfies TableColumn[]}
+                            rows={[
+                                { cells: ['taskset -c 0,1 ./app', 'CPU 0·1에서만 실행'] },
+                                { cells: ['taskset -p 0x3 <pid>', '실행 중 프로세스 변경'] },
+                                { cells: ['sched_setaffinity()', '프로그램 내에서 직접 설정'] },
+                                { cells: ['cgroups cpuset', '컨테이너/그룹 단위 격리'] },
+                                { cells: ['numactl --cpunodebind=0', 'NUMA 노드 단위 바인딩'] },
+                            ]}
+                        />
                     </div>
 
                     <div className="space-y-3">
@@ -652,40 +607,20 @@ cat /proc/loadavg
                             SMP vs NUMA 비교
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        항목
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-blue-600 dark:text-blue-400 font-semibold text-xs uppercase tracking-wide">
-                                        SMP
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-purple-600 dark:text-purple-400 font-semibold text-xs uppercase tracking-wide">
-                                        NUMA
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-xs">
-                                {[
-                                    ['메모리 접근 속도', '균일 (모든 코어 동일)', '비균일 (로컬 빠름, 원격 느림)'],
-                                    ['일반 적용 범위', '단일 소켓 멀티코어', '멀티 소켓 서버'],
-                                    ['커널 런큐', 'CPU당 1개', 'CPU당 1개 + NUMA node 그루핑'],
-                                    ['스케줄러 최적화', 'Load balancing', 'NUMA balancing + memory migration'],
-                                    ['실무 예시', '일반 데스크탑/서버', '고성능 서버 (EPYC, Xeon SP)'],
-                                ].map(([item, smp, numa]) => (
-                                    <tr key={item} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                        <td className="px-4 py-2 font-semibold text-gray-600 dark:text-gray-400">
-                                            {item}
-                                        </td>
-                                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{smp}</td>
-                                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{numa}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '항목', cellClassName: 'text-gray-600 dark:text-gray-400 font-semibold' },
+                            { header: 'SMP', headerClassName: 'text-blue-600 dark:text-blue-400', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                            { header: 'NUMA', headerClassName: 'text-purple-600 dark:text-purple-400', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['메모리 접근 속도', '균일 (모든 코어 동일)', '비균일 (로컬 빠름, 원격 느림)'] },
+                            { cells: ['일반 적용 범위', '단일 소켓 멀티코어', '멀티 소켓 서버'] },
+                            { cells: ['커널 런큐', 'CPU당 1개', 'CPU당 1개 + NUMA node 그루핑'] },
+                            { cells: ['스케줄러 최적화', 'Load balancing', 'NUMA balancing + memory migration'] },
+                            { cells: ['실무 예시', '일반 데스크탑/서버', '고성능 서버 (EPYC, Xeon SP)'] },
+                        ]}
+                    />
                 </div>
             </Section>
 
@@ -705,84 +640,16 @@ cat /proc/loadavg
                             스케줄러 클래스 우선순위 (높음 → 낮음)
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        정책
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        우선순위 범위
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        동작
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        사용 사례
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-xs">
-                                {[
-                                    [
-                                        'SCHED_DEADLINE',
-                                        '—',
-                                        'EDF(Earliest Deadline First) 기반. 주기·데드라인·실행시간 명시',
-                                        '실시간 제어 시스템',
-                                        'red',
-                                    ],
-                                    [
-                                        'SCHED_FIFO',
-                                        'RT 1~99',
-                                        '선점 없음. 더 높은 우선순위 태스크가 생기기 전까지 계속 실행',
-                                        '오디오 서버, 실시간 센서',
-                                        'red',
-                                    ],
-                                    [
-                                        'SCHED_RR',
-                                        'RT 1~99',
-                                        'FIFO에 타임슬라이스 추가. 같은 우선순위 간 라운드로빈',
-                                        '같은 우선순위 RT 태스크',
-                                        'red',
-                                    ],
-                                    [
-                                        'SCHED_NORMAL (CFS)',
-                                        '100~139 (nice -20~19)',
-                                        'vruntime 기반 공정 스케줄링. 대부분의 일반 프로세스',
-                                        '일반 서버/데스크탑 프로세스',
-                                        'blue',
-                                    ],
-                                    [
-                                        'SCHED_IDLE',
-                                        '가장 낮음',
-                                        'idle 시에만 실행. nice +19보다도 낮음',
-                                        '백그라운드 배치 작업',
-                                        'gray',
-                                    ],
-                                ].map(([policy, prio, desc, usage, color]) => (
-                                    <tr key={policy as string} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                        <td
-                                            className={`px-4 py-2.5 font-mono font-bold text-xs ${
-                                                color === 'red'
-                                                    ? 'text-red-600 dark:text-red-400'
-                                                    : color === 'blue'
-                                                        ? 'text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-500 dark:text-gray-500'
-                                            }`}
-                                        >
-                                            {policy}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">
-                                            {prio}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{desc}</td>
-                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">{usage}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={['정책', '우선순위 범위', '동작', '사용 사례']}
+                        rows={[
+                            { cells: [<span key="dl" className="font-mono font-bold text-red-600 dark:text-red-400">SCHED_DEADLINE</span>, '—', 'EDF 기반. 주기·데드라인·실행시간 명시', '실시간 제어 시스템'] },
+                            { cells: [<span key="ff" className="font-mono font-bold text-red-600 dark:text-red-400">SCHED_FIFO</span>, 'RT 1~99', '선점 없음. 더 높은 우선순위 태스크가 나올 때까지 실행', '오디오 서버, 실시간 센서'] },
+                            { cells: [<span key="rr" className="font-mono font-bold text-red-600 dark:text-red-400">SCHED_RR</span>, 'RT 1~99', 'FIFO + 타임슬라이스. 같은 우선순위 간 라운드로빈', '같은 우선순위 RT 태스크'] },
+                            { cells: [<span key="nr" className="font-mono font-bold text-blue-600 dark:text-blue-400">SCHED_NORMAL (CFS)</span>, '100~139 (nice -20~19)', 'vruntime 기반 공정 스케줄링', '일반 서버/데스크탑 프로세스'] },
+                            { cells: [<span key="id" className="text-gray-500 dark:text-gray-500">SCHED_IDLE</span>, '가장 낮음', 'idle 시에만 실행. nice +19보다도 낮음', '백그라운드 배치 작업'] },
+                        ]}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -863,48 +730,20 @@ cat /proc/loadavg
                             cgroup v1 vs v2
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        항목
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        v1 (레거시)
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-blue-600 dark:text-blue-400 font-semibold text-xs uppercase tracking-wide">
-                                        v2 (통합, 권장)
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-xs">
-                                {[
-                                    [
-                                        '마운트 구조',
-                                        '서브시스템별 별도 마운트 (/sys/fs/cgroup/cpu/, /memory/, …)',
-                                        '단일 통합 계층 (/sys/fs/cgroup/)',
-                                    ],
-                                    ['계층 구조', '서브시스템마다 독립적인 트리', '모든 서브시스템이 동일한 트리 공유'],
-                                    ['스레드 지원', '스레드별 소속 가능', 'v2.1+에서 thread-mode로 지원'],
-                                    [
-                                        '주요 파일',
-                                        'cpu.shares, memory.limit_in_bytes',
-                                        'cpu.max, cpu.weight, memory.max',
-                                    ],
-                                    ['현재 지원', '커널 지원 유지, 새 기능 없음', '커널 5.x+ 기본, systemd 244+ 전환'],
-                                ].map(([item, v1, v2]) => (
-                                    <tr key={item} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                        <td className="px-4 py-2.5 font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                                            {item}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-500">{v1}</td>
-                                        <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{v2}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '항목', nowrap: true, cellClassName: 'text-gray-600 dark:text-gray-400 font-semibold' },
+                            { header: 'v1 (레거시)', cellClassName: 'text-gray-500 dark:text-gray-500' },
+                            { header: 'v2 (통합, 권장)', headerClassName: 'text-blue-600 dark:text-blue-400', cellClassName: 'text-gray-700 dark:text-gray-300' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['마운트 구조', '서브시스템별 별도 마운트', '단일 통합 계층 (/sys/fs/cgroup/)'] },
+                            { cells: ['계층 구조', '서브시스템마다 독립적 트리', '모든 서브시스템이 동일 트리 공유'] },
+                            { cells: ['스레드 지원', '스레드별 소속 가능', 'v2.1+에서 thread-mode 지원'] },
+                            { cells: ['주요 파일', 'cpu.shares, memory.limit_in_bytes', 'cpu.max, cpu.weight, memory.max'] },
+                            { cells: ['현재 지원', '커널 유지, 새 기능 없음', '커널 5.x+ 기본, systemd 244+ 전환'] },
+                        ]}
+                    />
                 </div>
 
                 {/* cgroup 계층 D3 트리 */}
@@ -938,58 +777,20 @@ cat /proc/loadavg
                             CPU 서브시스템 주요 제어 파일 (v2)
                         </span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        파일
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        형식
-                                    </th>
-                                    <th className="text-left px-4 py-2 text-gray-500 dark:text-gray-400 font-semibold text-xs uppercase tracking-wide">
-                                        의미
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-xs font-mono">
-                                {[
-                                    [
-                                        'cpu.max',
-                                        '"200000 1000000"',
-                                        'period(µs) 중 quota(µs)만큼만 CPU 사용. "max"는 제한 없음',
-                                    ],
-                                    [
-                                        'cpu.weight',
-                                        '"100"',
-                                        '1~10000, 기본 100. CFS cpu.shares의 v2 대체. 상대적 가중치',
-                                    ],
-                                    [
-                                        'cpu.stat',
-                                        '읽기 전용',
-                                        'usage_usec, user_usec, system_usec, throttled_usec 등 통계',
-                                    ],
-                                    [
-                                        'cpuset.cpus',
-                                        '"0-3"',
-                                        '이 cgroup이 사용할 CPU 코어 범위 (CPU Affinity 2.6과 동일 개념)',
-                                    ],
-                                    ['cpuset.mems', '"0"', 'NUMA 메모리 노드 제한'],
-                                ].map(([file, fmt, desc]) => (
-                                    <tr key={file} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                        <td className="px-4 py-2.5 text-blue-600 dark:text-blue-400 font-bold">
-                                            {file}
-                                        </td>
-                                        <td className="px-4 py-2.5 text-green-600 dark:text-green-400">{fmt}</td>
-                                        <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400 font-sans">
-                                            {desc}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <InfoTable
+                        headers={[
+                            { header: '파일', mono: true, cellClassName: 'text-blue-600 dark:text-blue-400 font-bold' },
+                            { header: '형식', mono: true, cellClassName: 'text-green-600 dark:text-green-400' },
+                            { header: '의미', cellClassName: 'text-gray-600 dark:text-gray-400' },
+                        ] satisfies TableColumn[]}
+                        rows={[
+                            { cells: ['cpu.max', '"200000 1000000"', 'period(µs) 중 quota만큼 CPU 사용. "max"는 제한 없음'] },
+                            { cells: ['cpu.weight', '"100"', '1~10000, 기본 100. CFS cpu.shares의 v2 대체'] },
+                            { cells: ['cpu.stat', '읽기 전용', 'usage_usec, throttled_usec 등 통계'] },
+                            { cells: ['cpuset.cpus', '"0-3"', '사용할 CPU 코어 범위'] },
+                            { cells: ['cpuset.mems', '"0"', 'NUMA 메모리 노드 제한'] },
+                        ]}
+                    />
                 </div>
 
                 <Alert variant="info" title="Docker 컨테이너">
