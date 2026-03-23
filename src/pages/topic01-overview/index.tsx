@@ -6,7 +6,7 @@ import { renderSubsystemGraph } from '../../components/concepts/overview/Subsyst
 import { SyscallFlowViz } from '../../components/concepts/overview/SyscallFlowViz'
 import { KernelArchDiagram } from '../../components/concepts/overview/KernelArchDiagram'
 import { KernelRef } from '../../components/ui/KernelRef'
-import { Alert, AnimatedDiagram, CodeBlock, D3Container, InfoBox, InfoTable, MermaidDiagram, Prose, Section, StatCard, T , TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, D3Container, InfoBox, InfoTable, MermaidDiagram, Prose, Section, StatCard, T , TopicPage , InlineCode , CardGrid } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 import {
     syscallFlowChart,
@@ -84,7 +84,7 @@ export default function Topic01Overview() {
                 </Prose>
 
                 {/* 동심원 다이어그램 + 상세 패널 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
                         <D3Container
                             renderFn={(svg, w, h) => renderRingDiagram(svg, w, h, setSelectedRing)}
@@ -148,7 +148,7 @@ export default function Topic01Overview() {
                             </ul>
                         </div>
                     </div>
-                </div>
+                </CardGrid>
 
                 {/* 링 전환 트리거 표 */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -341,9 +341,9 @@ export default function Topic01Overview() {
                 <Prose>
                     리눅스 커널은 수천 개의 설정 옵션(CONFIG_*)을 통해 어떤 기능을 포함할지 결정합니다.
                     <strong className="text-gray-800 dark:text-gray-200">Kconfig</strong> 시스템이 이 설정을 관리하며,
-                    각 옵션은 <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">y</code>(내장),{' '}
-                    <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">m</code>(모듈),{' '}
-                    <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono">n</code>(제외) 중 하나를 선택합니다.
+                    각 옵션은 <InlineCode></InlineCode>(내장),{' '}
+                    <InlineCode></InlineCode>(모듈),{' '}
+                    <InlineCode></InlineCode>(제외) 중 하나를 선택합니다.
                 </Prose>
                 <InfoTable
                     headers={['명령', '인터페이스', '설명']}

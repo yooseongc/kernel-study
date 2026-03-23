@@ -1,6 +1,6 @@
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, InfoTable, Prose, Section, T , TopicPage } from '@study-ui/components'
+import { CodeBlock, InfoTable, Prose, Section, T , TopicPage , InlineCode } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -293,7 +293,7 @@ export default function Topic13Kvm() {
                         <T id="virtio">virtio</T>
                     </strong>
                     는 게스트-호스트 간 공유 메모리 링 버퍼(
-                    <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">virtqueue</code>)로 I/O를 전달해
+                    <InlineCode color="gray"></InlineCode>)로 I/O를 전달해
                     VMEXIT를 최소화합니다.
                 </Prose>
 
@@ -358,7 +358,7 @@ export default function Topic13Kvm() {
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         일반 virtio-net은 QEMU 프로세스가 virtqueue를 폴링합니다.
-                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded mx-1">vhost-net</code>은 커널
+                        <InlineCode color="gray"></InlineCode>은 커널
                         스레드가 직접 virtqueue를 처리해 QEMU 컨텍스트 스위칭을 제거합니다. KVM 네트워크 성능의 핵심
                         최적화 기법입니다.
                     </p>
@@ -371,7 +371,7 @@ export default function Topic13Kvm() {
             <Section id="s1315" title="13.5  KVM 관리 실전">
                 <Prose>
                     QEMU, libvirt(virsh), 그리고{' '}
-                    <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">perf kvm</code>으로
+                    <InlineCode color="gray"></InlineCode>으로
                     <T id="kvm">KVM</T> 환경을 생성·관리·분석하는 실전 명령어입니다.
                 </Prose>
                 <CodeBlock code={snippets.kvmMgmtCode} language="bash" filename="# KVM 실전 관리 및 성능 분석" />

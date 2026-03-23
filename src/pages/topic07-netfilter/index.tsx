@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, SubSection, T, themeColors, TopicPage, useTheme } from '@study-ui/components'
+import { CodeBlock, D3Container, InfoBox, InfoTable, Prose, Section, SubSection, T, themeColors, TopicPage, useTheme , InlineCode } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ── 7.2 Netfilter 5개 훅 포인트 D3 다이어그램 (Wikipedia-style) ──────────────
@@ -598,7 +598,7 @@ export default function Topic06() {
                         NAT 규칙이 적용되면 <T id="conntrack">conntrack</T>이 원본 주소와 변환된 주소의 매핑을 기록합니다.
                         이후 응답 패킷이 돌아올 때 conntrack이 자동으로 역변환(reverse NAT)을 수행하므로, 별도의 역방향 규칙이 필요 없습니다.
                         <br />
-                        <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">conntrack -L -n</code> 명령으로 현재 NAT 매핑 상태를 확인할 수 있습니다.
+                        <InlineCode></InlineCode> 명령으로 현재 NAT 매핑 상태를 확인할 수 있습니다.
                     </p>
                 </div>
             </Section>
@@ -707,7 +707,7 @@ export default function Topic06() {
                         <span className="text-yellow-600 dark:text-yellow-400">NIC Driver</span>
                     </div>
                     <p className="mt-3 text-xs">
-                        TC BPF는 <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">cls_bpf</code>를
+                        TC BPF는 <InlineCode></InlineCode>를
                         통해 eBPF 프로그램을 연결하며, 패킷 수정·리다이렉션·드롭 등의 액션을 수행할 수 있습니다. 다음
                         토픽(XDP / eBPF)에서 더 자세히 다룹니다.
                     </p>

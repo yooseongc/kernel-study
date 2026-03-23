@@ -2,7 +2,7 @@ import { KernelRef } from '../../components/ui/KernelRef'
 import { OpenFlowViz } from '../../components/concepts/filesystem/OpenFlowViz'
 import { VfsLayerDiagram } from '../../components/concepts/filesystem/VfsLayerDiagram'
 import * as snippets from './codeSnippets'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage , CardGrid } from '@study-ui/components'
 import type { TableColumn, TableRow } from '@study-ui/components'
 
 const openFlowSteps = [
@@ -66,7 +66,7 @@ export default function Topic11Filesystem() {
 
             {/* 4.1 VFS 계층 구조 */}
             <Section id="s441" title="4.1  VFS — Virtual File System">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     VFS는 커널의 파일시스템 추상화 계층입니다.{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         open()
@@ -82,7 +82,7 @@ export default function Topic11Filesystem() {
                     같은 POSIX <T id="syscall">syscall</T>을 받아서 실제 파일시스템(<T id="ext4">ext4</T>, XFS, tmpfs, NFS 등)으로 전달합니다. 유저는 어떤
                     파일시스템을 쓰는지 몰라도 됩니다. <KernelRef path="include/linux/fs.h" sym="inode" />{' '}
                     <KernelRef path="include/linux/dcache.h" sym="dentry" />
-                </p>
+                </Prose>
 
                 {/* VFS 레이어 다이어그램 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -181,7 +181,7 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.2 open() 흐름 */}
             <Section id="s442" title="4.2  open() 흐름 — VFS에서 ext4까지">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     유저가{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         open("/etc/passwd", O_RDONLY)
@@ -191,7 +191,7 @@ f_flags: O_RDONLY`}</pre>
                         read()
                     </code>
                     는 페이지 캐시를 확인하고 필요하면 디스크 I/O를 일으킵니다.
-                </p>
+                </Prose>
 
                 <AnimatedDiagram
                     steps={openFlowSteps}
@@ -204,14 +204,14 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.3 페이지 캐시 */}
             <Section id="s443" title="4.3  페이지 캐시 — 디스크 I/O 최소화">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     커널은 디스크에서 읽은 데이터를{' '}
                     <strong className="text-gray-900 dark:text-gray-100">
                         페이지 캐시(Page Cache)
                     </strong>
                     에 보관합니다. 같은 파일을 다시 읽으면 디스크 접근 없이 캐시에서 반환합니다. write()된 데이터는 먼저
                     캐시에 기록되고(dirty 상태), 백그라운드에서 디스크에 씁니다.
-                </p>
+                </Prose>
 
                 <CodeBlock code={snippets.pageCacheCode} language="bash" filename="# 페이지 캐시 확인" />
 
@@ -309,12 +309,12 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.4 ext4 저널링 */}
             <Section id="s444" title="4.4  ext4 — 널리 쓰이는 저널링 파일시스템">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     ext4는 Linux의 기본 파일시스템입니다.
                     <strong className="text-gray-900 dark:text-gray-100"> 저널(journal)</strong>로 크래시 후에도
                     파일시스템 일관성을 보장합니다. <T id="journaling">저널링</T> 모드에 따라 성능과 안전성이 달라집니다.{' '}
                     <KernelRef path="fs/ext4/" label="fs/ext4/" />
-                </p>
+                </Prose>
 
                 {/* 저널링 모드 테이블 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -338,7 +338,7 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.5 블록 I/O 경로 */}
             <Section id="s445" title="4.5  블록 I/O 경로 — bio에서 드라이버까지">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     파일시스템이 데이터를 읽고 쓸 때 최종적으로는{' '}
                     <code className="text-blue-600 dark:text-blue-300 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs">
                         submit_bio()
@@ -350,7 +350,7 @@ f_flags: O_RDONLY`}</pre>
                     → <strong className="text-gray-900 dark:text-gray-100">request</strong> →{' '}
                     <strong className="text-gray-900 dark:text-gray-100">드라이버</strong> 순으로 처리합니다.{' '}
                     <KernelRef path="include/linux/bio.h" sym="bio" />
-                </p>
+                </Prose>
 
                 {/* 블록 I/O 계층 다이어그램 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -432,11 +432,11 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.6 대표 파일시스템 비교 */}
             <Section id="s446" title="4.6  대표 파일시스템 비교 — ext4 · XFS · Btrfs · overlayfs">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     VFS 추상화 덕분에 리눅스는 같은 시스템에서 여러 파일시스템을 동시에 마운트할 수
                     있습니다. 디스크 기반(ext4, XFS, Btrfs), 메모리 기반(tmpfs), 커널 정보 노출용 가상 FS(procfs,
                     sysfs), 컨테이너 레이어링(<T id="overlayfs">overlayfs</T>), 원격 파일(NFS)이 대표적입니다.
-                </p>
+                </Prose>
 
                 {/* 비교 표 */}
                 <InfoTable
@@ -459,7 +459,7 @@ f_flags: O_RDONLY`}</pre>
                 />
 
                 {/* 3가지 카테고리 카드 */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CardGrid cols={3}>
                     {[
                         {
                             title: '디스크 기반 FS',
@@ -532,7 +532,7 @@ f_flags: O_RDONLY`}</pre>
                             ))}
                         </div>
                     ))}
-                </div>
+                </CardGrid>
 
                 {/* overlayfs 레이어 다이어그램 */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
@@ -594,11 +594,11 @@ f_flags: O_RDONLY`}</pre>
 
             {/* 4.7 리눅스 파일 종류와 권한 */}
             <Section id="s447" title="4.7  리눅스 파일 종류와 권한">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     리눅스에서 "모든 것은 파일"입니다. 일반 파일뿐 아니라 디렉토리, 디바이스, 파이프, 소켓까지 7종의 파일
                     타입이 존재하며, 각 파일에는 <strong className="text-gray-900 dark:text-gray-100">mode bits(rwx)</strong>로
                     접근 권한을 제어합니다.
-                </p>
+                </Prose>
 
                 {/* 7종 파일 타입 테이블 */}
                 <InfoTable

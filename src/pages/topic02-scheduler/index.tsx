@@ -4,7 +4,7 @@ import { ProcessStateDiagram } from '../../components/concepts/scheduler/Process
 import { CfsTreeViz } from '../../components/concepts/scheduler/CfsTreeViz'
 import { ContextSwitchViz } from '../../components/concepts/scheduler/ContextSwitchViz'
 import { CgroupTreeViz } from '../../components/concepts/scheduler/CgroupTreeViz'
-import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , TopicPage , SubSection } from '@study-ui/components'
+import { Alert, AnimatedDiagram, CodeBlock, InfoBox, InfoTable, Prose, Section, T , TopicPage , SubSection , InlineCode , CardGrid } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ── 2.7 컨텍스트 스위치 steps ───────────────────────────────────────────────
@@ -183,7 +183,7 @@ export default function Topic02Scheduler() {
                     있습니다.
                 </Prose>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     {/* O(1) 스케줄러 */}
                     <div className="rounded-xl border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-950/20 p-4 space-y-3">
                         <div className="font-semibold text-orange-800 dark:text-orange-300">
@@ -228,7 +228,7 @@ export default function Topic02Scheduler() {
                             <div className="text-blue-500 dark:text-blue-500">→ 단일 알고리즘, 공정성 보장</div>
                         </div>
                     </div>
-                </div>
+                </CardGrid>
             </Section>
 
             {/* 2.5 CFS 스케줄러 */}
@@ -258,7 +258,7 @@ export default function Topic02Scheduler() {
                     이며, 커널은 이를 내부적으로 weight(가중치)로 변환하여 vruntime 증가 속도를 조절합니다.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     {/* nice → weight 테이블 */}
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                         <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -306,7 +306,7 @@ export default function Topic02Scheduler() {
                             </ul>
                         </div>
                     </div>
-                </div>
+                </CardGrid>
 
                 <CodeBlock code={snippets.prioToWeightCode} language="c" filename="kernel/sched/fair.c" />
                 <InfoBox color="gray" title="관련 커널 소스">
@@ -488,7 +488,7 @@ cat /proc/loadavg
                     에 비트마스크로 저장됩니다.
                 </Prose>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                         <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                             <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
@@ -540,7 +540,7 @@ cat /proc/loadavg
                             모니터링과 함께 적용하세요.
                         </Alert>
                     </div>
-                </div>
+                </CardGrid>
             </Section>
 
             {/* 2.7 SMP와 NUMA */}
@@ -551,7 +551,7 @@ cat /proc/loadavg
                     <strong className="text-gray-900 dark:text-gray-100"><T id="numa">NUMA</T></strong>를 이해해야 합니다.
                 </Prose>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     {/* SMP */}
                     <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20 p-4 space-y-3">
                         <div className="font-semibold text-blue-800 dark:text-blue-300">
@@ -597,7 +597,7 @@ cat /proc/loadavg
                             <div>numastat -p &lt;pid&gt;</div>
                         </div>
                     </div>
-                </div>
+                </CardGrid>
 
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -650,7 +650,7 @@ cat /proc/loadavg
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     <div className="space-y-3">
                         <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 p-4">
                             <div className="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">
@@ -704,7 +704,7 @@ cat /proc/loadavg
                             </div>
                         </div>
                     </div>
-                </div>
+                </CardGrid>
             </Section>
 
             {/* 2.9 cgroups */}
@@ -793,10 +793,10 @@ cat /proc/loadavg
 
                 <Alert variant="info" title="Docker 컨테이너">
                     내부적으로{' '}
-                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--cpus</code>,{' '}
-                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">--memory</code>{' '}
+                    <InlineCode></InlineCode>,{' '}
+                    <InlineCode></InlineCode>{' '}
                     옵션을 cgroup v2의{' '}
-                    <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">cpu.max</code>,{' '}
+                    <InlineCode></InlineCode>,{' '}
                     <code className="bg-blue-100 dark:bg-blue-900/50 px-1 rounded font-mono text-xs">
                         memory.max
                     </code>
@@ -838,7 +838,7 @@ cat /proc/loadavg
                 />
 
                 {/* 스케줄링 도메인 카드 */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CardGrid cols={3}>
                     <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20 p-4 space-y-2">
                         <div className="font-semibold text-blue-800 dark:text-blue-300 text-sm">
                             SMT (Hyper-Threading)
@@ -870,7 +870,7 @@ cat /proc/loadavg
                             numactl --hardware
                         </div>
                     </div>
-                </div>
+                </CardGrid>
             </Section>
 
             {/* 2.11 SCHED_DEADLINE */}
@@ -951,9 +951,9 @@ cat /proc/loadavg
                     <div className="font-semibold text-red-800 dark:text-red-300 text-sm">Admission Control</div>
                     <div className="text-xs text-red-700 dark:text-red-400 leading-relaxed">
                         새 DEADLINE 태스크를 추가할 때 커널은{' '}
-                        <code className="bg-red-100 dark:bg-red-900/40 px-1 rounded">Σ (runtime / period) ≤ 1</code>{' '}
+                        <InlineCode color="red"></InlineCode>{' '}
                         조건을 검사합니다. 이 조건을 초과하면{' '}
-                        <code className="bg-red-100 dark:bg-red-900/40 px-1 rounded">-EBUSY</code>를 반환하고 설정을
+                        <InlineCode color="red"></InlineCode>를 반환하고 설정을
                         거부하여, CPU 과부하를 원천적으로 차단합니다. 즉, 시스템에 등록된 모든 DEADLINE 태스크의 대역폭
                         합이 1(100%)을 넘을 수 없습니다.
                     </div>

@@ -269,7 +269,7 @@ export default function Topic04() {
                     사용하는 고해상도 hrtimer입니다.
                 </Prose>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <CardGrid cols={3} className="mb-6">
                     {[
                         {
                             title: 'jiffies',
@@ -317,7 +317,7 @@ export default function Topic04() {
                             </ul>
                         </div>
                     ))}
-                </div>
+                </CardGrid>
 
                 <CodeBlock code={snippets.hrtimerCode} language="c" filename="kernel/hrtimer_example.c" />
             </Section>
@@ -331,7 +331,7 @@ export default function Topic04() {
                     <KernelRef path="kernel/irq/manage.c" sym="request_threaded_irq" />
                 </Prose>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-6">
+                <CardGrid cols={2} className="mt-4 mb-6">
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                         <div className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">전통적 방식</div>
                         <ul className="space-y-1">
@@ -368,7 +368,7 @@ export default function Topic04() {
                             ))}
                         </ul>
                     </div>
-                </div>
+                </CardGrid>
 
                 <CodeBlock code={snippets.threadedIrqCode} language="c" filename="drivers/my_driver.c" />
 
@@ -503,7 +503,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                 </div>
 
                 <SubSection>Coalescing 파라미터</SubSection>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <CardGrid cols={2} className="mb-6">
                     {coalescingParams.map((p) => (
                         <div key={p.name} className={`rounded-xl border ${p.color} bg-white dark:bg-gray-900/50 p-4`}>
                             <div className="flex items-center gap-2 mb-1">
@@ -516,7 +516,7 @@ cat /sys/kernel/debug/sched/preempt  # 선점 통계`}
                             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{p.desc}</p>
                         </div>
                     ))}
-                </div>
+                </CardGrid>
 
                 <SubSection>레이턴시 vs 처리량 트레이드오프</SubSection>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-5 mb-6">

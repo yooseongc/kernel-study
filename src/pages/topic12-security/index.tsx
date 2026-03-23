@@ -1,6 +1,6 @@
 import { KernelRef } from '../../components/ui/KernelRef'
 import * as snippets from './codeSnippets'
-import { Alert, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow , TopicPage } from '@study-ui/components'
+import { Alert, CodeBlock, InfoBox, InfoTable, Prose, Section, T , type TableRow , TopicPage , InlineCode } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Code strings
@@ -343,8 +343,8 @@ export default function Topic12() {
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         컨테이너 내부 uid 0(root)를 호스트의 일반 uid(예: 1000)에 매핑합니다. 컨테이너 안에서 root처럼
                         동작하지만, 호스트 커널에서는 권한이 없습니다. 이 덕분에{' '}
-                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">rootless Docker</code>,{' '}
-                        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">Podman</code> 등이 동작합니다.
+                        <InlineCode color="gray"></InlineCode>,{' '}
+                        <InlineCode color="gray"></InlineCode> 등이 동작합니다.
                     </p>
                     <CodeBlock code={snippets.userNsCode} language="bash" filename="# user namespace — UID 매핑" />
                 </div>
@@ -356,7 +356,7 @@ export default function Topic12() {
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         각 컨테이너는 독립된 마운트 namespace를 갖습니다. Docker는 컨테이너 시작 시 overlay2 레이어를
-                        마운트한 뒤 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">pivot_root</code>로 루트
+                        마운트한 뒤 <InlineCode color="gray"></InlineCode>로 루트
                         파일시스템을 교체합니다. 호스트의 파일시스템은 보이지 않습니다.
                     </p>
                     <CodeBlock code={snippets.mountNsCode} language="bash" filename="# mount namespace — pivot_root 절차" />
@@ -430,7 +430,7 @@ export default function Topic12() {
                 <Prose>
                     PID namespace는 리눅스 네임스페이스 중 하나로, 각 namespace 내에서 PID를{' '}
                     <strong className="text-gray-800 dark:text-gray-200">독립적으로 번호 매기는</strong> 메커니즘입니다.
-                    Docker 컨테이너에서 PID 1이 <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">init</code>
+                    Docker 컨테이너에서 PID 1이 <InlineCode color="gray"></InlineCode>
                     처럼 보이지만, 호스트에서는 완전히 다른 PID를 가집니다.
                 </Prose>
 
@@ -626,7 +626,7 @@ export default function Topic12() {
                     <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         컨테이너 안의 컨테이너(DinD)는 PID namespace를 3단계 이상으로 중첩할 수 있습니다. 각 레벨에서
                         독립적인 PID 번호가 부여되며,{' '}
-                        <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">NSpid</code> 필드에 계층별 PID가
+                        <InlineCode color="gray"></InlineCode> 필드에 계층별 PID가
                         순서대로 기록됩니다.
                     </p>
                     <div className="font-mono text-xs flex flex-col items-center gap-1 pt-1">

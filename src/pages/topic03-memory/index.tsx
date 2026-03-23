@@ -156,7 +156,7 @@ export default function Topic03() {
 
             {/* 3.1 Virtual Address Space */}
             <Section id="s331" title="3.1  가상 주소 공간">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     리눅스의 가장 중요한 보안·격리 원칙 중 하나:{' '}
                     <strong className="text-gray-800 dark:text-gray-200">
                         모든 프로세스는 자신만의 독립된 가상 주소 공간을 가집니다.
@@ -164,7 +164,7 @@ export default function Topic03() {
                     x86-64에서 각 프로세스는 0부터 0x00007FFFFFFFFFFF까지 128TB의 유저 공간을 독점적으로 사용합니다.
                     프로세스 A의 주소 0x00400000과 프로세스 B의 주소 0x00400000은{' '}
                     <em>이름만 같을 뿐, 전혀 다른 물리 페이지</em>를 가리킵니다.
-                </p>
+                </Prose>
 
                 {/* 프로세스별 가상 주소 공간 격리 */}
                 <MultiProcessVAViz />
@@ -232,10 +232,10 @@ export default function Topic03() {
 
                 {/* 단일 프로세스 상세 레이아웃 */}
                 <SubSection>단일 프로세스의 가상 주소 레이아웃 (x86-64)</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     48비트 주소 공간(256TB) 중 상위 128TB는 커널 전용, 하위 128TB는 유저 공간입니다. 중간의
                     non-canonical 구간에 접근하면 즉시 #GP 예외가 발생합니다.
-                </p>
+                </Prose>
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
                     <div className="flex items-center gap-2 mb-3">
                         <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">높은 주소 ↑</span>
@@ -264,10 +264,10 @@ export default function Topic03() {
 
             {/* 3.2 Page Table Walk */}
             <Section id="s332" title="3.2  페이지와 페이지 테이블">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     가상 주소는 4단계 페이지 테이블을 통해 물리 주소로 변환됩니다. 각 레벨이 9비트를 인덱스로 사용하고,
                     마지막 12비트가 page offset입니다.
-                </p>
+                </Prose>
                 <AnimatedDiagram
                     steps={pageTableSteps}
                     renderStep={(step) => <PageTableWalkViz step={step} />}
@@ -326,14 +326,14 @@ export default function Topic03() {
 
                 {/* TLB */}
                 <SubSection>TLB (Translation Lookaside Buffer) — 주소 변환 캐시</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     4단계 페이지 테이블 워크는 메모리를 최대 4번 참조해야 합니다(PGD→PUD→PMD→PTE). 매 메모리 접근마다 이
                     과정을 반복하면 성능이 심각하게 저하됩니다. CPU는 최근 변환 결과를 <T id="tlb">TLB</T>라는 하드웨어
                     캐시에 저장해 이 문제를 해결합니다.
-                </p>
+                </Prose>
 
                 {/* TLB Hit vs Miss 비교 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     {/* TLB Hit */}
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                         <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-3">
@@ -383,14 +383,14 @@ export default function Topic03() {
                             수십~수백 사이클
                         </div>
                     </div>
-                </div>
+                </CardGrid>
 
                 {/* TLB Flush 설명 */}
                 <SubSection>TLB Flush — 컨텍스트 스위치 시 무효화</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     컨텍스트 스위치 시 다른 프로세스의 가상 주소 매핑이 TLB에 남으면 안 됩니다. 커널은 TLB를
                     무효화합니다.
-                </p>
+                </Prose>
                 <CodeBlock
                     language="c"
                     filename="arch/x86/include/asm/tlbflush.h"
@@ -421,12 +421,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
                 {/* TLB Shootdown 설명 */}
                 <SubSection>TLB Shootdown과 관련 기법</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     멀티코어 환경에서 한 CPU가 페이지 매핑을 변경하면 다른 CPU들의 TLB도 무효화해야 합니다. 이를{' '}
                     <strong className="font-semibold text-gray-700 dark:text-gray-300">TLB Shootdown</strong>이라고
                     하며, IPI(프로세서간 인터럽트)로 구현됩니다.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                </Prose>
+                <CardGrid cols={3}>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                         <div className="text-sm font-bold text-violet-600 dark:text-violet-400 mb-2">ASID</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -451,7 +451,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             명시적으로 호출해 메모리 반환을 앞당깁니다.
                         </div>
                     </div>
-                </div>
+                </CardGrid>
                 <InfoBox color="gray" title="관련 커널 소스">
                     <div className="flex flex-wrap gap-2">
                         <KernelRef path="arch/x86/mm/pgtable.c" label="pgtable.c" />
@@ -463,11 +463,11 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.3 mm_struct & VMA */}
             <Section id="s333" title="3.3  mm_struct와 VMA">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     각 프로세스는 고유한 <code className="font-mono text-blue-600 dark:text-blue-400">mm_struct</code>를 가지며, 이
                     구조체가 가상 주소 공간 전체를 관리합니다. 가상 주소 공간 내의 각 연속된 영역은{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">vm_area_struct(VMA)</code>로 표현됩니다.
-                </p>
+                </Prose>
                 <CodeBlock code={snippets.mmStructCode} language="c" filename="include/linux/mm_types.h" />
                 <CodeBlock code={snippets.vmaCode} language="c" filename="include/linux/mm_types.h" />
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -488,12 +488,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
                 {/* mmap 익명/파일 매핑 */}
                 <SubSection>mmap() — 두 가지 매핑 방식</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">mmap()</code>은 가상 주소 공간에 새로운{' '}
                     <T id="vma">VMA</T>를 만드는 핵심 syscall입니다. 매핑 방식에 따라 <strong>익명 매핑</strong>과{' '}
                     <strong>파일 매핑</strong> 두 가지로 나뉩니다.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </Prose>
+                <CardGrid cols={2}>
                     <div
                         className={`rounded-xl border p-4 text-sm space-y-2 ${
                             isDark ? 'border-emerald-800/50 bg-emerald-900/20' : 'border-emerald-200 bg-emerald-50'
@@ -545,17 +545,17 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             <li>실행 파일(.text), shared library(.so) 로딩에 사용</li>
                         </ul>
                     </div>
-                </div>
+                </CardGrid>
                 <CodeBlock code={snippets.mmapExampleCode} language="c" filename="mm/mmap.c 활용 예시" />
             </Section>
 
             {/* 3.4 Page Fault */}
             <Section id="s334" title="3.4  Page Fault">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     가상 주소에 접근했을 때 물리 페이지가 없으면 MMU가 <T id="page_fault">Page Fault</T> 예외를
                     발생시킵니다. 커널은 fault 핸들러에서 적절한 물리 페이지를 확보하고 PTE를 업데이트한 뒤 명령어를
                     재실행합니다.
-                </p>
+                </Prose>
 
                 {/* 핵심 용어 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -606,18 +606,18 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.5 Buddy Allocator */}
             <Section id="s335" title="3.5  Buddy Allocator (인터랙티브)">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <strong className="text-gray-800 dark:text-gray-200">
                         <T id="buddy_allocator">Buddy Allocator</T>
                     </strong>
                     는 아직 사용되지 않은 <strong className="text-gray-800 dark:text-gray-200">free 물리 페이지</strong>
                     를 관리하는 커널의 핵심 메모리 관리자입니다. <T id="page_fault">Page Fault</T>, kmalloc,{' '}
                     <T id="mmap">mmap</T> 등 모든 물리 페이지 할당 요청이 여기서 처리됩니다.
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                </Prose>
+                <Prose>
                     커널은 물리 메모리를 2의 거듭제곱(2^order) 크기 블록으로 관리합니다. order 0 = 4KB(1 page), order 1
                     = 8KB, ..., order 10 = 4MB. 아래 시뮬레이터는 32페이지(128KB) 존에서 buddy 할당/해제를 보여줍니다.
-                </p>
+                </Prose>
 
                 <div
                     className={`rounded-lg border px-4 py-3 text-sm ${
@@ -642,12 +642,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.6 SLUB Allocator */}
             <Section id="s336" title="3.6  SLUB Allocator">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <T id="buddy_allocator">Buddy Allocator</T>는 페이지 단위(최소 4KB)이지만, 커널은 수십~수백 바이트의
                     작은 객체를 자주 할당합니다.
                     <T id="slub">SLUB</T>은 특정 크기의 객체 전용 캐시(
                     <code className="font-mono text-blue-600 dark:text-blue-400">kmem_cache</code>)를 미리 만들어 빠르게 재사용합니다.
-                </p>
+                </Prose>
                 <D3Container renderFn={slubRenderFn} deps={[theme]} height={280} />
                 <div className="flex flex-wrap gap-4 text-xs">
                     {[
@@ -677,10 +677,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.7 memory cgroup */}
             <Section id="s337" title="3.7  memory cgroup">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     cgroup v2의 memory 컨트롤러를 사용하면 프로세스 그룹별로 메모리 사용량을 제한할 수 있습니다.
                     컨테이너 런타임(Docker, containerd)이 이 인터페이스를 통해 컨테이너 메모리를 격리합니다.
-                </p>
+                </Prose>
 
                 {/* control files table */}
                 <InfoTable
@@ -707,12 +707,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
                 {/* OOM Killer */}
                 <SubSection>OOM Killer — 메모리 부족 시 프로세스 종료</SubSection>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     물리 메모리가 완전히 소진되면 커널 <T id="oom_killer">OOM Killer</T>가{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">oom_score</code> 기준으로 희생 프로세스를 선택해 강제
                     종료합니다.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                </Prose>
+                <CardGrid cols={3}>
                     <div
                         className={`rounded-xl border p-4 text-sm space-y-1 ${
                             isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
@@ -756,18 +756,18 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             <code className="font-mono text-blue-600 dark:text-blue-400">cat /proc/&lt;pid&gt;/oom_score</code> 로 확인
                         </div>
                     </div>
-                </div>
+                </CardGrid>
                 <CodeBlock code={snippets.oomBashCode} language="bash" filename="# OOM Killer 실전 관리" />
                 <CodeBlock code={snippets.oomKillCode} language="c" filename="mm/oom_kill.c" />
             </Section>
 
             {/* 3.8 vmalloc vs kmalloc */}
             <Section id="s338" title="3.8  vmalloc vs kmalloc — 커널 메모리 할당 API">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     커널 코드에서 메모리를 동적 할당할 때 두 가지 주요 API가 있습니다. <T id="gfp_flags">GFP 플래그</T>와
                     물리적 연속성 요구 여부가 선택 기준입니다.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </Prose>
+                <CardGrid cols={2}>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
                         <div className="text-sm font-bold text-blue-600 dark:text-blue-400 font-mono">kmalloc</div>
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -803,7 +803,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             </li>
                         </ul>
                     </div>
-                </div>
+                </CardGrid>
                 <CodeBlock
                     code={snippets.kmallocCode}
                     language="c"
@@ -828,10 +828,10 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.9 kswapd와 메모리 회수 */}
             <Section id="s339" title="3.9  kswapd와 메모리 회수 — LRU 알고리즘">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     물리 메모리가 부족해지면 커널은 사용 빈도가 낮은 페이지를 회수(reclaim)합니다. 이 작업은{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">kswapd</code> 커널 스레드가 담당합니다.
-                </p>
+                </Prose>
                 {/* Watermark Visualization */}
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                     <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
@@ -920,14 +920,14 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* 3.10 Huge Pages / THP */}
             <Section id="s3310" title="3.10  Huge Pages / THP — 대형 페이지">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     표준 페이지 크기는 4KB입니다. 수십GB 메모리를 사용하는 데이터베이스나 JVM은 수백만 개의{' '}
                     <T id="tlb">TLB</T> 엔트리가 필요해 TLB miss가 심각한 성능 저하를 유발합니다.{' '}
                     <strong className="text-gray-900 dark:text-white">
                         <T id="hugepage">Huge Pages</T>
                     </strong>
                     (2MB/1GB)로 TLB 부담을 90% 줄일 수 있습니다.
-                </p>
+                </Prose>
                 {/* 3-column page size comparison */}
                 <CardGrid cols={3}>
                     <InfoBox color="gray" title="4KB 일반 페이지">
@@ -953,7 +953,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                     </InfoBox>
                 </CardGrid>
                 {/* THP vs explicit comparison */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardGrid cols={2}>
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
                         <div className="text-sm font-bold text-amber-600 dark:text-amber-400">
                             명시적 Huge Pages (HugeTLBfs)
@@ -983,7 +983,7 @@ void flush_tlb_mm_range(struct mm_struct *mm,
                             </li>
                         </ul>
                     </div>
-                </div>
+                </CardGrid>
                 <CodeBlock code={snippets.hugepagesBashCode} language="bash" filename="# Huge Pages 설정" />
                 {/* Practical recommendations */}
                 <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">실전 권장 설정</div>
@@ -1002,12 +1002,12 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* ── 3.11  CoW — Copy-on-Write ── */}
             <Section id="s3311" title="3.11  CoW — Copy-on-Write: fork() 후 쓰기 최적화">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <code className="font-mono text-blue-500 dark:text-blue-600 dark:text-blue-400">fork()</code> 호출 시 자식 프로세스의
                     가상 주소 공간은 부모와 동일하지만, 물리 페이지는 즉시 복사하지 않고{' '}
                     <strong>읽기 전용(RO)으로 공유</strong>됩니다. 최초 쓰기 시 <T id="page_fault">Page Fault</T>가
                     발생하고, 커널이 페이지를 복사한 뒤 각자 독립 페이지를 보유합니다.
-                </p>
+                </Prose>
 
                 {/* Step-by-step animation */}
                 <CoWAnimationViz />
@@ -1049,11 +1049,11 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
             {/* ── 3.12  NUMA 메모리 정책 ── */}
             <Section id="s3312" title="3.12  NUMA 메모리 정책 — mbind()와 numactl">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <T id="numa">NUMA</T>(Non-Uniform Memory Access) 시스템에서 CPU는 자신과 연결된 <strong>로컬 메모리</strong>에 빠르게
                     접근하고, 원격 노드 메모리는 더 느립니다. 메모리 정책(memory policy)으로 어느 NUMA 노드에 할당할지
                     제어할 수 있습니다.
-                </p>
+                </Prose>
 
                 {/* Topology diagram */}
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 space-y-4">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Prose } from '@study-ui/components'
 import { glossary, CATEGORY_LABEL, CATEGORY_COLOR, type GlossaryCategory } from '../../data/glossary'
 
 const allCategories = Object.keys(CATEGORY_LABEL) as GlossaryCategory[]
@@ -130,7 +131,7 @@ export default function Glossary() {
                                 {CATEGORY_LABEL[term.category]}
                             </span>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{term.definition}</p>
+                        <Prose>{term.definition}</Prose>
                         {term.topicRef && (
                             <a
                                 href={`#/topic/${term.topicRef}`}

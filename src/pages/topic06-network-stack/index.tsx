@@ -5,7 +5,7 @@ import { NapiCompare } from '../../components/concepts/network/NapiCompare'
 import { SkbuffLayout } from '../../components/concepts/network/SkbuffLayout'
 import { NetworkFlowViz } from '../../components/concepts/network/NetworkFlowViz'
 import { TxFlowViz } from '../../components/concepts/network/TxFlowViz'
-import { CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme , SubSection } from '@study-ui/components'
+import { CodeBlock, InfoBox, InfoTable, Prose, Section, T, TopicPage, useTheme , SubSection , InlineCode } from '@study-ui/components'
 import type { TableColumn } from '@study-ui/components'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -339,11 +339,11 @@ export default function Topic05() {
             </Section>
 
             <Section id="s663" title="6.3  sk_buff 구조">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-300 px-1 rounded">sk_buff</code>
+                <Prose>
+                    <InlineCode></InlineCode>
                     (소켓 버퍼)는 패킷이 커널을 통과하는 내내 동반하는 메타데이터 구조체입니다. 실제 데이터를 복사하지
                     않고 포인터만 이동시켜 헤더 추가/제거를 O(1)에 처리합니다.
-                </p>
+                </Prose>
 
                 <CodeBlock code={snippets.skbuffCode} language="c" filename="include/linux/skbuff.h" />
 
@@ -373,19 +373,19 @@ export default function Topic05() {
             </Section>
 
             <Section id="s664" title="6.4  L2 / L3 / L4 처리 흐름">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     패킷이 NIC 드라이버에서 사용자 프로세스까지 도달하는 각 단계를 애니메이션으로 살펴봅니다. 각
                     레이어에서 어떤 커널 함수가 실행되는지 확인하세요.
-                </p>
+                </Prose>
 
                 <NetworkFlowViz />
             </Section>
 
             <Section id="s665" title="6.5  소켓 계층과 시스템 콜">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     사용자 프로그램은 소켓 API를 통해 네트워크에 접근합니다. 각 시스템 콜은 커널 내부의 특정 함수로
                     연결되어 소켓 객체와 <T id="sk_buff">sk_buff</T>를 조작합니다.
-                </p>
+                </Prose>
 
                 <InfoTable
                     striped
@@ -420,11 +420,11 @@ export default function Topic05() {
             </Section>
 
             <Section id="s666" title="6.6  net_cls cgroup — 네트워크와 cgroup 연결">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <code className="font-mono bg-gray-100 dark:bg-gray-800 text-green-600 dark:text-green-300 px-1 rounded">net_cls</code> 서브시스템은 특정
+                <Prose>
+                    <InlineCode color="green"></InlineCode> 서브시스템은 특정
                     cgroup에 속한 프로세스의 패킷에 classid 태그를 부여합니다. TC(Traffic Control)는 이 태그를 기반으로
                     대역폭을 제한하거나 우선순위를 설정할 수 있습니다.
-                </p>
+                </Prose>
 
                 <div className="rounded-lg border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 space-y-1">
                     <div className="font-semibold text-gray-800 dark:text-gray-200 mb-2">동작 원리</div>
@@ -455,11 +455,11 @@ export default function Topic05() {
             </Section>
 
             <Section id="s667" title="6.7  TX 경로 — 송신 패킷의 여정">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     RX(수신) 경로와 반대로, 애플리케이션이 데이터를 쓰면 TCP/IP 스택이 <T id="sk_buff">sk_buff</T>를
                     생성하고 <T id="qdisc">qdisc</T>(큐 디시플린)를 거쳐 NIC 하드웨어까지 전달됩니다. 각 레이어에서 헤더를 추가하고
                     라우팅을 결정한 뒤 드라이버가 DMA로 실제 전송합니다.
-                </p>
+                </Prose>
 
                 <TxFlowViz />
 
@@ -467,14 +467,14 @@ export default function Topic05() {
             </Section>
 
             <Section id="s668" title="6.8  TSO / GSO — 세그멘테이션 오프로드">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <span className="font-semibold text-blue-600 dark:text-blue-400">TSO (TCP Segmentation Offload)</span>: 커널이 큰 TCP
                     버퍼를 통째로 NIC에 넘기고, NIC 하드웨어가 MSS 단위로 분할합니다. CPU 부담을 크게 줄입니다.{' '}
                     <span className="font-semibold text-purple-600 dark:text-purple-400">GSO (Generic Segmentation Offload)</span>: TSO를
                     지원하지 않는 NIC를 위한 소프트웨어 대안으로, 드라이버 직전 단계에서 지연 분할합니다.{' '}
                     <span className="font-semibold text-green-600 dark:text-green-400">LRO / GRO</span>: 수신 시 작은 패킷 여럿을 큰 하나로
                     합쳐 CPU 인터럽트 오버헤드를 줄입니다 (LRO는 NIC 하드웨어, GRO는 <T id="napi">NAPI</T> 소프트웨어).
-                </p>
+                </Prose>
 
                 <InfoTable
                     striped
@@ -493,10 +493,10 @@ export default function Topic05() {
             </Section>
 
             <Section id="s669" title="6.9  RSS / RPS / RFS — 멀티코어 수신 분산">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     단일 CPU가 모든 수신 패킷을 처리하면 병목이 됩니다. 리눅스는 하드웨어/소프트웨어 두 수준에서 패킷을
                     여러 CPU 코어에 분산하는 메커니즘을 제공합니다.
-                </p>
+                </Prose>
 
                 <div className="grid grid-cols-3 gap-4">
                     {rssModes.map((mode) => (
@@ -528,12 +528,12 @@ export default function Topic05() {
             </Section>
 
             <Section id="s6610" title="6.10  Zero-copy — sendfile과 splice">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     일반 <code className="font-mono text-blue-600 dark:text-blue-400">read()+write()</code> 방식은 데이터를
                     커널→유저→커널로 두 번 복사합니다. <code className="font-mono text-purple-600 dark:text-purple-400">sendfile()</code>과{' '}
                     <code className="font-mono text-green-600 dark:text-green-400">splice()</code>는 유저공간을 거치지 않고 커널 내에서 직접
                     전달합니다. Nginx, Apache의 정적 파일 서빙 성능의 핵심인 <T id="zero_copy">zero-copy</T> 기법입니다.
-                </p>
+                </Prose>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
@@ -589,11 +589,11 @@ export default function Topic05() {
                 {/* 파트 A: SO_REUSEPORT */}
                 <div className="space-y-3">
                     <SubSection>파트 A: SO_REUSEPORT — 멀티코어 서버 성능</SubSection>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <Prose>
                         전통적으로 하나의 포트에는 하나의 소켓만 바인딩할 수 있었습니다.{' '}
                         <code className="font-mono text-blue-600 dark:text-blue-400">SO_REUSEPORT</code>는 여러 소켓(각자 다른
                         스레드/프로세스)이 같은 포트를 바인딩하고, 커널이 패킷을 분산시킵니다.
-                    </p>
+                    </Prose>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
@@ -622,10 +622,10 @@ export default function Topic05() {
                 {/* 파트 B: 네트워크 네임스페이스 */}
                 <div className="space-y-3">
                     <SubSection>파트 B: 네트워크 네임스페이스 — 컨테이너 네트워크 격리</SubSection>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <Prose>
                         <T id="namespace">네트워크 네임스페이스</T>는 네트워크 스택(인터페이스, 라우팅 테이블, iptables 규칙, 소켓)을 독립된
                         공간으로 분리합니다. Docker/K8s 컨테이너 네트워크의 기반입니다.
-                    </p>
+                    </Prose>
 
                     <CodeBlock code={snippets.netnsCode} language="bash" filename="# 네트워크 네임스페이스 실전" />
 
@@ -653,11 +653,11 @@ export default function Topic05() {
             </Section>
 
             <Section id="s6612" title="6.12  io_uring — 비동기 I/O의 새로운 표준">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     <code className="font-mono text-blue-600 dark:text-blue-400">io_uring</code>은 Linux 5.1(2019)에 도입된 비동기 I/O
                     인터페이스입니다. 전통적인 epoll+read/write 방식의 syscall 오버헤드를 공유 링 버퍼로 최소화해,
                     네트워크 서버의 성능을 크게 향상시킵니다. Nginx, Redis, RocksDB가 도입 중입니다.
-                </p>
+                </Prose>
 
                 {/* epoll vs io_uring 비교 */}
                 <div className="grid grid-cols-2 gap-4">
@@ -734,12 +734,12 @@ export default function Topic05() {
 
             {/* ─── 6.13  TCP 혼잡 제어 ─────────────────────────────────────────── */}
             <Section id="s6613" title="6.13  TCP 혼잡 제어 — CUBIC과 BBR">
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <Prose>
                     TCP 혼잡 제어는 네트워크 혼잡을 감지하고 전송 속도를 조절하는 메커니즘입니다. 리눅스에서{' '}
                     <code className="font-mono text-blue-600 dark:text-blue-400">net.ipv4.tcp_congestion_control</code>로 알고리즘을
                     선택하며, 대표 알고리즘은 기본값인 <strong>CUBIC</strong>과 Google이 개발한 <strong>BBR</strong>
                     입니다.
-                </p>
+                </Prose>
 
                 {/* CUBIC vs BBR 비교 카드 */}
                 <div className="grid grid-cols-2 gap-4">
