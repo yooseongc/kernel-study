@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Prose } from '@study-ui/components'
 import { glossary, CATEGORY_LABEL, CATEGORY_COLOR, type GlossaryCategory } from '../../data/glossary'
 
@@ -133,12 +134,12 @@ export default function Glossary() {
                         </div>
                         <Prose>{term.definition}</Prose>
                         {term.topicRef && (
-                            <a
-                                href={`#/topic/${term.topicRef}`}
+                            <Link
+                                to={`/topic/${term.topicRef}`}
                                 className="inline-flex items-center gap-1 mt-3 text-xs text-blue-600 dark:text-blue-400 hover:underline"
                             >
                                 → 관련 토픽 보기
-                            </a>
+                            </Link>
                         )}
                     </div>
                 ))}
